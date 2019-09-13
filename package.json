@@ -20,7 +20,8 @@
     "sass-loader": "^7.2.0",
     "style-loader": "^1.0.0",
     "webpack": "^4.39.1",
-    "webpack-cli": "^3.3.6"
+    "webpack-cli": "^3.3.6",
+    "eslint-utils": ">=1.4.1"
   },
   "scripts": {
     "build": "webpack",
