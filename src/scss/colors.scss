@@ -1,0 +1,12 @@
+:global(body) {
+	--brick-red: #C12D2E;
+	--tan: #CFBD90;
+	--black: #121311;
+	--dim-gray: #6F6B55;
+	--dark-olive-green: #4D4C3B;
+
+	--primary-color: var(--brick-red);
+	--border-color: var(--tan);
+	--border-dark: var(--dim-gray);
+	--text-color: var(--black);
+}

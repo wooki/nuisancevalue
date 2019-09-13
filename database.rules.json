@@ -1,0 +1,16 @@
+{
+    "rules": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        "games": {
+        	"$gameid": {
+        		"stations": {
+        			"$stationid": {
+        				".read": true,
+        				".write": true
+        			}
+        		}
+        	}
+        }
+    }
+}

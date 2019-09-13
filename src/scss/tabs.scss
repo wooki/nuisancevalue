@@ -1,0 +1,20 @@
+:global(.tabs) {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: flex-start;
+	border-bottom: 3px solid var(--border-color);
+	padding: 0;
+}
+:global(.tabs .tab) {
+	flex: 0 0 auto;
+	border-bottom: 3px solid var(--border-color);
+	padding: 0 30px;
+	line-height: 30px;
+	display: block;
+	transform: translateY(3px);
+	cursor: pointer;
+}
+:global(.tabs .tab.active) {
+	border-bottom: 3px solid var(--primary-color);
+}

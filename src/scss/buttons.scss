@@ -1,0 +1,22 @@
+:global(button) {
+	border: none;
+    cursor: pointer;
+    padding: 15px 60px 12px 60px;
+    outline: none;
+    transition: all 0.3s;
+    text-align: center;
+    font-size: 20px;
+    line-height: 24px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+}
+
+:global(button.disabled) {
+    background-color: var(--black);
+    color: var(--dim-gray);
+}
+
+:global(button:hover) {
+
+}
