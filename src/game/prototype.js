@@ -7,8 +7,13 @@ const Utils = require('./gameUtils.js');
 module.exports = function() {
 
 	return {
-		// ShipImage: require('../assets/ship.png'),
-		ShipImage: require('../assets/starfury.png'),
+		images: {
+			starfury: require('../assets/starfury.png'),
+			ship: require('../assets/ship.png'),
+			asteroid: require('../assets/asteroid.png'),
+			sol: require('../assets/sol.png'),
+			earth: require('../assets/earth.png')
+		},
 		Colors: {
 			Black: 0x000000,
 			Grid: 0x161616,
@@ -18,9 +23,10 @@ module.exports = function() {
 			Dashboard: 0x444444
 		},
 		zIndex: { // does this even work?
-			grid: 8,
-			ship: 9,
-			dashboard: 10
+			grid: 1,
+			asteroid: 10,
+			ship: 50,
+			dashboard: 100
 		},
 
 		pixiApp: null,
@@ -42,6 +48,7 @@ module.exports = function() {
 		engineOnEl: null,
 		engineOffEl: null,
 		lastServerData: null,
+		mapObjects: {},
 
 		// update includes scaling of offset, so nothing else should scale (except size) of player ship
 		// additional objects position will need to be scaled (player ship is always centre)
@@ -84,10 +91,10 @@ module.exports = function() {
 					let accelerationMatrix = new PIXI.Matrix();
 					accelerationMatrix.rotate(Utils.degreesToRadians(this.stationData.shipData.angle));
 					acceleration = accelerationMatrix.apply(acceleration);
-					dX = dX + acceleration.x;
-					dY = dY + acceleration.y;
-					// dX = dX + (elapsedMS * acceleration.x);
-					// dY = dY + (elapsedMS * acceleration.y);
+					// dX = dX + acceleration.x;
+					// dY = dY + acceleration.y;
+					dX = dX + (elapsedMS * acceleration.x);
+					dY = dY + (elapsedMS * acceleration.y);
 				}
 
 				// apply objects vector to it's position
@@ -118,15 +125,76 @@ module.exports = function() {
 
 				// update grid tile
 				if ((dX != 0) || (dY != 0) || dAngle != 0) {
-					// this.updateGrid(x, y, angle);
 					this.updateGrid(x, y);
 				}
+
+				// remove any objects no longer in the data, update or add others
+				let objGuids = [];
+				if (this.stationData.objects) {
+					this.stationData.objects.forEach((obj) => {
+						objGuids.push(obj.guid); // remmeber so we can remove any not in latest data
+
+						let sprite = this.mapObjects[obj.guid];
+
+						// if we have this object, update it
+						if (!sprite) {
+							// add it
+							sprite = new PIXI.Sprite(this.resources[this.baseUrl+this.images[obj.texture]].texture);
+							sprite.anchor.set(0.5);
+							sprite.width = obj.size * this.scale;
+							sprite.height = obj.size * this.scale;
+							sprite.zIndex = this.zIndex.asteroid;
+							sprite.angle = obj.angle || 0;
+						}
+
+						// objects have their own timestamp so try and figure out elapsed time
+						let objTimestamp = new Date(obj.updatedAt).getTime();
+						let objTimestampNow = new Date().getTime();
+						let objDifference = objTimestampNow - objTimestamp;
+						let objElapsedMS = (performance.now() - objDifference) + this.serverOffset;
+
+						// TODO: adjust for it's acceleration
+
+						// adjust for its vector and rotation
+						let objX = obj.x;
+						let objY = obj.y;
+						if ((obj.dX != 0) || (obj.dY != 0)) {
+							objX = objX + (objElapsedMS * obj.dX);
+							objY = objY + (objElapsedMS * obj.dY);
+						}
+
+						if (obj.angularVelocity) {
+							sprite.angle = ((obj.angle || 0) + (objElapsedMS * obj.angularVelocity)) % 360;
+						}
+
+						// set it's position relative to the ship (centre of screen)
+						let spritePos = Utils.relativeScreenCoord(objX, objY, x, y, this.UiWidth, this.UiHeight, 0, this.scale);
+						sprite.x = spritePos.x;
+						sprite.y = spritePos.y;
+
+						// only add at the end (so the props are right)
+						if (!this.mapObjects[obj.guid]) {
+							this.mapObjects[obj.guid] = sprite;
+							this.pixiApp.stage.addChild(sprite);
+						}
+					});
+				}
+
+				// remove any we haven't got in the latest data
+				Object.keys(this.mapObjects).forEach((guid) => {
+					if (this.mapObjects[guid] && !objGuids.includes(guid)) {
+						this.mapObjects[guid].destroy();
+						this.mapObjects[guid] = null;
+					}
+				});
+
 			}
 		},
 
 		loadResources: function(loader, resources) {
 
 			this.loadedSprites = true;
+			this.resources = resources;
 
 			// create a texture for the grid background
 			let gridGraphics = new PIXI.Graphics();
@@ -146,19 +214,19 @@ module.exports = function() {
 			this.sprites.gridSprite.height = this.UiHeight;
 			this.sprites.gridSprite.zIndex = this.zIndex.grid;
 			this.pixiApp.stage.addChild(this.sprites.gridSprite);
-			// this.updateGrid(0, 0, 0);
 			this.updateGrid(0, 0);
 
-			this.sprites.ship = new PIXI.Sprite(resources[this.baseUrl+this.ShipImage].texture);
+			// player ship
+			this.sprites.ship = new PIXI.Sprite(resources[this.baseUrl+this.images.starfury].texture);
 			this.sprites.ship.anchor.set(0.5);
-			this.sprites.ship.scale.x = 0.4 * this.scale; // scale the ship
-			this.sprites.ship.scale.y = 0.4 * this.scale;
+			this.sprites.ship.scale.x = this.scale; // scale the ship
+			this.sprites.ship.scale.y = this.scale;
 			this.sprites.ship.x = Math.floor(this.pixiApp.screen.width / 2);
 			this.sprites.ship.y = Math.floor(this.pixiApp.screen.height / 2);
 			this.sprites.zIndex = this.zIndex.ship;
 			this.pixiApp.stage.addChild(this.sprites.ship);
 
-			// create a texture to overlay on top of the background
+			// UI create a texture to overlay on top of the background
 			let dashboardGraphics = new PIXI.Graphics();
 			dashboardGraphics.beginFill(this.Colors.Dashboard, 1);
 			dashboardGraphics.drawRect(0, 0, this.UiWidth, this.UiHeight);
@@ -204,10 +272,10 @@ module.exports = function() {
 			}
 
 			// decide how much "game space" is represented by the narrowUI dimension
-			this.scale = (this.narrowUi / 2000);
+			this.scale = (this.narrowUi / 1000);
 
 			// grid is always 1024 but scaled
-			this.gridSize = Math.floor(1024 * this.scale);
+			this.gridSize = Math.floor(1000 * this.scale);
 		},
 
 		init: function(body, stationRoot, serverOffset) {
@@ -232,7 +300,11 @@ module.exports = function() {
 			const loader = PIXI.Loader.shared;
 
 			// load sprites
-			this.pixiApp.loader.add(this.baseUrl+this.ShipImage);
+			this.pixiApp.loader.add(this.baseUrl+this.images.starfury);
+			this.pixiApp.loader.add(this.baseUrl+this.images.ship);
+			this.pixiApp.loader.add(this.baseUrl+this.images.asteroid);
+			this.pixiApp.loader.add(this.baseUrl+this.images.sol);
+			this.pixiApp.loader.add(this.baseUrl+this.images.earth);
 
 			// manage loading of resources
 			this.pixiApp.loader.load(this.loadResources.bind(this));
@@ -313,8 +385,8 @@ module.exports = function() {
 				return;
 			}
 
-			// // set a timestamp for lastServerData and position of ship so that all local
-			// // updates can be based from there
+			// set a timestamp for lastServerData and position of ship so that all local
+			// updates can be based from there
 			if (this.stationData.shipData) {
 
 				let timestamp = new Date(this.stationData.shipData.updatedAt).getTime();
@@ -347,7 +419,7 @@ module.exports = function() {
 				if (this.speedEl) {
 					let dX = this.stationData.shipData.dX;
 					let dY = this.stationData.shipData.dY;
-					let distance = Math.sqrt(dX * dX + dY * dY);
+					let distance = Math.hypot(dX, dY);
 					this.speedEl.innerHTML = "Speed: " + (Math.round(distance * 10000)/10000) + " K/S";
 				}
 
@@ -362,22 +434,16 @@ module.exports = function() {
 				this.serverX = this.stationData.shipData.x;
 				this.serverY = this.stationData.shipData.y;
 
-			// 	// let screenCentreX = Math.floor(this.pixiApp.screen.width / 2);
-			// 	// let screenCentreY = Math.floor(this.pixiApp.screen.height / 2);
-
-			// 	// // center the sprite's anchor point
-			// 	// if (this.sprites && this.sprites.ship) {
-
 				// rotate the ship
 				if (this.sprites && this.sprites.ship) {
 					this.sprites.ship.angle = this.stationData.shipData.angle;
 				}
 
-				// this.updateGrid(this.serverX, this.serverY, this.stationData.shipData.angle);
 				this.updateGrid(this.serverX, this.serverY);
 
-			// 	// }
 			}
+
+
 
 		}
 

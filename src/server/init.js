@@ -11,8 +11,9 @@ module.exports = function(game, gameRef, mission, api) {
 	let objects = mission.getObjects(api) || [];
 	objects.forEach((obj) => {
 
-		// validate?
+		// validate or do other stuff? If not then no need to iterate!
 
+		// add to objects
 		api.addObject(obj);
 	});
 

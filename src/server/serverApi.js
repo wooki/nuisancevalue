@@ -16,6 +16,26 @@ module.exports = function(server, game, gameRef) {
 
 		// },
 
+		createObject: function(guid, x, y, name, size, mass, texture) {
+
+			return {
+				guid: guid,
+				x: x,
+				y: y,
+				dX: 0,
+				dY: 0,
+				name: name,
+				size: size,
+				mass: mass,
+				texture: texture,
+				dX: 0,
+				dY: 0,
+				angle: 0,
+				angularVelocity: 0
+			};
+
+		},
+
 		createPlayerShip: function(guid, x, y, name) {
 
 			return {
@@ -29,11 +49,11 @@ module.exports = function(server, game, gameRef) {
 				angle: 0,
 				angularVelocity: 0,
 				name: name,
+				size: 120,
 				stations: ['prototype']
 			};
 
 		},
-
 
 		addObject: function(obj) {
 

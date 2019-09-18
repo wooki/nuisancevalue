@@ -20,6 +20,7 @@ module.exports = function(game, gameRef, mission, api) {
 		}
 		last_timestamp = timestamp;
 
+		// deal with moving and stuff
 		Object.keys(game.objects).forEach((key) => {
 			let obj = game.objects[key];
 
@@ -51,7 +52,6 @@ module.exports = function(game, gameRef, mission, api) {
 			}
 
 
-
 			// *** GRAVITY
 
 			// *** MOVE
@@ -60,8 +60,6 @@ module.exports = function(game, gameRef, mission, api) {
 				// apply objects vector to it's position
 				obj.x = obj.x + (delta * obj.dX);
 				obj.y = obj.y + (delta * obj.dY);
-				// utils.updateData(game, gameRef, ['objects', key, 'x'], obj.x);
-				// utils.updateData(game, gameRef, ['objects', key, 'y'], obj.y);
 			}
 
 			// *** ROTATE
@@ -71,14 +69,20 @@ module.exports = function(game, gameRef, mission, api) {
 
 
 			// *** COLLISIONS
+			// check every other object to watch for an overlap: do damage AND modify vectors
 
 
 			// *** WRITE BACK TO DB
 			obj.updatedAt = firebase.database.ServerValue.TIMESTAMP;
 			utils.updateData(game, gameRef, ['objects', key], obj);
 
-		});
+		}); // move, gravity etc.
 
+
+		// create structure to make getting close by objects and hit tests etc. much faster
+		let objectsMap = utils.createObjectsMap(game.objects);
+
+// ABOVE ^^^^^    need to use this to do the collision?
 
 		// read and write stations
 		Object.keys(game.stations).forEach((key) => {
@@ -125,9 +129,16 @@ module.exports = function(game, gameRef, mission, api) {
 					port: yourShip.port || 'inactive',
 					starboard: yourShip.starboard || 'inactive',
 					angularVelocity: yourShip.angularVelocity || 0,
-					angularAcceleration: yourShip.angularAcceleration || 0
+					angularAcceleration: yourShip.angularAcceleration || 0,
+					size: yourShip.size
 				};
 				utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
+
+				// write other objects that this station can see
+				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 1000, objectsMap).filter(function(obj) {
+					return obj.guid != yourShip.guid;
+				});
+				utils.updateData(game, gameRef, ['stations', key, 'objects'], objects);
 			}
 
 			// update game state, if we need to
