@@ -135,9 +135,10 @@ module.exports = function(game, gameRef, mission, api) {
 				utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
 
 				// write other objects that this station can see
-				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 1000, objectsMap).filter(function(obj) {
+				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 2000, objectsMap).filter(function(obj) {
 					return obj.guid != yourShip.guid;
 				});
+
 				utils.updateData(game, gameRef, ['stations', key, 'objects'], objects);
 			}
 
@@ -152,7 +153,7 @@ module.exports = function(game, gameRef, mission, api) {
 			// window.requestAnimationFrame(update);
 			setTimeout(function() {
 				update(performance.now());
-			}, 250);
+			}, 200);
 		}
 	};
 

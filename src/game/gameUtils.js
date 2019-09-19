@@ -27,9 +27,14 @@ module.exports = {
 	},
 
 	degreesToRadians: function(degrees) {
-	  var pi = Math.PI;
-	  return degrees * (pi/180);
+	  return degrees * (Math.PI/180);
 	},
+
+	radiansToDegrees: function(radians) {
+	  return radians * (180/Math.PI);
+	},
+
+
 
 	// assuming the camera if focussed on the centre of the app window and we are proivided the coordinates
 	// in game of that position then where on screen should the x, y we positioned

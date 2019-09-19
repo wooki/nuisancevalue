@@ -272,7 +272,7 @@ module.exports = function() {
 			}
 
 			// decide how much "game space" is represented by the narrowUI dimension
-			this.scale = (this.narrowUi / 1000);
+			this.scale = (this.narrowUi / 2000);
 
 			// grid is always 1024 but scaled
 			this.gridSize = Math.floor(1000 * this.scale);
@@ -339,6 +339,7 @@ module.exports = function() {
 			container.appendChild(uiContainer);
 
 			this.speedEl = this.createLabel(uiContainer, "speedEl", "Speed: ?");
+			this.vectorEl = this.createLabel(uiContainer, "vectorEl", "Vector: ?");
 			this.angleEl = this.createLabel(uiContainer, "angleEl", "Angle: ?");
 			this.rotationEl = this.createLabel(uiContainer, "rotationEl", "Rotation: ?");
 
@@ -421,6 +422,13 @@ module.exports = function() {
 					let dY = this.stationData.shipData.dY;
 					let distance = Math.hypot(dX, dY);
 					this.speedEl.innerHTML = "Speed: " + (Math.round(distance * 10000)/10000) + " K/S";
+				}
+				if (this.vectorEl) {
+					let dX = this.stationData.shipData.dX;
+					let dY = this.stationData.shipData.dY;
+					let radians = Math.atan2(dX, -1 * dY);
+					if (radians < 0) { radians = radians + (2*Math.PI); }
+					this.vectorEl.innerHTML = "Vector: " + Math.round(Utils.radiansToDegrees(radians)) + " °";
 				}
 
 				if (this.angleEl) {

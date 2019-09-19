@@ -7,10 +7,10 @@ module.exports = {
 		let objects = [];
 
 		// create a star
-		let sol = api.createObject('sol', 0, 0, 'Sol', Math.sqrt(696342*4), 1000, 'sol'); // guid, x, y, name, size, mass, texture
+		let sol = api.createObject('sol', 0, 0, 'Sol', Math.sqrt(696342*2)*10, 1000, 'sol'); // guid, x, y, name, size, mass, texture
 		objects.push(sol);
 
-		let earth = api.createObject('earth', Math.sqrt(149597890), 0, 'Earth', Math.sqrt(6378*4), 100, 'earth'); // guid, x, y, name, size, mass, texture
+		let earth = api.createObject('earth', Math.sqrt(149597890)*10, 0, 'Earth', Math.sqrt(6378*2)*10, 100, 'earth'); // guid, x, y, name, size, mass, texture
 		objects.push(earth);
 
 		// create asteroids around the player ship to test range/scan

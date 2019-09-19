@@ -52,19 +52,13 @@ module.exports = {
 
 			let obj = objects[objKey];
 			let coords = [];
-			coords.push({x: obj.x, y: obj.y});
-			coords.push({x: obj.x - obj.size, y: obj.y - obj.size});
-			coords.push({x: obj.x - obj.size, y: obj.y});
-			coords.push({x: obj.x - obj.size, y: obj.y + obj.size});
-			coords.push({x: obj.x + obj.size, y: obj.y - obj.size});
-			coords.push({x: obj.x + obj.size, y: obj.y});
-			coords.push({x: obj.x + obj.size, y: obj.y + obj.size});
-			coords.push({x: obj.x - obj.size, y: obj.y - obj.size});
-			coords.push({x: obj.x, y: obj.y - obj.size});
-			coords.push({x: obj.x + obj.size, y: obj.y - obj.size});
-			coords.push({x: obj.x - obj.size, y: obj.y + obj.size});
-			coords.push({x: obj.x, y: obj.y + obj.size});
-			coords.push({x: obj.x + obj.size, y: obj.y + obj.size});
+
+			// THIS NEEDS TO ITERATE IN THOUSANDS TO GET ALL POSSIBLE COORDS!!
+			for (let dx = (obj.x - obj.size); dx <= (obj.x + obj.size); dx = dx + 1000) {
+				for (let dy = (obj.y - obj.size); dy <= (obj.y + obj.size); dy = dy + 1000) {
+					coords.push({x: dx, y: dy});
+				}
+			}
 
 			coords.forEach(function(coord) {
 
@@ -95,7 +89,6 @@ module.exports = {
 				}
 			}
 		}
-		// console.dir(squares);
 
 		// merge all of the objects in the squares
 		let objects = {};
@@ -113,7 +106,7 @@ module.exports = {
 			let dX = Math.abs(x - obj.x);
 			let dY = Math.abs(y - obj.y);
 			let d = Math.hypot(dX, dY);
-			if (d <= distance) {
+			if (d <= (distance + obj.size)) {
 				withinRange.push(obj);
 			}
 		});
