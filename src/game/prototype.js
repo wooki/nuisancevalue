@@ -151,7 +151,8 @@ module.exports = function() {
 						let objTimestamp = new Date(obj.updatedAt).getTime();
 						let objTimestampNow = new Date().getTime();
 						let objDifference = objTimestampNow - objTimestamp;
-						let objElapsedMS = (performance.now() - objDifference) + this.serverOffset;
+						let objElapsedMS = (objDifference) + this.serverOffset;
+						// let objElapsedMS = (performance.now() - objDifference) + this.serverOffset;
 
 						// TODO: adjust for it's acceleration
 

@@ -20,6 +20,9 @@ module.exports = function(game, gameRef, mission, api) {
 		}
 		last_timestamp = timestamp;
 
+		// create structure to make getting close by objects and hit tests etc. much faster
+		let objectsMap = utils.createObjectsMap(game.objects);
+
 		// deal with moving and stuff
 		Object.keys(game.objects).forEach((key) => {
 			let obj = game.objects[key];
@@ -51,7 +54,6 @@ module.exports = function(game, gameRef, mission, api) {
 				obj.starboard = "inactive";
 			}
 
-
 			// *** GRAVITY
 
 			// *** MOVE
@@ -67,10 +69,17 @@ module.exports = function(game, gameRef, mission, api) {
 				obj.angle = (obj.angle + (delta * obj.angularVelocity)) % 360;
 			}
 
-
 			// *** COLLISIONS
 			// check every other object to watch for an overlap: do damage AND modify vectors
+			let collidingObjects = utils.getObjectsWithinRange(obj.x, obj.y, obj.size, objectsMap);
+			collidingObjects = collidingObjects.filter(function(cobj) {
+				return obj.guid != cobj.guid;
+			});
+			if (collidingObjects.length > 0) {
 
+
+
+			}
 
 			// *** WRITE BACK TO DB
 			obj.updatedAt = firebase.database.ServerValue.TIMESTAMP;
@@ -78,11 +87,9 @@ module.exports = function(game, gameRef, mission, api) {
 
 		}); // move, gravity etc.
 
+		// rebuilt (after collisions) (maybe not needed?)
+		objectsMap = utils.createObjectsMap(game.objects);
 
-		// create structure to make getting close by objects and hit tests etc. much faster
-		let objectsMap = utils.createObjectsMap(game.objects);
-
-// ABOVE ^^^^^    need to use this to do the collision?
 
 		// read and write stations
 		Object.keys(game.stations).forEach((key) => {

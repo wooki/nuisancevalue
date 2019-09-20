@@ -1,3 +1,5 @@
+let Victor = require('victor');
+
 // utils for managing the game state
 module.exports = {
 
@@ -112,6 +114,33 @@ module.exports = {
 		});
 
 		return withinRange;
+	},
+
+	// calculate the new vectors for two colliding objects,
+	// method from here, thanls Chad Berchek! https://vobarian.com/collisions/
+	// objects require dX, dY, mass
+	// doesn't set the vectors - just returns them
+	collisionVectors: function(obj1, obj2) {
+
+		let v1 = new Victor((obj1.dX || 0), (obj1.dY || 0));
+		let v2 = new Victor((obj2.dX || 0), (obj2.dY || 0));
+
+		let normalVector = new Victor((v1.x - v2.x), (v1.y - v2.y));
+		let unitNormalVector = normalVector.clone().norm();
+
+		let unitTangentVector = new Victor(-1 * unitNormalVector.y, unitNormalVector.x);
+
+		let v1n = unitNormalVector.dot(v1);
+		let v2n = unitNormalVector.dot(v2);
+
+		let v1t = unitTangentVector.dor(v1);
+		let v2t = unitTangentVector.dor(v2);
+
+		let _v1t = v1t;
+		let _v2t = v2t;
+
+
+
 	}
 
 
