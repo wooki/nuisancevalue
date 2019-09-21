@@ -27,9 +27,9 @@ module.exports = {
 		// objects.push(api.createObject(api.generateGuid(), 29000, 2500, 'Asteroid', 50, 0, 'asteroid'));
 		// objects.push(api.createObject(api.generateGuid(), 24000, 1750, 'Asteroid', 50, 0, 'asteroid'));
 
-		objects.push(api.createObject(api.generateGuid(), 20500, 0, 'Asteroid', 50, 0, 'asteroid'));
-		let asteroid = api.createObject('asteroid', 20000, 1000, 'Asteroid', 100, 0, 'asteroid');
-		asteroid.dY = -0.01;
+		objects.push(api.createObject(api.generateGuid(), 20500, -500, 'Asteroid', 50, 50, 'asteroid'));
+		let asteroid = api.createObject('asteroid', 20000, 500, 'Asteroid', 100, 100, 'asteroid');
+		asteroid.dY = -0.05;
 		objects.push(asteroid);
 
 		return objects;

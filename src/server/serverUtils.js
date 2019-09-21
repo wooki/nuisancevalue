@@ -133,14 +133,28 @@ module.exports = {
 		let v1n = unitNormalVector.dot(v1);
 		let v2n = unitNormalVector.dot(v2);
 
-		let v1t = unitTangentVector.dor(v1);
-		let v2t = unitTangentVector.dor(v2);
+		let v1t = unitTangentVector.dot(v1);
+		let v2t = unitTangentVector.dot(v2);
 
 		let _v1t = v1t;
 		let _v2t = v2t;
 
+		let _v1n = ((v1n * (obj1.mass - obj2.mass)) + (2 * obj2.mass * v2n)) / (obj1.mass + obj2.mass);
+		let _v2n = ((v2n * (obj2.mass - obj1.mass)) + (2 * obj1.mass * v1n)) / (obj1.mass + obj2.mass);
 
+		_v1n = new Victor(_v1n * unitNormalVector.x, _v1n * unitNormalVector.y);
+		_v2n = new Victor(_v2n * unitNormalVector.x, _v2n * unitNormalVector.y);
 
+		_v1t = new Victor(_v1t * unitNormalVector.x, _v1t * unitNormalVector.y);
+		_v2t = new Victor(_v2t * unitNormalVector.x, _v2t * unitNormalVector.y);
+
+		let _v1 = _v1n.add(_v1t);
+		let _v2 = _v2n.add(_v2t);
+
+		return {
+			v1: _v1,
+			v2: _v2
+		}
 	}
 
 

@@ -23,6 +23,9 @@ module.exports = function(game, gameRef, mission, api) {
 		// create structure to make getting close by objects and hit tests etc. much faster
 		let objectsMap = utils.createObjectsMap(game.objects);
 
+		// util for keeping track of ongoing collisions
+		let collisions = {};
+
 		// deal with moving and stuff
 		Object.keys(game.objects).forEach((key) => {
 			let obj = game.objects[key];
@@ -71,15 +74,34 @@ module.exports = function(game, gameRef, mission, api) {
 
 			// *** COLLISIONS
 			// check every other object to watch for an overlap: do damage AND modify vectors
-			let collidingObjects = utils.getObjectsWithinRange(obj.x, obj.y, obj.size, objectsMap);
-			collidingObjects = collidingObjects.filter(function(cobj) {
-				return obj.guid != cobj.guid;
-			});
-			if (collidingObjects.length > 0) {
+			// only check collisions when not already colliding
 
-
-
-			}
+				let collidingObjects = utils.getObjectsWithinRange(obj.x, obj.y, obj.size, objectsMap);
+				collidingObjects = collidingObjects.filter(function(cobj) {
+					return obj.guid != cobj.guid;
+				});
+				if (collidingObjects.length > 0) {
+					if (collisions[obj.guid] !== true && !obj.collision) {
+						console.log("collision: "+obj.guid);
+						console.log("(!obj.collision): "+(!obj.collision));
+						console.log("collisions[obj.guid]: "+(collisions[obj.guid]));
+						console.dir(collisions);
+						collidingObjects.forEach(function(cobj) {
+							let cVectors = utils.collisionVectors(obj, cobj);
+							obj.dX = cVectors.v1.x;
+							obj.dY = cVectors.v1.y;
+							obj.collision = cobj.guid;
+							cobj.dX = cVectors.v2.x;
+							cobj.dY = cVectors.v2.y;
+							cobj.collision = obj.guid;
+							game.objects[key].collision = obj.guid;
+							collisions[obj.guid] = true;
+							collisions[cobj.guid] = true;
+						});
+					}
+				} else {
+					obj.collision = null;
+				}
 
 			// *** WRITE BACK TO DB
 			obj.updatedAt = firebase.database.ServerValue.TIMESTAMP;
