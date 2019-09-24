@@ -13,6 +13,8 @@ module.exports = function(game, gameRef, mission, api) {
 	});
 
 	let update = function(timestamp) {
+		console.log("update");
+		console.dir(timestamp);
 
 		let delta = 0;
 		if (last_timestamp > 0) {
@@ -28,6 +30,8 @@ module.exports = function(game, gameRef, mission, api) {
 
 		// deal with moving and stuff
 		Object.keys(game.objects).forEach((key) => {
+			console.log("key:"+key);
+
 			let obj = game.objects[key];
 
 			// *** SHIP SYSTEMS - e.g. engine on will accelerate
@@ -81,11 +85,11 @@ module.exports = function(game, gameRef, mission, api) {
 					return obj.guid != cobj.guid;
 				});
 				if (collidingObjects.length > 0) {
-					if (collisions[obj.guid] !== true && !obj.collision) {
-						console.log("collision: "+obj.guid);
-						console.log("(!obj.collision): "+(!obj.collision));
-						console.log("collisions[obj.guid]: "+(collisions[obj.guid]));
-						console.dir(collisions);
+					if (collisions[obj.guid] === undefined && obj.collision === undefined) {
+						console.log("obj:");
+						console.log(JSON.stringify(obj));
+						console.log(JSON.stringify(collidingObjects));
+						console.log(JSON.stringify(collisions));
 						collidingObjects.forEach(function(cobj) {
 							let cVectors = utils.collisionVectors(obj, cobj);
 							obj.dX = cVectors.v1.x;
@@ -94,7 +98,10 @@ module.exports = function(game, gameRef, mission, api) {
 							cobj.dX = cVectors.v2.x;
 							cobj.dY = cVectors.v2.y;
 							cobj.collision = obj.guid;
-							game.objects[key].collision = obj.guid;
+							game.objects[obj.guid].collision = cobj.guid;
+							game.objects[cobj.guid].collision = obj.guid;
+							console.log("collisions:"+obj.guid);
+							console.log("collisions:"+cobj.guid);
 							collisions[obj.guid] = true;
 							collisions[cobj.guid] = true;
 						});
