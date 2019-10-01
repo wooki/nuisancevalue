@@ -49,7 +49,7 @@ module.exports = function(server, game, gameRef) {
 				angle: 0,
 				angularVelocity: 0,
 				name: name,
-				mass: 50,
+				mass: 5,
 				size: 120,
 				stations: ['prototype']
 			};

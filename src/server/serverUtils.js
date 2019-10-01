@@ -102,14 +102,18 @@ module.exports = {
 
 		// calculate the actual distance for each object
 		let withinRange = [];
+		let withinRangeHash = {}; // so we don't re-do calculations for stuff already found to be in range
 		Object.keys(objects).forEach(function(guid) {
 
-			let obj = objects[guid];
-			let dX = Math.abs(x - obj.x);
-			let dY = Math.abs(y - obj.y);
-			let d = Math.hypot(dX, dY);
-			if (d <= (distance + obj.size)) {
-				withinRange.push(obj);
+			if (withinRangeHash[guid] === undefined) {
+				let obj = objects[guid];
+				let dX = Math.abs(x - obj.x);
+				let dY = Math.abs(y - obj.y);
+				let d = Math.hypot(dX, dY);
+				if (d <= (distance + (obj.size/2))) {
+					withinRange.push(obj);
+					withinRangeHash[guid] = true;
+				}
 			}
 		});
 
