@@ -201,11 +201,11 @@ module.exports = function() {
 			let gridGraphics = new PIXI.Graphics();
 			gridGraphics.lineStyle(1, this.Colors.Grid);
 			gridGraphics.drawRect(0, 0, this.gridSize, this.gridSize);
-			gridGraphics.lineStyle(1, this.Colors.GridDark);
-			gridGraphics.moveTo((this.gridSize / 2), 10);
-			gridGraphics.lineTo((this.gridSize / 2), (this.gridSize - 10));
-			gridGraphics.moveTo(10, (this.gridSize / 2));
-			gridGraphics.lineTo((this.gridSize - 10), (this.gridSize / 2));
+			// gridGraphics.lineStyle(1, this.Colors.GridDark);
+			// gridGraphics.moveTo((this.gridSize / 2), 10);
+			// gridGraphics.lineTo((this.gridSize / 2), (this.gridSize - 10));
+			// gridGraphics.moveTo(10, (this.gridSize / 2));
+			// gridGraphics.lineTo((this.gridSize - 10), (this.gridSize / 2));
 			let gridTexture = this.pixiApp.renderer.generateTexture(gridGraphics);
 			this.sprites.gridSprite = new PIXI.TilingSprite(gridTexture, this.gridSize, this.gridSize);
 			this.sprites.gridSprite.anchor.set(0.5);
@@ -222,6 +222,10 @@ module.exports = function() {
 			this.sprites.ship.anchor.set(0.5);
 			this.sprites.ship.scale.x = this.scale; // scale the ship
 			this.sprites.ship.scale.y = this.scale;
+			if (this.sprites.ship.scale.x < 0.2) {
+				this.sprites.ship.scale.x = 0.2;
+				this.sprites.ship.scale.y = 0.2;
+			}
 			this.sprites.ship.x = Math.floor(this.pixiApp.screen.width / 2);
 			this.sprites.ship.y = Math.floor(this.pixiApp.screen.height / 2);
 			this.sprites.zIndex = this.zIndex.ship;
@@ -273,7 +277,7 @@ module.exports = function() {
 			}
 
 			// decide how much "game space" is represented by the narrowUI dimension
-			this.scale = (this.narrowUi / 10000);
+			this.scale = (this.narrowUi / 120000);
 
 			// grid is always 1024 but scaled
 			this.gridSize = Math.floor(1000 * this.scale);

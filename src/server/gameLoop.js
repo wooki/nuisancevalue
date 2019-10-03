@@ -254,7 +254,7 @@ module.exports = function(game, gameRef, mission, api) {
 				utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
 
 				// write other objects that this station can see
-				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 10000, objectsMap).filter(function(obj) {
+				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 120000, objectsMap).filter(function(obj) {
 					return obj.guid != yourShip.guid;
 				});
 
@@ -269,13 +269,16 @@ module.exports = function(game, gameRef, mission, api) {
 
 
 		if (game.state == 'running') {
-			if (delta >= 200) {
-				window.requestAnimationFrame(update);
-			} else {
-				setTimeout(function() {
-					update(performance.now());
-				}, 200);
-			}
+			// if (delta >= 100) {
+			// 	window.requestAnimationFrame(update);
+			// } else {
+			// 	setTimeout(function() {
+			// 		update(performance.now());
+			// 	}, 100);
+			// }
+			setTimeout(function() {
+				update(performance.now());
+			}, 1000);
 		}
 	};
 
