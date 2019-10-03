@@ -14,8 +14,6 @@ module.exports = function(game, gameRef, mission, api) {
 	});
 
 	let update = function(timestamp) {
-		// console.log("update");
-		// console.dir(timestamp);
 
 		let delta = 0;
 		if (last_timestamp > 0) {
@@ -194,19 +192,22 @@ module.exports = function(game, gameRef, mission, api) {
 
 			// *** WRITE BACK TO DB
 			obj.updatedAt = firebase.database.ServerValue.TIMESTAMP;
-			utils.updateData(game, gameRef, ['objects', key], obj);
+			// utils.updateData(game, gameRef, ['objects', key], obj);
 
 		}); // move, gravity etc.
 
+		// update objects in one go
+		utils.updateData(game, gameRef, ['objects'], game.objects);
+
 		// rebuilt (after collisions) (maybe not needed?)
 		objectsMap = utils.createObjectsMap(game.objects);
-
 
 		// read and write stations
 		Object.keys(game.stations).forEach((key) => {
 
 			let station = game.stations[key];
 			let yourShip = game.objects[station.ship];
+			let stationData = station.data || {};
 
 			// *** READ STATION CONTROLS (e.g. start/stop ending - but don't apply that to ship vector)
 			if (station.type == "prototype") {
@@ -220,6 +221,7 @@ module.exports = function(game, gameRef, mission, api) {
 				if (station.commands && station.commands.port && station.commands.port != yourShip.port) {
 					utils.updateData(game, gameRef, ['objects', station.ship, 'port'], station.commands.port);
 					utils.updateData(game, gameRef, ['stations', key, 'commands', 'port'], 'inactive');
+
 				}
 				if (station.commands && station.commands.starboard && station.commands.starboard != yourShip.starboard) {
 					utils.updateData(game, gameRef, ['objects', station.ship, 'starboard'], station.commands.starboard);
@@ -251,34 +253,33 @@ module.exports = function(game, gameRef, mission, api) {
 					size: yourShip.size,
 					gavityEffect: yourShip.gavityEffect
 				};
-				utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
+				// utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
+				stationData.shipData = ship;
 
 				// write other objects that this station can see
-				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 120000, objectsMap).filter(function(obj) {
+				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 4000, objectsMap).filter(function(obj) {
 					return obj.guid != yourShip.guid;
 				});
 
-				utils.updateData(game, gameRef, ['stations', key, 'objects'], objects);
+				// utils.updateData(game, gameRef, ['stations', key, 'objects'], objects);
+				stationData.objects = objects;
 			}
 
 			// update game state, if we need to
 			if (game.state != game.stations[key].gameState) {
-				utils.updateData(game, gameRef, ['stations', key, 'gameState'], game.state);
+				// utils.updateData(game, gameRef, ['stations', key, 'gameState'], game.state);
+				stationData.gameState = game.state;
 			}
+
+			// update station in one go
+			utils.updateData(game, gameRef, ['stations', key, 'data'], stationData);
 		});
 
 
 		if (game.state == 'running') {
-			// if (delta >= 100) {
-			// 	window.requestAnimationFrame(update);
-			// } else {
-			// 	setTimeout(function() {
-			// 		update(performance.now());
-			// 	}, 100);
-			// }
 			setTimeout(function() {
 				update(performance.now());
-			}, 1000);
+			}, 250);
 		}
 	};
 

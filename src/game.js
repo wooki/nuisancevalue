@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		// connect to station
 		let stationRef = window.firebaseApp.database().ref(stationRoot);
+		let stationDataRef = stationRef.child('data');
 
 		// create app
 		let offsetRef = firebase.database().ref(".info/serverTimeOffset");
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		PrototypeStation.init(document.body, stationRef, serverOffset);
 
 		// watch all changes
-		stationRef.on("value", (snapshot) => {
+		stationDataRef.on("value", (snapshot) => {
 
 			station = snapshot.val();
 

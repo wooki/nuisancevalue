@@ -74,8 +74,8 @@ module.exports = function(server, game, gameRef) {
 
 				let newStation = {
 					guid: utils.generateGuid(),
-					ship: playerShip.guid,
-					type: station
+					type: station,
+					ship: playerShip.guid					
 				};
 
 				utils.updateData(game, gameRef, ['stations', newStation.guid], newStation);

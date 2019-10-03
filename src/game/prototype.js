@@ -277,7 +277,7 @@ module.exports = function() {
 			}
 
 			// decide how much "game space" is represented by the narrowUI dimension
-			this.scale = (this.narrowUi / 120000);
+			this.scale = (this.narrowUi / 4000);
 
 			// grid is always 1024 but scaled
 			this.gridSize = Math.floor(1000 * this.scale);
