@@ -21,6 +21,14 @@ module.exports = function(game, gameRef, mission, api) {
 		}
 		last_timestamp = timestamp;
 
+		// *** DESTROYED OBJECTS - remove destroyed objects
+		Object.keys(game.objects).forEach((key) => {
+			let obj = game.objects[key];
+			if (obj.destroyed == "destroyed") {
+				delete game.objects[key];
+			}
+		});
+
 		// create structure to make getting close by objects and hit tests etc. much faster
 		let objectsMap = utils.createObjectsMap(game.objects);
 
@@ -206,67 +214,75 @@ module.exports = function(game, gameRef, mission, api) {
 		Object.keys(game.stations).forEach((key) => {
 
 			let station = game.stations[key];
-			let yourShip = game.objects[station.ship];
 			let stationData = station.data || {};
+			let yourShip = game.objects[station.ship];
 
-			// *** READ STATION CONTROLS (e.g. start/stop ending - but don't apply that to ship vector)
-			if (station.type == "prototype") {
+			// check if it has been destroyed
+			if (yourShip === undefined || yourShip.destroyed == "destroyed") {
 
-				// prototype can fire engine
-				if (station.commands && station.commands.engine && station.commands.engine != yourShip.engine) {
-					utils.updateData(game, gameRef, ['objects', station.ship, 'engine'], station.commands.engine);
+				stationData.destroyed = "destroyed";
+
+			} else {
+
+				// *** READ STATION CONTROLS (e.g. start/stop ending - but don't apply that to ship vector)
+				if (station.type == "prototype") {
+
+					// prototype can fire engine
+					if (station.commands && station.commands.engine && station.commands.engine != yourShip.engine) {
+						utils.updateData(game, gameRef, ['objects', station.ship, 'engine'], station.commands.engine);
+					}
+
+					// prototype can fire port and starboard thrust
+					if (station.commands && station.commands.port && station.commands.port != yourShip.port) {
+						utils.updateData(game, gameRef, ['objects', station.ship, 'port'], station.commands.port);
+						utils.updateData(game, gameRef, ['stations', key, 'commands', 'port'], 'inactive');
+
+					}
+					if (station.commands && station.commands.starboard && station.commands.starboard != yourShip.starboard) {
+						utils.updateData(game, gameRef, ['objects', station.ship, 'starboard'], station.commands.starboard);
+						utils.updateData(game, gameRef, ['stations', key, 'commands', 'starboard'], 'inactive');
+					}
+
 				}
 
-				// prototype can fire port and starboard thrust
-				if (station.commands && station.commands.port && station.commands.port != yourShip.port) {
-					utils.updateData(game, gameRef, ['objects', station.ship, 'port'], station.commands.port);
-					utils.updateData(game, gameRef, ['stations', key, 'commands', 'port'], 'inactive');
+				// *** WRITE STATION (e.g. add scanned objects to the map etc.)
+				// write own ship data
+				// process objetcs that can be seen
+				if (station.type == "prototype") {
 
+					// write simple ship details
+					let ship = {
+						name: yourShip.name || '[no name]',
+						x: yourShip.x || 0,
+						y: yourShip.y || 0,
+						dX: yourShip.dX || 0,
+						dY: yourShip.dY || 0,
+						angle: yourShip.angle || 0,
+						acceleration: yourShip.acceleration || 0,
+						updatedAt: yourShip.updatedAt || firebase.database.ServerValue.TIMESTAMP,
+						engine: yourShip.engine || 'inactive',
+						port: yourShip.port || 'inactive',
+						starboard: yourShip.starboard || 'inactive',
+						angularVelocity: yourShip.angularVelocity || 0,
+						angularAcceleration: yourShip.angularAcceleration || 0,
+						size: yourShip.size
+					};
+
+					if (yourShip.gavityEffect && yourShip.gavityEffect.g > 0) {
+						ship.gavityEffect = yourShip.gavityEffect;
+					}
+
+					// utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
+					stationData.shipData = ship;
+
+					// write other objects that this station can see
+					let objects = utils.getObjectsWithinRange(ship.x, ship.y, 4000, objectsMap).filter(function(obj) {
+						return obj.guid != yourShip.guid;
+					});
+
+					// utils.updateData(game, gameRef, ['stations', key, 'objects'], objects);
+					stationData.objects = objects;
 				}
-				if (station.commands && station.commands.starboard && station.commands.starboard != yourShip.starboard) {
-					utils.updateData(game, gameRef, ['objects', station.ship, 'starboard'], station.commands.starboard);
-					utils.updateData(game, gameRef, ['stations', key, 'commands', 'starboard'], 'inactive');
-				}
-
-			}
-
-			// *** WRITE STATION (e.g. add scanned objects to the map etc.)
-			// write own ship data
-			// process objetcs that can be seen
-			if (station.type == "prototype") {
-
-				// write simple ship details
-				let ship = {
-					name: yourShip.name || '[no name]',
-					x: yourShip.x || 0,
-					y: yourShip.y || 0,
-					dX: yourShip.dX || 0,
-					dY: yourShip.dY || 0,
-					angle: yourShip.angle || 0,
-					acceleration: yourShip.acceleration || 0,
-					updatedAt: yourShip.updatedAt || firebase.database.ServerValue.TIMESTAMP,
-					engine: yourShip.engine || 'inactive',
-					port: yourShip.port || 'inactive',
-					starboard: yourShip.starboard || 'inactive',
-					angularVelocity: yourShip.angularVelocity || 0,
-					angularAcceleration: yourShip.angularAcceleration || 0,
-					size: yourShip.size
-				};
-
-				if (yourShip.gavityEffect && yourShip.gavityEffect.g > 0) {
-					ship.gavityEffect = yourShip.gavityEffect;
-				}
-
-				// utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
-				stationData.shipData = ship;
-
-				// write other objects that this station can see
-				let objects = utils.getObjectsWithinRange(ship.x, ship.y, 4000, objectsMap).filter(function(obj) {
-					return obj.guid != yourShip.guid;
-				});
-
-				// utils.updateData(game, gameRef, ['stations', key, 'objects'], objects);
-				stationData.objects = objects;
 			}
 
 			// update game state, if we need to

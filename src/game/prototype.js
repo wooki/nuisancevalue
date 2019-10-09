@@ -8,13 +8,6 @@ module.exports = function() {
 
 	return {
 		images: {
-			// starfury: require('../assets/starfury.png'),
-			// ship: require('../assets/ship.png'),
-			// asteroid: require('../assets/asteroid.png'),
-			// sol: require('../assets/sol.png'),
-			// earth: require('../assets/earth.png'),
-			// explosion: require('../assets/explosion.json'),
-			// explosionPng: require('../assets/explosion.png')
 			starfury: 'assets/starfury.png',
 			ship: 'assets/ship.png',
 			asteroid: 'assets/asteroid.png',
@@ -40,7 +33,6 @@ module.exports = function() {
 		pixiApp: null,
 		loadedSprites: false,
 		sprites: {},
-		// baseUrl: "http://localhost:5000/", // not needed
 		baseUrl: "/",
 		UiWidth: window.innerWidth,
 		UiHeight: window.innerHeight,
@@ -268,20 +260,20 @@ module.exports = function() {
 			this.drawUi(this.body, this.stationRoot);
 
 			// create explosion sprite
-			let explosionSheet = resources[this.baseUrl+this.images.explosion].spritesheet;
-			this.sprites.explosion = new PIXI.AnimatedSprite(explosionSheet.animations['explosion']);
-			this.sprites.explosion.x = Math.floor(this.pixiApp.screen.width / 2) + 100;
-			this.sprites.explosion.y = Math.floor(this.pixiApp.screen.height / 2);
-			this.sprites.explosion.width = 100;
-			this.sprites.explosion.height = 100;
-			this.sprites.explosion.anchor.set(0.5);
-			this.sprites.explosion.loop = false;
-			this.sprites.explosion.play();
-			this.sprites.explosion.onComplete = function() {
-				this.sprites.explosion.destroy();
-			}.bind(this);
-			this.sprites.zIndex = this.zIndex.ship;
-			this.pixiApp.stage.addChild(this.sprites.explosion);
+			// let explosionSheet = resources[this.baseUrl+this.images.explosion].spritesheet;
+			// this.sprites.explosion = new PIXI.AnimatedSprite(explosionSheet.animations['explosion']);
+			// this.sprites.explosion.x = Math.floor(this.pixiApp.screen.width / 2) + 100;
+			// this.sprites.explosion.y = Math.floor(this.pixiApp.screen.height / 2);
+			// this.sprites.explosion.width = 100;
+			// this.sprites.explosion.height = 100;
+			// this.sprites.explosion.anchor.set(0.5);
+			// this.sprites.explosion.loop = false;
+			// this.sprites.explosion.play();
+			// this.sprites.explosion.onComplete = function() {
+			// 	this.sprites.explosion.destroy();
+			// }.bind(this);
+			// this.sprites.zIndex = this.zIndex.ship;
+			// this.pixiApp.stage.addChild(this.sprites.explosion);
 
 			// make changes to scene in tick
 			this.pixiApp.ticker.add(this.tick.bind(this));
@@ -412,7 +404,7 @@ module.exports = function() {
 			// store the data
 			this.stationData = stationData;
 
-			// // before we have loaded we can't do anything
+			// before we have loaded we can't do anything
 			if (!this.loadedSprites || !this.stationData) {
 				return;
 			}

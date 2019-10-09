@@ -34,10 +34,10 @@ module.exports = {
 	  return radians * (180/Math.PI);
 	},
 
-	addExplosion
+	// add an effect to the scene as specified
+	// addEffect: function() {
 
-
-
+	// },
 
 	// assuming the camera if focussed on the centre of the app window and we are proivided the coordinates
 	// in game of that position then where on screen should the x, y we positioned

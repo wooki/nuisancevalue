@@ -51,6 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			station = snapshot.val();
 
+			// watch for player ship being destroyed
+			if (station.destroyed == "destroyed") {
+				console.log("PLAYER SHIP DESTROYED!");
+			}
+
 			// different station types need different UI but for now just ignore that
 			PrototypeStation.update(station);
 
