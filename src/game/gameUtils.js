@@ -34,6 +34,9 @@ module.exports = {
 	  return radians * (180/Math.PI);
 	},
 
+	addExplosion
+
+
 
 
 	// assuming the camera if focussed on the centre of the app window and we are proivided the coordinates

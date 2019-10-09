@@ -250,9 +250,13 @@ module.exports = function(game, gameRef, mission, api) {
 					starboard: yourShip.starboard || 'inactive',
 					angularVelocity: yourShip.angularVelocity || 0,
 					angularAcceleration: yourShip.angularAcceleration || 0,
-					size: yourShip.size,
-					gavityEffect: yourShip.gavityEffect
+					size: yourShip.size
 				};
+
+				if (yourShip.gavityEffect && yourShip.gavityEffect.g > 0) {
+					ship.gavityEffect = yourShip.gavityEffect;
+				}
+
 				// utils.updateData(game, gameRef, ['stations', key, 'shipData'], ship);
 				stationData.shipData = ship;
 

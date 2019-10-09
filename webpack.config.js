@@ -1,5 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
 
@@ -23,13 +24,17 @@ module.exports = {
 	      filename: '[name].css',
 	      chunkFilename: '[id].css',
 	      ignoreOrder: false, // Enable to remove warnings about conflicting order
-	    })
+	    }),
+			new CopyPlugin([
+	      { from: './src/assets/*', to: 'assets', flatten: true },
+				{ from: './src/html/*', to: '', flatten: true }
+	    ]),
 	],
 
 	module: {
 		rules: [
 			{ test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },
-			{ test: /\.(png|svg|jpg|gif)$/, use: [ 'file-loader' ] },
+			// { test: /\.(png|svg|jpg|gif)$/, use: [ 'file-loader' ] },
 			{
 		        test: /\.scss$/,
 		        use: [

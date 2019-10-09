@@ -8,11 +8,19 @@ module.exports = function() {
 
 	return {
 		images: {
-			starfury: require('../assets/starfury.png'),
-			ship: require('../assets/ship.png'),
-			asteroid: require('../assets/asteroid.png'),
-			sol: require('../assets/sol.png'),
-			earth: require('../assets/earth.png')
+			// starfury: require('../assets/starfury.png'),
+			// ship: require('../assets/ship.png'),
+			// asteroid: require('../assets/asteroid.png'),
+			// sol: require('../assets/sol.png'),
+			// earth: require('../assets/earth.png'),
+			// explosion: require('../assets/explosion.json'),
+			// explosionPng: require('../assets/explosion.png')
+			starfury: 'assets/starfury.png',
+			ship: 'assets/ship.png',
+			asteroid: 'assets/asteroid.png',
+			sol: 'assets/sol.png',
+			earth: 'assets/earth.png',
+			explosion: 'assets/explosion.json'
 		},
 		Colors: {
 			Black: 0x000000,
@@ -259,6 +267,22 @@ module.exports = function() {
 			// add ui might as well use html for the stuff it's good at
 			this.drawUi(this.body, this.stationRoot);
 
+			// create explosion sprite
+			let explosionSheet = resources[this.baseUrl+this.images.explosion].spritesheet;
+			this.sprites.explosion = new PIXI.AnimatedSprite(explosionSheet.animations['explosion']);
+			this.sprites.explosion.x = Math.floor(this.pixiApp.screen.width / 2) + 100;
+			this.sprites.explosion.y = Math.floor(this.pixiApp.screen.height / 2);
+			this.sprites.explosion.width = 100;
+			this.sprites.explosion.height = 100;
+			this.sprites.explosion.anchor.set(0.5);
+			this.sprites.explosion.loop = false;
+			this.sprites.explosion.play();
+			this.sprites.explosion.onComplete = function() {
+				this.sprites.explosion.destroy();
+			}.bind(this);
+			this.sprites.zIndex = this.zIndex.ship;
+			this.pixiApp.stage.addChild(this.sprites.explosion);
+
 			// make changes to scene in tick
 			this.pixiApp.ticker.add(this.tick.bind(this));
 
@@ -310,6 +334,7 @@ module.exports = function() {
 			this.pixiApp.loader.add(this.baseUrl+this.images.asteroid);
 			this.pixiApp.loader.add(this.baseUrl+this.images.sol);
 			this.pixiApp.loader.add(this.baseUrl+this.images.earth);
+			this.pixiApp.loader.add(this.baseUrl+this.images.explosion);
 
 			// manage loading of resources
 			this.pixiApp.loader.load(this.loadResources.bind(this));
@@ -347,6 +372,7 @@ module.exports = function() {
 			this.vectorEl = this.createLabel(uiContainer, "vectorEl", "Vector: ?");
 			this.angleEl = this.createLabel(uiContainer, "angleEl", "Angle: ?");
 			this.rotationEl = this.createLabel(uiContainer, "rotationEl", "Rotation: ?");
+			this.gravityEl = this.createLabel(uiContainer, "gravityEl", "Gravity: ?");
 
 			this.engineOnEl = this.createButton(uiContainer, "engineOnBtn", "Engine Burn", () => {
 				if (!this.engineOnEl.classList.contains("disabled")) {
@@ -433,7 +459,7 @@ module.exports = function() {
 					let dY = this.stationData.shipData.dY;
 					let radians = Math.atan2(dX, -1 * dY);
 					if (radians < 0) { radians = radians + (2*Math.PI); }
-					this.vectorEl.innerHTML = "Vector: " + Math.round(Utils.radiansToDegrees(radians)) + " °";
+					this.vectorEl.innerHTML = "Vector: " + Math.round(Utils.radiansToDegrees(radians)) + "°";
 				}
 
 				if (this.angleEl) {
@@ -442,6 +468,20 @@ module.exports = function() {
 
 				if (this.rotationEl) {
 					this.rotationEl.innerHTML = "Rotation: " + Math.round(this.stationData.shipData.angularVelocity * 1000) + "°/S";
+				}
+
+				if (this.gravityEl) {
+					if (this.stationData.shipData.gavityEffect && this.stationData.shipData.gavityEffect.g > 0) {
+						let dX = this.stationData.shipData.gavityEffect.x - this.stationData.shipData.x;
+						let dY = this.stationData.shipData.gavityEffect.y - this.stationData.shipData.y;
+						let radians = Math.atan2(dX, -1 * dY);
+						if (radians < 0) { radians = radians + (2*Math.PI); }
+						let gravityAngle = Math.round(Utils.radiansToDegrees(radians)) + "°";
+						let gravityMagnitude = (Math.round(this.stationData.shipData.gavityEffect.g * 10000000) / 10000) + "K/S";
+						this.gravityEl.innerHTML = "Gravity: " + gravityAngle + " at " + gravityMagnitude;
+					} else {
+						this.gravityEl.innerHTML = "Gravity: N/A";
+					}
 				}
 
 				this.serverX = this.stationData.shipData.x;
