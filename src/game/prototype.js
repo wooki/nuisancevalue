@@ -259,22 +259,6 @@ module.exports = function() {
 			// add ui might as well use html for the stuff it's good at
 			this.drawUi(this.body, this.stationRoot);
 
-			// create explosion sprite
-			// let explosionSheet = resources[this.baseUrl+this.images.explosion].spritesheet;
-			// this.sprites.explosion = new PIXI.AnimatedSprite(explosionSheet.animations['explosion']);
-			// this.sprites.explosion.x = Math.floor(this.pixiApp.screen.width / 2) + 100;
-			// this.sprites.explosion.y = Math.floor(this.pixiApp.screen.height / 2);
-			// this.sprites.explosion.width = 100;
-			// this.sprites.explosion.height = 100;
-			// this.sprites.explosion.anchor.set(0.5);
-			// this.sprites.explosion.loop = false;
-			// this.sprites.explosion.play();
-			// this.sprites.explosion.onComplete = function() {
-			// 	this.sprites.explosion.destroy();
-			// }.bind(this);
-			// this.sprites.zIndex = this.zIndex.ship;
-			// this.pixiApp.stage.addChild(this.sprites.explosion);
-
 			// make changes to scene in tick
 			this.pixiApp.ticker.add(this.tick.bind(this));
 
@@ -297,6 +281,47 @@ module.exports = function() {
 
 			// grid is always 1024 but scaled
 			this.gridSize = Math.floor(1000 * this.scale);
+		},
+
+		// remove UI and display estroyed message
+		destroyed: function() {
+			if (this.engineOnEl) { this.engineOnEl.remove(); }
+			if (this.engineOffEl) { this.engineOffEl.remove(); }
+			if (this.manPortEl) { this.manPortEl.remove(); }
+			if (this.manStarboardEl) { this.manStarboardEl.remove(); }
+			if (this.speedEl) { this.speedEl.remove(); }
+			if (this.vectorEl) { this.vectorEl.remove(); }
+			if (this.angleEl) { this.angleEl.remove(); }
+			if (this.rotationEl) { this.rotationEl.remove(); }
+			if (this.gravityEl) { this.gravityEl.remove(); }
+
+			if (this.gameOverEl === undefined) {
+				this.gameOverEl = document.createElement("label");
+				this.gameOverEl.classList.add(uiStyles.gameOver);
+				this.gameOverEl.innerHTML = "Game Over";
+				this.body.appendChild(this.gameOverEl);
+			}
+
+			if (this.sprites.ship) {
+				this.sprites.ship.destroy();
+				this.sprites.ship = null;
+
+				// create explosion sprite
+				let explosionSheet = this.resources[this.baseUrl+this.images.explosion].spritesheet;
+				let explosion = new PIXI.AnimatedSprite(explosionSheet.animations['explosion']);
+				explosion.x = Math.floor(this.pixiApp.screen.width / 2);
+				explosion.y = Math.floor(this.pixiApp.screen.height / 2);
+				explosion.width = 300 * this.scale;
+				explosion.height = 300 * this.scale;
+				explosion.anchor.set(0.5);
+				explosion.loop = false;
+				explosion.play();
+				explosion.onComplete = function() {
+					explosion.destroy();
+				}.bind(this);
+				this.sprites.zIndex = this.zIndex.ship;
+				this.pixiApp.stage.addChild(explosion);
+			}
 		},
 
 		init: function(body, stationRoot, serverOffset) {

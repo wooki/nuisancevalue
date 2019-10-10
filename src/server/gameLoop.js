@@ -147,6 +147,11 @@ module.exports = function(game, gameRef, mission, api) {
 
 						// TODO: if one side is a gravity object and the other isn't
 						// just detroy it.  Both gravity (or neither) is a collision
+						if (obj.gravity && cobj.gravity === undefined) {
+							cobj.destroyed = "destroyed";
+						} else if (cobj.gravity && obj.gravity === undefined) {
+							obj.destroyed = "destroyed";
+						}
 
 						// Immediately move them to be 1+ pixels apart
 						// Works but this moves them away directly, not in the direction of

@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		let divGameId = document.getElementById("gameId");
 		let divPause = document.getElementById("gamePause");
 		let divUnPause = document.getElementById("gameUnPause");
+		let divReset = document.getElementById("gameReset");
 		let divStationUrls = document.getElementById("stationUrls");
 
 		divPause.addEventListener('click', function(event) {
@@ -45,6 +46,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		divUnPause.addEventListener('click', function(event) {
 			if (game && api) {
 				GameServer.unpause(game, gameRef, Mission, api, GameServer);
+			}
+		});
+		divReset.addEventListener('click', function(event) {
+			if (game && api) {
+				GameServer.init(game, gameRef, Mission, api);
 			}
 		});
 
