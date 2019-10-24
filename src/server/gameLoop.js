@@ -166,29 +166,45 @@ module.exports = function(game, gameRef, mission, api) {
 
 						// until we are destroying non-gravity objects double move the
 						// non gravity object
+						let moveObj = false;
+						let moveCObj = false;
 						if (obj.gravity && !cobj.gravity) {
 							v2.subtract(v2diff);
 							v2.subtract(v2diff);
+							moveCObj = true;
+
 						} else if (cobj.gravity && !obj.gravity) {
 							v1.subtract(v1diff);
 							v1.subtract(v1diff);
+							moveObj = true;
+
 						} else {
 							// neithor or both are gravity
 							v1.subtract(v1diff);
 							v2.subtract(v2diff);
+							moveObj = true;
+							moveCObj = true;
 						}
 
-						obj.x = v1.x;
-						obj.y = v1.y;
-						cobj.x = v2.x;
-						cobj.y = v2.y;
+						if (moveObj) {
+							obj.x = v1.x;
+							obj.y = v1.y;
+						}
+						if (moveCObj) {
+							cobj.x = v2.x;
+							cobj.y = v2.y;
+						}
 
 						// work out new vectors
 						let cVectors = utils.collisionVectors(obj, cobj);
-						obj.dX = cVectors.v1.x;
-						obj.dY = cVectors.v1.y;
-						cobj.dX = cVectors.v2.x;
-						cobj.dY = cVectors.v2.y;
+						if (moveObj) {
+							obj.dX = cVectors.v1.x;
+							obj.dY = cVectors.v1.y;
+						}
+						if (moveCObj) {
+							cobj.dX = cVectors.v2.x;
+							cobj.dY = cVectors.v2.y;
+						}
 
 						// shouldn't need this now we move them apart
 						obj.collision = cobj.guid;
