@@ -246,14 +246,14 @@ module.exports = function(game, gameRef, mission, api) {
 			} else {
 
 				// *** READ STATION CONTROLS (e.g. start/stop ending - but don't apply that to ship vector)
-				if (station.type == "prototype") {
+				if (station.type == "helm") {
 
-					// prototype can fire engine
+					// helm can fire engine
 					if (station.commands && station.commands.engine && station.commands.engine != yourShip.engine) {
 						utils.updateData(game, gameRef, ['objects', station.ship, 'engine'], station.commands.engine);
 					}
 
-					// prototype can fire port and starboard thrust
+					// helm can fire port and starboard thrust
 					if (station.commands && station.commands.port && station.commands.port != yourShip.port) {
 						utils.updateData(game, gameRef, ['objects', station.ship, 'port'], station.commands.port);
 						utils.updateData(game, gameRef, ['stations', key, 'commands', 'port'], 'inactive');
@@ -269,7 +269,7 @@ module.exports = function(game, gameRef, mission, api) {
 				// *** WRITE STATION (e.g. add scanned objects to the map etc.)
 				// write own ship data
 				// process objetcs that can be seen
-				if (station.type == "prototype") {
+				if (station.type == "helm" || station.type == "navigation") {
 
 					// write simple ship details
 					let ship = {
@@ -297,7 +297,12 @@ module.exports = function(game, gameRef, mission, api) {
 					stationData.shipData = ship;
 
 					// write other objects that this station can see
-					let objects = utils.getObjectsWithinRange(ship.x, ship.y, 4000, objectsMap).filter(function(obj) {
+					let scanRange = 4000;
+					if (station.type == "navigation") {
+						scanRange = 40000;
+					}
+
+					let objects = utils.getObjectsWithinRange(ship.x, ship.y, scanRange, objectsMap).filter(function(obj) {
 						return obj.guid != yourShip.guid;
 					});
 

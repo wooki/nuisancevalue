@@ -52,7 +52,30 @@ module.exports = {
 		let p = new PIXI.Point(0, 0);
 		p = matrix.apply(p);
 		return p;
+	},
+
+	createButton: function(document, container, uiStyles, id, innerHTML, onClick) {
+
+		let button = document.createElement("button");
+		button.id = id;
+		button.classList.add(uiStyles.button);
+		button.innerHTML = innerHTML;
+		button.addEventListener('click', onClick);
+		container.appendChild(button);
+		return button;
+	},
+
+	createLabel: function(document, container, uiStyles, id, innerHTML) {
+
+		let label = document.createElement("label");
+		label.id = id;
+		label.classList.add(uiStyles.label);
+		label.innerHTML = innerHTML;
+		container.appendChild(label);
+		return label;
 	}
+
+
 
 
 

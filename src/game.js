@@ -1,4 +1,5 @@
-import PrototypeStation from './game/prototype.js';
+import HelmStation from './game/helm.js';
+import NavigationStation from './game/navigation.js';
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -28,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		// get the game id + station id
 		let url = parseUrlString(document.location);
 		let folders = url.pathname.split('/');
+		console.log("folders:");
+		console.dir(folders);
+
+		let stationType = folders[1];
 		let gameId = folders[2];
 		let stationId = folders[3];
 		let stationRoot = 'games/'+gameId+"/stations/"+stationId;
@@ -44,7 +49,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		  serverOffset = snap.val();
 		});
 
-		PrototypeStation.init(document.body, stationRef, serverOffset);
+		let stationUi = null;
+		if (stationType == "helm") {
+			stationUi = HelmStation;
+		} else if (stationType == "navigation") {
+			stationUi = NavigationStation;
+		}
+
+		stationUi.init(document.body, stationRef, serverOffset);
 
 		// watch all changes
 		stationDataRef.on("value", (snapshot) => {
@@ -54,11 +66,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			// watch for player ship being destroyed
 			if (station && station.destroyed == "destroyed") {
 				console.log("PLAYER SHIP DESTROYED!");
-				PrototypeStation.destroyed();
+				stationUi.destroyed();
 			}
 
 			// different station types need different UI but for now just ignore that
-			PrototypeStation.update(station);
+			stationUi.update(station);
 
 		});
 

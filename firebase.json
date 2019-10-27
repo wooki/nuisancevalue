@@ -22,7 +22,11 @@
         "destination": "/server.html"
       },
       {
-        "source": "/prototype/*/*",
+        "source": "/helm/*/*",
+        "destination": "/game.html"
+      },
+      {
+        "source": "/navigation/*/*",
         "destination": "/game.html"
       },
       {

@@ -8,14 +8,6 @@ module.exports = function(server, game, gameRef) {
 
 		generateGuid: utils.generateGuid,
 
-		// createPlanet: function(guid, x, y) {
-
-		// },
-
-		// createAsteroid: function(guid, x, y) {
-
-		// },
-
 		createObject: function(guid, x, y, name, size, mass, texture) {
 
 			return {
@@ -51,7 +43,7 @@ module.exports = function(server, game, gameRef) {
 				name: name,
 				mass: 5,
 				size: 120,
-				stations: ['prototype']
+				stations: ['helm', 'navigation']
 			};
 
 		},
@@ -75,7 +67,7 @@ module.exports = function(server, game, gameRef) {
 				let newStation = {
 					guid: utils.generateGuid(),
 					type: station,
-					ship: playerShip.guid					
+					ship: playerShip.guid
 				};
 
 				utils.updateData(game, gameRef, ['stations', newStation.guid], newStation);

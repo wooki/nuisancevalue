@@ -2,27 +2,14 @@ const PIXI = require('pixi.js');
 const uiStyles = require('./scss/ui.scss');
 const globalStyles = require('./styles.js');
 const Utils = require('./gameUtils.js');
+const Assets = require('./images.js');
 
-// prototype station for viewing and controlling a player ship
+// helm station for viewing and controlling a player ship
 module.exports = function() {
 
 	return {
-		images: {
-			starfury: 'assets/starfury.png',
-			ship: 'assets/ship.png',
-			asteroid: 'assets/asteroid.png',
-			sol: 'assets/sol.png',
-			earth: 'assets/earth.png',
-			explosion: 'assets/explosion.json'
-		},
-		Colors: {
-			Black: 0x000000,
-			Grid: 0x161616,
-			GridDark: 0x090909,
-			White: 0xFFFFFF,
-			Red: 0xFF0000,
-			Dashboard: 0x444444
-		},
+		images: Assets.images,
+		Colors: Assets.colors,
 		zIndex: { // does this even work?
 			grid: 1,
 			asteroid: 10,
@@ -277,7 +264,7 @@ module.exports = function() {
 			}
 
 			// decide how much "game space" is represented by the narrowUI dimension
-			this.scale = (this.narrowUi / 4000);
+			this.scale = (this.narrowUi / 40000);
 
 			// grid is always 1024 but scaled
 			this.gridSize = Math.floor(1000 * this.scale);
@@ -285,10 +272,6 @@ module.exports = function() {
 
 		// remove UI and display estroyed message
 		destroyed: function() {
-			if (this.engineOnEl) { this.engineOnEl.remove(); }
-			if (this.engineOffEl) { this.engineOffEl.remove(); }
-			if (this.manPortEl) { this.manPortEl.remove(); }
-			if (this.manStarboardEl) { this.manStarboardEl.remove(); }
 			if (this.speedEl) { this.speedEl.remove(); }
 			if (this.vectorEl) { this.vectorEl.remove(); }
 			if (this.angleEl) { this.angleEl.remove(); }
@@ -358,69 +341,17 @@ module.exports = function() {
 
 		},
 
-		createButton: function(container, id, innerHTML, onClick) {
-
-			let button = document.createElement("button");
-			button.id = id;
-			button.classList.add(uiStyles.button);
-			button.innerHTML = innerHTML;
-			button.addEventListener('click', onClick);
-			container.appendChild(button);
-			return button;
-		},
-
-		createLabel: function(container, id, innerHTML) {
-
-			let label = document.createElement("label");
-			label.id = id;
-			label.classList.add(uiStyles.label);
-			label.innerHTML = innerHTML;
-			container.appendChild(label);
-			return label;
-		},
-
 		// draw some controls
 		drawUi: function(container, stationRoot) {
 			let uiContainer = document.createElement("div");
 			uiContainer.classList.add(uiStyles.ui);
 			container.appendChild(uiContainer);
 
-			this.speedEl = this.createLabel(uiContainer, "speedEl", "Speed: ?");
-			this.vectorEl = this.createLabel(uiContainer, "vectorEl", "Vector: ?");
-			this.angleEl = this.createLabel(uiContainer, "angleEl", "Angle: ?");
-			this.rotationEl = this.createLabel(uiContainer, "rotationEl", "Rotation: ?");
-			this.gravityEl = this.createLabel(uiContainer, "gravityEl", "Gravity: ?");
-
-			this.engineOnEl = this.createButton(uiContainer, "engineOnBtn", "Engine Burn", () => {
-				if (!this.engineOnEl.classList.contains("disabled")) {
-					stationRoot.child('commands').child('engine').set("active");
-				}
-			});
-
-			this.engineOffEl = this.createButton(uiContainer, "engineOffBtn", "Cease Burn", () => {
-				if (!this.engineOffEl.classList.contains("disabled")) {
-					stationRoot.child('commands').child('engine').set("inactive");
-				}
-			});
-
-			let uiManeuverContainer = document.createElement("div");
-			uiManeuverContainer.classList.add(uiStyles.maneuver);
-			uiContainer.appendChild(uiManeuverContainer);
-
-			this.manPortEl = this.createButton(uiManeuverContainer, "manPortBtn", "<", () => {
-				if (!this.manPortEl.classList.contains("disabled")) {
-					this.manPortEl.classList.add("disabled")
-					stationRoot.child('commands').child('port').set("active");
-				}
-			});
-
-			this.manStarboardEl = this.createButton(uiManeuverContainer, "manStarboardBtn", ">", () => {
-				if (!this.manStarboardEl.classList.contains("disabled")) {
-					this.manStarboardEl.classList.add("disabled")
-					stationRoot.child('commands').child('starboard').set("active");
-				}
-			});
-
+			this.speedEl = Utils.createLabel(document, uiContainer, uiStyles, "speedEl", "Speed: ?");
+			this.vectorEl = Utils.createLabel(document, uiContainer, uiStyles, "vectorEl", "Vector: ?");
+			this.angleEl = Utils.createLabel(document, uiContainer, uiStyles, "angleEl", "Angle: ?");
+			this.rotationEl = Utils.createLabel(document, uiContainer, uiStyles, "rotationEl", "Rotation: ?");
+			this.gravityEl = Utils.createLabel(document, uiContainer, uiStyles, "gravityEl", "Gravity: ?");
 		},
 
 		// data from the server
@@ -442,27 +373,6 @@ module.exports = function() {
 				let timestampNow = new Date().getTime();
 				let difference = timestampNow - timestamp;
 				this.lastServerData = (performance.now() - difference) + this.serverOffset;
-
-				if (this.engineOnEl && this.engineOffEl && this.stationData.shipData.engine == "active") {
-					// this.stationData.commands && this.stationData.commands.engine == "active") {
-					this.engineOnEl.classList.add("disabled");
-					this.engineOffEl.classList.remove("disabled");
-				} else {
-					this.engineOnEl.classList.remove("disabled");
-					this.engineOffEl.classList.add("disabled");
-				}
-
-				if (this.manPortEl && this.stationData.shipData.port == "inactive") {
-					this.manPortEl.classList.remove("disabled");
-				} else {
-					this.manPortEl.classList.add("disabled");
-				}
-
-				if (this.manStarboardEl && this.stationData.shipData.starboard == "inactive") {
-					this.manStarboardEl.classList.remove("disabled");
-				} else {
-					this.manStarboardEl.classList.add("disabled");
-				}
 
 				// get distance of vector as thousand pixels per second
 				if (this.speedEl) {
