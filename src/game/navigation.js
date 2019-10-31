@@ -237,7 +237,7 @@ module.exports = function() {
 			dashboardMaskGraphics.drawRect(0, 0, this.UiWidth, this.UiHeight);
 			dashboardMaskGraphics.endFill();
 			dashboardMaskGraphics.beginHole();
-			dashboardMaskGraphics.drawCircle(this.sprites.dashboardSprite.x, this.sprites.dashboardSprite.y, Math.floor(this.narrowUi / 2));
+			dashboardMaskGraphics.drawRoundedRect(30, 30, this.UiWidth - 60, this.UiHeight - 60, 30);
 			dashboardMaskGraphics.endHole();
 			this.sprites.dashboardSprite.invertMask = true;
 			this.sprites.dashboardSprite.mask = dashboardMaskGraphics;
@@ -259,12 +259,16 @@ module.exports = function() {
 			// get the smaller of the two dimensions, work to that
 			// size for the map etc. so we can draw a circle
 			this.narrowUi = this.UiWidth;
+			this.wideUi = this.UiWidth;
 			if (this.UiHeight < this.narrowUi) {
 				this.narrowUi = this.UiHeight;
 			}
+			if (this.UiHeight > this.wideUi) {
+				this.wideUi = this.UiHeight;
+			}
 
 			// decide how much "game space" is represented by the narrowUI dimension
-			this.scale = (this.narrowUi / 40000);
+			this.scale = (this.wideUi / 40000);
 
 			// grid is always 1024 but scaled
 			this.gridSize = Math.floor(1000 * this.scale);

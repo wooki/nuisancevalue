@@ -72,6 +72,7 @@ module.exports = function() {
 				let dX = elapsedMS * (this.stationData.shipData.dX);
 				let dY = elapsedMS * (this.stationData.shipData.dY);
 
+				// add engine acceleration
 				if (this.stationData.commands && this.stationData.commands.engine == 'active') {
 					// add acceleration to delta
 					let acceleration = new PIXI.Point(0, 0 - (elapsedMS * this.stationData.shipData.acceleration));
@@ -83,6 +84,9 @@ module.exports = function() {
 					dX = dX + (elapsedMS * acceleration.x);
 					dY = dY + (elapsedMS * acceleration.y);
 				}
+
+				// add acceleration due to gravity
+				// TODO: add acceleration due to gravity
 
 				// apply objects vector to it's position
 				let x = this.serverX;
@@ -109,6 +113,9 @@ module.exports = function() {
 				if (this.sprites && this.sprites.ship) {
 					this.sprites.ship.angle = angle;
 				}
+
+				// check for collisions
+				// TODO: check for collisions
 
 				// update grid tile
 				if ((dX != 0) || (dY != 0) || dAngle != 0) {
