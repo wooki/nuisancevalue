@@ -26,6 +26,21 @@ module.exports = {
 		}
 	},
 
+	// for an object at x,y and a gravity source at gX,gY of magnitude g
+	// for time delta return movement vector
+	gravityVector: function(x, y, gX, gY, g, delta) {
+
+		let dX = gX - x;
+		let dY = gY - y;
+		let radians = Math.atan2(dX, -1 * dY);
+		if (radians < 0) { radians = radians + (2*Math.PI); }
+
+		let acceleration = new PIXI.Point(0, 0 - (delta * g));
+		let accelerationMatrix = new PIXI.Matrix();
+		accelerationMatrix.rotate(radians);
+		return accelerationMatrix.apply(acceleration);
+	},
+
 	degreesToRadians: function(degrees) {
 	  return degrees * (Math.PI/180);
 	},

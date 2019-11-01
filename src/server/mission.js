@@ -23,12 +23,19 @@ module.exports = {
 		earth.gravity = 200;
 		objects.push(earth);
 
+		objects.push(api.createObject(api.generateGuid(), 20000, 1000, 'Asteroid', 100, 10, 'asteroid'));
+		objects.push(api.createObject(api.generateGuid(), 20000, 1500, 'Asteroid', 100, 10, 'asteroid'));
+		objects.push(api.createObject(api.generateGuid(), 20000, 2000, 'Asteroid', 100, 10, 'asteroid'));
+		objects.push(api.createObject(api.generateGuid(), 20000, -1000, 'Asteroid', 100, 10, 'asteroid'));
+		objects.push(api.createObject(api.generateGuid(), 20000, -1500, 'Asteroid', 100, 10, 'asteroid'));
+		objects.push(api.createObject(api.generateGuid(), 20000, -2500, 'Asteroid', 100, 10, 'asteroid'));
+
 		// create asteroids around the player ship to test range/scan
-		for (let i = 0; i < 5; i++) {
-			let x = (Math.floor(Math.random() * 20000) - 10000);
-			let y = (Math.floor(Math.random() * 20000) - 10000);
-			this.addAsteroid(api, objects, x, y).dY = -0.4;
-		}
+		// for (let i = 0; i < 5; i++) {
+		// 	let x = (Math.floor(Math.random() * 20000) - 10000);
+		// 	let y = (Math.floor(Math.random() * 20000) - 10000);
+		// 	this.addAsteroid(api, objects, x, y).dY = -0.4;
+		// }
 
 
 		return objects;

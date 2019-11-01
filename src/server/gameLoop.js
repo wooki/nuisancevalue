@@ -298,8 +298,9 @@ module.exports = function(game, gameRef, mission, api) {
 
 					// write other objects that this station can see
 					let scanRange = 4000;
+					let objects = [];
 					if (station.type == "helm") {
-						let objects = utils.getObjectsWithinRange(ship.x, ship.y, scanRange, objectsMap).filter(function(obj) {
+							objects = utils.getObjectsWithinRange(ship.x, ship.y, scanRange, objectsMap).filter(function(obj) {
 							return obj.guid != yourShip.guid;
 						});
 

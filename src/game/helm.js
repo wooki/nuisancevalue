@@ -85,8 +85,19 @@ module.exports = function() {
 					dY = dY + (elapsedMS * acceleration.y);
 				}
 
-				// add acceleration due to gravity
-				// TODO: add acceleration due to gravity
+				// add acceleration due to gravity (actually just vector)
+				if (this.stationData.shipData.gavityEffect && this.stationData.shipData.gavityEffect.g > 0) {
+
+					let gravityVector = Utils.gravityVector(this.serverX,
+																									this.serverY,
+																									this.stationData.shipData.gavityEffect.x,
+																									this.stationData.shipData.gavityEffect.y,
+																									this.stationData.shipData.gavityEffect.g,
+																									elapsedMS);
+
+					dX = dX + gravityVector.x;
+					dY = dY + gravityVector.y;
+				}
 
 				// apply objects vector to it's position
 				let x = this.serverX;
@@ -148,11 +159,25 @@ module.exports = function() {
 						let objElapsedMS = (objDifference) + this.serverOffset;
 						// let objElapsedMS = (performance.now() - objDifference) + this.serverOffset;
 
-						// TODO: adjust for it's acceleration
-
-						// adjust for its vector and rotation
+						// work out new position
 						let objX = obj.x;
 						let objY = obj.y;
+
+						// adjust for it's acceleration
+						if (obj.gavityEffect && obj.gavityEffect.g > 0) {
+
+							let gravityVector = Utils.gravityVector(0,
+																											0,
+																											obj.gavityEffect.x,
+																											obj.gavityEffect.y,
+																											obj.gavityEffect.g,
+																											objElapsedMS);
+
+							objX = objX + gravityVector.x;
+							objY = objY + gravityVector.y;							
+						}
+
+						// adjust for its vector and rotation
 						if ((obj.dX != 0) || (obj.dY != 0)) {
 							objX = objX + (objElapsedMS * obj.dX);
 							objY = objY + (objElapsedMS * obj.dY);
@@ -161,6 +186,8 @@ module.exports = function() {
 						if (obj.angularVelocity) {
 							sprite.angle = ((obj.angle || 0) + (objElapsedMS * obj.angularVelocity)) % 360;
 						}
+
+						// TODO: check for collisions
 
 						// set it's position relative to the ship (centre of screen)
 						let spritePos = Utils.relativeScreenCoord(objX, objY, x, y, this.UiWidth, this.UiHeight, 0, this.scale);
