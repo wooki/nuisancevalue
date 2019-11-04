@@ -164,6 +164,7 @@ module.exports = function() {
 						if (!this.mapObjects[obj.guid]) {
 							this.mapObjects[obj.guid] = sprite;
 							this.pixiApp.stage.addChild(sprite);
+							this.pixiApp.stage.sortChildren();
 						}
 					});
 				}
@@ -186,8 +187,13 @@ module.exports = function() {
 
 			// create a texture for the grid background
 			let gridGraphics = new PIXI.Graphics();
-			gridGraphics.lineStyle(1, this.Colors.Grid);
+			// gridGraphics.lineStyle(1, this.Colors.Grid);
+			gridGraphics.beginFill(this.Colors.GridDark, 1);
 			gridGraphics.drawRect(0, 0, this.gridSize, this.gridSize);
+			gridGraphics.endFill();
+			gridGraphics.beginFill(this.Colors.Black, 1);
+			gridGraphics.drawRect(0.5, 0.5, this.gridSize - 1, this.gridSize - 1);
+			gridGraphics.endFill();
 			// gridGraphics.lineStyle(1, this.Colors.GridDark);
 			// gridGraphics.moveTo((this.gridSize / 2), 10);
 			// gridGraphics.lineTo((this.gridSize / 2), (this.gridSize - 10));
@@ -209,13 +215,13 @@ module.exports = function() {
 			this.sprites.ship.anchor.set(0.5);
 			this.sprites.ship.scale.x = this.scale; // scale the ship
 			this.sprites.ship.scale.y = this.scale;
-			if (this.sprites.ship.scale.x < 0.2) {
-				this.sprites.ship.scale.x = 0.2;
-				this.sprites.ship.scale.y = 0.2;
+			if (this.sprites.ship.scale.x < 0.1) {
+				this.sprites.ship.scale.x = 0.1;
+				this.sprites.ship.scale.y = 0.1;
 			}
 			this.sprites.ship.x = Math.floor(this.pixiApp.screen.width / 2);
 			this.sprites.ship.y = Math.floor(this.pixiApp.screen.height / 2);
-			this.sprites.zIndex = this.zIndex.ship;
+			this.sprites.ship.zIndex = this.zIndex.ship;
 			this.pixiApp.stage.addChild(this.sprites.ship);
 
 			// UI create a texture to overlay on top of the background
@@ -252,6 +258,8 @@ module.exports = function() {
 			// re-run server if this runs after initial update
 			this.update(this.stationData);
 
+			// sort zIndex
+			this.pixiApp.stage.sortChildren();
 		},
 
 		setSizes: function() {
@@ -268,7 +276,7 @@ module.exports = function() {
 			}
 
 			// decide how much "game space" is represented by the narrowUI dimension
-			this.scale = (this.wideUi / 40000);
+			this.scale = (this.wideUi / 100000);
 
 			// grid is always 1024 but scaled
 			this.gridSize = Math.floor(1000 * this.scale);

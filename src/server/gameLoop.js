@@ -301,11 +301,25 @@ module.exports = function(game, gameRef, mission, api) {
 					let objects = [];
 					if (station.type == "helm") {
 							objects = utils.getObjectsWithinRange(ship.x, ship.y, scanRange, objectsMap).filter(function(obj) {
-							return obj.guid != yourShip.guid;
-						});
+								return obj.guid != yourShip.guid;
+							});
 
 					} else if (station.type == "navigation") {
-						// returns all objects with gravity and objects within x range
+						// returns all objects within x range
+						objects = utils.getObjectsWithinRange(ship.x, ship.y, scanRange, objectsMap)
+
+						// returns all objects with gravity
+						Object.keys(game.objects).forEach((gravKey) => {
+							let gravObj = game.objects[gravKey];
+							if (gravObj.gravity && gravObj.mass > 0) {
+								objects.push(gravObj);
+							}
+						});
+
+						// remove your own ship
+						objects = objects.filter(function(obj) {
+							return obj.guid != yourShip.guid;
+						});
 					}
 
 

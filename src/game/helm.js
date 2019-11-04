@@ -18,6 +18,7 @@ module.exports = function() {
 		},
 
 		pixiApp: null,
+		pixiContainer: null,
 		loadedSprites: false,
 		sprites: {},
 		baseUrl: "/",
@@ -52,7 +53,7 @@ module.exports = function() {
 
 				// this.sprites.gridSprite.tileTransform.rotation = 0 - Utils.degreesToRadians(angle % 360);
 				this.sprites.gridSprite.tilePosition.x = Math.floor(this.UiWidth / 2) - positionChange.x;
-				this.sprites.gridSprite.tilePosition.y = Math.floor(this.UiHeight / 2) - positionChange.y;
+				this.sprites.gridSprite.tilePosition.y = Math.floor(this.UiHeight / 2) - positionChange.y;				
 			}
 		},
 
@@ -174,7 +175,7 @@ module.exports = function() {
 																											objElapsedMS);
 
 							objX = objX + gravityVector.x;
-							objY = objY + gravityVector.y;							
+							objY = objY + gravityVector.y;
 						}
 
 						// adjust for its vector and rotation
@@ -197,7 +198,8 @@ module.exports = function() {
 						// only add at the end (so the props are right)
 						if (!this.mapObjects[obj.guid]) {
 							this.mapObjects[obj.guid] = sprite;
-							this.pixiApp.stage.addChild(sprite);
+							this.pixiContainer.addChild(sprite);
+							this.pixiContainer.sortChildren();
 						}
 					});
 				}
@@ -235,7 +237,7 @@ module.exports = function() {
 			this.sprites.gridSprite.width = this.UiWidth;
 			this.sprites.gridSprite.height = this.UiHeight;
 			this.sprites.gridSprite.zIndex = this.zIndex.grid;
-			this.pixiApp.stage.addChild(this.sprites.gridSprite);
+			this.pixiContainer.addChild(this.sprites.gridSprite);
 			this.updateGrid(0, 0);
 
 			// player ship
@@ -249,8 +251,8 @@ module.exports = function() {
 			}
 			this.sprites.ship.x = Math.floor(this.pixiApp.screen.width / 2);
 			this.sprites.ship.y = Math.floor(this.pixiApp.screen.height / 2);
-			this.sprites.zIndex = this.zIndex.ship;
-			this.pixiApp.stage.addChild(this.sprites.ship);
+			this.sprites.ship.zIndex = this.zIndex.ship;
+			this.pixiContainer.addChild(this.sprites.ship);
 
 			// UI create a texture to overlay on top of the background
 			let dashboardGraphics = new PIXI.Graphics();
@@ -275,7 +277,7 @@ module.exports = function() {
 			dashboardMaskGraphics.endHole();
 			this.sprites.dashboardSprite.invertMask = true;
 			this.sprites.dashboardSprite.mask = dashboardMaskGraphics;
-			this.pixiApp.stage.addChild(this.sprites.dashboardSprite);
+			this.pixiContainer.addChild(this.sprites.dashboardSprite);
 
 			// add ui might as well use html for the stuff it's good at
 			this.drawUi(this.body, this.stationRoot);
@@ -286,6 +288,9 @@ module.exports = function() {
 			// re-run server if this runs after initial update
 			this.update(this.stationData);
 
+			// sort the z-index
+			this.pixiContainer.sortChildren();
+			this.pixiApp.stage.sortChildren();
 		},
 
 		setSizes: function() {
@@ -341,7 +346,8 @@ module.exports = function() {
 					explosion.destroy();
 				}.bind(this);
 				this.sprites.zIndex = this.zIndex.ship;
-				this.pixiApp.stage.addChild(explosion);
+				this.pixiContainer.addChild(explosion);
+				this.pixiContainer.sortChildren();
 			}
 		},
 
@@ -361,6 +367,9 @@ module.exports = function() {
 				resolution: window.devicePixelRatio || 1
 			});
 			this.pixiApp.stage.sortableChildren = true;
+			this.pixiContainer = new PIXI.Container();
+			this.pixiContainer.sortableChildren = true;
+			this.pixiApp.stage.addChild(this.pixiContainer);
 			this.body.appendChild(this.pixiApp.view);
 
 			// prepare to load resources

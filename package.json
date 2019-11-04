@@ -4,26 +4,26 @@
   "description": "",
   "private": "true",
   "dependencies": {
-    "pixi.js": "^5.1.1",
-    "preact": "^8.5.1",
+    "pixi.js": "^5.1.5",
+    "preact": "^8.5.3",
     "victor": "^1.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
+    "@babel/core": "^7.6.4",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-env": "^7.6.3",
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.0.4",
     "css-loader": "^3.2.0",
-    "eslint-utils": ">=1.4.1",
+    "eslint-utils": "^1.4.3",
     "file-loader": "^4.2.0",
     "mini-css-extract-plugin": "^0.8.0",
-    "node-sass": "^4.12.0",
-    "sass-loader": "^7.2.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^7.3.1",
     "style-loader": "^1.0.0",
-    "webpack": "^4.39.1",
-    "webpack-cli": "^3.3.9"
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "scripts": {
     "build": "webpack",
