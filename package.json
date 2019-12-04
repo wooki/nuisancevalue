@@ -12,17 +12,16 @@
     "copy-webpack-plugin": "^4.6.0",
     "express": "^4.17.1",
     "lance-gg": "^4.0.8",
-    "mem": ">=4.0.0",
     "pixi.js": "^5.2.0",
     "query-string": "^4.2.3",
     "socket.io": "^2.3.0",
-    "webpack": "^4.41.2"
+    "webpack": "^3.8.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",
     "@babel/core": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
-    "eslint": ">=4.18.2",
+    "eslint": "^3.16.1",
     "eslint-config-google": "^0.7.1"
   },
   "scripts": {
