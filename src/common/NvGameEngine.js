@@ -1,0 +1,224 @@
+import { GameEngine, P2PhysicsEngine, TwoVector } from 'lance-gg';
+// import Bullet from './Bullet';
+import Ship from './Ship';
+import Asteroid from './Asteroid';
+
+export default class NvGameEngine extends GameEngine {
+
+    constructor(options) {
+        super(options);
+
+        console.log("NvGameEngine:");
+        console.dir(this);
+
+        this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
+        this.physicsEngine.world.defaultContactMaterial.friction = 1;
+        this.physicsEngine.world.on('beginContact', this.handleCollision.bind(this));
+
+        // game variables
+        Object.assign(this, {
+            SHIP: Math.pow(2, 0), BULLET: Math.pow(2, 1), ASTEROID: Math.pow(2, 2)
+        });
+
+        this.on('preStep', this.preStep.bind(this));
+        this.on('playerDisconnected', this.playerDisconnected.bind(this));
+    }
+
+    // when disconnected remove from any ship stations
+    playerDisconnected(disconnectData) {
+        let playerId = disconnectData.playerId;
+        let ship = this.getPlayerShip(playerId);
+        if (ship) {
+            if (ship.helmPlayerId == playerId) {
+                ship.helmPlayerId = 0;
+            }
+            if (ship.navPlayerId == playerId) {
+                ship.navPlayerId = 0;
+            }
+        }
+    }
+
+    // handle a collision on server only
+    handleCollision(evt) {
+
+        console.log("handleCollision");
+
+        // identify the two objects which collided
+        let A;
+        let B;
+        this.world.forEachObject((id, obj) => {
+            if (obj.physicsObj === evt.bodyA) A = obj;
+            if (obj.physicsObj === evt.bodyB) B = obj;
+        });
+
+        // check bullet-asteroid and ship-asteroid collisions
+        if (!A || !B) return;
+        console.log("A) " + A.toString());
+        console.log("B) " + B.toString());
+
+        // if (A instanceof Ship && B instanceof Asteroid) this.kill(A);
+        // if (B instanceof Ship && A instanceof Asteroid) this.kill(B);
+
+
+    }
+
+
+    // degreesToRadians: function(degrees) {
+    //   return degrees * (Math.PI/180);
+    // },
+
+    // radiansToDegrees: function(radians) {
+    //   return radians * (180/Math.PI);
+    // },
+
+    // update world objects for engines/gravity etc
+    preStep() {
+
+        // loop world objects once here instead of looping in specific functions
+        this.world.forEachObject((objId, obj) => {
+
+            // only certain types have engines
+            if (obj.applyEngine) {
+                obj.applyEngine();
+            }
+
+            // gravity
+
+        });
+
+    }
+
+    registerClasses(serializer) {
+        serializer.registerClass(Ship);
+        serializer.registerClass(Asteroid);
+        // serializer.registerClass(Bullet);
+    }
+
+    // finds the player (optionally in a specific role)
+    getPlayerShip(playerId, role) {
+
+        let ship = null;
+        this.world.forEachObject((objId, obj) => {
+            if (obj instanceof Ship) {
+                if (obj.helmPlayerId == playerId && role == 'helm') {
+                    ship = obj;
+                } else if (obj.navPlayerId == playerId && role == 'nav') {
+                    ship = obj;
+                } else if ((obj.helmPlayerId == playerId || obj.navPlayerId == playerId) && role === undefined) {
+                    ship = obj;
+                }
+            }
+        });
+
+        return ship;
+    }
+
+    processInput(inputData, playerId) {
+
+        super.processInput(inputData, playerId);
+        console.log("processInput:"+playerId);
+        console.dir(inputData);
+
+        if (playerId != 0) {
+
+            // handle joining ship
+            if (inputData.input == 'join-ship') {
+                let ship = this.world.objects[inputData.options.objId];
+                if (inputData.options.station == "helm" && ship.helmPlayerId == 0) {
+                    ship.helmPlayerId = playerId;
+                    ship.playerId = playerId; // set the ownership to last player to join
+                } else if (inputData.options.station == "nav" && ship.navPlayerId == 0) {
+                    ship.navPlayerId = playerId;
+                    ship.playerId = playerId; // set the ownership to last player to join
+                }
+            }
+
+            // handle engine - helm only (no options, so we can bind to keys)
+            if (inputData.input.startsWith('engine')) {
+
+                let ship = this.getPlayerShip(playerId);
+                let level = inputData.options.level;
+                if (ship) {
+                    ship.engine = level || 0;
+                    if (ship.engine < 0) { ship.engine = 0; }
+                    if (ship.engine > 5) { ship.engine = 5; }
+                }
+            }
+
+            // handle maneuver - helm only (no options, so we can bind to keys)
+            if (inputData.input.startsWith('maneuver')) {
+
+                let ship = this.getPlayerShip(playerId);
+                let direction = inputData.options.direction;
+                if (ship && direction) {
+                    ship.applyManeuver(direction);
+                }
+            }
+
+        }
+
+    }
+
+    // create ship
+    addShip(params) {
+
+        // name, x, y, dX, dY, mass, hull, size, angle
+        let s = new Ship(this, {}, {
+            mass: params['mass'], angularVelocity: 0,
+            position: new TwoVector(params['x'], params['y']),
+            velocity: new TwoVector(params['dX'], params['dY']),
+            angle: params['angle']
+        });
+        s.name = params['name'];
+        s.hull = params['hull'];
+        s.size = params['size'];
+        s.helmPlayerId = 0;
+        s.navPlayerId = 0;
+        this.addObjectToWorld(s);
+    }
+
+    // create asteroid
+    addAsteroid(params) {
+
+        // x, y, dX, dY, mass, size, angle, angularVelocity
+        let a = new Asteroid(this, {}, {
+            mass: params['mass'], angularVelocity: params['angularVelocity'],
+            position: new TwoVector(params['x'], params['y']),
+            velocity: new TwoVector(params['dX'], params['dY']),
+            angle: params['angle']
+        });
+        a.size = params['size'];
+        this.addObjectToWorld(a);
+    }
+
+
+
+    // asteroid explosion
+    // explode(asteroid, bullet) {
+
+    //     // Remove asteroid and bullet
+    //     let asteroidBody = asteroid.physicsObj;
+    //     let level = asteroid.level;
+    //     let x = asteroidBody.position[0];
+    //     let y = asteroidBody.position[1];
+    //     let r = this.asteroidRadius * (this.numAsteroidLevels - level) / this.numAsteroidLevels;
+    //     this.removeObjectFromWorld(asteroid);
+    //     this.removeObjectFromWorld(bullet);
+
+    //     // Add new sub-asteroids
+    //     if (level < 3) {
+    //         let angleDisturb = Math.PI/2 * Math.random();
+    //         for (let i=0; i<4; i++) {
+    //             let angle = Math.PI/2 * i + angleDisturb;
+    //             let subAsteroid = new Asteroid(this, {}, {
+    //                 mass: 10,
+    //                 position: new TwoVector(x + r * Math.cos(angle), y + r * Math.sin(angle)),
+    //                 velocity: new TwoVector(this.rand(), this.rand())
+    //             });
+    //             subAsteroid.level = level + 1;
+    //             this.trace.info(() => `creating sub-asteroid with radius ${r}: ${subAsteroid.toString()}`);
+    //             this.addObjectToWorld(subAsteroid);
+    //         }
+    //     }
+    // }
+}

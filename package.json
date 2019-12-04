@@ -1,49 +1,50 @@
 {
   "name": "nuisancevalue",
-  "version": "1.0.0",
-  "description": "",
-  "private": "true",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=11.0.0"
+  },
+  "description": "An HTML5 multiplayer bridge simulator game based on Lance, P2 and PIXI",
+  "main": "main.js",
   "dependencies": {
-    "pixi.js": "^5.1.5",
-    "preact": "^8.5.3",
-    "victor": "^1.1.0"
+    "@babel/node": "^7.7.4",
+    "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^4.6.0",
+    "express": "^4.17.1",
+    "lance-gg": "^4.0.8",
+    "pixi.js": "^5.2.0",
+    "query-string": "^4.2.3",
+    "socket.io": "^2.3.0",
+    "webpack": "^3.8.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.4",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/preset-env": "^7.6.3",
-    "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^5.0.4",
-    "css-loader": "^3.2.0",
-    "eslint-utils": "^1.4.3",
-    "file-loader": "^4.2.0",
-    "mini-css-extract-plugin": "^0.8.0",
-    "node-sass": "^4.13.0",
-    "sass-loader": "^7.3.1",
-    "style-loader": "^1.0.0",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "eslint": "^3.16.1",
+    "eslint-config-google": "^0.7.1"
   },
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack && firebase serve"
+    "start": "node dist-server/main.js",
+    "start-debug": "node --inspect-brk dist-server/main.js",
+    "start-dev": "nodemon dist-server/main.js",
+    "postinstall": "webpack && babel src --source-maps --out-dir dist-server",
+    "build": "webpack && babel src --source-maps --out-dir dist-server",
+    "stats": "webpack --env production --profile --json > stats.json",
+    "dev": "webpack --watch"
   },
-  "keywords": [],
-  "author": "James Rowe",
-  "license": "ISC",
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ],
-    "plugins": [
-      [
-        "@babel/plugin-transform-react-jsx",
-        {
-          "pragma": "h"
-        }
-      ],
-      "@babel/plugin-proposal-class-properties"
-    ]
-  }
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "game",
+    "bridge-simulator",
+    "lance",
+    "lance-gg",
+    "multiplayer",
+    "websockets"
+  ],
+  "author": "Jim Rowe",
+  "license": "CC-BY-NC-SA-4.0"
 }
