@@ -2,14 +2,15 @@ import { GameEngine, P2PhysicsEngine, TwoVector } from 'lance-gg';
 // import Bullet from './Bullet';
 import Ship from './Ship';
 import Asteroid from './Asteroid';
+import Planet from './Planet';
+import Victor from 'victor';
+
+let gravityObjects = {};
 
 export default class NvGameEngine extends GameEngine {
 
     constructor(options) {
         super(options);
-
-        console.log("NvGameEngine:");
-        console.dir(this);
 
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
         this.physicsEngine.world.defaultContactMaterial.friction = 1;
@@ -17,7 +18,7 @@ export default class NvGameEngine extends GameEngine {
 
         // game variables
         Object.assign(this, {
-            SHIP: Math.pow(2, 0), BULLET: Math.pow(2, 1), ASTEROID: Math.pow(2, 2)
+            SHIP: Math.pow(2, 0), PLANET: Math.pow(2, 1), ASTEROID: Math.pow(2, 2)
         });
 
         this.on('preStep', this.preStep.bind(this));
@@ -41,7 +42,7 @@ export default class NvGameEngine extends GameEngine {
     // handle a collision on server only
     handleCollision(evt) {
 
-        console.log("handleCollision");
+// console.log("handleCollision");
 
         // identify the two objects which collided
         let A;
@@ -53,8 +54,8 @@ export default class NvGameEngine extends GameEngine {
 
         // check bullet-asteroid and ship-asteroid collisions
         if (!A || !B) return;
-        console.log("A) " + A.toString());
-        console.log("B) " + B.toString());
+// console.log("A) " + A.toString());
+// console.log("B) " + B.toString());
 
         // if (A instanceof Ship && B instanceof Asteroid) this.kill(A);
         // if (B instanceof Ship && A instanceof Asteroid) this.kill(B);
@@ -82,7 +83,82 @@ export default class NvGameEngine extends GameEngine {
                 obj.applyEngine();
             }
 
-            // gravity
+            // if this has gravity then add to gravity objects
+            if (obj instanceof Planet) {
+                gravityObjects[objId] = obj.id;
+            }
+
+            // apply gravity
+            if (obj.physicsObj) {
+                let gravSource = null;
+                let gravDistance = null;
+                let gravSourceAmount = 0;
+
+                // find biggest gravity effect, only apply gravity on smaller objects
+                Object.keys(gravityObjects).forEach((gravObjId) => {
+
+                    // let gravObj = gravityObjects[gravObjId];
+                    let gravObj = this.world.queryObject({ id: gravityObjects[gravObjId] });
+
+                    if (gravObj && gravObj.id != objId && gravObj.physicsObj) {
+                        if (gravObj.physicsObj.mass > obj.physicsObj.mass) {
+
+                            let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
+
+                            // use closest gravity object instead of largest g
+                            // if (g > gravSourceAmount) {
+                            if (gravDistance === null || d < gravDistance) {
+                                let g = (obj.physicsObj.mass + gravObj.physicsObj.mass) / (d*d);
+                                gravDistance = d;
+                                gravSourceAmount = g;
+                                gravSource = gravObj;
+                            }
+                        }
+                    }
+                });
+
+                // apply force towards source
+                if (gravSourceAmount && gravSource) {
+
+// console.log(`d=${gravDistance}, g=${gravSourceAmount} obj=${obj.toString()}`);
+
+                    // flip x coord of obj because our 0,0 is top left
+                    let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
+                    let gravObjV = Victor.fromArray(gravSource.physicsObj.position);
+
+                    // let direction = gravObjV.clone();
+                    // direction.subtract(objV);
+
+                    let direction = gravObjV.clone();
+                    direction.subtract(objV);
+
+                    let gravVector = new Victor(0, gravSourceAmount);
+
+// console.log("objV:"+objV.toString());
+// console.log("gravObjV:"+gravObjV.toString());
+// console.log("direction:"+direction.toString());
+
+
+                    let radians = Math.atan2(direction.x, 0 - direction.y);
+                    if (radians < 0) { radians = radians + (2*Math.PI); }
+
+// console.log("direction:"+radians*(180/Math.PI));
+                    gravVector.rotate(0 - radians);
+
+                    let v = new Victor(0, 100);
+// console.log("v:"+v.toString());
+                    v.rotate(0 - radians);
+// console.log("v:"+v.toString());
+
+                    gravVector.multiply(new Victor(1000, 1000)); // speed things up a lot
+
+// console.log("gravVector:"+gravVector.toString());
+                    // accelerate towards the gravity source
+                    obj.physicsObj.applyForce(gravVector.toArray()); // apply to centre of mass
+
+                    // throw new Error("Something went badly wrong!");
+                }
+            } // if (obj.physicsObj)
 
         });
 
@@ -91,7 +167,7 @@ export default class NvGameEngine extends GameEngine {
     registerClasses(serializer) {
         serializer.registerClass(Ship);
         serializer.registerClass(Asteroid);
-        // serializer.registerClass(Bullet);
+        serializer.registerClass(Planet);
     }
 
     // finds the player (optionally in a specific role)
@@ -189,6 +265,21 @@ export default class NvGameEngine extends GameEngine {
         });
         a.size = params['size'];
         this.addObjectToWorld(a);
+    }
+
+    // create planet
+    addPlanet(params) {
+
+        // x, y, dX, dY, mass, size, angle, angularVelocity
+        let p = new Planet(this, {}, {
+            mass: params['mass'], angularVelocity: params['angularVelocity'],
+            position: new TwoVector(params['x'], params['y']),
+            velocity: new TwoVector(params['dX'], params['dY']),
+            angle: params['angle']
+        });
+        p.size = params['size'];
+        p.texture = params['texture'];
+        this.addObjectToWorld(p);
     }
 
 

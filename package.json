@@ -15,6 +15,7 @@
     "pixi.js": "^5.2.0",
     "query-string": "^4.2.3",
     "socket.io": "^2.3.0",
+    "victor": "^1.1.0",
     "webpack": "^3.8.1"
   },
   "devDependencies": {

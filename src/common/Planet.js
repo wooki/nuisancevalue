@@ -3,11 +3,12 @@ import { PhysicalObject2D, BaseTypes } from 'lance-gg';
 let game = null;
 let p2 = null;
 
-export default class Asteroid extends PhysicalObject2D {
+export default class Planet extends PhysicalObject2D {
 
     static get netScheme() {
         return Object.assign({
-            size: { type: BaseTypes.TYPES.INT16 }
+            size: { type: BaseTypes.TYPES.INT32 },
+            texture: { type: BaseTypes.TYPES.STRING }
         }, super.netScheme);
     }
 
@@ -26,9 +27,8 @@ export default class Asteroid extends PhysicalObject2D {
         // Add ship physics
         let shape = this.shape = new p2.Circle({
             radius: Math.floor(this.size / 2),
-            collisionGroup: game.ASTEROID,
-            // collisionMask: game.ASTEROID | game.SHIP
-            collisionMask: game.SHIP // don't collide with other asteroids or planets
+            collisionGroup: game.PLANET,
+            collisionMask: game.SHIP | game.PLANET
         });
         this.physicsObj = new p2.Body({
             mass: this.mass,
@@ -45,11 +45,12 @@ export default class Asteroid extends PhysicalObject2D {
     }
 
     toString() {
-        return `Asteroid::${super.toString()} size=${this.size}`;
+        return `Planet::${super.toString()} texture=${this.texture} size=${this.size}`;
     }
 
     syncTo(other) {
         super.syncTo(other);
         this.size = other.size;
+        this.texture = other.texture;
     }
 }

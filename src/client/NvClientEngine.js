@@ -9,9 +9,6 @@ export default class NvClientEngine extends ClientEngine {
 
     constructor(gameEngine, options) {
         super(gameEngine, options, NvRenderer);
-
-        console.log("NvClientEngine:");
-        console.dir(this);
     }
 
     // send to game

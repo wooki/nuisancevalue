@@ -2,6 +2,7 @@ import { ServerEngine, TwoVector } from 'lance-gg';
 import Asteroid from '../common/Asteroid';
 import Bullet from '../common/Bullet';
 import Ship from '../common/Ship';
+import SolarObjects from '../common/SolarObjects';
 
 export default class NvServerEngine extends ServerEngine {
 
@@ -16,18 +17,41 @@ export default class NvServerEngine extends ServerEngine {
         super.start();
 
         // create an asteroid
-        this.gameEngine.addAsteroid({
-            x: 0, y: -1000,
+        // this.gameEngine.addAsteroid({
+        //     x: SolarObjects.adjustedOrbit('Earth') + 2000, y: -1000,
+        //     dX: 0, dY: -15,
+        //     mass: Math.random() * 100, size: 50 + Math.random() * 100,
+        //     angle: Math.random() * 2 * Math.PI,
+        //     angularVelocity: Math.random()
+        // });
+
+        // add the sun
+        this.gameEngine.addPlanet({
+            x: 0, y: 0,
             dX: 0, dY: 0,
-            mass: Math.random() * 100, size: 50 + Math.random() * 100,
+            mass: SolarObjects.adjustedMass('Sol'),
+            size: SolarObjects.adjustedDiameter('Sol'),
             angle: Math.random() * 2 * Math.PI,
-            angularVelocity: Math.random()
+            angularVelocity: 0,
+            texture: 'sol'
+        });
+
+        // add the earth
+        this.gameEngine.addPlanet({
+            x: SolarObjects.adjustedOrbit('Earth'), y: 0,
+            dX: 0, dY: 0,
+            mass: SolarObjects.adjustedMass('Earth'),
+            size: SolarObjects.adjustedDiameter('Earth'),
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'earth'
         });
 
         // create a single player ship for now name, x, y, dX, dY, mass, hull, size, angle (radians)
         this.gameEngine.addShip({
             name: "Nuisance Value",
-            x: 0, y: 0,
+            x: SolarObjects.adjustedOrbit('Earth') + Math.floor(SolarObjects.adjustedDiameter('Earth')/2) + 1000,
+            y: 0,
             dX: 0, dY: 0,
             mass: 10, size: 100,
             hull: 'Bushido',

@@ -36,13 +36,20 @@ export default class Ship extends PhysicalObject2D {
         // if (this.engine && this.engine > 0) {
             if (maneuver == 'l') {
 
-                this.physicsObj.applyForceLocal([-100, 0], [this.size, 0]);
-                this.physicsObj.applyForceLocal([100, 0], [0, this.size]);
+                this.physicsObj.applyForceLocal([-500, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([500, 0], [Math.floor(this.size/2), this.size]);
 
             } else if (maneuver == 'r') {
 
-                this.physicsObj.applyForceLocal([100, 0], [0, 0]);
-                this.physicsObj.applyForceLocal([-100, 0], [this.size, this.size]);
+                this.physicsObj.applyForceLocal([500, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([-500, 0], [Math.floor(this.size/2), this.size]);
+            } else if (maneuver == 'f') {
+
+                this.physicsObj.applyForceLocal([0, 100], [Math.floor(this.size/2), Math.floor(this.size)]);
+
+            } else if (maneuver == 'b') {
+
+                this.physicsObj.applyForceLocal([0, -100], [Math.floor(this.size/2), 0]);
             }
         // }
     }
@@ -53,9 +60,9 @@ export default class Ship extends PhysicalObject2D {
 
         // Add ship physics
         let shape = this.shape = new p2.Circle({
-            radius: this.size,
+            radius: Math.floor(this.size / 2),
             collisionGroup: game.SHIP,
-            collisionMask: game.ASTEROID | game.SHIP
+            collisionMask: game.ASTEROID | game.SHIP | game.PLANET
         });
         // let shape = this.shape = new p2.Box({
         //     width: this.size,

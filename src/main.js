@@ -26,7 +26,7 @@ const gameEngine = new NvGameEngine({ traceLevel: Lib.Trace.TRACE_ALL });
 const serverEngine = new NvServerEngine(io, gameEngine, {
 	debug: {},
 	updateRate: 6,
-	timeoutInterval: 120
+	timeoutInterval: 1120
 });
 
 // start the game

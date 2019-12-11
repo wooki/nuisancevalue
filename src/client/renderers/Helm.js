@@ -4,6 +4,7 @@ const Assets = require('./images.js');
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
+import Planet from './../../common/Planet';
 
 let el = null;
 let uiEls = {};
@@ -17,6 +18,7 @@ let settings = {
     zIndex: {
         grid: 1,
         asteroid: 10,
+        planet: 11,
         ship: 50,
         dashboard: 100
     }
@@ -78,20 +80,10 @@ export default class HelmRenderer {
         this.controls.bindKey('3', 'engine', { }, { level: 3 });
         this.controls.bindKey('4', 'engine', { }, { level: 4 });
         this.controls.bindKey('5', 'engine', { }, { level: 5 });
-        this.controls.bindKey('left', 'maneuver', { repeat: true }, { direction: 'l' });
-        this.controls.bindKey('right', 'maneuver', { repeat: true }, { direction: 'r' });
-        this.controls.bindKey('up', 'engine', { }, () => {
-            settings.engineLevel = (settings.engineLevel || 0) + 1;
-            return {
-                level: settings.engineLevel
-            };
-        });
-        this.controls.bindKey('down', 'engine', { }, () => {
-            settings.engineLevel = (settings.engineLevel || 1) - 1;
-            return {
-                level: settings.engineLevel
-            };
-        });
+        this.controls.bindKey('left', 'maneuver', { }, { direction: 'l' });
+        this.controls.bindKey('right', 'maneuver', { }, { direction: 'r' });
+        this.controls.bindKey('up', 'maneuver', { }, { direction: 'f' });
+        this.controls.bindKey('down', 'maneuver', { }, { direction: 'b' });
     }
 
     setEngine(level) {
@@ -134,6 +126,14 @@ export default class HelmRenderer {
             this.setManeuver('r');
         });
 
+        uiEls.manForwardEl = this.createButton(document, uiManeuverContainer, "manForwardBtn", "^", () => {
+            this.setManeuver('f');
+        });
+
+        uiEls.manBackEl = this.createButton(document, uiManeuverContainer, "manBackBtn", "v", () => {
+            this.setManeuver('b');
+        });
+
     }
 
     createButton(document, container, id, innerHTML, onClick) {
@@ -163,25 +163,23 @@ export default class HelmRenderer {
         settings.scale = (settings.narrowUi / settings.mapSize);
         console.log("scale="+settings.scale);
 
-        // grid is always 1024 but scaled
+        // grid is always 1000 but scaled
         settings.gridSize = Math.floor(1000 * settings.scale);
     }
 
     addToMap(guid, texture, width, height, x, y, zIndex, minimulScale) {
 
         sprites[guid] = new PIXI.Sprite(texture);
-        sprites[guid].width = width;
-        sprites[guid].height = height;
+        sprites[guid].width = Math.floor(width * settings.scale);
+        sprites[guid].height = Math.floor(height * settings.scale);
         sprites[guid].anchor.set(0.5);
-        sprites[guid].scale.x = settings.scale; // scale the ship
-        sprites[guid].scale.y = settings.scale; // scale the ship
-        // if (minimulScale && sprites[guid].scale.x < minimulScale) {
-            // sprites[guid].scale.x = minimulScale;
-            // sprites[guid].scale.y = minimulScale;
-        // }
         sprites[guid].x = x;
         sprites[guid].y = y;
         sprites[guid].zIndex = zIndex;
+
+        console.log("addToMap:");
+        console.dir(arguments);
+        console.dir(sprites[guid]);
 
         mapObjects[guid] = sprites[guid];
         pixiContainer.addChild(sprites[guid]);
@@ -308,8 +306,12 @@ export default class HelmRenderer {
         gameObjects.forEach((obj) => {
 
             let texture = null;
+            let zIndex = settings.zIndex.asteroid;
             if (obj instanceof Asteroid) {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
+            } else if (obj instanceof Planet) {
+                texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
+                zIndex = settings.zIndex.planet;
             }
 
             let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
@@ -326,7 +328,7 @@ export default class HelmRenderer {
                               texture,
                               obj.size, obj.size,
                               coord.x, coord.y,
-                              settings.zIndex.asteroid, 0.2)
+                              zIndex, 0.2)
             } else {
                 // update position
                 mapObjects[obj.id].x = coord.x;
