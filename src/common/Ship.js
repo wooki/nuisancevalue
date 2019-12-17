@@ -27,7 +27,7 @@ export default class Ship extends PhysicalObject2D {
     // if the ship has active engines then apply force
     applyEngine() {
         if (this.engine && this.engine > 0) {
-            this.physicsObj.applyForceLocal([0, this.engine * 100]);
+            this.physicsObj.applyForceLocal([0, this.engine * 50]);
         }
     }
 

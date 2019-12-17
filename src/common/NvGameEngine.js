@@ -109,6 +109,7 @@ export default class NvGameEngine extends GameEngine {
                             // if (g > gravSourceAmount) {
                             if (gravDistance === null || d < gravDistance) {
                                 let g = (obj.physicsObj.mass + gravObj.physicsObj.mass) / (d*d);
+                                g = 1000 * g; // speed it up loads!
                                 gravDistance = d;
                                 gravSourceAmount = g;
                                 gravSource = gravObj;
@@ -123,7 +124,8 @@ export default class NvGameEngine extends GameEngine {
 // console.log(`d=${gravDistance}, g=${gravSourceAmount} obj=${obj.toString()}`);
 
                     // flip x coord of obj because our 0,0 is top left
-                    let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
+                    // let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
+                    let objV = Victor.fromArray(obj.physicsObj.position);
                     let gravObjV = Victor.fromArray(gravSource.physicsObj.position);
 
                     // let direction = gravObjV.clone();
@@ -131,28 +133,33 @@ export default class NvGameEngine extends GameEngine {
 
                     let direction = gravObjV.clone();
                     direction.subtract(objV);
+if (obj instanceof Ship) {
+console.log("direction:"+direction.toString());
+}
+                    let gravVector = direction.normalize().multiply(new Victor(gravSourceAmount, gravSourceAmount));
 
-                    let gravVector = new Victor(0, gravSourceAmount);
+
+                    // let gravVector = new Victor(0, gravSourceAmount);
 
 // console.log("objV:"+objV.toString());
 // console.log("gravObjV:"+gravObjV.toString());
-// console.log("direction:"+direction.toString());
 
 
-                    let radians = Math.atan2(direction.x, 0 - direction.y);
-                    if (radians < 0) { radians = radians + (2*Math.PI); }
+                    // let radians = Math.atan2(direction.x, 0 - direction.y);
+                    // if (radians < 0) { radians = radians + (2*Math.PI); }
 
 // console.log("direction:"+radians*(180/Math.PI));
-                    gravVector.rotate(0 - radians);
+                    // gravVector.rotate(0 - radians);
 
-                    let v = new Victor(0, 100);
+                    // let v = new Victor(0, 100);
 // console.log("v:"+v.toString());
-                    v.rotate(0 - radians);
+                    // v.rotate(0 - radians);
 // console.log("v:"+v.toString());
 
-                    gravVector.multiply(new Victor(1000, 1000)); // speed things up a lot
-
-// console.log("gravVector:"+gravVector.toString());
+                    // gravVector.multiply(new Victor(1000, 1000)); // speed things up a lot
+if (obj instanceof Ship) {
+console.log("gravVector:"+gravVector.toString());
+}
                     // accelerate towards the gravity source
                     obj.physicsObj.applyForce(gravVector.toArray()); // apply to centre of mass
 

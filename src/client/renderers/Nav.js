@@ -294,8 +294,6 @@ export default class NavRenderer {
                                                      0, // obj.physicsObj.angle, // might need to add Math.PI
                                                      settings.scale);
 
-// console.log("obj.physicsObj.position= "+obj.physicsObj.position.toString()+", coord= "+coord.toString());
-
                 if (!mapObjects[obj.id]) {
                     this.addToMap(obj.id,
                                   texture,
