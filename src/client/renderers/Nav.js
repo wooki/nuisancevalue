@@ -133,17 +133,27 @@ export default class NavRenderer {
         settings.gridSize = Math.floor(40000 * settings.scale);
     }
 
-    addToMap(guid, texture, width, height, x, y, zIndex, minimulScale, minimulSize) {
+    // clicked an object, do some stuff...
+    objectClick(guid, eventData) {
+
+        console.log("guid: "+guid);
+
+        let obj = game.world.queryObject({ id: guid });
+        console.dir(obj);
+
+    }
+
+    addToMap(guid, texture, width, height, x, y, angle, zIndex, minimumScale, minimumSize) {
 
         let useScale = settings.scale;
-        if (useScale < minimulScale) {
-            useScale = minimulScale;
+        if (useScale < minimumScale) {
+            useScale = minimumScale;
         }
 
         let useWidth = Math.floor(width * useScale);
         let useHeight = Math.floor(height * useScale);
-        if (useWidth < minimulSize) { useWidth = minimulSize; }
-        if (useHeight < minimulSize) { useHeight = minimulSize; }
+        if (useWidth < minimumSize) { useWidth = minimumSize; }
+        if (useHeight < minimumSize) { useHeight = minimumSize; }
 
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].width = useWidth;
@@ -151,11 +161,13 @@ export default class NavRenderer {
         sprites[guid].anchor.set(0.5);
         sprites[guid].x = x;
         sprites[guid].y = y;
+        sprites[guid].rotation = angle;
         sprites[guid].zIndex = zIndex;
+        sprites[guid].interactive = true;
+        sprites[guid].on('mousedown', (e) => { this.objectClick(guid, e) });
+        sprites[guid].on('touchstart', (e) => { this.objectClick(guid, e) });
 
-        console.log("addToMap:");
-        console.dir(arguments);
-        console.dir(sprites[guid]);
+        console.log("addToMap:"+x+","+y+" angle="+angle);
 
         mapObjects[guid] = sprites[guid];
         pixiContainer.addChild(sprites[guid]);
@@ -179,6 +191,7 @@ export default class NavRenderer {
         gridGraphics.lineStyle(1, Assets.Colors.Grid);
         gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
         let gridTexture = pixiApp.renderer.generateTexture(gridGraphics);
+        gridGraphics.destroy();
         sprites.gridSprite = new PIXI.TilingSprite(gridTexture, settings.gridSize, settings.gridSize);
         sprites.gridSprite.anchor.set(0.5);
         sprites.gridSprite.x = Math.floor(settings.UiWidth / 2);
@@ -188,30 +201,8 @@ export default class NavRenderer {
         sprites.gridSprite.zIndex = settings.zIndex.grid;
         pixiContainer.addChild(sprites.gridSprite);
 
-        // UI create a texture to overlay on top of the background
-        // let dashboardGraphics = new PIXI.Graphics();
-        // dashboardGraphics.beginFill(Assets.Colors.Dashboard, 1);
-        // dashboardGraphics.drawRect(0, 0, settings.UiWidth, settings.UiHeight);
-        // dashboardGraphics.endFill();
-        // let dashboardTexture = pixiApp.renderer.generateTexture(dashboardGraphics);
-        // sprites.dashboardSprite = new PIXI.Sprite(dashboardTexture);
-        // sprites.dashboardSprite.anchor.set(0.5);
-        // sprites.dashboardSprite.x = Math.floor(settings.UiWidth / 2);
-        // sprites.dashboardSprite.y = Math.floor(settings.UiHeight / 2);
-        // sprites.dashboardSprite.width = settings.UiWidth;
-        // sprites.dashboardSprite.height = settings.UiHeight;
-        // sprites.dashboardSprite.zIndex = settings.zIndex.dashboard;
-
-        // let dashboardMaskGraphics = new PIXI.Graphics();
-        // dashboardMaskGraphics.beginFill(Assets.Colors.Black, 1);
-        // dashboardMaskGraphics.drawRect(0, 0, settings.UiWidth, settings.UiHeight);
-        // dashboardMaskGraphics.endFill();
-        // dashboardMaskGraphics.beginHole();
-        // dashboardMaskGraphics.drawRect(0, 0, Math.floor(settings.narrowUi), Math.floor(settings.narrowUi));
-        // dashboardMaskGraphics.endHole();
-        // sprites.dashboardSprite.invertMask = true;
-        // sprites.dashboardSprite.mask = dashboardMaskGraphics;
-        // pixiContainer.addChild(sprites.dashboardSprite);
+        // set the grid to the 0,0 point at the start
+        this.updateGrid(settings.focus[0], settings.focus[1]);
 
         // sort the z-index
         pixiContainer.sortChildren();
@@ -223,11 +214,7 @@ export default class NavRenderer {
     updateGrid(x, y) {
 
         if (sprites.gridSprite) {
-
             let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
-            let positionMatrix = new PIXI.Matrix();
-            positionChange = positionMatrix.apply(positionChange);
-
             sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
             sprites.gridSprite.tilePosition.y = Math.floor(settings.UiHeight / 2) - (positionChange.y);
         }
@@ -294,17 +281,20 @@ export default class NavRenderer {
                                                      0, // obj.physicsObj.angle, // might need to add Math.PI
                                                      settings.scale);
 
+                let angle = this.adjustAngle(obj.physicsObj.angle);
+
                 if (!mapObjects[obj.id]) {
                     this.addToMap(obj.id,
                                   texture,
                                   obj.size, obj.size,
                                   coord.x, coord.y,
-                                  zIndex, 0.01, 12)
+                                  angle,
+                                  zIndex, 0.01, 24)
                 } else {
                     // update position
                     mapObjects[obj.id].x = coord.x;
                     mapObjects[obj.id].y = coord.y;
-                    let angle = obj.physicsObj.angle + this.adjustAngle(angle);
+                    let angle = this.adjustAngle(obj.physicsObj.angle);
                     mapObjects[obj.id].rotation = angle;
                 }
             });

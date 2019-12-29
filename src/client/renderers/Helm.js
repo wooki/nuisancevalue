@@ -5,6 +5,8 @@ const Assets = require('./images.js');
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
+import Victor from 'victor';
+import HelmUi from './Utils/HelmUi';
 
 let el = null;
 let uiEls = {};
@@ -20,7 +22,8 @@ let settings = {
         asteroid: 10,
         planet: 11,
         ship: 50,
-        dashboard: 100
+        dashboard: 100,
+        ui: 101
     }
 };
 let pixiApp = null;
@@ -101,18 +104,19 @@ export default class HelmRenderer {
         uiContainer.classList.add('ui-container');
         container.appendChild(uiContainer);
 
-        // this.speedEl = GameUtils.createLabel(document, uiContainer, uiStyles, "speedEl", "Speed: ?");
-        // this.vectorEl = GameUtils.createLabel(document, uiContainer, uiStyles, "vectorEl", "Vector: ?");
-        // this.angleEl = GameUtils.createLabel(document, uiContainer, uiStyles, "angleEl", "Angle: ?");
-        // this.rotationEl = GameUtils.createLabel(document, uiContainer, uiStyles, "rotationEl", "Rotation: ?");
-        // this.gravityEl = GameUtils.createLabel(document, uiContainer, uiStyles, "gravityEl", "Gravity: ?");
-
         uiEls.engineEl5 = this.createButton(document, uiContainer, "engineOnBtn5", "Engine Burn 5", () => { this.setEngine(5); });
         uiEls.engineEl4 = this.createButton(document, uiContainer, "engineOnBtn4", "Engine Burn 4", () => { this.setEngine(4); });
         uiEls.engineEl3 = this.createButton(document, uiContainer, "engineOnBtn3", "Engine Burn 3", () => { this.setEngine(3); });
         uiEls.engineEl2 = this.createButton(document, uiContainer, "engineOnBtn2", "Engine Burn 2", () => { this.setEngine(2); });
         uiEls.engineEl1 = this.createButton(document, uiContainer, "engineOnBtn1", "Engine Burn 1", () => { this.setEngine(1); });
         uiEls.engineEl0 = this.createButton(document, uiContainer, "engineOffBtn", "Cease Burn", () => { this.setEngine(0); });
+
+        uiEls.speedEl = this.createLabel(document, uiContainer, "speedEl", "Speed: ?");
+        // this.vectorEl = GameUtils.createLabel(document, uiContainer, uiStyles, "vectorEl", "Vector: ?");
+        // this.angleEl = GameUtils.createLabel(document, uiContainer, uiStyles, "angleEl", "Angle: ?");
+        // this.rotationEl = GameUtils.createLabel(document, uiContainer, uiStyles, "rotationEl", "Rotation: ?");
+        // this.gravityEl = GameUtils.createLabel(document, uiContainer, uiStyles, "gravityEl", "Gravity: ?");
+
 
         let uiManeuverContainer = document.createElement("div");
         uiManeuverContainer.classList.add('maneuver');
@@ -147,6 +151,16 @@ export default class HelmRenderer {
         return button;
     }
 
+    createLabel(document, container, id, innerHTML) {
+
+        let label = document.createElement("label");
+        label.id = id;
+        label.classList.add('label');
+        label.innerHTML = innerHTML;
+        container.appendChild(label);
+        return label;
+    }
+
     // read window sizes and set scale etc.
     setSizes() {
 
@@ -177,10 +191,6 @@ export default class HelmRenderer {
         sprites[guid].y = y;
         sprites[guid].zIndex = zIndex;
 
-        console.log("addToMap:");
-        console.dir(arguments);
-        console.dir(sprites[guid]);
-
         mapObjects[guid] = sprites[guid];
         pixiContainer.addChild(sprites[guid]);
 
@@ -203,6 +213,7 @@ export default class HelmRenderer {
         gridGraphics.lineStyle(1, Assets.Colors.Grid);
         gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
         let gridTexture = pixiApp.renderer.generateTexture(gridGraphics);
+        gridGraphics.destroy();
         sprites.gridSprite = new PIXI.TilingSprite(gridTexture, settings.gridSize, settings.gridSize);
         sprites.gridSprite.anchor.set(0.5);
         sprites.gridSprite.x = Math.floor(settings.UiWidth / 2);
@@ -233,6 +244,7 @@ export default class HelmRenderer {
         dashboardGraphics.drawRect(0, 0, settings.UiWidth, settings.UiHeight);
         dashboardGraphics.endFill();
         let dashboardTexture = pixiApp.renderer.generateTexture(dashboardGraphics);
+        dashboardGraphics.destroy();
         sprites.dashboardSprite = new PIXI.Sprite(dashboardTexture);
         sprites.dashboardSprite.anchor.set(0.5);
         sprites.dashboardSprite.x = Math.floor(settings.UiWidth / 2);
@@ -268,11 +280,7 @@ export default class HelmRenderer {
     updateGrid(x, y) {
 
         if (sprites.gridSprite) {
-
             let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
-            let positionMatrix = new PIXI.Matrix();
-            positionChange = positionMatrix.apply(positionChange);
-
             sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
             sprites.gridSprite.tilePosition.y = Math.floor(settings.UiHeight / 2) - (positionChange.y);
         }
@@ -391,8 +399,36 @@ export default class HelmRenderer {
                     uiEls['engineEl'+playerShip.engine].classList.add('active');
                 }
 
-                this.drawObjects(gameObjects, playerShip, t, dt);
+                // update the UI
+                let speedV = Victor.fromArray(playerShip.physicsObj.velocity);
+                uiEls.speedEl.innerHTML = "Speed: " + Math.abs(Math.round(speedV.length()));
 
+                let course = Victor.fromArray(playerShip.physicsObj.velocity).angle();
+                // let bearing = this.adjustAngle(playerShip.physicsObj.angle);
+                let bearing = playerShip.physicsObj.angle;
+                let gravity = null;
+                if (playerShip.gravityData.direction) {
+                    gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]).angle();
+                }
+
+                // draw a marker to show bearing
+                if (!sprites.helmUi) {
+                    sprites.helmUi = new HelmUi({
+                        uiSize: settings.narrowUi,
+                        uiWidth: settings.UiWidth,
+                        uiHeight: settings.UiHeight,
+                        scale: settings.scale,
+                        bearing: bearing,
+                        course: course,
+                        zIndex: settings.zIndex.ui
+                    });
+                    pixiContainer.addChild(sprites.helmUi);
+                } else {
+                    sprites.helmUi.update(bearing, course, gravity);
+                }
+
+                // draw stuff on the map
+                this.drawObjects(gameObjects, playerShip, t, dt);
 
             } else if (settings.playerShipId) {
                 if (mapObjects[settings.playerShipId]) {
