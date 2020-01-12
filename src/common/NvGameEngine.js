@@ -4,6 +4,7 @@ import Ship from './Ship';
 import Asteroid from './Asteroid';
 import Planet from './Planet';
 import Victor from 'victor';
+import SolarObjects from './SolarObjects';
 
 let gravityObjects = {};
 
@@ -73,7 +74,11 @@ export default class NvGameEngine extends GameEngine {
     // },
 
     // update world objects for engines/gravity etc
-    preStep() {
+    preStep(params) {
+
+        let step = params.step;
+        let isReenact = params.isReenact;
+        let dt = params.dt;
 
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
@@ -104,12 +109,9 @@ export default class NvGameEngine extends GameEngine {
                         if (gravObj.physicsObj.mass > obj.physicsObj.mass) {
 
                             let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
+                            let g = (obj.physicsObj.mass + gravObj.physicsObj.mass) / (d*d);
 
-                            // use closest gravity object instead of largest g
-                            // if (g > gravSourceAmount) {
-                            if (gravDistance === null || d < gravDistance) {
-                                let g = (obj.physicsObj.mass + gravObj.physicsObj.mass) / (d*d);
-                                g = 1000 * g; // speed it up loads!
+                            if (gravSourceAmount === null || gravSourceAmount < g) {
                                 gravDistance = d;
                                 gravSourceAmount = g;
                                 gravSource = gravObj;
@@ -136,7 +138,8 @@ export default class NvGameEngine extends GameEngine {
                         source: gravSource.physicsObj.position,
                         direction: direction,
                         amount: gravSourceAmount,
-                        vector: gravVector
+                        vector: gravVector,
+                        mass: gravSource.physicsObj.mass
                     };
 
                     // accelerate towards the gravity source

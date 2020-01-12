@@ -50,9 +50,9 @@ export default class NvServerEngine extends ServerEngine {
         // create a single player ship for now name, x, y, dX, dY, mass, hull, size, angle (radians)
         this.gameEngine.addShip({
             name: "Nuisance Value",
-            x: SolarObjects.adjustedOrbit('Earth') + Math.floor(SolarObjects.adjustedDiameter('Earth')/2) + 1000,
+            x: SolarObjects.adjustedOrbit('Earth') + Math.floor(SolarObjects.adjustedDiameter('Earth')/2) + 2000,
             y: 0,
-            dX: 0, dY: 0,
+            dX: 0, dY: -150,
             mass: 10, size: 100,
             hull: 'Bushido',
             angle: Math.PI});

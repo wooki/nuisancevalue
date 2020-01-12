@@ -7,6 +7,8 @@ import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
+import SolarObjects from './../../common/SolarObjects';
+// import {CRTFilter} from '@pixi/filter-crt';
 
 let el = null;
 let uiEls = {};
@@ -28,6 +30,7 @@ let settings = {
 };
 let pixiApp = null;
 let pixiContainer = null;
+let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 
@@ -56,7 +59,16 @@ export default class HelmRenderer {
         pixiApp.stage.sortableChildren = true;
         pixiContainer = new PIXI.Container();
         pixiContainer.sortableChildren = true;
+        pixiContainer.zIndex = 2;
+        mapContainer = new PIXI.Container();
+        mapContainer.sortableChildren = true;
+        mapContainer.zIndex = 1;
+        // mapContainer.filters = [new CRTFilter({ // doesn't really work with black background
+        //     lineWidth: 5,
+        //     lineContrast: 0.75
+        // })];
         pixiApp.stage.addChild(pixiContainer);
+        pixiApp.stage.addChild(mapContainer);
         el.append(pixiApp.view); // add to the page
 
         // prepare to load resources
@@ -102,6 +114,7 @@ export default class HelmRenderer {
     drawUi(container) {
         let uiContainer = document.createElement("div");
         uiContainer.classList.add('ui-container');
+        uiContainer.classList.add('helm');
         container.appendChild(uiContainer);
 
         uiEls.engineEl5 = this.createButton(document, uiContainer, "engineOnBtn5", "Engine Burn 5", () => { this.setEngine(5); });
@@ -112,6 +125,8 @@ export default class HelmRenderer {
         uiEls.engineEl0 = this.createButton(document, uiContainer, "engineOffBtn", "Cease Burn", () => { this.setEngine(0); });
 
         uiEls.speedEl = this.createLabel(document, uiContainer, "speedEl", "Speed: ?");
+        uiEls.gravDistEl = this.createLabel(document, uiContainer, "gravDistEl", "Grav Distance: ?");
+        uiEls.gravOrbitV = this.createLabel(document, uiContainer, "gravOrbitV", "Grav Orbit Speed: ?");
         // this.vectorEl = GameUtils.createLabel(document, uiContainer, uiStyles, "vectorEl", "Vector: ?");
         // this.angleEl = GameUtils.createLabel(document, uiContainer, uiStyles, "angleEl", "Angle: ?");
         // this.rotationEl = GameUtils.createLabel(document, uiContainer, uiStyles, "rotationEl", "Rotation: ?");
@@ -192,7 +207,8 @@ export default class HelmRenderer {
         sprites[guid].zIndex = zIndex;
 
         mapObjects[guid] = sprites[guid];
-        pixiContainer.addChild(sprites[guid]);
+        mapContainer.addChild(sprites[guid]);
+        mapContainer.sortChildren();
 
         return sprites[guid];
     }
@@ -221,7 +237,7 @@ export default class HelmRenderer {
         sprites.gridSprite.width = settings.UiWidth;
         sprites.gridSprite.height = settings.UiHeight;
         sprites.gridSprite.zIndex = settings.zIndex.grid;
-        pixiContainer.addChild(sprites.gridSprite);
+        mapContainer.addChild(sprites.gridSprite);
         // this.updateGrid(0, 0);
 
         // player ship
@@ -236,7 +252,7 @@ export default class HelmRenderer {
         // sprites.ship.x = Math.floor(pixiApp.screen.width / 2);
         // sprites.ship.y = Math.floor(pixiApp.screen.height / 2);
         // sprites.ship.zIndex = settings.zIndex.ship;
-        // pixiContainer.addChild(sprites.ship);
+        // mapContainertainer.addChild(sprites.ship);
 
         // UI create a texture to overlay on top of the background
         let dashboardGraphics = new PIXI.Graphics();
@@ -401,14 +417,21 @@ export default class HelmRenderer {
 
                 // update the UI
                 let speedV = Victor.fromArray(playerShip.physicsObj.velocity);
-                uiEls.speedEl.innerHTML = "Speed: " + Math.abs(Math.round(speedV.length()));
+                let speed = Math.abs(Math.round(speedV.length()));
+                uiEls.speedEl.innerHTML = "Speed: " + speed;
 
                 let course = Victor.fromArray(playerShip.physicsObj.velocity).angle();
                 // let bearing = this.adjustAngle(playerShip.physicsObj.angle);
                 let bearing = playerShip.physicsObj.angle;
                 let gravity = null;
-                if (playerShip.gravityData.direction) {
-                    gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]).angle();
+                if (playerShip.gravityData && playerShip.gravityData.direction) {
+                    gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
+
+                    console.log("dt="+dt+" mass="+playerShip.gravityData.mass+" amount="+playerShip.gravityData.amount);
+                    let orbitV = Math.sqrt((playerShip.gravityData.mass + playerShip.physicsObj.mass) / gravity.length() + 1);
+                    orbitV = Math.round(orbitV / 3);
+                    uiEls.gravDistEl.innerHTML = "Grav Distance: " + Math.round(gravity.length());
+                    uiEls.gravOrbitV.innerHTML = "Grav V: " + orbitV;
                 }
 
                 // draw a marker to show bearing
@@ -420,11 +443,48 @@ export default class HelmRenderer {
                         scale: settings.scale,
                         bearing: bearing,
                         course: course,
+                        gravity: gravity.angle(),
                         zIndex: settings.zIndex.ui
                     });
-                    pixiContainer.addChild(sprites.helmUi);
+                    mapContainer.addChild(sprites.helmUi);
                 } else {
-                    sprites.helmUi.update(bearing, course, gravity);
+                    sprites.helmUi.update(bearing, course, gravity.angle());
+                }
+
+                // draw speed and gravity text
+                if (!sprites.speedText) {
+                    sprites.speedText = new PIXI.Text(speed + SolarObjects.units.speed, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
+                    sprites.speedText.anchor.set(0.5);
+                    sprites.speedText.x = Math.floor(settings.UiWidth / 2);
+                    sprites.speedText.y = Math.floor(settings.UiHeight / 2);
+                    sprites.speedText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 16));
+                    sprites.speedText.rotation = (course + (0.5 * Math.PI)) % (2 * Math.PI);
+                    sprites.speedText.zIndex = settings.zIndex.ui;
+                    mapContainer.addChild(sprites.speedText);
+                    mapContainer.sortChildren();
+                } else {
+                    sprites.speedText.text = speed + SolarObjects.units.speed;
+                    sprites.speedText.rotation = (course + (0.5 * Math.PI)) % (2 * Math.PI);
+                }
+
+                if (gravity) {
+
+                    let gravityAmountText = Math.round((playerShip.gravityData.amount / (playerShip.physicsObj.mass)) * 100) / 100;
+
+                    if (!sprites.gravityText) {
+                        sprites.gravityText = new PIXI.Text(gravityAmountText + SolarObjects.units.force, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
+                        sprites.gravityText.anchor.set(0.5);
+                        sprites.gravityText.x = Math.floor(settings.UiWidth / 2);
+                        sprites.gravityText.y = Math.floor(settings.UiHeight / 2);
+                        sprites.gravityText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 16));
+                        sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
+                        sprites.gravityText.zIndex = settings.zIndex.ui;
+                        mapContainer.addChild(sprites.gravityText);
+                        mapContainer.sortChildren();
+                    } else {
+                        sprites.gravityText.text = gravityAmountText + SolarObjects.units.force;
+                        sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
+                    }
                 }
 
                 // draw stuff on the map

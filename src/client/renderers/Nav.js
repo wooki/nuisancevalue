@@ -23,11 +23,13 @@ let settings = {
         asteroid: 10,
         planet: 11,
         ship: 50,
-        dashboard: 100
+        dashboard: 100,
+        ui: 101
     }
 };
 let pixiApp = null;
 let pixiContainer = null;
+let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 
@@ -56,7 +58,12 @@ export default class NavRenderer {
         pixiApp.stage.sortableChildren = true;
         pixiContainer = new PIXI.Container();
         pixiContainer.sortableChildren = true;
+        pixiContainer.zIndex = 2;
         pixiApp.stage.addChild(pixiContainer);
+        mapContainer = new PIXI.Container();
+        mapContainer.sortableChildren = true;
+        mapContainer.zIndex = 1;
+        pixiApp.stage.addChild(mapContainer);
         el.append(pixiApp.view); // add to the page
 
         // prepare to load resources
@@ -89,41 +96,66 @@ export default class NavRenderer {
         // this.controls.bindKey('down', 'maneuver', { }, { direction: 'b' });
     }
 
+    consoleInput(event) {
+
+        if (event.keyCode == 13 || event.code == 'Enter') {
+            let input = document.getElementById("consoleInput");
+            let log = document.getElementById("console");
+            let val = input.value;
+            input.value = '';
+            console.log("input:"+val);
+
+            let words = val.split(' ');
+            let result = "ok";
+
+            log.innerHTML = log.innerHTML + "\nNAV:COM$ " + val + "\n" + result;
+
+
+        }
+    }
+
     // draw some controls
     drawUi(container) {
         let uiContainer = document.createElement("div");
         uiContainer.classList.add('ui-container');
+        uiContainer.classList.add('nav');
         container.appendChild(uiContainer);
 
-        // uiEls.engineEl5 = this.createButton(document, uiContainer, "engineOnBtn5", "Engine Burn 5", () => { this.setEngine(5); });
+        uiEls.consoleInputDiv = document.createElement("div");
+        uiEls.consoleInputDiv.classList.add('console-input-container');
+        uiContainer.appendChild(uiEls.consoleInputDiv);
 
-        // uiEls.manPortEl = this.createButton(document, uiManeuverContainer, "manPortBtn", "<", () => {
-        //     this.setManeuver('l');
-        // });
+        uiEls.consoleInput = document.createElement("div");
+        uiEls.consoleInput.classList.add('console-input-prefix');
+        uiEls.consoleInput.innerHTML = 'NAV:COM$ ';
+        uiEls.consoleInputDiv.appendChild(uiEls.consoleInput);
+
+        uiEls.consoleInput = document.createElement("input");
+        uiEls.consoleInput.id = 'consoleInput';
+        uiEls.consoleInput.classList.add('console-input');
+        uiEls.consoleInput.addEventListener('keydown', (e) => { this.consoleInput(e); });
+        uiEls.consoleInputDiv.appendChild(uiEls.consoleInput);
+        uiEls.consoleInput.focus();
+
+        uiEls.console = document.createElement("pre");
+        uiEls.console.id = 'console';
+        window.addEventListener('click', (e) => {
+            var input = document.getElementById("consoleInput");
+            input.focus();
+        } );
+        uiEls.console.classList.add('console');
+        uiEls.console.innerHTML = 'This is test console content.';
+        uiContainer.appendChild(uiEls.console);
+
+
     }
-
-    // createButton(document, container, id, innerHTML, onClick) {
-
-    //     let button = document.createElement("button");
-    //     button.id = id;
-    //     button.classList.add('button');
-    //     button.innerHTML = innerHTML;
-    //     button.addEventListener('click', onClick);
-    //     container.appendChild(button);
-    //     return button;
-    // }
 
     // read window sizes and set scale etc.
     setSizes() {
 
-        // get the smaller of the two dimensions, work to that
-        // size for the map etc. so we can draw a circle
         settings.UiWidth = window.innerWidth;
         settings.UiHeight = window.innerHeight;
-        settings.narrowUi = window.innerWidth;
-        if (settings.UiHeight < settings.narrowUi) {
-            settings.narrowUi = settings.UiHeight;
-        }
+        settings.narrowUi = settings.UiHeight; // assume landscape!
 
         // decide how much "game space" is represented by the narrowUI dimension
         let zoomedMapSize = settings.mapSize * settings.zoomLevels[settings.zoom];
@@ -167,11 +199,19 @@ export default class NavRenderer {
         sprites[guid].on('mousedown', (e) => { this.objectClick(guid, e) });
         sprites[guid].on('touchstart', (e) => { this.objectClick(guid, e) });
 
-        console.log("addToMap:"+x+","+y+" angle="+angle);
-
         mapObjects[guid] = sprites[guid];
-        pixiContainer.addChild(sprites[guid]);
+        mapContainer.addChild(sprites[guid]);
 
+        sprites[guid+'-label'] = new PIXI.Text('id:'+guid, {fontFamily : 'Arial', fontSize: 12, fill : 0xFFFFFF, align : 'center'});
+        sprites[guid+'-label'].anchor.set(0, 0.5);
+        sprites[guid+'-label'].x = x + useWidth;
+        sprites[guid+'-label'].y = y - useHeight;
+        // sprites[guid+'-label'].pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 16));
+        sprites[guid+'-label'].rotation = (-0.25 * Math.PI);
+        sprites[guid+'-label'].zIndex = settings.zIndex.ui;
+        mapContainer.addChild(sprites[guid+'-label']);
+
+        mapContainer.sortChildren();
         return sprites[guid];
     }
 
@@ -199,13 +239,11 @@ export default class NavRenderer {
         sprites.gridSprite.width = settings.UiWidth;
         sprites.gridSprite.height = settings.UiHeight;
         sprites.gridSprite.zIndex = settings.zIndex.grid;
-        pixiContainer.addChild(sprites.gridSprite);
+        mapContainer.addChild(sprites.gridSprite);
 
         // set the grid to the 0,0 point at the start
         this.updateGrid(settings.focus[0], settings.focus[1]);
 
-        // sort the z-index
-        pixiContainer.sortChildren();
         pixiApp.stage.sortChildren();
     }
 
@@ -289,7 +327,7 @@ export default class NavRenderer {
                                   obj.size, obj.size,
                                   coord.x, coord.y,
                                   angle,
-                                  zIndex, 0.01, 24)
+                                  zIndex, 0.001, 8)
                 } else {
                     // update position
                     mapObjects[obj.id].x = coord.x;
@@ -301,7 +339,7 @@ export default class NavRenderer {
 
         }
 
-        pixiContainer.sortChildren();
+        mapContainer.sortChildren();
     }
 
 }

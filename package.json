@@ -12,6 +12,7 @@
     "copy-webpack-plugin": "^4.6.0",
     "express": "^4.17.1",
     "lance-gg": "^4.0.8",
+    "pixi-filters": "^3.0.3",
     "pixi.js": "^5.2.0",
     "query-string": "^4.2.3",
     "socket.io": "^2.3.0",

@@ -15,6 +15,52 @@
             left: 0;
             width: 200px;
         }
+        .nav.ui-container {
+            top: auto;
+            bottom: 0;
+            display:  flex;
+            width: 100%;
+            max-width: 300px;
+            flex-direction: column-reverse;
+            padding: 2px 0 2px 5px;
+        }
+        .nav.ui-container .console {
+            color: #bada55;
+            flex: 1 0 auto;
+            line-height: 30px;
+            font-size: 18px;
+            opacity: 0.9;
+            font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+            pointer-events: none;
+        }
+        .nav.ui-container .console-input-container {
+            flex: 0 0 auto;
+            display:  flex;
+            color: #bada55;
+            height: 30px;
+            line-height: 30px;
+            font-size: 18px;
+            flex-direction: row;
+            font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+        }
+        .nav.ui-container .console-input {
+            display:  block;
+            flex: 1 0 auto;
+            display:  block;
+            border: none;
+            outline: none;
+            color: #bada55;
+            height: 30px;
+            line-height: 30px;
+            font-size: 18px;
+            background: transparent;
+            font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+        }
+        .nav.ui-container .console-input-prefix {
+            content: 'NAV:COM$';
+            flex: 0 0 auto;
+            padding-right: 8px;
+        }
 
         button.active {
             opacity: 0.2;
