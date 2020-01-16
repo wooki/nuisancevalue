@@ -22,7 +22,8 @@ module.exports = {
 	},
 
 	units: {
-		speed: ' Mm',
+		speed: ' Mm/s',
+		distance: ' Mm',
 		force: ' N'
 	},
 

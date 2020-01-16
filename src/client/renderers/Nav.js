@@ -5,7 +5,9 @@ const Assets = require('./images.js');
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
+import NavCom from './Utils/NavCom';
 
+let navCom = new NavCom();
 let el = null;
 let uiEls = {};
 let game = null;
@@ -103,14 +105,10 @@ export default class NavRenderer {
             let log = document.getElementById("console");
             let val = input.value;
             input.value = '';
-            console.log("input:"+val);
-
-            let words = val.split(' ');
-            let result = "ok";
-
-            log.innerHTML = log.innerHTML + "\nNAV:COM$ " + val + "\n" + result;
-
-
+            let result = navCom.parse(val);
+            log.innerHTML = log.innerHTML + "\nNAV:COM$ " + val + "\n" + (result.error ? result.error : '');
+            console.log(">>>");
+            console.dir(result);
         }
     }
 

@@ -124,15 +124,6 @@ export default class HelmRenderer {
         uiEls.engineEl1 = this.createButton(document, uiContainer, "engineOnBtn1", "Engine Burn 1", () => { this.setEngine(1); });
         uiEls.engineEl0 = this.createButton(document, uiContainer, "engineOffBtn", "Cease Burn", () => { this.setEngine(0); });
 
-        uiEls.speedEl = this.createLabel(document, uiContainer, "speedEl", "Speed: ?");
-        uiEls.gravDistEl = this.createLabel(document, uiContainer, "gravDistEl", "Grav Distance: ?");
-        uiEls.gravOrbitV = this.createLabel(document, uiContainer, "gravOrbitV", "Grav Orbit Speed: ?");
-        // this.vectorEl = GameUtils.createLabel(document, uiContainer, uiStyles, "vectorEl", "Vector: ?");
-        // this.angleEl = GameUtils.createLabel(document, uiContainer, uiStyles, "angleEl", "Angle: ?");
-        // this.rotationEl = GameUtils.createLabel(document, uiContainer, uiStyles, "rotationEl", "Rotation: ?");
-        // this.gravityEl = GameUtils.createLabel(document, uiContainer, uiStyles, "gravityEl", "Gravity: ?");
-
-
         let uiManeuverContainer = document.createElement("div");
         uiManeuverContainer.classList.add('maneuver');
         uiContainer.appendChild(uiManeuverContainer);
@@ -418,20 +409,16 @@ export default class HelmRenderer {
                 // update the UI
                 let speedV = Victor.fromArray(playerShip.physicsObj.velocity);
                 let speed = Math.abs(Math.round(speedV.length()));
-                uiEls.speedEl.innerHTML = "Speed: " + speed;
 
                 let course = Victor.fromArray(playerShip.physicsObj.velocity).angle();
-                // let bearing = this.adjustAngle(playerShip.physicsObj.angle);
                 let bearing = playerShip.physicsObj.angle;
                 let gravity = null;
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
                     gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
-
-                    console.log("dt="+dt+" mass="+playerShip.gravityData.mass+" amount="+playerShip.gravityData.amount);
-                    let orbitV = Math.sqrt((playerShip.gravityData.mass + playerShip.physicsObj.mass) / gravity.length() + 1);
-                    orbitV = Math.round(orbitV / 3);
-                    uiEls.gravDistEl.innerHTML = "Grav Distance: " + Math.round(gravity.length());
-                    uiEls.gravOrbitV.innerHTML = "Grav V: " + orbitV;
+                    // uiEls.gravDistEl.innerHTML = "Grav Distance: " + Math.round(gravity.length());
+                    // let orbitV = Math.sqrt((playerShip.gravityData.mass + playerShip.physicsObj.mass) / gravity.length() + 1);
+                    // orbitV = Math.round(orbitV / 3);
+                    // uiEls.gravOrbitV.innerHTML = "Grav V: " + orbitV;
                 }
 
                 // draw a marker to show bearing
@@ -469,20 +456,23 @@ export default class HelmRenderer {
 
                 if (gravity) {
 
+                    let gravityDistanceText = Math.round(gravity.length());
                     let gravityAmountText = Math.round((playerShip.gravityData.amount / (playerShip.physicsObj.mass)) * 100) / 100;
+                    let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
+                                   gravityAmountText + SolarObjects.units.force;
 
                     if (!sprites.gravityText) {
-                        sprites.gravityText = new PIXI.Text(gravityAmountText + SolarObjects.units.force, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
+                        sprites.gravityText = new PIXI.Text(gravText, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
                         sprites.gravityText.anchor.set(0.5);
                         sprites.gravityText.x = Math.floor(settings.UiWidth / 2);
                         sprites.gravityText.y = Math.floor(settings.UiHeight / 2);
-                        sprites.gravityText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 16));
+                        sprites.gravityText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 22));
                         sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
                         sprites.gravityText.zIndex = settings.zIndex.ui;
                         mapContainer.addChild(sprites.gravityText);
                         mapContainer.sortChildren();
                     } else {
-                        sprites.gravityText.text = gravityAmountText + SolarObjects.units.force;
+                        sprites.gravityText.text = gravText;
                         sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
                     }
                 }
