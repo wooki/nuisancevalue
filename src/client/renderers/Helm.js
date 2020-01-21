@@ -1,6 +1,7 @@
 import KeyboardControls from '../NvKeyboardControls.js';
 const PIXI = require('pixi.js');
 const Assets = require('./images.js');
+import {GlowFilter} from '@pixi/filter-glow';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -33,6 +34,9 @@ let pixiContainer = null;
 let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
+let effects = {
+    hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5)
+};
 
 export default class HelmRenderer {
 
@@ -64,7 +68,7 @@ export default class HelmRenderer {
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;
         // mapContainer.filters = [new CRTFilter({ // doesn't really work with black background
-        //     lineWidth: 5,
+        //     lineWidth: 10,
         //     lineContrast: 0.75
         // })];
         pixiApp.stage.addChild(pixiContainer);
@@ -81,6 +85,7 @@ export default class HelmRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -247,7 +252,12 @@ export default class HelmRenderer {
 
         // UI create a texture to overlay on top of the background
         let dashboardGraphics = new PIXI.Graphics();
-        dashboardGraphics.beginFill(Assets.Colors.Dashboard, 1);
+        // dashboardGraphics.beginFill(Assets.Colors.Dashboard, 1);
+        dashboardGraphics.beginTextureFill({
+            texture: resources[settings.baseUrl+Assets.Images.dashboard].texture,
+            color: Assets.Colors.Dashboard,
+            alpha: 1
+        });
         dashboardGraphics.drawRect(0, 0, settings.UiWidth, settings.UiHeight);
         dashboardGraphics.endFill();
         let dashboardTexture = pixiApp.renderer.generateTexture(dashboardGraphics);
@@ -441,6 +451,7 @@ export default class HelmRenderer {
                 // draw speed and gravity text
                 if (!sprites.speedText) {
                     sprites.speedText = new PIXI.Text(speed + SolarObjects.units.speed, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
+                    sprites.speedText.filters = [ effects.hudGlow ];
                     sprites.speedText.anchor.set(0.5);
                     sprites.speedText.x = Math.floor(settings.UiWidth / 2);
                     sprites.speedText.y = Math.floor(settings.UiHeight / 2);
@@ -462,7 +473,13 @@ export default class HelmRenderer {
                                    gravityAmountText + SolarObjects.units.force;
 
                     if (!sprites.gravityText) {
-                        sprites.gravityText = new PIXI.Text(gravText, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
+                        sprites.gravityText = new PIXI.Text(gravText, {
+                            fontFamily : 'Arial',
+                            fontSize: 9,
+                            fill : 0xFFFFFF,
+                            align : 'center'
+                        });
+                        sprites.gravityText.filters = [ effects.hudGlow ];
                         sprites.gravityText.anchor.set(0.5);
                         sprites.gravityText.x = Math.floor(settings.UiWidth / 2);
                         sprites.gravityText.y = Math.floor(settings.UiHeight / 2);

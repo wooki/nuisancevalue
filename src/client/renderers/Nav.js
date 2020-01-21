@@ -1,6 +1,7 @@
 import KeyboardControls from '../NvKeyboardControls.js';
 const PIXI = require('pixi.js');
 const Assets = require('./images.js');
+import {GlowFilter} from '@pixi/filter-glow';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -15,11 +16,13 @@ let client = null;
 let settings = {
     baseUrl: '/',
     mapSize: 400000,
-    zoom: 0,
-    zoomLevels: [1, 0.66, 0.5, 0.33, 0.2],
+    zoom: 3, // 0-9, index for zoomLevels
+    zoomLevels: [4, 2, 1, 0.5, 0.25, 0.125, 0.0625, 0.03123, 0.015625, 0.0078125],
     focus: [0, 0],
     loadedSprites: false,
-    gridSize: 50000,
+    gridSize: 40000, // this is set in setSizes
+    minimumScale: 0.001,
+    minimumSpriteSize: 8,
     zIndex: {
         grid: 1,
         asteroid: 10,
@@ -34,6 +37,13 @@ let pixiContainer = null;
 let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
+let effects = {
+    hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5)
+};
+let aliases = {}; // keep track of everything added to map using easier address
+let commandBuffer = [];
+let commandBufferIndex = 0;
+let scaleChange = false;
 
 export default class NavRenderer {
 
@@ -99,16 +109,82 @@ export default class NavRenderer {
     }
 
     consoleInput(event) {
+        let input = document.getElementById("consoleInput");
 
-        if (event.keyCode == 13 || event.code == 'Enter') {
-            let input = document.getElementById("consoleInput");
+        if (event.keyCode == 38 || event.code == 'ArrowUp') { // up
+            commandBufferIndex = commandBufferIndex + 1;
+            if (commandBufferIndex > commandBuffer.length) {
+                commandBufferIndex = commandBuffer.length;
+            } else {
+                input.value = commandBuffer[commandBufferIndex - 1];
+            }
+
+        } else if (event.keyCode == 40 || event.code == 'ArrowDown') { // down
+            commandBufferIndex = commandBufferIndex - 1;
+            if (commandBufferIndex < 1) {
+                commandBufferIndex = 0;
+                input.value = '';
+            } else {
+                input.value = commandBuffer[commandBufferIndex - 1];
+            }
+
+        } else if (event.keyCode == 27 || event.code == 'Escape') { // escape
+            input.value = '';
+
+        } else if (event.keyCode == 13 || event.code == 'Enter') { // enter
             let log = document.getElementById("console");
             let val = input.value;
+            commandBuffer.unshift(val);
+            commandBufferIndex = 0;
+            if (commandBuffer.length > 30) {
+                commandBuffer.pop();
+            }
             input.value = '';
             let result = navCom.parse(val);
-            log.innerHTML = log.innerHTML + "\nNAV:COM$ " + val + "\n" + (result.error ? result.error : '');
+            log.innerHTML = log.innerHTML + "\nNAV:COM$ " + val + (result.error ? "\n" + result.error : '');
             console.log(">>>");
             console.dir(result);
+
+            if (!result.error) {
+                if (result.command == 'clear') { // clear
+                    log.innerHTML = '';
+
+                } else if (result.command == 'help') { // help
+                    let cmd = null;
+                    if (result.parameters && result.parameters.command) {
+                        cmd = result.parameters.command;
+                    }
+                    let help = navCom.help(cmd);
+                    log.innerHTML = log.innerHTML + help;
+
+                } else if (result.command == 'focus') { // focus
+
+                    let focusX = 0;
+                    let focusY = 0;
+                    if (result.parameters.centre.includes(',')) {
+                        let coords = result.parameters.centre.split(',');
+                        focusX = parseInt(coords[0].replace('k', '000')) || 0;
+                        focusY = parseInt(coords[1].replace('k', '000')) || 0;
+                    } else {
+                        if (aliases[result.parameters.centre]) {
+                            let obj = game.world.queryObject({id: aliases[result.parameters.centre]})
+                            if (obj) {
+                                focusX = obj.physicsObj.position[0];
+                                focusY = obj.physicsObj.position[1];
+                            }
+                        }
+                    }
+                    settings.focus = [focusX, focusY];
+                    this.updateGrid(settings.focus[0], settings.focus[1]);
+
+                } else if (result.command == 'zoom') { // zoom
+
+                    settings.zoom = parseInt(result.parameters.level);
+                    this.setSizes();
+                    this.createGrid()
+                    this.updateGrid(settings.focus[0], settings.focus[1]);
+                }
+            }
         }
     }
 
@@ -158,6 +234,7 @@ export default class NavRenderer {
         // decide how much "game space" is represented by the narrowUI dimension
         let zoomedMapSize = settings.mapSize * settings.zoomLevels[settings.zoom];
         settings.scale = (settings.narrowUi / zoomedMapSize);
+        scaleChange = true;
 
         // grid is always 1000 but scaled
         settings.gridSize = Math.floor(40000 * settings.scale);
@@ -173,7 +250,7 @@ export default class NavRenderer {
 
     }
 
-    addToMap(guid, texture, width, height, x, y, angle, zIndex, minimumScale, minimumSize) {
+    getUseSize(width, height, minimumScale, minimumSize) {
 
         let useScale = settings.scale;
         if (useScale < minimumScale) {
@@ -185,9 +262,27 @@ export default class NavRenderer {
         if (useWidth < minimumSize) { useWidth = minimumSize; }
         if (useHeight < minimumSize) { useHeight = minimumSize; }
 
+        return {
+            useWidth: useWidth,
+            useHeight: useHeight
+        };
+    }
+
+    addToMap(name, guid, texture, width, height, x, y, angle, zIndex, minimumScale, minimumSize) {
+
+        // give anything added to the map an alias
+        let alias = name;
+        if (aliases[alias]) {
+            alias = name + guid;
+        }
+        aliases[alias] = guid; // alias just keeps actual guid
+
+        let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+
         sprites[guid] = new PIXI.Sprite(texture);
-        sprites[guid].width = useWidth;
-        sprites[guid].height = useHeight;
+        sprites[guid].filters = [ effects.hudGlow ];
+        sprites[guid].width = useSize.useWidth;
+        sprites[guid].height = useSize.useHeight;
         sprites[guid].anchor.set(0.5);
         sprites[guid].x = x;
         sprites[guid].y = y;
@@ -200,13 +295,16 @@ export default class NavRenderer {
         mapObjects[guid] = sprites[guid];
         mapContainer.addChild(sprites[guid]);
 
-        sprites[guid+'-label'] = new PIXI.Text('id:'+guid, {fontFamily : 'Arial', fontSize: 12, fill : 0xFFFFFF, align : 'center'});
+        sprites[guid+'-label'] = new PIXI.Text(alias, {fontFamily : 'Arial', fontSize: 12, fill : 0xFFFFFF, align : 'center'});
+        sprites[guid+'-label'].filters = [ effects.hudGlow ];
         sprites[guid+'-label'].anchor.set(0, 0.5);
-        sprites[guid+'-label'].x = x + useWidth;
-        sprites[guid+'-label'].y = y - useHeight;
+        sprites[guid+'-label'].x = x + (3 + Math.floor(useSize.useWidth));
+        sprites[guid+'-label'].y = y - (3 + Math.floor(useSize.useHeight));
         // sprites[guid+'-label'].pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 16));
         sprites[guid+'-label'].rotation = (-0.25 * Math.PI);
         sprites[guid+'-label'].zIndex = settings.zIndex.ui;
+
+        mapObjects[guid+'-label'] = sprites[guid+'-label'];
         mapContainer.addChild(sprites[guid+'-label']);
 
         mapContainer.sortChildren();
@@ -219,15 +317,35 @@ export default class NavRenderer {
         sprites[guid] = null;
     }
 
-    loadResources(loader, resources) {
+    createGrid() {
 
-        settings.loadedSprites = true;
-        settings.resources = resources;
+        // remove old one
+        if (sprites.gridSprite) {
+            mapContainer.removeChild(sprites.gridSprite);
+            sprites.gridSprite.destroy(true);
+            sprites.gridSprite = null;
+        }
 
         // create a texture for the grid background
         let gridGraphics = new PIXI.Graphics();
+        // once the grid is large draw extra lines
+        if (settings.gridSize >= 500) {
+
+            let smallGridSize = Math.round(settings.gridSize/4);
+
+            gridGraphics.lineStyle(1, Assets.Colors.GridSmall);
+            gridGraphics.moveTo(smallGridSize, 1); gridGraphics.lineTo(smallGridSize, settings.gridSize - 1);
+            gridGraphics.moveTo(smallGridSize*2, 1); gridGraphics.lineTo(smallGridSize*2, settings.gridSize - 1);
+            gridGraphics.moveTo(settings.gridSize - smallGridSize, 1); gridGraphics.lineTo(settings.gridSize - smallGridSize, settings.gridSize - 1);
+
+            gridGraphics.moveTo(1, smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize);
+            gridGraphics.moveTo(1, smallGridSize*2); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*2);
+            gridGraphics.moveTo(1, settings.gridSize - smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, settings.gridSize - smallGridSize);
+        }
+
         gridGraphics.lineStyle(1, Assets.Colors.Grid);
         gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
+
         let gridTexture = pixiApp.renderer.generateTexture(gridGraphics);
         gridGraphics.destroy();
         sprites.gridSprite = new PIXI.TilingSprite(gridTexture, settings.gridSize, settings.gridSize);
@@ -238,6 +356,14 @@ export default class NavRenderer {
         sprites.gridSprite.height = settings.UiHeight;
         sprites.gridSprite.zIndex = settings.zIndex.grid;
         mapContainer.addChild(sprites.gridSprite);
+    }
+
+    loadResources(loader, resources) {
+
+        settings.loadedSprites = true;
+        settings.resources = resources;
+
+        this.createGrid();
 
         // set the grid to the 0,0 point at the start
         this.updateGrid(settings.focus[0], settings.focus[1]);
@@ -290,9 +416,14 @@ export default class NavRenderer {
 
                 // keep track of the player object
                 let isPlayer = false;
+                let alias = obj.id;
                 if (obj instanceof Ship && obj.navPlayerId == game.playerId) {
                     playerShip = obj;
                     isPlayer = true;
+
+                    // hard-code alias for self
+                    aliases['self'] = obj.id;
+                    aliases['me'] = obj.id;
                 }
 
                 let texture = null;
@@ -300,12 +431,19 @@ export default class NavRenderer {
                 if (obj instanceof Ship) {
                     texture = settings.resources[settings.baseUrl+Assets.Images[obj.hull]].texture;
                     zIndex = settings.zIndex.ship;
+                    alias = obj.hull;
                 } if (obj instanceof Asteroid) {
                     texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                     zIndex = settings.zIndex.asteroid;
+                    alias = 'asteroid';
                 } else if (obj instanceof Planet) {
                     texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                     zIndex = settings.zIndex.planet;
+                    alias = obj.texture;
+                }
+
+                if (isPlayer) {
+                    alias = obj.name;
                 }
 
                 let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
@@ -320,24 +458,37 @@ export default class NavRenderer {
                 let angle = this.adjustAngle(obj.physicsObj.angle);
 
                 if (!mapObjects[obj.id]) {
-                    this.addToMap(obj.id,
+                    this.addToMap(alias,
+                                  obj.id,
                                   texture,
                                   obj.size, obj.size,
                                   coord.x, coord.y,
                                   angle,
-                                  zIndex, 0.001, 8)
+                                  zIndex, settings.minimumScale, settings.minimumSpriteSize)
                 } else {
-                    // update position
+                    // update position & scale
                     mapObjects[obj.id].x = coord.x;
                     mapObjects[obj.id].y = coord.y;
                     let angle = this.adjustAngle(obj.physicsObj.angle);
                     mapObjects[obj.id].rotation = angle;
+                    if (scaleChange) {
+                        let useSize = this.getUseSize(obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
+                        mapObjects[obj.id].width = useSize.useWidth;
+                        mapObjects[obj.id].height = useSize.useHeight;
+                    }
+
+                    if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
+
+                        mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
+                        mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
+                    }
                 }
             });
 
         }
 
         mapContainer.sortChildren();
+        scaleChange = false;
     }
 
 }

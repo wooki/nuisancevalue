@@ -6,13 +6,15 @@ module.exports = {
 		asteroid: 'assets/asteroid.png',
 		sol: 'assets/sol.png',
 		earth: 'assets/earth.png',
-		explosion: 'assets/explosion.json'
+		explosion: 'assets/explosion.json',
+		dashboard: 'assets/dashboard.jpg'
 	},
 	Colors: {
 		Black: 0x000000,
-		Grid: 0x161616,
+		Grid: 0x163516,
+		GridSmall: 0x2c332c,
 		White: 0xFFFFFF,
 		Red: 0xFF0000,
-		Dashboard: 0x444444
+		Dashboard: 0x2c332c
 	}
 }

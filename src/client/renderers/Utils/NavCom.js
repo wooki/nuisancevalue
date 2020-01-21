@@ -1,22 +1,43 @@
 
 const testString = /^[A-Za-z0-9]+$/;
 const testNumber = /^[0-9]+$/;
+const testZoom = /^[0-9]+$/;
+const testFocus = /^[A-Za-z0-9,]+$/;
 
 const commands = [
 	{
-		name: 'orbit',
-		parameters: [
-			{ name: "alias", test: testString },
-			{ name: "radius", test: testNumber }
-		],
-		description: "test"
-	},
-	{
+        name: 'orbit',
+        parameters: [
+            { name: "alias", test: testString, help: "Object to orbit around." },
+            { name: "distance", test: testNumber, help: "Distance from surface to orbit." }
+        ],
+        description: "Calculate the speed required for a stable orbit."
+    },
+    {
+        name: 'focus',
+        parameters: [
+            { name: "centre", test: testFocus, help: "Either an object, or a coordinate in the form x,y e.g. 0,0. You can use 'k' to indicate x1000 e.g. 100k,15k." }
+        ],
+        description: "Set the centre of the map."
+    },
+    {
+        name: 'zoom',
+        parameters: [
+            { name: "level", test: testZoom, help: "One of the built-in zoom levels from 0-9 with 9 being most zoomed in." }
+        ],
+        description: "Set the zoom factor of the map."
+    },
+    {
+        name: 'clear',
+        parameters: [],
+        description: "Clear the console log."
+    },
+    {
 		name: 'help',
 		parameters: [
-			{ name: "command", test: testString, optional: true }
+			{ name: "command", test: testString, optional: true, help: "Help about this comand." }
 		],
-		description: "get general help, or help on a specific command"
+		description: "Get a list of commands, or help on a specific command."
 	}
 ];
 
@@ -29,18 +50,12 @@ export default class NavCom {
     		return (word && word.trim().length > 0);
     	});
 
-        console.log("parse: ");
-        console.dir(words);
-
-    	// look for a command
+        // look for a command
     	let command = commands.find(function(c) {
             return (c.name == words[0]);
     	});
 
-        console.dir(command);
-
-
-    	if (command) {
+        if (command) {
 
             words.shift();
 
@@ -55,9 +70,6 @@ export default class NavCom {
                     if (command.parameters[index].test.test(words[index])) {
                         values[command.parameters[index].name] = words[index];
                     } else {
-                        console.log("invalid:"+index);
-                        console.log("words:"+words[index]);
-                        console.log("parameters:"+command.parameters[index].test);
                         return {
                             command: command,
                             error: 'invalid parameter "'+words[index]+'", expected '+command.parameters[index].name
@@ -92,8 +104,54 @@ export default class NavCom {
     }
 
     // get help text for general use or for specific command - triggered by the parse but handled here
-    help(command, parameters) {
+    help(helpCommand) {
 
+        let h = "";
+
+        if (helpCommand) {
+            // help on specific command
+            let command = commands.find(function(c) {
+                return (c.name == helpCommand);
+            });
+
+            if (command) {
+                h = h + command.description;
+
+                if (command.parameters && command.parameters.length > 0) {
+
+                    let parameterlist = command.parameters.map(function(p) {
+                        return "&lt;"+p.name+"&gt;";
+                    });
+                    h = h + "\ne.g. " + command.name + ' ' + parameterlist.join(" ");
+
+                    // add each parameter in detail
+                    let parameterdetail = command.parameters.map(function(p) {
+                        return p.name + ": " + p.help + (p.optional ? ' (optional)' : '');
+                    });
+                    h = h + "\n" + parameterdetail.join("\n");
+                } else {
+                    h = h + "\n(no parameters)";
+                }
+
+            } else {
+                h = h + "Command '"+command.name + "' not found";
+            }
+
+        } else {
+            // some info plus iterate possible commands
+            h = h + "JupiCorp NavCom, version 3.2.57(1)-release (x86_128_compat)\n";
+            h = h + "These commands are defined internally.  Type 'help' to see this list.\n";
+            h = h + "Type 'help name' to find out more about the command 'name'.\n------\n";
+
+            // get a list
+            let delim = '';
+            commands.forEach(function(c) {
+                h = h + delim + c.name;
+                delim = ', ';
+            });
+        }
+
+        return h;
     }
 
 }
