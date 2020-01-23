@@ -17,7 +17,8 @@
     "query-string": "^4.2.3",
     "socket.io": "^2.3.0",
     "victor": "^1.1.0",
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "node": ">=11.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",
