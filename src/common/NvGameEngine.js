@@ -99,26 +99,40 @@ export default class NvGameEngine extends GameEngine {
                 let gravDistance = null;
                 let gravSourceAmount = 0;
 
-                // find biggest gravity effect, only apply gravity on smaller objects
-                Object.keys(gravityObjects).forEach((gravObjId) => {
+                // allow for objects with fixed gravity source - planets in orbit around sun
+                if (obj.fixedgravity !== undefined && obj.fixedgravity !== null && obj.fixedgravity !== '') {
 
-                    // let gravObj = gravityObjects[gravObjId];
-                    let gravObj = this.world.queryObject({ id: gravityObjects[gravObjId] });
+                    let gravObj = this.world.queryObject({ id: parseInt(obj.fixedgravity) });
+                    if (gravObj) {
+                        let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
+                        let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
+                        gravDistance = d;
+                        gravSourceAmount = g;
+                        gravSource = gravObj;
+                    }
+                } else {
 
-                    if (gravObj && gravObj.id != objId && gravObj.physicsObj) {
-                        if (gravObj.physicsObj.mass > obj.physicsObj.mass) {
+                    // find biggest gravity effect, only apply gravity on smaller objects
+                    Object.keys(gravityObjects).forEach((gravObjId) => {
 
-                            let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
-                            let g = (obj.physicsObj.mass + gravObj.physicsObj.mass) / (d*d);
+                        // let gravObj = gravityObjects[gravObjId];
+                        let gravObj = this.world.queryObject({ id: gravityObjects[gravObjId] });
 
-                            if (gravSourceAmount === null || gravSourceAmount < g) {
-                                gravDistance = d;
-                                gravSourceAmount = g;
-                                gravSource = gravObj;
+                        if (gravObj && gravObj.id != objId && gravObj.physicsObj) {
+                            if (gravObj.physicsObj.mass > obj.physicsObj.mass) {
+
+                                let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
+                                let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
+
+                                if (gravSourceAmount === null || gravSourceAmount < g) {
+                                    gravDistance = d;
+                                    gravSourceAmount = g;
+                                    gravSource = gravObj;
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
 
                 // apply force towards source
                 if (gravSourceAmount && gravSource) {
@@ -238,7 +252,7 @@ export default class NvGameEngine extends GameEngine {
         s.size = params['size'];
         s.helmPlayerId = 0;
         s.navPlayerId = 0;
-        this.addObjectToWorld(s);
+        return this.addObjectToWorld(s);
     }
 
     // create asteroid
@@ -252,7 +266,7 @@ export default class NvGameEngine extends GameEngine {
             angle: params['angle']
         });
         a.size = params['size'];
-        this.addObjectToWorld(a);
+        return this.addObjectToWorld(a);
     }
 
     // create planet
@@ -267,7 +281,8 @@ export default class NvGameEngine extends GameEngine {
         });
         p.size = params['size'];
         p.texture = params['texture'];
-        this.addObjectToWorld(p);
+        p.fixedgravity = params['fixedgravity'] || '';
+        return this.addObjectToWorld(p);
     }
 
 

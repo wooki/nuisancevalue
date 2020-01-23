@@ -8,7 +8,8 @@ export default class Planet extends PhysicalObject2D {
     static get netScheme() {
         return Object.assign({
             size: { type: BaseTypes.TYPES.INT32 },
-            texture: { type: BaseTypes.TYPES.STRING }
+            texture: { type: BaseTypes.TYPES.STRING },
+            fixedgravity: { type: BaseTypes.TYPES.STRING }
         }, super.netScheme);
     }
 
@@ -45,12 +46,13 @@ export default class Planet extends PhysicalObject2D {
     }
 
     toString() {
-        return `Planet::${super.toString()} texture=${this.texture} size=${this.size}`;
+        return `Planet::${super.toString()} texture=${this.texture} size=${this.size} fixedgravity=${this.fixedgravity}`;
     }
 
     syncTo(other) {
         super.syncTo(other);
         this.size = other.size;
         this.texture = other.texture;
+        this.fixedgravity = other.fixedgravity;
     }
 }

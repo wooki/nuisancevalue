@@ -27,7 +27,7 @@ const serverEngine = new NvServerEngine(io, gameEngine, {
 	debug: {},
 	updateRate: 6,
 	stepRate: 60,
-	timeoutInterval: 1120
+	timeoutInterval: 1200
 });
 
 // start the game

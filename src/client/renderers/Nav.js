@@ -7,6 +7,8 @@ import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
 import NavCom from './Utils/NavCom';
+import SolarObjects from './../../common/SolarObjects';
+import Victor from 'victor';
 
 let navCom = new NavCom();
 let el = null;
@@ -15,12 +17,12 @@ let game = null;
 let client = null;
 let settings = {
     baseUrl: '/',
-    mapSize: 400000,
+    mapSize: 500000, // this is set in setSizes
     zoom: 3, // 0-9, index for zoomLevels
     zoomLevels: [4, 2, 1, 0.5, 0.25, 0.125, 0.0625, 0.03123, 0.015625, 0.0078125],
     focus: [0, 0],
     loadedSprites: false,
-    gridSize: 40000, // this is set in setSizes
+    gridSize: 50000, // this is set in setSizes
     minimumScale: 0.001,
     minimumSpriteSize: 8,
     zIndex: {
@@ -87,6 +89,7 @@ export default class NavRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.asteroid);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
 
         // manage loading of resources
@@ -94,18 +97,6 @@ export default class NavRenderer {
 
         // add ui might as well use html for the stuff it's good at
         this.drawUi(root);
-
-        // this.controls = new KeyboardControls(client);
-        // this.controls.bindKey('0', 'engine', { }, { level: 0 });
-        // this.controls.bindKey('1', 'engine', { }, { level: 1 });
-        // this.controls.bindKey('2', 'engine', { }, { level: 2 });
-        // this.controls.bindKey('3', 'engine', { }, { level: 3 });
-        // this.controls.bindKey('4', 'engine', { }, { level: 4 });
-        // this.controls.bindKey('5', 'engine', { }, { level: 5 });
-        // this.controls.bindKey('left', 'maneuver', { }, { direction: 'l' });
-        // this.controls.bindKey('right', 'maneuver', { }, { direction: 'r' });
-        // this.controls.bindKey('up', 'maneuver', { }, { direction: 'f' });
-        // this.controls.bindKey('down', 'maneuver', { }, { direction: 'b' });
     }
 
     consoleInput(event) {
@@ -142,8 +133,8 @@ export default class NavRenderer {
             input.value = '';
             let result = navCom.parse(val);
             log.innerHTML = log.innerHTML + "\nNAV:COM$ " + val + (result.error ? "\n" + result.error : '');
-            console.log(">>>");
-            console.dir(result);
+console.log(">>> command");
+console.dir(result);
 
             if (!result.error) {
                 if (result.command == 'clear') { // clear
@@ -167,7 +158,7 @@ export default class NavRenderer {
                         focusY = parseInt(coords[1].replace('k', '000')) || 0;
                     } else {
                         if (aliases[result.parameters.centre]) {
-                            let obj = game.world.queryObject({id: aliases[result.parameters.centre]})
+                            let obj = game.world.queryObject({id: parseInt(aliases[result.parameters.centre])})
                             if (obj) {
                                 focusX = obj.physicsObj.position[0];
                                 focusY = obj.physicsObj.position[1];
@@ -183,6 +174,51 @@ export default class NavRenderer {
                     this.setSizes();
                     this.createGrid()
                     this.updateGrid(settings.focus[0], settings.focus[1]);
+
+                } else if (result.command == 'info') { // info
+
+                    let obj = null;
+                    if (!(aliases[result.parameters.alias] === null)) {
+                        obj = game.world.queryObject({id: parseInt(aliases[result.parameters.alias])})
+                    }
+                    if (obj) {
+
+                        // log.innerHTML = log.innerHTML + "\n" + result.parameters.alias + "\n------";
+
+                        if (obj instanceof Ship) {
+                            log.innerHTML = log.innerHTML + "\nDesignation: Ship";
+                        } else if (obj instanceof Planet) {
+                            log.innerHTML = log.innerHTML + "\nDesignation: Planet";
+                        } else if (obj instanceof Asteroid) {
+                            log.innerHTML = log.innerHTML + "\nDesignation: Asteroid";
+                        }
+
+                        // vector of object
+                        let v = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
+
+                        log.innerHTML = log.innerHTML + "\nMass: " + obj.physicsObj.mass.toPrecision(3) + SolarObjects.units.mass;
+                        log.innerHTML = log.innerHTML + "\nHeading: " + ((Math.round(v.verticalAngleDeg()) + 360) % 360) + "°";
+                        log.innerHTML = log.innerHTML + "\nSpeed: " + Math.round(v.magnitude()) + SolarObjects.units.speed;
+                        log.innerHTML = log.innerHTML + "\nRadius: " + Math.round(obj.size / 2) + SolarObjects.units.distance;
+// log.innerHTML = log.innerHTML + "\nSurface G: " + Math.round(v.magnitude()) + SolarObjects.units.force;
+
+                        // bearing & distance
+                        let us = game.world.queryObject({id: parseInt(aliases['self'])})
+                        if (us && us.id != obj.id) {
+
+                            let ourPos = Victor.fromArray(us.physicsObj.position);
+                            let theirPos = Victor.fromArray(obj.physicsObj.position);
+                            let direction = theirPos.clone().subtract(ourPos);
+                            direction = new Victor(direction.x, 0 - direction.y);
+
+                            log.innerHTML = log.innerHTML + "\nBearing: " + ((Math.round(direction.verticalAngleDeg()) + 360) % 360) + "°";
+                            log.innerHTML = log.innerHTML + "\nDistance: " + direction.magnitude() + SolarObjects.units.distance;
+                        }
+
+
+                    } else {
+                        log.innerHTML = log.innerHTML + "\nobject '" + result.parameters.alias + "' not found.";
+                    }
                 }
             }
         }
@@ -237,7 +273,7 @@ export default class NavRenderer {
         scaleChange = true;
 
         // grid is always 1000 but scaled
-        settings.gridSize = Math.floor(40000 * settings.scale);
+        settings.gridSize = Math.floor(50000 * settings.scale);
     }
 
     // clicked an object, do some stuff...
@@ -245,13 +281,20 @@ export default class NavRenderer {
 
         console.log("guid: "+guid);
 
-        let obj = game.world.queryObject({ id: guid });
+        let obj = game.world.queryObject({ id: parseInt(guid) });
         console.dir(obj);
 
     }
 
     getUseSize(width, height, minimumScale, minimumSize) {
 
+        console.log({
+            width: width,
+            height: height,
+            minimumScale: minimumScale,
+            minimumSize: minimumSize,
+            settingsScale: settings.scale
+        });
         let useScale = settings.scale;
         if (useScale < minimumScale) {
             useScale = minimumScale;
@@ -331,15 +374,17 @@ export default class NavRenderer {
         // once the grid is large draw extra lines
         if (settings.gridSize >= 500) {
 
-            let smallGridSize = Math.round(settings.gridSize/4);
+            let smallGridSize = Math.round(settings.gridSize/5);
 
             gridGraphics.lineStyle(1, Assets.Colors.GridSmall);
             gridGraphics.moveTo(smallGridSize, 1); gridGraphics.lineTo(smallGridSize, settings.gridSize - 1);
             gridGraphics.moveTo(smallGridSize*2, 1); gridGraphics.lineTo(smallGridSize*2, settings.gridSize - 1);
+            gridGraphics.moveTo(smallGridSize*3, 1); gridGraphics.lineTo(smallGridSize*3, settings.gridSize - 1);
             gridGraphics.moveTo(settings.gridSize - smallGridSize, 1); gridGraphics.lineTo(settings.gridSize - smallGridSize, settings.gridSize - 1);
 
             gridGraphics.moveTo(1, smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize);
             gridGraphics.moveTo(1, smallGridSize*2); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*2);
+            gridGraphics.moveTo(1, smallGridSize*3); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*3);
             gridGraphics.moveTo(1, settings.gridSize - smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, settings.gridSize - smallGridSize);
         }
 

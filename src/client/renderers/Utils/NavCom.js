@@ -1,8 +1,8 @@
 
 const testString = /^[A-Za-z0-9]+$/;
-const testNumber = /^[0-9]+$/;
+const testNumber = /^-?[0-9]+$/;
 const testZoom = /^[0-9]+$/;
-const testFocus = /^[A-Za-z0-9,]+$/;
+const testFocus = /^[\-A-Za-z0-9,]+$/;
 
 const commands = [
 	{
@@ -14,9 +14,24 @@ const commands = [
         description: "Calculate the speed required for a stable orbit."
     },
     {
+        name: 'info',
+        parameters: [
+            { name: "alias", test: testString, help: "Object to find out about (can use self)." }
+        ],
+        description: "Displays important information about a specific object."
+    },
+    {
+        name: 'waypoint',
+        parameters: [
+            { name: "name", test: testString, help: "Name for the waypoint" },
+            { name: "target", test: testFocus, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30." }
+        ],
+        description: "Set a waypoint on the map, if the target is ommitted it removes the waypoint."
+    },
+    {
         name: 'focus',
         parameters: [
-            { name: "centre", test: testFocus, help: "Either an object, or a coordinate in the form x,y e.g. 0,0. You can use 'k' to indicate x1000 e.g. 100k,15k." }
+            { name: "centre", test: testFocus, help: "Either an object (can use self), or a coordinate in the form x,y e.g. 0,0. You can use 'k' to indicate x1000 e.g. 100k,15k." }
         ],
         description: "Set the centre of the map."
     },

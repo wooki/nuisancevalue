@@ -27,7 +27,7 @@ export default class Ship extends PhysicalObject2D {
     // if the ship has active engines then apply force
     applyEngine() {
         if (this.engine && this.engine > 0) {
-            this.physicsObj.applyForceLocal([0, this.engine * 50]);
+            this.physicsObj.applyForceLocal([0, this.engine * 0.1]);
         }
     }
 
@@ -36,20 +36,20 @@ export default class Ship extends PhysicalObject2D {
         // if (this.engine && this.engine > 0) {
             if (maneuver == 'l') {
 
-                this.physicsObj.applyForceLocal([-500, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([500, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), this.size]);
 
             } else if (maneuver == 'r') {
 
-                this.physicsObj.applyForceLocal([500, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([-500, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), this.size]);
             } else if (maneuver == 'f') {
 
-                this.physicsObj.applyForceLocal([0, 100], [Math.floor(this.size/2), Math.floor(this.size)]);
+                this.physicsObj.applyForceLocal([0, 0.05], [Math.floor(this.size/2), Math.floor(this.size)]);
 
             } else if (maneuver == 'b') {
 
-                this.physicsObj.applyForceLocal([0, -100], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([0, -0.05], [Math.floor(this.size/2), 0]);
             }
         // }
     }

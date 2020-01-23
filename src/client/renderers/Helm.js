@@ -84,6 +84,7 @@ export default class HelmRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.asteroid);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
 
@@ -148,6 +149,8 @@ export default class HelmRenderer {
         uiEls.manBackEl = this.createButton(document, uiManeuverContainer, "manBackBtn", "v", () => {
             this.setManeuver('b');
         });
+
+        uiEls.gravOrbitV = this.createLabel(document, uiContainer, "gravOrbitV", "grav");
 
     }
 
@@ -426,9 +429,8 @@ export default class HelmRenderer {
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
                     gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
                     // uiEls.gravDistEl.innerHTML = "Grav Distance: " + Math.round(gravity.length());
-                    // let orbitV = Math.sqrt((playerShip.gravityData.mass + playerShip.physicsObj.mass) / gravity.length() + 1);
-                    // orbitV = Math.round(orbitV / 3);
-                    // uiEls.gravOrbitV.innerHTML = "Grav V: " + orbitV;
+                        let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
+                        uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
                 }
 
                 // draw a marker to show bearing
@@ -440,12 +442,12 @@ export default class HelmRenderer {
                         scale: settings.scale,
                         bearing: bearing,
                         course: course,
-                        gravity: gravity.angle(),
+                        gravity: gravity ? gravity.angle() : null,
                         zIndex: settings.zIndex.ui
                     });
                     mapContainer.addChild(sprites.helmUi);
                 } else {
-                    sprites.helmUi.update(bearing, course, gravity.angle());
+                    sprites.helmUi.update(bearing, course, gravity ? gravity.angle() : null);
                 }
 
                 // draw speed and gravity text

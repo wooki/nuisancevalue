@@ -6,6 +6,7 @@ module.exports = {
 		asteroid: 'assets/asteroid.png',
 		sol: 'assets/sol.png',
 		earth: 'assets/earth.png',
+		mars: 'assets/mars.png',
 		explosion: 'assets/explosion.json',
 		dashboard: 'assets/dashboard.jpg'
 	},
