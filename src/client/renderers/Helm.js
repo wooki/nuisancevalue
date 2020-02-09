@@ -428,9 +428,8 @@ export default class HelmRenderer {
                 let gravity = null;
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
                     gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
-                    // uiEls.gravDistEl.innerHTML = "Grav Distance: " + Math.round(gravity.length());
-                        let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
-                        uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
+                    let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
+                    uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
                 }
 
                 // draw a marker to show bearing
@@ -471,8 +470,13 @@ export default class HelmRenderer {
 
                     let gravityDistanceText = Math.round(gravity.length());
                     let gravityAmountText = Math.round((playerShip.gravityData.amount / (playerShip.physicsObj.mass)) * 100) / 100;
+
+                    let gravityHeading = Victor.fromArray([playerShip.gravityData.velocity.x, playerShip.gravityData.velocity.y]);
+                    let closing = ((speedV.clone().subtract(gravityHeading)).dot(gravity) / gravity.length());
+
                     let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
-                                   gravityAmountText + SolarObjects.units.force;
+                                   gravityAmountText + SolarObjects.units.force + "\n" +
+                                   closing.toPrecision(3) + SolarObjects.units.speed;
 
                     if (!sprites.gravityText) {
                         sprites.gravityText = new PIXI.Text(gravText, {

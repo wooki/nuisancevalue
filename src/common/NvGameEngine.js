@@ -89,7 +89,7 @@ export default class NvGameEngine extends GameEngine {
             }
 
             // if this has gravity then add to gravity objects
-            if (obj instanceof Planet) {
+            if (obj instanceof Planet) { // only planets for now!
                 gravityObjects[objId] = obj.id;
             }
 
@@ -153,7 +153,8 @@ export default class NvGameEngine extends GameEngine {
                         direction: direction,
                         amount: gravSourceAmount,
                         vector: gravVector,
-                        mass: gravSource.physicsObj.mass
+                        mass: gravSource.physicsObj.mass,
+                        velocity: gravSource.physicsObj.velocity
                     };
 
                     // accelerate towards the gravity source
@@ -194,8 +195,8 @@ export default class NvGameEngine extends GameEngine {
     processInput(inputData, playerId) {
 
         super.processInput(inputData, playerId);
-        console.log("processInput:"+playerId);
-        console.dir(inputData);
+        // console.log("processInput:"+playerId);
+        // console.dir(inputData);
 
         if (playerId != 0) {
 

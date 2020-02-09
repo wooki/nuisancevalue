@@ -175,6 +175,33 @@ console.dir(result);
                     this.createGrid()
                     this.updateGrid(settings.focus[0], settings.focus[1]);
 
+                } else if (result.command == 'waypoint') { // waypoint
+// "name", test: testString, help: "Name for the waypoint" },
+// "target", test: testFocus, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30." }
+// "Set a waypoint on the map, if the target is ommitted it removes the waypoint."
+
+
+                } else if (result.command == 'orbit') { // orbit
+
+                    let obj = null;
+                    if (!(aliases[result.parameters.alias] === null)) {
+                        obj = game.world.queryObject({id: parseInt(aliases[result.parameters.alias])})
+                    }
+                    if (obj && obj instanceof Planet) {
+
+                        let us = game.world.queryObject({id: parseInt(aliases['self'])})
+                        let radius = obj.size + parseInt(result.parameters.distance);
+                        // log.innerHTML = log.innerHTML + "\nOrbit Radius: "+radius;
+                        if (us.gravityData && us.gravityData.direction) {
+                            let gravity = Victor.fromArray([us.gravityData.direction.x, us.gravityData.direction.y]);
+                            let orbitV = Math.sqrt((SolarObjects.constants.G * us.gravityData.mass) / gravity.length() + 1);
+                            log.innerHTML = log.innerHTML + "\nOrbit radius "+Math.round(radius)+" at "+Math.round(orbitV) + SolarObjects.units.speed;
+                        }
+
+                    } else {
+                        log.innerHTML = log.innerHTML + "\nInvalid target";
+                    }
+
                 } else if (result.command == 'info') { // info
 
                     let obj = null;
@@ -182,8 +209,6 @@ console.dir(result);
                         obj = game.world.queryObject({id: parseInt(aliases[result.parameters.alias])})
                     }
                     if (obj) {
-
-                        // log.innerHTML = log.innerHTML + "\n" + result.parameters.alias + "\n------";
 
                         if (obj instanceof Ship) {
                             log.innerHTML = log.innerHTML + "\nDesignation: Ship";
@@ -200,7 +225,6 @@ console.dir(result);
                         log.innerHTML = log.innerHTML + "\nHeading: " + ((Math.round(v.verticalAngleDeg()) + 360) % 360) + "°";
                         log.innerHTML = log.innerHTML + "\nSpeed: " + Math.round(v.magnitude()) + SolarObjects.units.speed;
                         log.innerHTML = log.innerHTML + "\nRadius: " + Math.round(obj.size / 2) + SolarObjects.units.distance;
-// log.innerHTML = log.innerHTML + "\nSurface G: " + Math.round(v.magnitude()) + SolarObjects.units.force;
 
                         // bearing & distance
                         let us = game.world.queryObject({id: parseInt(aliases['self'])})
@@ -212,7 +236,21 @@ console.dir(result);
                             direction = new Victor(direction.x, 0 - direction.y);
 
                             log.innerHTML = log.innerHTML + "\nBearing: " + ((Math.round(direction.verticalAngleDeg()) + 360) % 360) + "°";
-                            log.innerHTML = log.innerHTML + "\nDistance: " + direction.magnitude() + SolarObjects.units.distance;
+                            log.innerHTML = log.innerHTML + "\nDistance: " + direction.magnitude().toPrecision(3) + SolarObjects.units.distance;
+
+                            if (obj instanceof Planet) {
+                                let g = Math.round(((SolarObjects.constants.G * obj.physicsObj.mass) / Math.pow((obj.size / 2), 2)) * 100) / 100;
+                                log.innerHTML = log.innerHTML + "\nSurface G: " + g + SolarObjects.units.force;
+                            }
+
+                            // closing speed
+                            // https://gamedev.stackexchange.com/questions/118162/how-to-calculate-the-closing-speed-of-two-objects
+                            // val tmp = a.position - b.position
+                            // return -((a.velocity - b.velocity).dot(tmp)/tmp.length)
+                            let ourVelocity = new Victor(us.physicsObj.velocity[0], 0 - us.physicsObj.velocity[1]);
+                            let closing = ((ourVelocity.clone().subtract(v)).dot(direction) / direction.length());
+                            log.innerHTML = log.innerHTML + "\nClosing: " + closing.toPrecision(3) + SolarObjects.units.speed;
+
                         }
 
 
