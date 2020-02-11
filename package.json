@@ -12,13 +12,13 @@
     "copy-webpack-plugin": "^4.6.0",
     "express": "^4.17.1",
     "lance-gg": "^4.0.8",
+    "node": "^13.8.0",
     "pixi-filters": "^3.0.3",
     "pixi.js": "^5.2.0",
     "query-string": "^4.2.3",
     "socket.io": "^2.3.0",
     "victor": "^1.1.0",
-    "webpack": "^3.8.1",
-    "node": ">=11.0.0"
+    "webpack": "^3.8.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",

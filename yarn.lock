@@ -4048,10 +4048,10 @@ node-releases@^1.1.47:
   dependencies:
     semver "^6.3.0"
 
-node@>=11.0.0:
-  version "13.7.0"
-  resolved "https://registry.yarnpkg.com/node/-/node-13.7.0.tgz#222fd622b9bfc2570625ee8151b54a0d611574e1"
-  integrity sha512-HS7bU1UEUQ8d7auEX6mRgI0fpJ6xF9aM5HELOnLgVVPaDtroC2fy4+ScYxzF1RRNMpZL9k5d7NLF9Yf9zGewAw==
+node@^13.8.0:
+  version "13.8.0"
+  resolved "https://registry.yarnpkg.com/node/-/node-13.8.0.tgz#4bcc1e9fc5b8c27088c89be38613ff10b63cea45"
+  integrity sha512-5lCiqlWPij8bl5bPMBbOtuhMsrhLlYm2zYmRfrEkvJl8OOjzXpc1Dej/mcd8C3wdwJ9E0VJLvqlHDMe70WUT4w==
   dependencies:
     node-bin-setup "^1.0.0"
 

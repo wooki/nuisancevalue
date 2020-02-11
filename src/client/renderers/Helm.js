@@ -150,7 +150,7 @@ export default class HelmRenderer {
             this.setManeuver('b');
         });
 
-        uiEls.gravOrbitV = this.createLabel(document, uiContainer, "gravOrbitV", "grav");
+        // uiEls.gravOrbitV = this.createLabel(document, uiContainer, "gravOrbitV", "grav");
 
     }
 
@@ -428,8 +428,8 @@ export default class HelmRenderer {
                 let gravity = null;
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
                     gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
-                    let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
-                    uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
+                    // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
+                    // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
                 }
 
                 // draw a marker to show bearing
@@ -474,8 +474,10 @@ export default class HelmRenderer {
                     let gravityHeading = Victor.fromArray([playerShip.gravityData.velocity.x, playerShip.gravityData.velocity.y]);
                     let closing = ((speedV.clone().subtract(gravityHeading)).dot(gravity) / gravity.length());
 
+                    // let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
+                    //                gravityAmountText + SolarObjects.units.force + "\n" +
+                    //                closing.toPrecision(3) + SolarObjects.units.speed;
                     let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
-                                   gravityAmountText + SolarObjects.units.force + "\n" +
                                    closing.toPrecision(3) + SolarObjects.units.speed;
 
                     if (!sprites.gravityText) {

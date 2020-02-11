@@ -179,7 +179,8 @@ console.dir(result);
 // "name", test: testString, help: "Name for the waypoint" },
 // "target", test: testFocus, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30." }
 // "Set a waypoint on the map, if the target is ommitted it removes the waypoint."
-
+                    console.log("WAYPOINT:");
+                    console.dir(result);
 
                 } else if (result.command == 'orbit') { // orbit
 
