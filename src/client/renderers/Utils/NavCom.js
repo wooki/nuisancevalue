@@ -6,6 +6,14 @@ const testFocus = /^[\-A-Za-z0-9,]+$/;
 
 const commands = [
 	{
+        name: 'predict',
+        parameters: [
+            { name: "alias", test: testString, help: "Object to predict position." },
+            { name: "time", test: testNumber, help: "Number of seconds in the future." }
+        ],
+        description: "TODO: Calculates the future position of a body assuming forces do not change."
+    },
+    {
         name: 'orbit',
         parameters: [
             { name: "alias", test: testString, help: "Object to orbit around." },
@@ -24,9 +32,9 @@ const commands = [
         name: 'waypoint',
         parameters: [
             { name: "name", test: testString, help: "Name for the waypoint" },
-            { name: "target", test: testFocus, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30." }
+            { name: "target", test: testFocus, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30 (not implemented yet)." }
         ],
-        description: "Set a waypoint on the map, if the target is ommitted it removes the waypoint."
+        description: "TODO: Set a waypoint on the map, if the target is ommitted it removes the waypoint."
     },
     {
         name: 'focus',
@@ -59,11 +67,20 @@ const commands = [
 export default class NavCom {
 
     // parse a line of text and return formatted command or error
-    parse(line) {
+    parse(line, navComSavedData) {
 
     	let words = line.split(/(\s+)/).filter((word) => {
-    		return (word && word.trim().length > 0);
+            return (word && word.trim().length > 0);
     	});
+
+        // inject variables
+        words = words.map((word) => {
+            if (word == '.') { // special keyword to use stored data
+                return navComSavedData;
+            } else {
+                return word;
+            }
+        });
 
         // look for a command
     	let command = commands.find(function(c) {

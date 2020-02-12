@@ -12,7 +12,11 @@ export default class Ship extends PhysicalObject2D {
             hull: { type: BaseTypes.TYPES.STRING },
             engine: { type: BaseTypes.TYPES.UINT8 },
             helmPlayerId: { type: BaseTypes.TYPES.UINT8 },
-            navPlayerId: { type: BaseTypes.TYPES.UINT8 }
+            navPlayerId: { type: BaseTypes.TYPES.UINT8 },
+            waypoints: {
+                type: BaseTypes.TYPES.LIST,
+                itemType: BaseTypes.TYPES.STRING
+            }
         }, super.netScheme);
     }
 
@@ -28,6 +32,28 @@ export default class Ship extends PhysicalObject2D {
     applyEngine() {
         if (this.engine && this.engine > 0) {
             this.physicsObj.applyForceLocal([0, this.engine * 0.1]);
+        }
+    }
+
+    addWaypoint(name, x, y) {
+        let currentWaypointIndex = this.waypoints.findIndex(function(wp) {
+            return wp.startsWith(name+',')
+        });
+
+        if (currentWaypointIndex >= 0) {
+            this.waypoints[currentWaypointIndex] = name + "," + Math.round(x) + "," + Math.round(y);
+        } else {
+            this.waypoints.push(name + "," + Math.round(x) + "," + Math.round(y));
+        }
+    }
+
+    removeWaypoint(name) {
+        let currentWaypointIndex = this.waypoints.findIndex(function(wp) {
+            return wp.startsWith(name+',')
+        });
+
+        if (currentWaypointIndex >= 0) {
+            delete this.waypoints[currentWaypointIndex];
         }
     }
 
@@ -100,5 +126,6 @@ export default class Ship extends PhysicalObject2D {
         this.engine = other.engine;
         this.helmPlayerId = other.helmPlayerId;
         this.navPlayerId = other.navPlayerId;
+        this.waypoints = other.waypoints;
     }
 }

@@ -8,7 +8,8 @@ module.exports = {
 		earth: 'assets/earth.png',
 		mars: 'assets/mars.png',
 		explosion: 'assets/explosion.json',
-		dashboard: 'assets/dashboard.jpg'
+		dashboard: 'assets/dashboard.jpg',
+		waypoint: 'assets/waypoint.png'
 	},
 	Colors: {
 		Black: 0x000000,
@@ -16,6 +17,7 @@ module.exports = {
 		GridSmall: 0x2c332c,
 		White: 0xFFFFFF,
 		Red: 0xFF0000,
-		Dashboard: 0x2c332c
+		Dashboard: 0x2c332c,
+		Waypoint: 0xFFFF00
 	}
 }

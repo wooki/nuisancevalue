@@ -27,6 +27,15 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("maneuver", { direction: direction} );
     }
 
+    // add waypoint
+    addWaypoint(name, x, y) {
+        this.sendInput("waypoint", { name: name, x: x, y: y } );
+    }
+
+    removeWaypoint(name) {
+        this.sendInput("waypoint", { name: name } );
+    }
+
 
     // handleOrientation(event) {
     //     let isPortrait = window.innerHeight > window.innerWidth;

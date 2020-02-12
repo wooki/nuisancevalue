@@ -2,6 +2,7 @@ import KeyboardControls from '../NvKeyboardControls.js';
 const PIXI = require('pixi.js');
 const Assets = require('./images.js');
 import {GlowFilter} from '@pixi/filter-glow';
+import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -25,6 +26,7 @@ let settings = {
         asteroid: 10,
         planet: 11,
         ship: 50,
+        waypoints: 60,
         dashboard: 100,
         ui: 101
     }
@@ -35,7 +37,8 @@ let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 let effects = {
-    hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5)
+    hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
+    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1)
 };
 
 export default class HelmRenderer {
@@ -87,6 +90,7 @@ export default class HelmRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -195,27 +199,69 @@ export default class HelmRenderer {
         settings.gridSize = Math.floor(1000 * settings.scale);
     }
 
-    addToMap(guid, texture, width, height, x, y, zIndex, minimulScale) {
+    getUseSize(width, height, minimumScale, minimumSize) {
+
+        let useScale = settings.scale;
+        if (useScale < minimumScale) {
+            useScale = minimumScale;
+        }
+
+        let useWidth = Math.floor(width * useScale);
+        let useHeight = Math.floor(height * useScale);
+        if (useWidth < minimumSize) { useWidth = minimumSize; }
+        if (useHeight < minimumSize) { useHeight = minimumSize; }
+
+        return {
+            useWidth: useWidth,
+            useHeight: useHeight
+        };
+    }
+
+    addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
+
+        let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+        console.log("addToMap:"+alias);
+        console.dir(arguments);
+        console.dir(useSize);
 
         sprites[guid] = new PIXI.Sprite(texture);
-        sprites[guid].width = Math.floor(width * settings.scale);
-        sprites[guid].height = Math.floor(height * settings.scale);
+        sprites[guid].width = useSize.useWidth;
+        sprites[guid].height = useSize.useHeight;
         sprites[guid].anchor.set(0.5);
         sprites[guid].x = x;
         sprites[guid].y = y;
         sprites[guid].zIndex = zIndex;
-
+        if (guid.toString().startsWith('waypoint-')) {
+            sprites[guid].filters = [ effects.waypointColor, effects.hudGlow ];
+        } else {
+            sprites[guid].filters = [ effects.hudGlow ];
+        }
         mapObjects[guid] = sprites[guid];
         mapContainer.addChild(sprites[guid]);
-        mapContainer.sortChildren();
 
+        if (addLabel) {
+            sprites[guid+'-label'] = new PIXI.Text(alias, {fontFamily : 'Arial', fontSize: 12, fill : 0xFFFFFF, align : 'center'});
+            sprites[guid+'-label'].filters = [ effects.hudGlow ];
+            sprites[guid+'-label'].anchor.set(0, 0.5);
+            sprites[guid+'-label'].x = x + (3 + Math.floor(useSize.useWidth));
+            sprites[guid+'-label'].y = y - (3 + Math.floor(useSize.useHeight));
+            sprites[guid+'-label'].rotation = (-0.25 * Math.PI);
+            sprites[guid+'-label'].zIndex = settings.zIndex.ui;
+
+            mapObjects[guid+'-label'] = sprites[guid+'-label'];
+            mapContainer.addChild(sprites[guid+'-label']);
+        }
+
+        mapContainer.sortChildren();
         return sprites[guid];
     }
 
     removeFromMap(guid) {
-        mapObjects[guid].destroy();
-        mapObjects[guid] = null;
-        sprites[guid] = null;
+        if (mapObjects[guid]) {
+            mapObjects[guid].destroy();
+            mapObjects[guid] = null;
+            sprites[guid] = null;
+        }
     }
 
     loadResources(loader, resources) {
@@ -331,15 +377,28 @@ export default class HelmRenderer {
 
     drawObjects(gameObjects, playerShip, t, dt) {
 
+        // keep track of and return ids of stuff we have
+        let drawnObjects = {};
+
         gameObjects.forEach((obj) => {
 
+            drawnObjects[obj.id] = true;
+            drawnObjects[obj.id + '-label'] = true;
+
+            let alias = obj.id;
             let texture = null;
             let zIndex = settings.zIndex.asteroid;
             if (obj instanceof Asteroid) {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
+                alias = 'asteroid';
             } else if (obj instanceof Planet) {
                 texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                 zIndex = settings.zIndex.planet;
+                alias = obj.texture;
+            } else if (obj instanceof Planet) {
+                texture = settings.resources[settings.baseUrl+Assets.Images[obj.hull]].texture;
+                zIndex = settings.zIndex.ship;
+                alias = obj.hull;
             }
 
             let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
@@ -352,18 +411,26 @@ export default class HelmRenderer {
                                                  settings.scale);
 
             if (!mapObjects[obj.id]) {
-                this.addToMap(obj.id,
+                this.addToMap(alias,
+                              obj.id,
                               texture,
                               obj.size, obj.size,
                               coord.x, coord.y,
-                              zIndex, 0.2)
+                              zIndex, 0.05, 0, false)
             } else {
                 // update position
                 mapObjects[obj.id].x = coord.x;
                 mapObjects[obj.id].y = coord.y;
                 mapObjects[obj.id].rotation = obj.physicsObj.angle;
+
+                if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
+                    mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
+                    mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
+                }
             }
         });
+
+        return drawnObjects;
     }
 
     // update grid to reflect current position and
@@ -371,6 +438,9 @@ export default class HelmRenderer {
     draw(t, dt) {
 
         if (settings.loadedSprites) {
+
+            // keep track of all objects we have - so we can remove missing ones later
+            let serverObjects = {};
 
             // find the player ship first, so we can set objects positions relative to it
             let playerShip = null;
@@ -389,14 +459,63 @@ export default class HelmRenderer {
 
             if (playerShip) {
 
+                serverObjects[playerShip.id] = true;
+
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {
                     settings.playerShipId = playerShip.id;
-                    this.addToMap(playerShip.id,
+                    this.addToMap(playerShip.name,
+                                  playerShip.id,
                                   settings.resources[settings.baseUrl+Assets.Images[playerShip.hull]].texture,
                                   playerShip.size, playerShip.size,
                                   Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2),
-                                  settings.zIndex.ship, 0.2)
+                                  settings.zIndex.ship, 0.2, 0, false)
+                }
+
+                // draw waypoints
+                if (playerShip.waypoints) {
+
+                    let waypointTexture = settings.resources[settings.baseUrl+Assets.Images.waypoint].texture;
+
+                    playerShip.waypoints.forEach((wp) => {
+
+                        let waypointParams = wp.split(',');
+                        let waypoint = {
+                            name: waypointParams[0],
+                            x: parseInt(waypointParams[1]),
+                            y: parseInt(waypointParams[2])
+                        }
+                        serverObjects["waypoint-"+waypoint.name] = true;
+                        serverObjects["waypoint-"+waypoint.name+'-label'] = true;
+
+                        let coord = this.relativeScreenCoord(waypoint.x,
+                             waypoint.y,
+                             playerShip.physicsObj.position[0],
+                             playerShip.physicsObj.position[1],
+                             pixiApp.screen.width,
+                             pixiApp.screen.height,
+                             0,
+                             settings.scale);
+
+                        if (!mapObjects["waypoint-"+waypoint.name]) {
+
+                            this.addToMap(waypoint.name,
+                                          "waypoint-"+waypoint.name,
+                                          waypointTexture,
+                                          16, 16,
+                                          coord.x, coord.y,
+                                          settings.zIndex.waypoints, 1, 16, true)
+                        } else {
+                            // update position
+                            mapObjects["waypoint-"+waypoint.name].x = coord.x;
+                            mapObjects["waypoint-"+waypoint.name].y = coord.y;
+                            if (mapObjects["waypoint-"+waypoint.name + '-label'] && mapObjects["waypoint-"+waypoint.name]) {
+
+                                mapObjects["waypoint-"+waypoint.name + '-label'].x = coord.x + (3 + Math.floor(mapObjects["waypoint-"+waypoint.name].width/2));
+                                mapObjects["waypoint-"+waypoint.name + '-label'].y = coord.y - (3 + Math.floor(mapObjects["waypoint-"+waypoint.name].height/2));
+                            }
+                        }
+                    });
                 }
 
                 // update the grid
@@ -503,7 +622,16 @@ export default class HelmRenderer {
                 }
 
                 // draw stuff on the map
-                this.drawObjects(gameObjects, playerShip, t, dt);
+                let drawnObjects = this.drawObjects(gameObjects, playerShip, t, dt);
+                serverObjects = Object.assign(serverObjects, drawnObjects);
+
+                // remove any objects that we no-longer have
+                Object.keys(mapObjects).forEach((key) => {
+                    if (!serverObjects[key]) {
+                        this.removeFromMap(key);
+                    }
+                });
+
 
             } else if (settings.playerShipId) {
                 if (mapObjects[settings.playerShipId]) {

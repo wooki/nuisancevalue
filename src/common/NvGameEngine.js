@@ -234,6 +234,20 @@ export default class NvGameEngine extends GameEngine {
                 }
             }
 
+            // handle add waypoint - nav only
+            if (inputData.input.startsWith('waypoint')) {
+
+                let ship = this.getPlayerShip(playerId);
+                let name = inputData.options.name;
+                let x = inputData.options.x;
+                let y = inputData.options.y;
+                if (x === undefined || y === undefined) {
+                    ship.removeWaypoint(name);
+                } else {
+                    ship.addWaypoint(name, x, y);
+                }
+            }
+
         }
 
     }
@@ -253,6 +267,7 @@ export default class NvGameEngine extends GameEngine {
         s.size = params['size'];
         s.helmPlayerId = 0;
         s.navPlayerId = 0;
+        s.waypoints = [];
         return this.addObjectToWorld(s);
     }
 
