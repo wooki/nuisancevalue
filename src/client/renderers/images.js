@@ -1,8 +1,8 @@
 module.exports = {
 	Images: {
 		starfury: 'assets/starfury.png',
-		ship: 'assets/ship.png',
-		Bushido: 'assets/ship.png',
+		// ship: 'assets/ship.png',
+		// bushido: 'assets/ship.png',
 		asteroid: 'assets/asteroid.png',
 		sol: 'assets/sol.png',
 		earth: 'assets/earth.png',

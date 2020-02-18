@@ -16,7 +16,8 @@ export default class HelmUi extends PIXI.Graphics {
         	course: null,
             gravity: null,
             alpha: 1,
-            zIndex: 1
+            zIndex: 1,
+            waypoints: []
         }, params);
 
         this.draw();
@@ -56,13 +57,24 @@ export default class HelmUi extends PIXI.Graphics {
                      this.gravity - 0.02, this.gravity + 0.02);
         }
 
+        if (this.waypoints) {
+            this.waypoints.forEach((waypoint) => {
+                this.moveTo();
+                this.lineStyle(5, 0xFFFF00, 1);
+                this.arc(0, 0,
+                         (this.params.uiHeight / 2) - 5,
+                         waypoint.bearing - 0.02, waypoint.bearing + 0.02);
+            });
+        }
+
     }
 
-    update(bearing, course, gravity) {
+    update(bearing, course, gravity, waypoints) {
 
-        this.bearing = (bearing + (0.5 * Math.PI)) % (2 * Math.PI);
+        this.bearing = bearing % (2 * Math.PI);
 		this.course = course  % (2 * Math.PI);
         this.gravity = gravity  % (2 * Math.PI);
+        this.waypoints = waypoints;
 
         this.draw();
     }

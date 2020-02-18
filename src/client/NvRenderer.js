@@ -5,6 +5,7 @@ import Ship from './../common/Ship';
 import LobbyRenderer from './renderers/Lobby';
 import HelmRenderer from './renderers/Helm';
 import NavRenderer from './renderers/Nav';
+import SignalsRenderer from './renderers/Signals';
 
 let ctx = null;
 let game = null;
@@ -18,9 +19,6 @@ export default class NvRenderer extends Renderer {
         super(gameEngine, clientEngine);
         game = gameEngine;
         client = clientEngine;
-
-        console.log("NvRenderer:");
-        console.dir(this);
 
         // Init canvas
         // canvas = document.createElement('canvas');
@@ -44,6 +42,8 @@ export default class NvRenderer extends Renderer {
             renderer = new HelmRenderer(game, client);
         } else if (station == 'nav') {
             renderer = new NavRenderer(game, client);
+        } else if (station == 'signals') {
+            renderer = new SignalsRenderer(game, client);
         } else {
             // default to lobby
             renderer = new LobbyRenderer(game, client);
@@ -62,6 +62,8 @@ export default class NvRenderer extends Renderer {
                     station = 'helm';
                 } else if (obj.navPlayerId == game.playerId) {
                     station = 'nav';
+                } else if (obj.signalsPlayerId == game.playerId) {
+                    station = 'signals';
                 }
             }
         });
@@ -71,6 +73,8 @@ export default class NvRenderer extends Renderer {
             renderer = new HelmRenderer(game, client);
         } else if (station == 'nav') {
             renderer = new NavRenderer(game, client);
+        } else if (station == 'signals') {
+            renderer = new SignalsRenderer(game, client);
         } else {
             // default to lobby
             renderer = new LobbyRenderer(game, client);

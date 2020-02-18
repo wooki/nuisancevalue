@@ -1,4 +1,5 @@
 import { PhysicalObject2D, BaseTypes } from 'lance-gg';
+import Hulls from './Hulls';
 
 let game = null;
 let p2 = null;
@@ -11,8 +12,13 @@ export default class Ship extends PhysicalObject2D {
             size: { type: BaseTypes.TYPES.INT16 },
             hull: { type: BaseTypes.TYPES.STRING },
             engine: { type: BaseTypes.TYPES.UINT8 },
+            playable: { type: BaseTypes.TYPES.UINT8 },
             helmPlayerId: { type: BaseTypes.TYPES.UINT8 },
             navPlayerId: { type: BaseTypes.TYPES.UINT8 },
+            signalsPlayerId: { type: BaseTypes.TYPES.UINT8 },
+            commsScript: { type: BaseTypes.TYPES.UINT8 },
+            commsState: { type: BaseTypes.TYPES.UINT8 },
+            commsTargetId: { type: BaseTypes.TYPES.INT16 },
             waypoints: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
@@ -53,7 +59,8 @@ export default class Ship extends PhysicalObject2D {
         });
 
         if (currentWaypointIndex >= 0) {
-            delete this.waypoints[currentWaypointIndex];
+            this.waypoints.splice(currentWaypointIndex, 1);
+            // note - delete this.waypoints[currentWaypointIndex] didn't work!!!
         }
     }
 
@@ -83,6 +90,9 @@ export default class Ship extends PhysicalObject2D {
     onAddToWorld(gameEngine) {
         game = gameEngine;
         p2 = gameEngine.physicsEngine.p2;
+
+        // get the hull so shape can match image dimensions
+        let hullData = Hulls[this.hull];
 
         // Add ship physics
         let shape = this.shape = new p2.Circle({
@@ -124,8 +134,13 @@ export default class Ship extends PhysicalObject2D {
         this.size = other.size;
         this.hull = other.hull;
         this.engine = other.engine;
+        this.playable = other.playable;
         this.helmPlayerId = other.helmPlayerId;
         this.navPlayerId = other.navPlayerId;
+        this.signalsPlayerId = other.signalsPlayerId;
         this.waypoints = other.waypoints;
+        this.commsScript = other.commsScript;
+        this.commsState = other.commsState;
+        this.commsTargetId = other.commsTargetId;
     }
 }

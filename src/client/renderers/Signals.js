@@ -19,10 +19,12 @@ let game = null;
 let client = null;
 let settings = {
     baseUrl: '/',
-    mapSize: 4000,
+    mapSize: 12000, // this is set in setSizes
     loadedSprites: false,
-    gridSize: 1024,
+    gridSize: 10000, // this is set in setSizes
     waypointTexture: null,
+    minimumScale: 0.001,
+    minimumSpriteSize: 8,
     zIndex: {
         grid: 1,
         asteroid: 10,
@@ -40,19 +42,21 @@ let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 let effects = {
     hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
-    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1)
+    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
+    selectionColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1)
 };
+let selectedObjId = null;
 
-export default class HelmRenderer {
+export default class SignalsRenderer {
 
     // create a PIXI app and add to the #game element, start load of resources
     constructor(gameEngine, clientEngine) {
-    	game = gameEngine;
+        game = gameEngine;
         client = clientEngine;
 
-    	let root = document.getElementById('game');
-    	root.innerHTML = '';
-    	el = document.createElement('div');
+        let root = document.getElementById('game');
+        root.innerHTML = '';
+        el = document.createElement('div');
         root.append(el);
 
         // work out some sizes for UI - populates settings var
@@ -72,6 +76,9 @@ export default class HelmRenderer {
         mapContainer = new PIXI.Container();
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;
+        mapContainer.interactive = true;
+        mapContainer.on('mousedown', this.canvasClick.bind(this));
+        mapContainer.on('touchstart', this.canvasClick.bind(this));
         // mapContainer.filters = [new CRTFilter({ // doesn't really work with black background
         //     lineWidth: 10,
         //     lineContrast: 0.75
@@ -102,64 +109,27 @@ export default class HelmRenderer {
 
         // add ui might as well use html for the stuff it's good at
         this.drawUi(root);
-
-        this.controls = new KeyboardControls(client);
-        this.controls.bindKey('0', 'engine', { }, { level: 0 });
-        this.controls.bindKey('1', 'engine', { }, { level: 1 });
-        this.controls.bindKey('2', 'engine', { }, { level: 2 });
-        this.controls.bindKey('3', 'engine', { }, { level: 3 });
-        this.controls.bindKey('4', 'engine', { }, { level: 4 });
-        this.controls.bindKey('5', 'engine', { }, { level: 5 });
-        this.controls.bindKey('left', 'maneuver', { }, { direction: 'l' });
-        this.controls.bindKey('right', 'maneuver', { }, { direction: 'r' });
-        this.controls.bindKey('up', 'maneuver', { }, { direction: 'f' });
-        this.controls.bindKey('down', 'maneuver', { }, { direction: 'b' });
     }
 
-    setEngine(level) {
-        settings.engineLevel = level;
-        client.setEngine(level);
-    }
+    canvasClick(event) {
 
-    setManeuver(direction) {
-        client.setManeuver(direction);
+        event.stopPropagation();
+
+        // unselect selection
+        selectedObjId = null;
+        this.removeCommsUi();
     }
 
     // draw some controls
     drawUi(container) {
-        let uiContainer = document.createElement("div");
-        uiContainer.classList.add('ui-container');
-        uiContainer.classList.add('helm');
-        container.appendChild(uiContainer);
+        uiEls.uiContainer = document.createElement("div");
+        uiEls.uiContainer.classList.add('ui-container');
+        uiEls.uiContainer.classList.add('signals');
+        container.appendChild(uiEls.uiContainer);
 
-        uiEls.engineEl5 = this.createButton(document, uiContainer, "engineOnBtn5", "Engine Burn 5", () => { this.setEngine(5); });
-        uiEls.engineEl4 = this.createButton(document, uiContainer, "engineOnBtn4", "Engine Burn 4", () => { this.setEngine(4); });
-        uiEls.engineEl3 = this.createButton(document, uiContainer, "engineOnBtn3", "Engine Burn 3", () => { this.setEngine(3); });
-        uiEls.engineEl2 = this.createButton(document, uiContainer, "engineOnBtn2", "Engine Burn 2", () => { this.setEngine(2); });
-        uiEls.engineEl1 = this.createButton(document, uiContainer, "engineOnBtn1", "Engine Burn 1", () => { this.setEngine(1); });
-        uiEls.engineEl0 = this.createButton(document, uiContainer, "engineOffBtn", "Cease Burn", () => { this.setEngine(0); });
+        // torps
 
-        let uiManeuverContainer = document.createElement("div");
-        uiManeuverContainer.classList.add('maneuver');
-        uiContainer.appendChild(uiManeuverContainer);
-
-        uiEls.manPortEl = this.createButton(document, uiManeuverContainer, "manPortBtn", "<", () => {
-            this.setManeuver('l');
-        });
-
-        uiEls.manStarboardEl = this.createButton(document, uiManeuverContainer, "manStarboardBtn", ">", () => {
-            this.setManeuver('r');
-        });
-
-        uiEls.manForwardEl = this.createButton(document, uiManeuverContainer, "manForwardBtn", "^", () => {
-            this.setManeuver('f');
-        });
-
-        uiEls.manBackEl = this.createButton(document, uiManeuverContainer, "manBackBtn", "v", () => {
-            this.setManeuver('b');
-        });
-
-        // uiEls.gravOrbitV = this.createLabel(document, uiContainer, "gravOrbitV", "grav");
+        // counter-measures / decoys
 
     }
 
@@ -199,9 +169,77 @@ export default class HelmRenderer {
         // decide how much "game space" is represented by the narrowUI dimension
         settings.scale = (settings.narrowUi / settings.mapSize);
 
-        // grid is always 1000 but scaled
-        settings.gridSize = Math.floor(1000 * settings.scale);
+        // grid is always 10000 but scaled
+        settings.gridSize = Math.floor(10000 * settings.scale);
     }
+
+    // clicked an object, do some stuff...
+    objectClick(guid, eventData) {
+
+        eventData.stopPropagation();
+
+        let selectedGuid = parseInt(guid);
+        let obj = game.world.queryObject({ id: selectedGuid });
+        if (obj.signalsPlayerId != game.playerId) {
+
+            if (selectedObjId != selectedGuid) {
+                this.removeCommsUi();
+                selectedObjId = selectedGuid; // keep reference
+                this.createCommsUi(obj);
+            }
+        }
+    }
+
+    removeCommsUi() {
+        if (uiEls.uiCommsControls) {
+            uiEls.uiCommsControls.forEach(function(el) {
+                el.removeEventListener('click', this.openComms.bind(this));
+                el.remove();
+            }.bind(this));
+            uiEls.uiCommsControls = null;
+        }
+        if (uiEls.uiComms) {
+            uiEls.uiComms.remove();
+            uiEls.uiComms = null;;
+        }
+    }
+
+    createCommsUi(obj) {
+
+        // comms ui
+        uiEls.uiComms = document.createElement("div");
+        uiEls.uiComms.classList.add('ui-comms');
+        uiEls.uiContainer.appendChild(uiEls.uiComms);
+        uiEls.uiCommsControls = [];
+
+        if (selectedObjId) {
+
+            let obj = game.world.queryObject({ id: selectedObjId });
+            if (obj && obj.commsScript !== undefined) {
+
+                // depends on conversation state
+                let openCommsBtn = this.createButton(document, uiEls.uiComms, "openComms", "Open Comms", this.openComms.bind(this));
+                uiEls.uiCommsControls.push(openCommsBtn);
+            }
+        }
+
+    }
+
+    openComms() {
+        // open comms to currently selected target
+        console.log("TODO: openComms");
+
+        if (selectedObjId) {
+
+            let obj = game.world.queryObject({ id: selectedObjId });
+            if (obj) {
+                console.dir(obj);
+            }
+            // client.setEngine(level);
+        }
+    }
+
+
 
     getUseSize(width, height, minimumScale, minimumSize) {
 
@@ -238,6 +276,9 @@ export default class HelmRenderer {
             sprites[guid].filters = [ effects.hudGlow ];
         }
         // sprites[guid].tint = tint; // tint is rubbish - ships need color switch filters for palette
+        sprites[guid].interactive = true;
+        sprites[guid].on('mousedown', (e) => { this.objectClick(guid, e) });
+        sprites[guid].on('touchstart', (e) => { this.objectClick(guid, e) });
 
         mapObjects[guid] = sprites[guid];
         mapContainer.addChild(sprites[guid]);
@@ -267,15 +308,37 @@ export default class HelmRenderer {
         }
     }
 
-    loadResources(loader, resources) {
+    createGrid() {
 
-        settings.loadedSprites = true;
-        settings.resources = resources;
+        // remove old one
+        if (sprites.gridSprite) {
+            mapContainer.removeChild(sprites.gridSprite);
+            sprites.gridSprite.destroy(true);
+            sprites.gridSprite = null;
+        }
 
         // create a texture for the grid background
         let gridGraphics = new PIXI.Graphics();
+        // once the grid is large draw extra lines
+        if (settings.gridSize >= 500) {
+
+            let smallGridSize = Math.round(settings.gridSize/5);
+
+            gridGraphics.lineStyle(1, Assets.Colors.GridSmall);
+            gridGraphics.moveTo(smallGridSize, 1); gridGraphics.lineTo(smallGridSize, settings.gridSize - 1);
+            gridGraphics.moveTo(smallGridSize*2, 1); gridGraphics.lineTo(smallGridSize*2, settings.gridSize - 1);
+            gridGraphics.moveTo(smallGridSize*3, 1); gridGraphics.lineTo(smallGridSize*3, settings.gridSize - 1);
+            gridGraphics.moveTo(settings.gridSize - smallGridSize, 1); gridGraphics.lineTo(settings.gridSize - smallGridSize, settings.gridSize - 1);
+
+            gridGraphics.moveTo(1, smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize);
+            gridGraphics.moveTo(1, smallGridSize*2); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*2);
+            gridGraphics.moveTo(1, smallGridSize*3); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*3);
+            gridGraphics.moveTo(1, settings.gridSize - smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, settings.gridSize - smallGridSize);
+        }
+
         gridGraphics.lineStyle(1, Assets.Colors.Grid);
         gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
+
         let gridTexture = pixiApp.renderer.generateTexture(gridGraphics);
         gridGraphics.destroy();
         sprites.gridSprite = new PIXI.TilingSprite(gridTexture, settings.gridSize, settings.gridSize);
@@ -286,6 +349,14 @@ export default class HelmRenderer {
         sprites.gridSprite.height = settings.UiHeight;
         sprites.gridSprite.zIndex = settings.zIndex.grid;
         mapContainer.addChild(sprites.gridSprite);
+    }
+
+    loadResources(loader, resources) {
+
+        settings.loadedSprites = true;
+        settings.resources = resources;
+
+        this.createGrid();
 
         // UI create a texture to overlay on top of the background
         let dashboardGraphics = new PIXI.Graphics();
@@ -364,6 +435,14 @@ export default class HelmRenderer {
         // keep track of and return ids of stuff we have
         let drawnObjects = {};
 
+        // if we have no selection - remove the selection sprite
+        if (selectedObjId == null) {
+            if (sprites.selection) {
+                sprites.selection.destroy();
+                sprites.selection = null;
+            }
+        }
+
         gameObjects.forEach((obj) => {
 
             drawnObjects[obj.id] = true;
@@ -409,12 +488,36 @@ export default class HelmRenderer {
                 mapObjects[obj.id].x = coord.x;
                 mapObjects[obj.id].y = coord.y;
                 mapObjects[obj.id].rotation = obj.physicsObj.angle;
-
                 if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
                     mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
                     mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
                 }
             }
+
+            // if selected then highlight somehow
+            if (selectedObjId == obj.id) {
+                // let useSize = this.getUseSize(obj.size + 4, obj.size + 4, 0.05, 16);
+
+                if (sprites.selection) {
+                    sprites.selection.x = coord.x;
+                    sprites.selection.y = coord.y;
+                    // sprites.selection.width = useSize.useWidth;
+                    // sprites.selection.height = useSize.useHeight;
+                } else {
+                    sprites.selection = new PIXI.Sprite(settings.waypointTexture);
+                    sprites.selection.width = 16;
+                    sprites.selection.height = 16;
+                    // sprites.selection.width = useSize.useWidth;
+                    // sprites.selection.height = useSize.useHeight;
+                    sprites.selection.anchor.set(0.5);
+                    sprites.selection.x = coord.x;
+                    sprites.selection.y = coord.y;
+                    sprites.selection.zIndex = settings.zIndex.waypoints;
+                    sprites.selection.filters = [ effects.selectionColor, effects.hudGlow ];
+                    mapContainer.addChild(sprites.selection);
+                }
+            }
+
         });
 
         return drawnObjects;
@@ -465,7 +568,7 @@ export default class HelmRenderer {
             let gameObjects = [];
             game.world.forEachObject((objId, obj) => {
                 if (obj instanceof Ship) {
-                    if (obj.helmPlayerId == game.playerId) {
+                    if (obj.signalsPlayerId == game.playerId) {
                         playerShip = obj;
                     } else {
                         gameObjects.push(obj);
@@ -536,16 +639,16 @@ export default class HelmRenderer {
                 // update engine
                 settings.engineLevel = playerShip.engine;
 
-                // set the engine buttons
-                if (playerShip.engine !== undefined) {
-                    uiEls.engineEl0.classList.remove('active');
-                    uiEls.engineEl1.classList.remove('active');
-                    uiEls.engineEl2.classList.remove('active');
-                    uiEls.engineEl3.classList.remove('active');
-                    uiEls.engineEl4.classList.remove('active');
-                    uiEls.engineEl5.classList.remove('active');
-                    uiEls['engineEl'+playerShip.engine].classList.add('active');
-                }
+                // // set the engine buttons
+                // if (playerShip.engine !== undefined) {
+                //     uiEls.engineEl0.classList.remove('active');
+                //     uiEls.engineEl1.classList.remove('active');
+                //     uiEls.engineEl2.classList.remove('active');
+                //     uiEls.engineEl3.classList.remove('active');
+                //     uiEls.engineEl4.classList.remove('active');
+                //     uiEls.engineEl5.classList.remove('active');
+                //     uiEls['engineEl'+playerShip.engine].classList.add('active');
+                // }
 
                 // update the UI
                 let speedV = Victor.fromArray(playerShip.physicsObj.velocity);

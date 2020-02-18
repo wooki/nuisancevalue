@@ -28,7 +28,7 @@ export default class LobbyRenderer {
 
     	let shipsList = '';
     	let ships = game.world.forEachObject((objId, obj) => {
-    		if (obj instanceof Ship) {
+    		if (obj instanceof Ship && obj.playable === 1) {
 	    		if (!shipEls[objId]) {
 	    			shipEls[objId] = document.createElement('div');
 	    			let shipName = document.createElement('div');
@@ -63,6 +63,17 @@ export default class LobbyRenderer {
 	    		} else if (obj.navPlayerId != 0 && shipEls[objId+'-nav']) {
 	    			shipEls[objId+'-nav'].remove();
 	    			shipEls[objId+'-nav'] = null;
+	    		}
+
+	    		if (obj.navPlayerId == 0 && !shipEls[objId+'-signals']) {
+		    		shipEls[objId+'-signals'] = document.createElement('div');
+	    			shipEls[objId+'-signals'].addEventListener('click', (event) => { this.joinShip(objId, 'signals') } );
+	    			shipEls[objId+'-signals'].innerHTML = "Join as signals";
+	    			shipEls[objId+'-signals'].classList.add('join');
+	    			shipEls[objId].append(shipEls[objId+'-signals']);
+	    		} else if (obj.navPlayerId != 0 && shipEls[objId+'-signals']) {
+	    			shipEls[objId+'-signals'].remove();
+	    			shipEls[objId+'-signals'] = null;
 	    		}
 
 	    	}

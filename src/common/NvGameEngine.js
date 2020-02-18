@@ -37,6 +37,9 @@ export default class NvGameEngine extends GameEngine {
             if (ship.navPlayerId == playerId) {
                 ship.navPlayerId = 0;
             }
+            if (ship.signalsPlayerId == playerId) {
+                ship.signalsPlayerId = 0;
+            }
         }
     }
 
@@ -183,7 +186,9 @@ export default class NvGameEngine extends GameEngine {
                     ship = obj;
                 } else if (obj.navPlayerId == playerId && role == 'nav') {
                     ship = obj;
-                } else if ((obj.helmPlayerId == playerId || obj.navPlayerId == playerId) && role === undefined) {
+                } else if (obj.signalsPlayerId == playerId && role == 'signals') {
+                    ship = obj;
+                } else if ((obj.helmPlayerId == playerId || obj.navPlayerId == playerId || obj.signalsPlayerId == playerId) && role === undefined) {
                     ship = obj;
                 }
             }
@@ -208,6 +213,9 @@ export default class NvGameEngine extends GameEngine {
                     ship.playerId = playerId; // set the ownership to last player to join
                 } else if (inputData.options.station == "nav" && ship.navPlayerId == 0) {
                     ship.navPlayerId = playerId;
+                    ship.playerId = playerId; // set the ownership to last player to join
+                } else if (inputData.options.station == "signals" && ship.signalsPlayerId == 0) {
+                    ship.signalsPlayerId = playerId;
                     ship.playerId = playerId; // set the ownership to last player to join
                 }
             }
@@ -267,7 +275,13 @@ export default class NvGameEngine extends GameEngine {
         s.size = params['size'];
         s.helmPlayerId = 0;
         s.navPlayerId = 0;
+        s.signalsPlayerId = 0;
         s.waypoints = [];
+        s.playable = params['playable'] || 0;
+        s.commsScript = params['commsScript'] || 0;
+        s.commsState = params['commsState'] || 0;
+        s.commsTargetId = params['commsTargetId'] || -1;
+
         return this.addObjectToWorld(s);
     }
 

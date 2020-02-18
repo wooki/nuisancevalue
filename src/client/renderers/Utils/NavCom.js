@@ -1,8 +1,16 @@
+import Zoom from './NavActions/Zoom';
+import Clear from './NavActions/Clear';
+import Help from './NavActions/Help';
+import Focus from './NavActions/Focus';
+import Waypoint from './NavActions/Waypoint';
+import Orbit from './NavActions/Orbit';
+import Predict from './NavActions/Predict';
+import Info from './NavActions/Info';
 
 const testString = /^[A-Za-z0-9]+$/;
 const testNumber = /^-?[0-9]+$/;
 const testZoom = /^[0-9]+$/;
-const testFocus = /^[\-A-Za-z0-9,]+$/;
+const testCoord = /^[\-A-Za-z0-9,]+$/;
 
 const commands = [
 	{
@@ -11,7 +19,8 @@ const commands = [
             { name: "alias", test: testString, help: "Object to predict position." },
             { name: "time", test: testNumber, help: "Number of seconds in the future." }
         ],
-        description: "TODO: Calculates the future position of a body assuming forces do not change."
+        description: "Calculates the future position of a body assuming forces do not change.",
+        action: Predict
     },
     {
         name: 'orbit',
@@ -19,48 +28,55 @@ const commands = [
             { name: "alias", test: testString, help: "Object to orbit around." },
             { name: "distance", test: testNumber, help: "Distance from surface to orbit." }
         ],
-        description: "Calculate the speed required for a stable orbit."
+        description: "Calculate the speed required for a stable orbit.",
+        action: Orbit
     },
     {
         name: 'info',
         parameters: [
             { name: "alias", test: testString, help: "Object to find out about (can use self)." }
         ],
-        description: "Displays important information about a specific object."
+        description: "Displays important information about a specific object.",
+        action: Info
     },
     {
         name: 'waypoint',
         parameters: [
             { name: "name", test: testString, help: "Name for the waypoint" },
-            { name: "target", test: testFocus, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30 (not implemented yet)." }
+            { name: "target", test: testCoord, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30 (not implemented yet)." }
         ],
-        description: "TODO: Set a waypoint on the map, if the target is ommitted it removes the waypoint."
+        description: "Set a waypoint on the map, if the target is ommitted it removes the waypoint.",
+        action: Waypoint
     },
     {
         name: 'focus',
         parameters: [
-            { name: "centre", test: testFocus, help: "Either an object (can use self), or a coordinate in the form x,y e.g. 0,0. You can use 'k' to indicate x1000 e.g. 100k,15k." }
+            { name: "centre", test: testCoord, help: "Either an object (can use self), or a coordinate in the form x,y e.g. 0,0. You can use 'k' to indicate x1000 e.g. 100k,15k." }
         ],
-        description: "Set the centre of the map."
+        description: "Set the centre of the map.",
+        action: Focus
     },
     {
         name: 'zoom',
         parameters: [
             { name: "level", test: testZoom, help: "One of the built-in zoom levels from 0-9 with 9 being most zoomed in." }
         ],
-        description: "Set the zoom factor of the map."
+        description: "Set the zoom factor of the map.",
+        action: Zoom
     },
     {
         name: 'clear',
         parameters: [],
-        description: "Clear the console log."
+        description: "Clear the console log.",
+        action: Clear
     },
     {
 		name: 'help',
 		parameters: [
 			{ name: "command", test: testString, optional: true, help: "Help about this comand." }
 		],
-		description: "Get a list of commands, or help on a specific command."
+		description: "Get a list of commands, or help on a specific command.",
+        action: Help
 	}
 ];
 
@@ -82,6 +98,9 @@ export default class NavCom {
             }
         });
 
+        console.log("words:");
+        console.dir(words);
+
         // look for a command
     	let command = commands.find(function(c) {
             return (c.name == words[0]);
@@ -100,7 +119,31 @@ export default class NavCom {
                 if (words[index]) {
                     // check syntax
                     if (command.parameters[index].test.test(words[index])) {
-                        values[command.parameters[index].name] = words[index];
+
+                        // specialcase for coord type
+                        if (command.parameters[index].test === testCoord) {
+
+                            if (words[index].includes(',')) {
+                                let coords = words[index].split(',');
+                                coords = coords.map(function(c) {
+                                    if (c.endsWith('k')) {
+                                        return parseInt(c) * 1000;
+                                    } else {
+                                        return parseInt(c);
+                                    }
+                                });
+                                values[command.parameters[index].name + '-coords'] = coords;
+                                values[command.parameters[index].name] = coords[0] + ',' + coords[1];
+                            } else {
+                                values[command.parameters[index].name] = words[index];
+                            }
+
+
+                        } else {
+                            values[command.parameters[index].name] = words[index];
+                        }
+
+
                     } else {
                         return {
                             command: command,
@@ -121,10 +164,12 @@ export default class NavCom {
                 }
             }
 
-    		return {
+    		let data = {
     			command: command.name,
                 parameters: values
     		};
+
+            return new command.action(data, this);
 
     	} else {
 
@@ -181,6 +226,9 @@ export default class NavCom {
                 h = h + delim + c.name;
                 delim = ', ';
             });
+            h = h + "------\n";
+            h = h + "Replace any parameter with a '.' to use the last returned data.\n";
+
         }
 
         return h;

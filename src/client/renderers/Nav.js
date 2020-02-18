@@ -7,6 +7,7 @@ import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
+import Hulls from './../../common/Hulls';
 import NavCom from './Utils/NavCom';
 import SolarObjects from './../../common/SolarObjects';
 import Victor from 'victor';
@@ -26,6 +27,7 @@ let settings = {
     gridSize: 50000, // this is set in setSizes
     minimumScale: 0.001,
     minimumSpriteSize: 8,
+    waypointSize: 16,
     zIndex: {
         grid: 1,
         asteroid: 10,
@@ -49,7 +51,6 @@ let aliases = {}; // keep track of everything added to map using easier address
 let commandBuffer = [];
 let commandBufferIndex = 0;
 let scaleChange = false;
-let navComSavedData = null;
 
 export default class NavRenderer {
 
@@ -57,6 +58,7 @@ export default class NavRenderer {
     constructor(gameEngine, clientEngine) {
         game = gameEngine;
         client = clientEngine;
+        this.navComSavedData = null;
 
         let root = document.getElementById('game');
         root.innerHTML = '';
@@ -79,6 +81,10 @@ export default class NavRenderer {
         pixiContainer.zIndex = 2;
         pixiApp.stage.addChild(pixiContainer);
         mapContainer = new PIXI.Container();
+        mapContainer.interactive = true;
+        mapContainer.on('mousedown', this.canvasClick);
+        mapContainer.on('touchstart', this.canvasClick);
+
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;
         pixiApp.stage.addChild(mapContainer);
@@ -88,14 +94,17 @@ export default class NavRenderer {
         const loader = PIXI.Loader.shared;
 
         // load sprites
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.starfury);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.ship);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.asteroid);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
+
+        // load sprites for all hulls
+        for (let [hullKey, hullData] of Object.entries(Hulls)) {
+            pixiApp.loader.add(settings.baseUrl+hullData.image);
+        }
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -104,6 +113,32 @@ export default class NavRenderer {
         this.drawUi(root);
     }
 
+    canvasClick(event) {
+
+        event.stopPropagation();
+
+        let pos = event.data.getLocalPosition(mapContainer);
+        var input = document.getElementById("consoleInput");
+
+        // reverse the pos coords into game space from screen space
+        // scale, focus, centre-screen
+        let v = new Victor(pos.x, pos.y);
+        let scale = new Victor(settings.scale, settings.scale);
+        let focus = Victor.fromArray(settings.focus);
+        let screen = new Victor(pixiApp.screen.width / 2, pixiApp.screen.height / 2);
+
+        v = v.subtract(screen);
+        v = v.divide(scale);
+        v = focus.add(v);
+
+        let currentVal = input.value;
+        if (!currentVal.endsWith(' ')) {
+            currentVal = currentVal + ' ';
+        }
+        currentVal = currentVal + Math.round(v.x) + "," + Math.round(v.y);
+        this.navComSavedData = Math.round(v.x) + "," + Math.round(v.y);
+        input.value = currentVal;
+    }
 
     addWaypoint(name, x, y) {
         client.addWaypoint(name, x, y);
@@ -146,164 +181,14 @@ export default class NavRenderer {
             }
             input.value = '';
 
-            let result = navCom.parse(val, navComSavedData);
+            let result = navCom.parse(val, this.navComSavedData);
             log.innerHTML = log.innerHTML + "\nNAV:COM$ " + val + (result.error ? "\n" + result.error : '');
-console.log(">>> command");
-console.dir(result);
 
             if (!result.error) {
-                if (result.command == 'clear') { // clear
-                    log.innerHTML = '';
 
-                } else if (result.command == 'help') { // help
-                    let cmd = null;
-                    if (result.parameters && result.parameters.command) {
-                        cmd = result.parameters.command;
-                    }
-                    let help = navCom.help(cmd);
-                    log.innerHTML = log.innerHTML + help;
-
-                } else if (result.command == 'focus') { // focus
-
-                    let focusX = 0;
-                    let focusY = 0;
-                    if (result.parameters.centre.includes(',')) {
-                        let coords = result.parameters.centre.split(',');
-                        focusX = parseInt(coords[0].replace('k', '000')) || 0;
-                        focusY = parseInt(coords[1].replace('k', '000')) || 0;
-                    } else {
-                        if (aliases[result.parameters.centre]) {
-                            let obj = game.world.queryObject({id: parseInt(aliases[result.parameters.centre])})
-                            if (obj) {
-                                focusX = obj.physicsObj.position[0];
-                                focusY = obj.physicsObj.position[1];
-                            }
-                        }
-                    }
-                    settings.focus = [focusX, focusY];
-                    this.updateGrid(settings.focus[0], settings.focus[1]);
-
-                } else if (result.command == 'zoom') { // zoom
-
-                    settings.zoom = parseInt(result.parameters.level);
-                    this.setSizes();
-                    this.createGrid()
-                    this.updateGrid(settings.focus[0], settings.focus[1]);
-
-                } else if (result.command == 'waypoint') { // waypoint
-// "name", test: testString, help: "Name for the waypoint" },
-// "target", test: testFocus, optional: true, help: "One of: an object; a coordinate in the form x,y (can use k for thousands); a direction and distance in the form distance@degrees e.g. 100k@30." }
-// "Set a waypoint on the map, if the target is ommitted it removes the waypoint."
-                    console.log("WAYPOINT:");
-                    console.dir(result);
-
-                    let waypointX = 0;
-                    let waypointY = 0;
-
-                    if (result.parameters.target) {
-                        if (result.parameters.target.includes(',')) {
-                            let coords = result.parameters.target.split(',');
-                            waypointX = parseInt(coords[0].replace('k', '000')) || 0;
-                            waypointY = parseInt(coords[1].replace('k', '000')) || 0;
-                        } else {
-                            if (aliases[result.parameters.target]) {
-                                let obj = game.world.queryObject({id: parseInt(aliases[result.parameters.target])})
-                                if (obj) {
-                                    waypointX = obj.physicsObj.position[0];
-                                    waypointY = obj.physicsObj.position[1];
-                                }
-                            }
-                        }
-
-                        this.addWaypoint(result.parameters.name, waypointX, waypointY);
-                    } else {
-                        this.removeWaypoint(result.parameters.name);
-                    }
-
-
-                } else if (result.command == 'predict') { // predict
-
-                    console.log("PREDICT:");
-                    console.dir(result);
-
-                } else if (result.command == 'orbit') { // orbit
-
-                    let obj = null;
-                    if (!(aliases[result.parameters.alias] === null)) {
-                        obj = game.world.queryObject({id: parseInt(aliases[result.parameters.alias])})
-                    }
-                    if (obj && obj instanceof Planet) {
-
-                        let us = game.world.queryObject({id: parseInt(aliases['self'])})
-                        let radius = obj.size + parseInt(result.parameters.distance);
-                        // log.innerHTML = log.innerHTML + "\nOrbit Radius: "+radius;
-                        if (us.gravityData && us.gravityData.direction) {
-                            let gravity = Victor.fromArray([us.gravityData.direction.x, us.gravityData.direction.y]);
-                            let orbitV = Math.sqrt((SolarObjects.constants.G * us.gravityData.mass) / gravity.length() + 1);
-                            log.innerHTML = log.innerHTML + "\nOrbit radius "+Math.round(radius)+" at "+Math.round(orbitV) + SolarObjects.units.speed;
-                        }
-
-                    } else {
-                        log.innerHTML = log.innerHTML + "\nInvalid target";
-                    }
-
-                } else if (result.command == 'info') { // info
-
-                    let obj = null;
-                    if (!(aliases[result.parameters.alias] === null)) {
-                        obj = game.world.queryObject({id: parseInt(aliases[result.parameters.alias])})
-                    }
-                    if (obj) {
-
-                        navComSavedData = result.parameters.alias;
-
-                        if (obj instanceof Ship) {
-                            log.innerHTML = log.innerHTML + "\nDesignation: Ship";
-                        } else if (obj instanceof Planet) {
-                            log.innerHTML = log.innerHTML + "\nDesignation: Planet";
-                        } else if (obj instanceof Asteroid) {
-                            log.innerHTML = log.innerHTML + "\nDesignation: Asteroid";
-                        }
-
-                        // vector of object
-                        let v = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
-
-                        log.innerHTML = log.innerHTML + "\nMass: " + obj.physicsObj.mass.toPrecision(3) + SolarObjects.units.mass;
-                        log.innerHTML = log.innerHTML + "\nHeading: " + ((Math.round(v.verticalAngleDeg()) + 360) % 360) + "°";
-                        log.innerHTML = log.innerHTML + "\nSpeed: " + Math.round(v.magnitude()) + SolarObjects.units.speed;
-                        log.innerHTML = log.innerHTML + "\nRadius: " + Math.round(obj.size / 2) + SolarObjects.units.distance;
-
-                        // bearing & distance
-                        let us = game.world.queryObject({id: parseInt(aliases['self'])})
-                        if (us && us.id != obj.id) {
-
-                            let ourPos = Victor.fromArray(us.physicsObj.position);
-                            let theirPos = Victor.fromArray(obj.physicsObj.position);
-                            let direction = theirPos.clone().subtract(ourPos);
-                            direction = new Victor(direction.x, 0 - direction.y);
-
-                            log.innerHTML = log.innerHTML + "\nBearing: " + ((Math.round(direction.verticalAngleDeg()) + 360) % 360) + "°";
-                            log.innerHTML = log.innerHTML + "\nDistance: " + direction.magnitude().toPrecision(3) + SolarObjects.units.distance;
-
-                            if (obj instanceof Planet) {
-                                let g = Math.round(((SolarObjects.constants.G * obj.physicsObj.mass) / Math.pow((obj.size / 2), 2)) * 100) / 100;
-                                log.innerHTML = log.innerHTML + "\nSurface G: " + g + SolarObjects.units.force;
-                            }
-
-                            // closing speed
-                            // https://gamedev.stackexchange.com/questions/118162/how-to-calculate-the-closing-speed-of-two-objects
-                            // val tmp = a.position - b.position
-                            // return -((a.velocity - b.velocity).dot(tmp)/tmp.length)
-                            let ourVelocity = new Victor(us.physicsObj.velocity[0], 0 - us.physicsObj.velocity[1]);
-                            let closing = ((ourVelocity.clone().subtract(v)).dot(direction) / direction.length());
-                            log.innerHTML = log.innerHTML + "\nClosing: " + closing.toPrecision(3) + SolarObjects.units.speed;
-
-                        }
-
-
-                    } else {
-                        log.innerHTML = log.innerHTML + "\nobject '" + result.parameters.alias + "' not found.";
-                    }
+                if (result.execute) {
+                    result.execute(log, aliases, settings, this, game);
+                    console.log("navComSavedData:"+this.navComSavedData);
                 }
             }
         }
@@ -364,10 +249,21 @@ console.dir(result);
     // clicked an object, do some stuff...
     objectClick(guid, eventData) {
 
-        console.log("guid: "+guid);
+        eventData.stopPropagation();
 
+        var input = document.getElementById("consoleInput");
         let obj = game.world.queryObject({ id: parseInt(guid) });
+
+        console.log("obj:");
         console.dir(obj);
+
+        let currentVal = input.value;
+        if (!currentVal.endsWith(' ')) {
+            currentVal = currentVal + ' ';
+            currentVal = currentVal + Math.round(obj.physicsObj.position[0]) + "," + Math.round(obj.physicsObj.position[1]);
+        }
+        this.navComSavedData = Math.round(obj.physicsObj.position[0]) + "," + Math.round(obj.physicsObj.position[1]);
+        input.value = currentVal;
 
     }
 
@@ -535,6 +431,52 @@ console.dir(result);
         return p;
     }
 
+    drawWaypoint(wp) {
+
+        let gameObjects = {};
+
+        let waypointTexture = settings.resources[settings.baseUrl+Assets.Images.waypoint].texture;
+        let waypointParams = wp.split(',');
+        let waypoint = {
+            name: waypointParams[0],
+            x: parseInt(waypointParams[1]),
+            y: parseInt(waypointParams[2])
+        }
+        gameObjects["waypoint-"+waypoint.name] = true;
+        gameObjects["waypoint-"+waypoint.name+'-label'] = true;
+
+        let coord = this.relativeScreenCoord(waypoint.x,
+             waypoint.y,
+             settings.focus[0],
+             settings.focus[1],
+             pixiApp.screen.width,
+             pixiApp.screen.height,
+             0,
+             settings.scale);
+
+        if (!mapObjects["waypoint-"+waypoint.name]) {
+
+            this.addToMap(waypoint.name,
+                          "waypoint-"+waypoint.name,
+                          waypointTexture,
+                          settings.waypointSize, settings.waypointSize,
+                          coord.x, coord.y,
+                          0,
+                          settings.zIndex.waypoints, 1, settings.waypointSize)
+        } else {
+            // update position
+            mapObjects["waypoint-"+waypoint.name].x = coord.x;
+            mapObjects["waypoint-"+waypoint.name].y = coord.y;
+            if (mapObjects["waypoint-"+waypoint.name + '-label'] && mapObjects["waypoint-"+waypoint.name]) {
+
+                mapObjects["waypoint-"+waypoint.name + '-label'].x = coord.x + (3 + Math.floor(mapObjects["waypoint-"+waypoint.name].width/2));
+                mapObjects["waypoint-"+waypoint.name + '-label'].y = coord.y - (3 + Math.floor(mapObjects["waypoint-"+waypoint.name].height/2));
+            }
+        }
+
+        return gameObjects;
+    }
+
     // update grid to reflect current position and
     // create/update/delete PIXI objects to match the world
     draw(t, dt) {
@@ -563,55 +505,20 @@ console.dir(result);
 
                 let texture = null;
                 let zIndex = settings.zIndex.asteroid;
+                let widthRatio = 1;
                 if (obj instanceof Ship) {
-                    texture = settings.resources[settings.baseUrl+Assets.Images[obj.hull]].texture;
+                    let hullData = Hulls[obj.hull];
+                    texture = settings.resources[settings.baseUrl+hullData.image].texture;
                     zIndex = settings.zIndex.ship;
                     alias = obj.hull;
+                    widthRatio = hullData.width;
 
                     // draw waypoints
                     if (isPlayer && obj.waypoints) {
 
-                        let waypointTexture = settings.resources[settings.baseUrl+Assets.Images.waypoint].texture;
-
                         obj.waypoints.forEach((wp) => {
-
-                            let waypointParams = wp.split(',');
-                            let waypoint = {
-                                name: waypointParams[0],
-                                x: parseInt(waypointParams[1]),
-                                y: parseInt(waypointParams[2])
-                            }
-                            gameObjects["waypoint-"+waypoint.name] = true;
-                            gameObjects["waypoint-"+waypoint.name+'-label'] = true;
-
-                            let coord = this.relativeScreenCoord(waypoint.x,
-                                 waypoint.y,
-                                 settings.focus[0],
-                                 settings.focus[1],
-                                 pixiApp.screen.width,
-                                 pixiApp.screen.height,
-                                 0,
-                                 settings.scale);
-
-                            if (!mapObjects["waypoint-"+waypoint.name]) {
-
-                                this.addToMap(waypoint.name,
-                                              "waypoint-"+waypoint.name,
-                                              waypointTexture,
-                                              16, 16,
-                                              coord.x, coord.y,
-                                              0,
-                                              settings.zIndex.waypoints, 1, 16)
-                            } else {
-                                // update position
-                                mapObjects["waypoint-"+waypoint.name].x = coord.x;
-                                mapObjects["waypoint-"+waypoint.name].y = coord.y;
-                                if (mapObjects["waypoint-"+waypoint.name + '-label'] && mapObjects["waypoint-"+waypoint.name]) {
-
-                                    mapObjects["waypoint-"+waypoint.name + '-label'].x = coord.x + (3 + Math.floor(mapObjects["waypoint-"+waypoint.name].width/2));
-                                    mapObjects["waypoint-"+waypoint.name + '-label'].y = coord.y - (3 + Math.floor(mapObjects["waypoint-"+waypoint.name].height/2));
-                                }
-                            }
+                            let waypointObjects = this.drawWaypoint(wp);
+                            gameObjects = Object.assign(gameObjects, waypointObjects);
                         });
                     }
 
@@ -644,7 +551,7 @@ console.dir(result);
                     this.addToMap(alias,
                                   obj.id,
                                   texture,
-                                  obj.size, obj.size,
+                                  obj.size * widthRatio, obj.size,
                                   coord.x, coord.y,
                                   angle,
                                   zIndex, settings.minimumScale, settings.minimumSpriteSize)
