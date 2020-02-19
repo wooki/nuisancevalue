@@ -98,9 +98,6 @@ export default class NavCom {
             }
         });
 
-        console.log("words:");
-        console.dir(words);
-
         // look for a command
     	let command = commands.find(function(c) {
             return (c.name == words[0]);

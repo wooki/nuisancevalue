@@ -36,6 +36,11 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("waypoint", { name: name } );
     }
 
+    // update ship comms
+    updateShipComms(params) {
+        this.sendInput("comms", params );
+    }
+
 
     // handleOrientation(event) {
     //     let isPortrait = window.innerHeight > window.innerWidth;

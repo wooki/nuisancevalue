@@ -10,22 +10,29 @@
     "@babel/node": "^7.7.4",
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^4.6.0",
+    "css-loader": "^3.4.2",
     "express": "^4.17.1",
     "lance-gg": "^4.0.8",
+    "mini-css-extract-plugin": "^0.9.0",
     "node": "^13.8.0",
+    "node-sass": "^4.13.1",
     "pixi-filters": "^3.0.3",
     "pixi.js": "^5.2.0",
     "query-string": "^4.2.3",
+    "raw-loader": "^4.0.0",
+    "sass-loader": "^8.0.2",
     "socket.io": "^2.3.0",
+    "style-loader": "^1.1.3",
     "victor": "^1.1.0",
-    "webpack": "^3.8.1"
+    "webpack": "^4.41.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",
     "@babel/core": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "eslint": "^3.16.1",
-    "eslint-config-google": "^0.7.1"
+    "eslint-config-google": "^0.7.1",
+    "webpack-cli": "^3.3.11"
   },
   "scripts": {
     "start": "node dist-server/main.js",

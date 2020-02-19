@@ -5,6 +5,7 @@ import Asteroid from './Asteroid';
 import Planet from './Planet';
 import Victor from 'victor';
 import SolarObjects from './SolarObjects';
+import Comms from './Comms';
 
 let gravityObjects = {};
 
@@ -221,7 +222,7 @@ export default class NvGameEngine extends GameEngine {
             }
 
             // handle engine - helm only (no options, so we can bind to keys)
-            if (inputData.input.startsWith('engine')) {
+            if (inputData.input == 'engine') {
 
                 let ship = this.getPlayerShip(playerId);
                 let level = inputData.options.level;
@@ -233,7 +234,7 @@ export default class NvGameEngine extends GameEngine {
             }
 
             // handle maneuver - helm only (no options, so we can bind to keys)
-            if (inputData.input.startsWith('maneuver')) {
+            if (inputData.input == 'maneuver') {
 
                 let ship = this.getPlayerShip(playerId);
                 let direction = inputData.options.direction;
@@ -243,7 +244,7 @@ export default class NvGameEngine extends GameEngine {
             }
 
             // handle add waypoint - nav only
-            if (inputData.input.startsWith('waypoint')) {
+            if (inputData.input == 'waypoint') {
 
                 let ship = this.getPlayerShip(playerId);
                 let name = inputData.options.name;
@@ -253,6 +254,28 @@ export default class NvGameEngine extends GameEngine {
                     ship.removeWaypoint(name);
                 } else {
                     ship.addWaypoint(name, x, y);
+                }
+            }
+
+            if (inputData.input == 'comms') {
+
+                let ship = this.world.objects[inputData.options.id];
+                if (inputData.options.target != undefined) {
+                    ship.commsTargetId = inputData.options.target;
+                }
+                if (inputData.options.state != undefined){
+                    // let previousState = ship.commsState;
+                    ship.commsState = inputData.options.state;
+
+                    // sometimes this check stops it from firing on client, not sure why
+                    // but as long as we don't send the same state through as an update
+                    // leaving out this check should be fine
+                    // if (ship.commsState != previousState) {
+
+                        // chance for script to send commands to ship or game
+                        let c = new Comms(this, null);
+                        c.executeOnEnter(ship);
+                    // }
                 }
             }
 
@@ -281,6 +304,7 @@ export default class NvGameEngine extends GameEngine {
         s.commsScript = params['commsScript'] || 0;
         s.commsState = params['commsState'] || 0;
         s.commsTargetId = params['commsTargetId'] || -1;
+        s.dockedTargetId = params['dockedTargetId'] || -1;
 
         return this.addObjectToWorld(s);
     }

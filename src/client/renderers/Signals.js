@@ -3,6 +3,7 @@ const PIXI = require('pixi.js');
 const Assets = require('./images.js');
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
+import {BevelFilter} from '@pixi/filter-bevel';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -10,6 +11,7 @@ import Planet from './../../common/Planet';
 import Hulls from './../../common/Hulls';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
+import Comms from './../../common/Comms';
 import SolarObjects from './../../common/SolarObjects';
 // import {CRTFilter} from '@pixi/filter-crt';
 
@@ -43,7 +45,8 @@ let mapObjects = {}; // keep track of what we have added
 let effects = {
     hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
     waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
-    selectionColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1)
+    selectionColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
+    bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9})
 };
 let selectedObjId = null;
 
@@ -185,18 +188,20 @@ export default class SignalsRenderer {
             if (selectedObjId != selectedGuid) {
                 this.removeCommsUi();
                 selectedObjId = selectedGuid; // keep reference
-                this.createCommsUi(obj);
+                this.createInitialCommsUi(obj);
             }
         }
     }
 
     removeCommsUi() {
-        if (uiEls.uiCommsControls) {
-            uiEls.uiCommsControls.forEach(function(el) {
-                el.removeEventListener('click', this.openComms.bind(this));
-                el.remove();
-            }.bind(this));
-            uiEls.uiCommsControls = null;
+        if (uiEls.uiCommsOpen) {
+            uiEls.uiCommsOpen.removeEventListener('click', this.openComms.bind(this));
+            uiEls.uiCommsOpen.remove();
+            uiEls.uiCommsOpen = null;
+        }
+        if (uiEls.uiCommsText) {
+            uiEls.uiCommsText.remove();
+            uiEls.uiCommsText = null;
         }
         if (uiEls.uiComms) {
             uiEls.uiComms.remove();
@@ -204,36 +209,123 @@ export default class SignalsRenderer {
         }
     }
 
-    createCommsUi(obj) {
+    createInitialCommsUi(obj) {
 
-        // comms ui
+        // container
         uiEls.uiComms = document.createElement("div");
         uiEls.uiComms.classList.add('ui-comms');
         uiEls.uiContainer.appendChild(uiEls.uiComms);
-        uiEls.uiCommsControls = [];
 
         if (selectedObjId) {
 
-            let obj = game.world.queryObject({ id: selectedObjId });
-            if (obj && obj.commsScript !== undefined) {
+            let selectedObj = game.world.queryObject({ id: selectedObjId });
+            if (selectedObj && selectedObj.commsScript !== undefined) {
 
-                // depends on conversation state
-                let openCommsBtn = this.createButton(document, uiEls.uiComms, "openComms", "Open Comms", this.openComms.bind(this));
-                uiEls.uiCommsControls.push(openCommsBtn);
-            }
+                let playerShip = null;
+                game.world.forEachObject((objId, obj) => {
+                    if (obj instanceof Ship) {
+                        if (obj.signalsPlayerId == game.playerId) {
+                            playerShip = obj;
+                        }
+                    }
+                });
+
+                if (playerShip) {
+
+                    // if (selectedObj.commsTargetId != playerShip.id) {
+                        // open comms button
+                        uiEls.uiCommsOpen = this.createButton(document, uiEls.uiComms, "openComms", "Open Comms", this.openComms.bind(this));
+                    // }
+
+                } // !playerShip
+            } // !selectedObj.commsScript
         }
 
     }
 
+    createResponseCommsUi(state) {
+
+        uiEls.uiCommsText = this.createLabel(document, uiEls.uiComms, "commsText", state.text);
+
+        state.responses.forEach((response, responseIndex) => {
+            let responseButton = this.createButton(document, uiEls.uiComms, "response-"+response, response, this.sendCommsResponse.bind(this));
+            responseButton.setAttribute('data-response', responseIndex);
+            uiEls['uiCommsTextResponse'+responseIndex] = responseButton;
+        });
+    }
+
     openComms() {
-        // open comms to currently selected target
-        console.log("TODO: openComms");
+        this.removeCommsUi();
+
+        // container
+        uiEls.uiComms = document.createElement("div");
+        uiEls.uiComms.classList.add('ui-comms');
+        uiEls.uiContainer.appendChild(uiEls.uiComms);
 
         if (selectedObjId) {
 
-            let obj = game.world.queryObject({ id: selectedObjId });
-            if (obj) {
-                console.dir(obj);
+            let selectedObj = game.world.queryObject({ id: selectedObjId });
+            if (selectedObj && selectedObj.commsScript !== undefined) {
+
+                let playerShip = null;
+                game.world.forEachObject((objId, obj) => {
+                    if (obj instanceof Ship) {
+                        if (obj.signalsPlayerId == game.playerId) {
+                            playerShip = obj;
+                        }
+                    }
+                });
+
+                if (playerShip) {
+
+                    let c = new Comms(game, client);
+
+                    let conversation = c.openComms(playerShip, selectedObj); // returns text and possible responses
+                    uiEls.uiCommsText = this.createLabel(document, uiEls.uiComms, "commsText", conversation.text);
+
+                    conversation.responses.forEach((response, responseIndex) => {
+                        let responseButton = this.createButton(document, uiEls.uiComms, "response-"+response, response, this.sendCommsResponse.bind(this));
+                        responseButton.setAttribute('data-response', responseIndex);
+                        uiEls['uiCommsTextResponse'+responseIndex] = responseButton;
+                    });
+
+                } // !playerShip
+            } // !selectedObj.commsScript
+        }  // !selectedObjId
+    }
+
+    sendCommsResponse(event) {
+
+        this.removeCommsUi();
+
+        // container
+        uiEls.uiComms = document.createElement("div");
+        uiEls.uiComms.classList.add('ui-comms');
+        uiEls.uiContainer.appendChild(uiEls.uiComms);
+
+        if (selectedObjId) {
+
+            let selectedObj = game.world.queryObject({ id: selectedObjId });
+            if (selectedObj) {
+
+                let playerShip = null;
+                game.world.forEachObject((objId, obj) => {
+                    if (obj instanceof Ship) {
+                        if (obj.signalsPlayerId == game.playerId) {
+                            playerShip = obj;
+                        }
+                    }
+                });
+
+                if (playerShip) {
+
+                    let response = event.currentTarget.getAttribute('data-response');
+                    response = parseInt(response);
+
+                    let c = new Comms(game, client);
+                    let state = c.respond(playerShip, selectedObj, response);
+                    this.createResponseCommsUi(state);
+                }
             }
             // client.setEngine(level);
         }
@@ -376,6 +468,7 @@ export default class SignalsRenderer {
         sprites.dashboardSprite.y = Math.floor(settings.UiHeight / 2);
         sprites.dashboardSprite.width = settings.UiWidth;
         sprites.dashboardSprite.height = settings.UiHeight;
+        sprites.dashboardSprite.filters = [effects.bevel];
         sprites.dashboardSprite.zIndex = settings.zIndex.dashboard;
 
         let dashboardMaskGraphics = new PIXI.Graphics();
@@ -452,6 +545,7 @@ export default class SignalsRenderer {
             let texture = null;
             let zIndex = settings.zIndex.asteroid;
             let widthRatio = 1;
+            let labelObj = false;
             if (obj instanceof Asteroid) {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                 alias = 'asteroid';
@@ -459,12 +553,14 @@ export default class SignalsRenderer {
                 texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                 zIndex = settings.zIndex.planet;
                 alias = obj.texture;
+                labelObj = true;
             } else if (obj instanceof Ship) {
                 let hullData = Hulls[obj.hull];
                 texture = settings.resources[settings.baseUrl+hullData.image].texture;
                 zIndex = settings.zIndex.ship;
                 alias = obj.hull;
                 widthRatio = hullData.width;
+                labelObj = true;
             }
 
             let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
@@ -482,7 +578,7 @@ export default class SignalsRenderer {
                               texture,
                               obj.size * widthRatio, obj.size,
                               coord.x, coord.y,
-                              zIndex, 0.05, 0, false)
+                              zIndex, 0.05, 0, labelObj)
             } else {
                 // update position
                 mapObjects[obj.id].x = coord.x;

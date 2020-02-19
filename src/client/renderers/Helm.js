@@ -3,6 +3,7 @@ const PIXI = require('pixi.js');
 const Assets = require('./images.js');
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
+import {BevelFilter} from '@pixi/filter-bevel';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -40,7 +41,8 @@ let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 let effects = {
     hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
-    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1)
+    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
+    bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9})
 };
 
 export default class HelmRenderer {
@@ -305,6 +307,7 @@ export default class HelmRenderer {
         sprites.dashboardSprite.y = Math.floor(settings.UiHeight / 2);
         sprites.dashboardSprite.width = settings.UiWidth;
         sprites.dashboardSprite.height = settings.UiHeight;
+        sprites.dashboardSprite.filters = [effects.bevel];
         sprites.dashboardSprite.zIndex = settings.zIndex.dashboard;
 
         let dashboardMaskGraphics = new PIXI.Graphics();

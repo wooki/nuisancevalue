@@ -12,6 +12,8 @@ import NavCom from './Utils/NavCom';
 import SolarObjects from './../../common/SolarObjects';
 import Victor from 'victor';
 
+// import styles from './css/nav.scss';
+
 let navCom = new NavCom();
 let el = null;
 let uiEls = {};
