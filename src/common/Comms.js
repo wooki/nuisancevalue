@@ -15,6 +15,16 @@ export default class Comms {
         client = clientEngine;
     }
 
+    closeComms(playerShip, selectedObj) {
+
+    	if (selectedObj.playable != 1 && selectedObj.commsTargetId == playerShip.id) {
+    		client.updateShipComms({
+				id: selectedObj.id,
+				target: -1
+			});
+    	}
+    }
+
 	// try and start or contiue a comms session
 	openComms(playerShip, selectedObj) {
 

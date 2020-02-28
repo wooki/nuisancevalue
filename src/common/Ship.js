@@ -19,7 +19,7 @@ export default class Ship extends PhysicalObject2D {
             commsScript: { type: BaseTypes.TYPES.UINT8 },
             commsState: { type: BaseTypes.TYPES.UINT8 },
             commsTargetId: { type: BaseTypes.TYPES.INT16 },
-            dockedTargetId: { type: BaseTypes.TYPES.INT16 },
+            dockedId: { type: BaseTypes.TYPES.INT16 },
             waypoints: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
@@ -88,6 +88,9 @@ export default class Ship extends PhysicalObject2D {
         // }
     }
 
+    // TODO: dock and undock
+    // this.physicsObj.removeShape
+
     onAddToWorld(gameEngine) {
         game = gameEngine;
         p2 = gameEngine.physicsEngine.p2;
@@ -143,6 +146,6 @@ export default class Ship extends PhysicalObject2D {
         this.commsScript = other.commsScript;
         this.commsState = other.commsState;
         this.commsTargetId = other.commsTargetId;
-        this.dockedTargetId  = other.dockedTargetId  ;
+        this.dockedId  = other.dockedId  ;
     }
 }

@@ -44,6 +44,13 @@ let effects = {
     waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
     bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9})
 };
+let docking = {
+    dockable: null, // closest id < 1000 - allows us to start dock
+    distance: null, // distance to closest id, so we can start dock to closest
+    target: null, // id we are trying to dock with
+    id: null, // id docked with
+    progress: 0 // percent progress
+}
 
 export default class HelmRenderer {
 
@@ -161,8 +168,20 @@ export default class HelmRenderer {
             this.setManeuver('b');
         });
 
-        // uiEls.gravOrbitV = this.createLabel(document, uiContainer, "gravOrbitV", "grav");
+        uiEls.uiDocking = document.createElement("div");
+        uiEls.uiDocking.classList.add('ui-docking');
+        uiEls.uiDocking.classList.add('inactive');
+        uiContainer.appendChild(uiEls.uiDocking);
 
+        uiEls.dockStartEl = this.createButton(document, uiEls.uiDocking, "dockStartBtn", "Start Docking", () => {
+            docking.target = docking.dockable;
+        });
+        uiEls.dockCancelEl = this.createButton(document, uiEls.uiDocking, "dockCancelBtn", "Cancel Docking", () => {
+            uiEls.uiEls.uiDocking.classList.add('inactive');
+        });
+        uiEls.dockDistanceEl = this.createLabel(document, uiEls.uiDocking, "dockDistanceEl", "Distance:");
+        uiEls.dockClosingEl = this.createLabel(document, uiEls.uiDocking, "dockClosingEl", "Closing:");
+        uiEls.dockProgressEl = this.createLabel(document, uiEls.uiDocking, "dockProgressEl", "Progress:");
     }
 
     createButton(document, container, id, innerHTML, onClick) {
@@ -418,6 +437,114 @@ export default class HelmRenderer {
                     mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
                 }
             }
+
+            // display docking UI
+            let ourPos = Victor.fromArray(playerShip.physicsObj.position);
+            let theirPos = Victor.fromArray(obj.physicsObj.position);
+            let direction = theirPos.clone().subtract(ourPos);
+            direction = new Victor(direction.x, 0 - direction.y);
+            let distance = direction.magnitude();
+            distance = distance - (obj.size + playerShip.size);// adjust disctance for size of two objects!
+            if (distance < 0) {
+                distance = 0;
+            }
+            let ourVelocity = new Victor(playerShip.physicsObj.velocity[0], 0 - playerShip.physicsObj.velocity[1]);
+            let theirVelocity = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
+            let closing = ((ourVelocity.clone().subtract(theirVelocity)).dot(direction) / distance);
+            let closingDesc = Math.round(closing);
+            if (closing == Infinity || closing == -Infinity) {
+                closingDesc = "∞";
+            }
+            // let docking = {
+            //     dockable: null, // closest id < 1000 - allows us to start dock
+            //     distance: null, // distance to closest id, so we can start dock to closest
+            //     target: null, // id we are trying to dock with
+            //     id: null, // id docked with
+            //     progress: 0 // percent progress
+            // }
+            if (docking.id == null) {
+                if (docking.target == obj.id && distance <= 200 & Math.abs(closing) < 100) {
+
+                    // console.log("1)"+alias+":"+Math.round(distance)+ " @"+Math.round(closing));
+
+                    // dock if progress >= 100 (docking is instant on server)
+                    if (docking.progress >= 100) {
+
+                        docking.id = docking.target;
+                        docking.dockable = null;
+                        docking.progress = 0;
+                        docking.target = null;
+
+                        uiEls.uiDocking.classList.add('inactive');
+
+                        console.log("DOCKED!");
+
+                    } else {
+                        // add progress (dt should = 16ms)
+                        docking.progress = docking.progress + (dt / 100); // 100% is 10s
+
+                        uiEls.dockDistanceEl.innerHTML = "Distance: "+Math.round(distance);
+                        uiEls.dockClosingEl.innerHTML = "Closing: "+closingDesc;
+                        uiEls.dockProgressEl.innerHTML = "Progress: "+Math.round(docking.progress)+'%';
+                    }
+
+
+                } else if (docking.target == obj.id && distance <= 1000) {
+
+                    // console.log("2)"+alias+":"+Math.round(distance)+ " @"+Math.round(closing));
+
+                    // reduce the progress
+                    docking.progress = docking.progress - (dt / 100); // 100% is 10s
+                    if (docking.progress < 0) {
+                        docking.progress = 0;
+                    }
+
+                    uiEls.dockDistanceEl.innerHTML = "Distance: "+Math.round(distance);
+                    uiEls.dockClosingEl.innerHTML = "Closing: "+closingDesc;
+                    uiEls.dockProgressEl.innerHTML = "Progress: "+Math.round(docking.progress)+'%';
+
+                } else if (docking.target == obj.id) {
+
+                    // distance > 1000 so fail
+                    docking.target = null;
+                    docking.progress = 0;
+
+                    // hide "cancel"/"progress"
+                    uiEls.dockDistanceEl.innerHTML = "";
+                    uiEls.dockClosingEl.innerHTML = "";
+                    uiEls.dockProgressEl.innerHTML = "";
+
+                } else if (distance <= 1000) {
+
+                    // docking.target == null // this will be always be the case due to prior ifs
+
+                    // allow helm to "start docking procedure" with closest we are close to
+                    if (docking.distance == null || distance < docking.distance) {
+                        docking.distance = distance;
+                        docking.dockable = obj.id;
+
+                        // show "start" button
+                        uiEls.uiDocking.classList.remove('inactive');
+
+                    }
+
+                } else if (docking.dockable == obj.id) {
+
+                    // distance > 1000 so remove from dockable
+                    docking.distance = null;
+                    docking.dockable = null;
+                    docking.progress = 0;
+
+                    // hide "start" button
+                    uiEls.uiDocking.classList.add('inactive');
+                    uiEls.dockDistanceEl.innerHTML = "";
+                    uiEls.dockClosingEl.innerHTML = "";
+                    uiEls.dockProgressEl.innerHTML = "";
+
+                }
+            }
+
+
         });
 
         return drawnObjects;

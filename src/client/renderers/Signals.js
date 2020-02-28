@@ -183,7 +183,7 @@ export default class SignalsRenderer {
 
         let selectedGuid = parseInt(guid);
         let obj = game.world.queryObject({ id: selectedGuid });
-        if (obj.signalsPlayerId != game.playerId) {
+        if (obj && obj.signalsPlayerId != game.playerId) {
 
             if (selectedObjId != selectedGuid) {
                 this.removeCommsUi();
@@ -194,6 +194,11 @@ export default class SignalsRenderer {
     }
 
     removeCommsUi() {
+        if (uiEls.closeCommsButton) {
+            uiEls.closeCommsButton.removeEventListener('click', this.closeComms.bind(this));
+            uiEls.closeCommsButton.remove();
+            uiEls.closeCommsButton = null;
+        }
         if (uiEls.uiCommsOpen) {
             uiEls.uiCommsOpen.removeEventListener('click', this.openComms.bind(this));
             uiEls.uiCommsOpen.remove();
@@ -216,29 +221,11 @@ export default class SignalsRenderer {
         uiEls.uiComms.classList.add('ui-comms');
         uiEls.uiContainer.appendChild(uiEls.uiComms);
 
-        if (selectedObjId) {
+        let objects = this.getPlayerAndSelected();
+        if (objects) {
 
-            let selectedObj = game.world.queryObject({ id: selectedObjId });
-            if (selectedObj && selectedObj.commsScript !== undefined) {
-
-                let playerShip = null;
-                game.world.forEachObject((objId, obj) => {
-                    if (obj instanceof Ship) {
-                        if (obj.signalsPlayerId == game.playerId) {
-                            playerShip = obj;
-                        }
-                    }
-                });
-
-                if (playerShip) {
-
-                    // if (selectedObj.commsTargetId != playerShip.id) {
-                        // open comms button
-                        uiEls.uiCommsOpen = this.createButton(document, uiEls.uiComms, "openComms", "Open Comms", this.openComms.bind(this));
-                    // }
-
-                } // !playerShip
-            } // !selectedObj.commsScript
+            // open comms button
+            uiEls.uiCommsOpen = this.createButton(document, uiEls.uiComms, "openComms", "Open Comms", this.openComms.bind(this));
         }
 
     }
@@ -252,6 +239,48 @@ export default class SignalsRenderer {
             responseButton.setAttribute('data-response', responseIndex);
             uiEls['uiCommsTextResponse'+responseIndex] = responseButton;
         });
+
+        uiEls.closeCommsButton = this.createButton(document, uiEls.uiComms, "response-close", "Close Comms", this.closeComms.bind(this));
+    }
+
+    closeComms() {
+        this.removeCommsUi();
+
+        let objects = this.getPlayerAndSelected();
+        if (objects) {
+            let c = new Comms(game, client);
+            c.closeComms(objects.playerShip, objects.selectedObj);
+
+            if (objects.selectedObj.signalsPlayerId != game.playerId) {
+                this.createInitialCommsUi(objects.selectedObj);
+            }
+        }
+    }
+
+    getPlayerAndSelected() {
+        if (selectedObjId) {
+
+            let selectedObj = game.world.queryObject({ id: selectedObjId });
+            if (selectedObj && selectedObj.commsScript !== undefined) {
+
+                let playerShip = null;
+                game.world.forEachObject((objId, obj) => {
+                    if (obj instanceof Ship && obj.playable == 1) {
+                        if (obj.signalsPlayerId == game.playerId) {
+                            playerShip = obj;
+                        }
+                    }
+                });
+
+                if (playerShip) {
+                    return {
+                        selectedObj: selectedObj,
+                        playerShip: playerShip
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     openComms() {
@@ -260,37 +289,25 @@ export default class SignalsRenderer {
         // container
         uiEls.uiComms = document.createElement("div");
         uiEls.uiComms.classList.add('ui-comms');
+        uiEls.uiComms.classList.add('open');
         uiEls.uiContainer.appendChild(uiEls.uiComms);
 
-        if (selectedObjId) {
+        let objects = this.getPlayerAndSelected();
+        if (objects) {
 
-            let selectedObj = game.world.queryObject({ id: selectedObjId });
-            if (selectedObj && selectedObj.commsScript !== undefined) {
+            let c = new Comms(game, client);
 
-                let playerShip = null;
-                game.world.forEachObject((objId, obj) => {
-                    if (obj instanceof Ship) {
-                        if (obj.signalsPlayerId == game.playerId) {
-                            playerShip = obj;
-                        }
-                    }
-                });
+            let conversation = c.openComms(objects.playerShip, objects.selectedObj); // returns text and possible responses
+            uiEls.uiCommsText = this.createLabel(document, uiEls.uiComms, "commsText", conversation.text);
 
-                if (playerShip) {
+            conversation.responses.forEach((response, responseIndex) => {
+                let responseButton = this.createButton(document, uiEls.uiComms, "response-"+response, response, this.sendCommsResponse.bind(this));
+                responseButton.setAttribute('data-response', responseIndex);
+                uiEls['uiCommsTextResponse'+responseIndex] = responseButton;
+            });
 
-                    let c = new Comms(game, client);
+            uiEls.closeCommsButton = this.createButton(document, uiEls.uiComms, "response-close", "Close Comms", this.closeComms.bind(this));
 
-                    let conversation = c.openComms(playerShip, selectedObj); // returns text and possible responses
-                    uiEls.uiCommsText = this.createLabel(document, uiEls.uiComms, "commsText", conversation.text);
-
-                    conversation.responses.forEach((response, responseIndex) => {
-                        let responseButton = this.createButton(document, uiEls.uiComms, "response-"+response, response, this.sendCommsResponse.bind(this));
-                        responseButton.setAttribute('data-response', responseIndex);
-                        uiEls['uiCommsTextResponse'+responseIndex] = responseButton;
-                    });
-
-                } // !playerShip
-            } // !selectedObj.commsScript
         }  // !selectedObjId
     }
 
@@ -301,33 +318,18 @@ export default class SignalsRenderer {
         // container
         uiEls.uiComms = document.createElement("div");
         uiEls.uiComms.classList.add('ui-comms');
+        uiEls.uiComms.classList.add('open');
         uiEls.uiContainer.appendChild(uiEls.uiComms);
 
-        if (selectedObjId) {
+        let objects = this.getPlayerAndSelected();
+        if (objects) {
 
-            let selectedObj = game.world.queryObject({ id: selectedObjId });
-            if (selectedObj) {
+            let response = event.currentTarget.getAttribute('data-response');
+            response = parseInt(response);
 
-                let playerShip = null;
-                game.world.forEachObject((objId, obj) => {
-                    if (obj instanceof Ship) {
-                        if (obj.signalsPlayerId == game.playerId) {
-                            playerShip = obj;
-                        }
-                    }
-                });
-
-                if (playerShip) {
-
-                    let response = event.currentTarget.getAttribute('data-response');
-                    response = parseInt(response);
-
-                    let c = new Comms(game, client);
-                    let state = c.respond(playerShip, selectedObj, response);
-                    this.createResponseCommsUi(state);
-                }
-            }
-            // client.setEngine(level);
+            let c = new Comms(game, client);
+            let state = c.respond(objects.playerShip, objects.selectedObj, response);
+            this.createResponseCommsUi(state);
         }
     }
 

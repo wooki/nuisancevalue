@@ -70,7 +70,7 @@ export default class NvServerEngine extends ServerEngine {
             x: SolarObjects.Earth.orbit,
             y: stationOrbitDistance,
             dX: stationOrbitSpeed, dY: (0 - earthOrbitSpeed),
-            mass: 0.01, size: 280, // need to read mass and size from hull
+            mass: 0.1, size: 280, // need to read mass and size from hull
             hull: 'station',
             angle: 0,
             fixedgravity: earth.id.toString()
