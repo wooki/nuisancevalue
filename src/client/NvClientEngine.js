@@ -41,6 +41,13 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("comms", params );
     }
 
+    dock(objId) {
+        this.sendInput("dock", { target: objId } );
+    }
+
+    undock() {
+        this.sendInput("undock");
+    }
 
     // handleOrientation(event) {
     //     let isPortrait = window.innerHeight > window.innerWidth;

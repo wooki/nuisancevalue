@@ -20,7 +20,7 @@ export default class NvGameEngine extends GameEngine {
 
         // game variables
         Object.assign(this, {
-            SHIP: Math.pow(2, 0), PLANET: Math.pow(2, 1), ASTEROID: Math.pow(2, 2)
+            SHIP: Math.pow(2, 0), PLANET: Math.pow(2, 1), ASTEROID: Math.pow(2, 2), DOCKED_SHIP: Math.pow(2, 3)
         });
 
         this.on('preStep', this.preStep.bind(this));
@@ -87,85 +87,98 @@ export default class NvGameEngine extends GameEngine {
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
 
-            // only certain types have engines
-            if (obj.applyEngine) {
-                obj.applyEngine();
-            }
+            // docked ships can ignore everything and just copy the position and vector
+            // from the ship they are docked with
+            if (obj.dockedId && obj.dockedId >= 0) {
 
-            // if this has gravity then add to gravity objects
-            if (obj instanceof Planet) { // only planets for now!
-                gravityObjects[objId] = obj.id;
-            }
+                // get the object we're docked with
+                let mothership = this.world.queryObject({ id: obj.dockedId });
+                if (mothership) {
+                    obj.physicsObj.position = [mothership.position.x, mothership.position.y];
+                    obj.physicsObj.velocity = [mothership.velocity.x, mothership.velocity.y];
+                }
 
-            // apply gravity
-            if (obj.physicsObj) {
-                let gravSource = null;
-                let gravDistance = null;
-                let gravSourceAmount = 0;
+            } else {
+                // only certain types have engines
+                if (obj.applyEngine) {
+                    obj.applyEngine();
+                }
 
-                // allow for objects with fixed gravity source - planets in orbit around sun
-                if (obj.fixedgravity !== undefined && obj.fixedgravity !== null && obj.fixedgravity !== '') {
+                // if this has gravity then add to gravity objects
+                if (obj instanceof Planet) { // only planets for now!
+                    gravityObjects[objId] = obj.id;
+                }
 
-                    let gravObj = this.world.queryObject({ id: parseInt(obj.fixedgravity) });
-                    if (gravObj) {
-                        let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
-                        let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
-                        gravDistance = d;
-                        gravSourceAmount = g;
-                        gravSource = gravObj;
-                    }
-                } else {
+                // apply gravity
+                if (obj.physicsObj) {
+                    let gravSource = null;
+                    let gravDistance = null;
+                    let gravSourceAmount = 0;
 
-                    // find biggest gravity effect, only apply gravity on smaller objects
-                    Object.keys(gravityObjects).forEach((gravObjId) => {
+                    // allow for objects with fixed gravity source - planets in orbit around sun
+                    if (obj.fixedgravity !== undefined && obj.fixedgravity !== null && obj.fixedgravity !== '') {
 
-                        // let gravObj = gravityObjects[gravObjId];
-                        let gravObj = this.world.queryObject({ id: gravityObjects[gravObjId] });
+                        let gravObj = this.world.queryObject({ id: parseInt(obj.fixedgravity) });
+                        if (gravObj) {
+                            let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
+                            let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
+                            gravDistance = d;
+                            gravSourceAmount = g;
+                            gravSource = gravObj;
+                        }
+                    } else {
 
-                        if (gravObj && gravObj.id != objId && gravObj.physicsObj) {
-                            if (gravObj.physicsObj.mass > obj.physicsObj.mass) {
+                        // find biggest gravity effect, only apply gravity on smaller objects
+                        Object.keys(gravityObjects).forEach((gravObjId) => {
 
-                                let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
-                                let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
+                            // let gravObj = gravityObjects[gravObjId];
+                            let gravObj = this.world.queryObject({ id: gravityObjects[gravObjId] });
 
-                                if (gravSourceAmount === null || gravSourceAmount < g) {
-                                    gravDistance = d;
-                                    gravSourceAmount = g;
-                                    gravSource = gravObj;
+                            if (gravObj && gravObj.id != objId && gravObj.physicsObj) {
+                                if (gravObj.physicsObj.mass > obj.physicsObj.mass) {
+
+                                    let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
+                                    let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
+
+                                    if (gravSourceAmount === null || gravSourceAmount < g) {
+                                        gravDistance = d;
+                                        gravSourceAmount = g;
+                                        gravSource = gravObj;
+                                    }
                                 }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
 
-                // apply force towards source
-                if (gravSourceAmount && gravSource) {
+                    // apply force towards source
+                    if (gravSourceAmount && gravSource) {
 
-// console.log(`d=${gravDistance}, g=${gravSourceAmount} obj=${obj.toString()}`);
+    // console.log(`d=${gravDistance}, g=${gravSourceAmount} obj=${obj.toString()}`);
 
-                    // flip x coord of obj because our 0,0 is top left
-                    // let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
-                    let objV = Victor.fromArray(obj.physicsObj.position);
-                    let gravObjV = Victor.fromArray(gravSource.physicsObj.position);
+                        // flip x coord of obj because our 0,0 is top left
+                        // let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
+                        let objV = Victor.fromArray(obj.physicsObj.position);
+                        let gravObjV = Victor.fromArray(gravSource.physicsObj.position);
 
-                    let direction = gravObjV.clone().subtract(objV);
-                    let gravVector = direction.clone().normalize().multiply(new Victor(gravSourceAmount, gravSourceAmount));
+                        let direction = gravObjV.clone().subtract(objV);
+                        let gravVector = direction.clone().normalize().multiply(new Victor(gravSourceAmount, gravSourceAmount));
 
-                    // write to the local object (not transmitted - just for display)
-                    obj.gravityData = {
-                        source: gravSource.physicsObj.position,
-                        direction: direction,
-                        amount: gravSourceAmount,
-                        vector: gravVector,
-                        mass: gravSource.physicsObj.mass,
-                        velocity: gravSource.physicsObj.velocity
-                    };
+                        // write to the local object (not transmitted - just for display)
+                        obj.gravityData = {
+                            source: gravSource.physicsObj.position,
+                            direction: direction,
+                            amount: gravSourceAmount,
+                            vector: gravVector,
+                            mass: gravSource.physicsObj.mass,
+                            velocity: gravSource.physicsObj.velocity
+                        };
 
-                    // accelerate towards the gravity source
-                    obj.physicsObj.applyForce(gravVector.toArray()); // apply to centre of mass
+                        // accelerate towards the gravity source
+                        obj.physicsObj.applyForce(gravVector.toArray()); // apply to centre of mass
 
-                }
-            } // if (obj.physicsObj)
+                    }
+                } // if (obj.physicsObj)
+            } // not docked
 
         });
 
@@ -240,6 +253,25 @@ export default class NvGameEngine extends GameEngine {
                 let direction = inputData.options.direction;
                 if (ship && direction) {
                     ship.applyManeuver(direction);
+                }
+            }
+
+            // handle dock - helm only
+            if (inputData.input == 'dock') {
+                let ship = this.getPlayerShip(playerId);
+                if (ship) {
+                    if (inputData.options.target != undefined) {
+                        ship.dock(inputData.options.target);
+                    }
+                }
+            }
+
+            // handle undock - helm only
+            if (inputData.input == 'undock') {
+
+                let ship = this.getPlayerShip(playerId);
+                if (ship) {
+                    ship.undock();
                 }
             }
 

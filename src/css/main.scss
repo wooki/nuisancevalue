@@ -18,6 +18,13 @@ body, html {
             display: none;
         }
     }
+    .ui-undock {
+        margin-top: auto;
+        display: block;
+        &.inactive {
+            display: none;
+        }
+    }
 }
 
 .signals.ui-container {

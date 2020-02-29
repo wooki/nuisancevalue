@@ -37,6 +37,10 @@ export default class Ship extends PhysicalObject2D {
 
     // if the ship has active engines then apply force
     applyEngine() {
+        if (this.dockedId && this.dockedId >= 0) {
+            return; // can't do this while docked
+        }
+
         if (this.engine && this.engine > 0) {
             this.physicsObj.applyForceLocal([0, this.engine * 0.1]);
         }
@@ -67,29 +71,83 @@ export default class Ship extends PhysicalObject2D {
 
     // apply two forces opposite corners to create rotation
     applyManeuver(maneuver) {
-        // if (this.engine && this.engine > 0) {
-            if (maneuver == 'l') {
 
-                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), this.size]);
+        if (this.dockedId && this.dockedId >= 0) {
+            return; // can't do this while docked
+        }
 
-            } else if (maneuver == 'r') {
+        if (maneuver == 'l') {
 
-                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), this.size]);
-            } else if (maneuver == 'f') {
+            this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), 0]);
+            this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), this.size]);
 
-                this.physicsObj.applyForceLocal([0, 0.05], [Math.floor(this.size/2), Math.floor(this.size)]);
+        } else if (maneuver == 'r') {
 
-            } else if (maneuver == 'b') {
+            this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), 0]);
+            this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), this.size]);
+        } else if (maneuver == 'f') {
 
-                this.physicsObj.applyForceLocal([0, -0.05], [Math.floor(this.size/2), 0]);
-            }
-        // }
+            this.physicsObj.applyForceLocal([0, 0.05], [Math.floor(this.size/2), Math.floor(this.size)]);
+
+        } else if (maneuver == 'b') {
+
+            this.physicsObj.applyForceLocal([0, -0.05], [Math.floor(this.size/2), 0]);
+        }
+
     }
 
-    // TODO: dock and undock
-    // this.physicsObj.removeShape
+    dock(dockWith) {
+        console.log("dock: "+dockWith);
+
+        // find the target
+        let mothership = game.world.objects[dockWith];
+
+        // update our data
+        this.dockedId = dockWith;
+
+        // remove shape and replace with non-collision version
+        this.physicsObj.removeShape(this.shape);
+        this.shape = this.shape = new p2.Circle({
+            radius: Math.floor(this.size / 2),
+            collisionGroup: game.DOCKED_SHIP
+        });
+        this.physicsObj.addShape(this.shape);
+
+        // match position and velocity to dock
+        this.physicsObj.position = [mothership.position.x, mothership.position.y];
+        this.physicsObj.velocity = [mothership.velocity.x, mothership.velocity.y];
+
+        // NOTE: client side we will remove sprite and add sprite to dock target sprite
+    }
+
+    undock() {
+
+        if (this.dockedId && this.dockedId >= 0) {
+
+            // find the target
+            let mothership = game.world.objects[this.dockedId];
+            if (mothership) {
+
+                // update our data
+                this.dockedId = -1;
+
+                // remove shape and replace with proper version
+                this.physicsObj.removeShape(this.shape);
+                this.shape = this.shape = new p2.Circle({
+                    collisionGroup: game.SHIP,
+                    collisionMask: game.ASTEROID | game.SHIP | game.PLANET
+                });
+                this.physicsObj.addShape(this.shape);
+
+                // position just behind dock with slightly slower velocity
+                this.physicsObj.position = [mothership.position.x + mothership.size + this.size, mothership.position.y + mothership.size + this.size];
+                this.physicsObj.velocity = [mothership.velocity.x - 1, mothership.velocity.y - 1];
+
+            }
+
+        }
+
+    }
 
     onAddToWorld(gameEngine) {
         game = gameEngine;
@@ -99,7 +157,7 @@ export default class Ship extends PhysicalObject2D {
         let hullData = Hulls[this.hull];
 
         // Add ship physics
-        let shape = this.shape = new p2.Circle({
+        this.shape = this.shape = new p2.Circle({
             radius: Math.floor(this.size / 2),
             collisionGroup: game.SHIP,
             collisionMask: game.ASTEROID | game.SHIP | game.PLANET
@@ -120,7 +178,7 @@ export default class Ship extends PhysicalObject2D {
             velocity: [this.velocity.x, this.velocity.y],
             angle: this.angle,
             damping: 0, angularDamping: 0 });
-        this.physicsObj.addShape(shape);
+        this.physicsObj.addShape(this.shape);
         gameEngine.physicsEngine.world.addBody(this.physicsObj);
     }
 
