@@ -177,7 +177,11 @@ export default class HelmRenderer {
             docking.target = docking.dockable;
         });
         uiEls.dockCancelEl = this.createButton(document, uiEls.uiDocking, "dockCancelBtn", "Cancel Docking", () => {
-            uiEls.uiEls.uiDocking.classList.add('inactive');
+            // uiEls.uiDocking.classList.add('inactive');
+            docking.id = null;
+            docking.dockable = null;
+            docking.progress = 0;
+            docking.target = null;
         });
         uiEls.dockDistanceEl = this.createLabel(document, uiEls.uiDocking, "dockDistanceEl", "Distance:");
         uiEls.dockClosingEl = this.createLabel(document, uiEls.uiDocking, "dockClosingEl", "Closing:");
@@ -186,6 +190,9 @@ export default class HelmRenderer {
         uiEls.dockUndockEl = this.createButton(document, uiContainer, "dockUndockBtn", "Undock", () => {
             // do the undock
             docking.id = null;
+            docking.dockable = null;
+            docking.progress = 0;
+            docking.target = null;
             client.undock();
         });
         uiEls.dockUndockEl.classList.add('ui-undock');
@@ -358,7 +365,6 @@ export default class HelmRenderer {
     // update includes scaling of offset, so nothing else should scale (except size) of player ship
     // additional objects position will need to be scaled (player ship is always centre)
     updateGrid(x, y) {
-
         if (sprites.gridSprite) {
             let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
             sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
@@ -417,7 +423,8 @@ export default class HelmRenderer {
                 alias = obj.hull;
                 widthRatio = hullData.width;
             }
-
+            console.log("drawObjects" + obj.physicsObj.position[0]);
+            console.log("   playerShip" + playerShip.physicsObj.position[0]);
             let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
                                                  obj.physicsObj.position[1],
                                                  playerShip.physicsObj.position[0],
@@ -459,7 +466,10 @@ export default class HelmRenderer {
                 }
                 let ourVelocity = new Victor(playerShip.physicsObj.velocity[0], 0 - playerShip.physicsObj.velocity[1]);
                 let theirVelocity = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
-                let closing = ((ourVelocity.clone().subtract(theirVelocity)).dot(direction) / distance);
+                let closing = 0;
+                if (distance != 0) {
+                    closing = ((ourVelocity.clone().subtract(theirVelocity)).dot(direction) / distance);
+                }
                 let closingDesc = Math.round(closing);
                 if (closing == Infinity || closing == -Infinity) {
                     closingDesc = "∞";
@@ -477,7 +487,7 @@ export default class HelmRenderer {
                         // console.log("1)"+alias+":"+Math.round(distance)+ " @"+Math.round(closing));
 
                         // dock if progress >= 100 (docking is instant on server)
-                        if (docking.progress >= 20) {
+                        if (docking.progress >= 5) {
 
                             client.setEngine(0); // stop engine
 
@@ -655,7 +665,10 @@ export default class HelmRenderer {
                         waypoint.bearing = waypoint.waypointDirection.angle() % (2 * Math.PI);
 
                         let ourSpeed = Victor.fromArray(playerShip.physicsObj.velocity);
-                        waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+                        waypoint.closing = 0;
+                        if (waypoint.distanceToWaypoint != 0) {
+                            waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+                        }
 
                         if (waypoint.distanceToWaypoint < (settings.mapSize / 2)) {
                             // draw to map
@@ -670,6 +683,7 @@ export default class HelmRenderer {
                 }
 
                 // update the grid
+                console.log("X:"+playerShip.physicsObj.position[0]);
                 this.updateGrid(playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
 
                 // set the player ship rotation
@@ -689,7 +703,7 @@ export default class HelmRenderer {
                     uiEls['engineEl'+playerShip.engine].classList.add('active');
                 }
 
-                if (playerShip.dockedId && playerShip.dockedId >= 0) {
+                if (playerShip.dockedId !== null && playerShip.dockedId >= 0) {
                     uiEls.dockUndockEl.classList.remove('inactive');
                 } else {
                     uiEls.dockUndockEl.classList.add('inactive');
@@ -802,7 +816,10 @@ export default class HelmRenderer {
                     let gravityAmountText = Math.round((playerShip.gravityData.amount / (playerShip.physicsObj.mass)) * 100) / 100;
 
                     let gravityHeading = Victor.fromArray([playerShip.gravityData.velocity.x, playerShip.gravityData.velocity.y]);
-                    let closing = ((speedV.clone().subtract(gravityHeading)).dot(gravity) / gravity.length());
+                    let closing = 0;
+                    if (gravity.length() != 0) {
+                        closing = ((speedV.clone().subtract(gravityHeading)).dot(gravity) / gravity.length());
+                    }
 
                     // let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
                     //                gravityAmountText + SolarObjects.units.force + "\n" +
@@ -845,6 +862,7 @@ export default class HelmRenderer {
                 // remove any objects that we no-longer have
                 Object.keys(mapObjects).forEach((key) => {
                     if (!serverObjects[key]) {
+                        console.log("removing "+key);
                         this.removeFromMap(key);
                     }
                 });

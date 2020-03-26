@@ -26,64 +26,64 @@ export default class NvServerEngine extends ServerEngine {
         // });
 
         // add the sun
-        let sol = this.gameEngine.addPlanet({
-            x: 0, y: 0,
-            dX: 0, dY: 0,
-            mass: SolarObjects.Sol.mass,
-            size: SolarObjects.Sol.diameter,
-            angle: Math.random() * 2 * Math.PI,
-            angularVelocity: 0,
-            texture: 'sol'
-        });
+        // let sol = this.gameEngine.addPlanet({
+        //     x: 0, y: 0,
+        //     dX: 0, dY: 0,
+        //     mass: SolarObjects.Sol.mass,
+        //     size: SolarObjects.Sol.diameter,
+        //     angle: Math.random() * 2 * Math.PI,
+        //     angularVelocity: 0,
+        //     texture: 'sol'
+        // });
 
         // add the earth
         let earthOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Earth.orbit);
-        let earth = this.gameEngine.addPlanet({
-            x: SolarObjects.Earth.orbit, y: 0,
-            dX: 0, dY: 0 - earthOrbitSpeed,
-            mass: SolarObjects.Earth.mass,
-            size: SolarObjects.Earth.diameter,
-            angle: Math.random() * 2 * Math.PI,
-            angularVelocity: 0,
-            texture: 'earth',
-            fixedgravity: sol.id.toString()
-        });
+        // let earth = this.gameEngine.addPlanet({
+        //     x: SolarObjects.Earth.orbit, y: 0,
+        //     dX: 0, dY: 0 - earthOrbitSpeed,
+        //     mass: SolarObjects.Earth.mass,
+        //     size: SolarObjects.Earth.diameter,
+        //     angle: Math.random() * 2 * Math.PI,
+        //     angularVelocity: 0,
+        //     texture: 'earth',
+        //     fixedgravity: sol.id.toString()
+        // });
 
-        // add the mars
-        let marsOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Mars.orbit);
-        this.gameEngine.addPlanet({
-            x: SolarObjects.Mars.orbit, y: 0,
-            dX: 0, dY: 0 - marsOrbitSpeed,
-            mass: SolarObjects.Mars.mass,
-            size: SolarObjects.Mars.diameter,
-            angle: Math.random() * 2 * Math.PI,
-            angularVelocity: 0,
-            texture: 'mars',
-            fixedgravity: sol.id.toString()
-        });
+        // add mars
+        // let marsOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Mars.orbit);
+        // this.gameEngine.addPlanet({
+        //     x: SolarObjects.Mars.orbit, y: 0,
+        //     dX: 0, dY: 0 - marsOrbitSpeed,
+        //     mass: SolarObjects.Mars.mass,
+        //     size: SolarObjects.Mars.diameter,
+        //     angle: Math.random() * 2 * Math.PI,
+        //     angularVelocity: 0,
+        //     texture: 'mars',
+        //     fixedgravity: sol.id.toString()
+        // });
 
         // create a station around earth
-        let stationOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 1500;
+        let stationOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
         let stationOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / stationOrbitDistance);
         this.gameEngine.addShip({
             name: "Earth Station 1",
-            x: SolarObjects.Earth.orbit,
-            y: stationOrbitDistance,
-            dX: stationOrbitSpeed, dY: (0 - earthOrbitSpeed),
+            x: SolarObjects.Earth.orbit + stationOrbitDistance,
+            y: 0,
+            dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
             mass: 0.1, size: 280, // need to read mass and size from hull
             hull: 'station',
             angle: 0,
-            fixedgravity: earth.id.toString()
+            // fixedgravity: earth.id.toString()
         });
 
         // create a single player ship for now name, x, y, dX, dY, mass, hull, size, angle (radians)
-        let shipOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2000;
+        let shipOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
         let shipOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / shipOrbitDistance);
         this.gameEngine.addShip({
             name: "Nuisance Value",
-            x: SolarObjects.Earth.orbit + shipOrbitDistance,
-            y: 0,
-            dX: 0, dY: 0 - (earthOrbitSpeed + shipOrbitSpeed),
+            x: SolarObjects.Earth.orbit + shipOrbitDistance + 250,
+            y: 250,
+            dX: 0, dY: (0 - (earthOrbitSpeed + shipOrbitSpeed)),
             mass: 0.01, size: 100, // need to read mass and size from hull
             hull: 'bushido',
             angle: Math.PI,

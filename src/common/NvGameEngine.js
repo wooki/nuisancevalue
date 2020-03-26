@@ -89,13 +89,31 @@ export default class NvGameEngine extends GameEngine {
 
             // docked ships can ignore everything and just copy the position and vector
             // from the ship they are docked with
-            if (obj.dockedId && obj.dockedId >= 0) {
+            if (obj.dockedId !== null && obj.dockedId >= 0) {
 
                 // get the object we're docked with
-                let mothership = this.world.queryObject({ id: obj.dockedId });
+                let mothership = this.world.queryObject({ id: parseInt(obj.dockedId) });
                 if (mothership) {
-                    obj.physicsObj.position = [mothership.position.x, mothership.position.y];
-                    obj.physicsObj.velocity = [mothership.velocity.x, mothership.velocity.y];
+                    // console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
+                    if (isNaN(mothership.physicsObj.position[0])) {
+                    //     console.log("MOTHERSHIP pos NaN!");
+                    //     this.world.forEachObject(function(index, o) {
+                    //         console.dir(o);
+                    //     });
+                    } else {
+                        console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
+
+                        obj.physicsObj.angularVelocity = 0;
+                        obj.physicsObj.position = [mothership.physicsObj.position[0], mothership.physicsObj.position[1]];
+                        obj.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];
+                        obj.position = new TwoVector(mothership.physicsObj.position[0], mothership.physicsObj.position[1]);
+                        obj.velocity = new TwoVector(mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]);
+
+                    }
+
+                    // console.log("obj.physicsObj.position:");
+                    // console.dir(obj.physicsObj.position);
+
                 }
 
             } else {

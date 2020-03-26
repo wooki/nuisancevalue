@@ -1,4 +1,4 @@
-import { PhysicalObject2D, BaseTypes } from 'lance-gg';
+import { PhysicalObject2D, BaseTypes, TwoVector } from 'lance-gg';
 import Hulls from './Hulls';
 
 let game = null;
@@ -29,15 +29,16 @@ export default class Ship extends PhysicalObject2D {
 
     // get bending() {
     //     return {
-    //         position: { max: 4.0 },
+    //         position: { percent: 0.0 },
+    //         velocity: { percent: 0.0 },
     //         angularVelocity: { percent: 0.0 },
-    //         angleLocal: { percent: 0.0 }
-    //     };
+    //         angle: { percent: 0.0 },
+    //     }
     // }
 
     // if the ship has active engines then apply force
     applyEngine() {
-        if (this.dockedId && this.dockedId >= 0) {
+        if (this.dockedId !== null && this.dockedId >= 0) {
             return; // can't do this while docked
         }
 
@@ -72,7 +73,7 @@ export default class Ship extends PhysicalObject2D {
     // apply two forces opposite corners to create rotation
     applyManeuver(maneuver) {
 
-        if (this.dockedId && this.dockedId >= 0) {
+        if (this.dockedId !== null && this.dockedId >= 0) {
             return; // can't do this while docked
         }
 
@@ -106,23 +107,30 @@ export default class Ship extends PhysicalObject2D {
         this.dockedId = dockWith;
 
         // remove shape and replace with non-collision version
+        // game.physicsEngine.world.removeBody(this.physicsObj);
         this.physicsObj.removeShape(this.shape);
-        this.shape = this.shape = new p2.Circle({
+        this.shape = new p2.Circle({
             radius: Math.floor(this.size / 2),
             collisionGroup: game.DOCKED_SHIP
         });
         this.physicsObj.addShape(this.shape);
 
+        console.log("dock:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
+
         // match position and velocity to dock
-        this.physicsObj.position = [mothership.position.x, mothership.position.y];
-        this.physicsObj.velocity = [mothership.velocity.x, mothership.velocity.y];
+        this.physicsObj.angularVelocity = 0;
+        this.physicsObj.position = [mothership.physicsObj.position[0], mothership.physicsObj.position[1]];
+        this.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];
+        this.position = new TwoVector(mothership.physicsObj.position[0], mothership.physicsObj.position[1]);
+        this.velocity = new TwoVector(mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]);
+        // game.physicsEngine.world.addBody(this.physicsObj);
 
         // NOTE: client side we will remove sprite and add sprite to dock target sprite
     }
 
     undock() {
 
-        if (this.dockedId && this.dockedId >= 0) {
+        if (this.dockedId !== null && this.dockedId >= 0) {
 
             // find the target
             let mothership = game.world.objects[this.dockedId];
@@ -132,17 +140,25 @@ export default class Ship extends PhysicalObject2D {
                 this.dockedId = -1;
 
                 // remove shape and replace with proper version
+                // game.physicsEngine.world.removeBody(this.physicsObj);
                 this.physicsObj.removeShape(this.shape);
                 this.shape = this.shape = new p2.Circle({
+                    radius: Math.floor(this.size / 2),
                     collisionGroup: game.SHIP,
                     collisionMask: game.ASTEROID | game.SHIP | game.PLANET
                 });
                 this.physicsObj.addShape(this.shape);
 
-                // position just behind dock with slightly slower velocity
-                this.physicsObj.position = [mothership.position.x + mothership.size + this.size, mothership.position.y + mothership.size + this.size];
-                this.physicsObj.velocity = [mothership.velocity.x - 1, mothership.velocity.y - 1];
+                console.log("undock:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
 
+                // position just behind dock with slightly slower velocity
+                this.physicsObj.angularVelocity = 0;
+                this.physicsObj.position = [mothership.physicsObj.position[0] + mothership.size + this.size, mothership.physicsObj.position[1] + mothership.size + this.size];
+                this.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];
+                this.position = new TwoVector(mothership.physicsObj.position[0], mothership.physicsObj.position[1]);
+                this.velocity = new TwoVector(mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]);
+
+                // game.physicsEngine.world.addBody(this.physicsObj);
             }
 
         }
@@ -204,6 +220,6 @@ export default class Ship extends PhysicalObject2D {
         this.commsScript = other.commsScript;
         this.commsState = other.commsState;
         this.commsTargetId = other.commsTargetId;
-        this.dockedId  = other.dockedId  ;
+        this.dockedId  = other.dockedId;
     }
 }

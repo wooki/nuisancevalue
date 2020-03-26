@@ -65,13 +65,13 @@ export default class LobbyRenderer {
 	    			shipEls[objId+'-nav'] = null;
 	    		}
 
-	    		if (obj.navPlayerId == 0 && !shipEls[objId+'-signals']) {
+	    		if (obj.signalsPlayerId == 0 && !shipEls[objId+'-signals']) {
 		    		shipEls[objId+'-signals'] = document.createElement('div');
 	    			shipEls[objId+'-signals'].addEventListener('click', (event) => { this.joinShip(objId, 'signals') } );
 	    			shipEls[objId+'-signals'].innerHTML = "Join as signals";
 	    			shipEls[objId+'-signals'].classList.add('join');
 	    			shipEls[objId].append(shipEls[objId+'-signals']);
-	    		} else if (obj.navPlayerId != 0 && shipEls[objId+'-signals']) {
+	    		} else if (obj.signalsPlayerId != 0 && shipEls[objId+'-signals']) {
 	    			shipEls[objId+'-signals'].remove();
 	    			shipEls[objId+'-signals'] = null;
 	    		}

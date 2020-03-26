@@ -503,6 +503,9 @@ export default class NavRenderer {
                     // hard-code alias for self
                     aliases['self'] = obj.id;
                     aliases['me'] = obj.id;
+
+                    console.log("ME:");
+                    console.dir(playerShip);
                 }
 
                 let texture = null;
