@@ -29,6 +29,10 @@ export default class HelmUi extends PIXI.Graphics {
         this.zIndex = this.params.zIndex;
         this.width = this.params.uiWidth;
         this.height = this.params.uiHeight;
+        let smallestDimension = this.params.uiWidth;
+        if (this.params.uiHeight < smallestDimension) {
+          smallestDimension = this.params.uiHeight;
+        }
         this.anchor = 0.5;
         this.x = (this.params.uiWidth / 2);
         this.y = (this.params.uiHeight / 2);
@@ -37,7 +41,7 @@ export default class HelmUi extends PIXI.Graphics {
         if (this.bearing) {
             this.lineStyle(5, 0xFF0000, 1);
             this.arc(0, 0,
-                     (this.params.uiHeight / 2) - 5,
+                     (smallestDimension / 2) - 5,
                      this.bearing - 0.02, this.bearing + 0.02);
         }
 
@@ -45,7 +49,7 @@ export default class HelmUi extends PIXI.Graphics {
             this.moveTo();
             this.lineStyle(5, 0x00FF00, 1);
             this.arc(0, 0,
-                     (this.params.uiHeight / 2) - 5,
+                     (smallestDimension / 2) - 5,
                      this.course - 0.02, this.course + 0.02);
         }
 
@@ -53,7 +57,7 @@ export default class HelmUi extends PIXI.Graphics {
             this.moveTo();
             this.lineStyle(5, 0x0000FF, 1);
             this.arc(0, 0,
-                     (this.params.uiHeight / 2) - 5,
+                     (smallestDimension / 2) - 5,
                      this.gravity - 0.02, this.gravity + 0.02);
         }
 
@@ -62,7 +66,7 @@ export default class HelmUi extends PIXI.Graphics {
                 this.moveTo();
                 this.lineStyle(5, 0xFFFF00, 1);
                 this.arc(0, 0,
-                         (this.params.uiHeight / 2) - 5,
+                         (smallestDimension / 2) - 5,
                          waypoint.bearing - 0.02, waypoint.bearing + 0.02);
             });
         }

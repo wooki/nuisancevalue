@@ -95,20 +95,17 @@ export default class NvGameEngine extends GameEngine {
                 let mothership = this.world.queryObject({ id: parseInt(obj.dockedId) });
                 if (mothership) {
                     // console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
-                    if (isNaN(mothership.physicsObj.position[0])) {
-                    //     console.log("MOTHERSHIP pos NaN!");
-                    //     this.world.forEachObject(function(index, o) {
-                    //         console.dir(o);
-                    //     });
+                    if (isNaN(mothership.position.x)) {
+                        // console.log("MOTHERSHIP pos NaN!");
+                        // this.world.forEachObject(function(index, o) {
+                        //     console.dir(o);
+                        // });
                     } else {
-                        console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
+                        // console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
 
                         obj.physicsObj.angularVelocity = 0;
                         obj.physicsObj.position = [mothership.physicsObj.position[0], mothership.physicsObj.position[1]];
-                        obj.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];
-                        obj.position = new TwoVector(mothership.physicsObj.position[0], mothership.physicsObj.position[1]);
-                        obj.velocity = new TwoVector(mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]);
-
+                        // obj.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];                      
                     }
 
                     // console.log("obj.physicsObj.position:");

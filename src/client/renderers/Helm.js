@@ -423,8 +423,8 @@ export default class HelmRenderer {
                 alias = obj.hull;
                 widthRatio = hullData.width;
             }
-            console.log("drawObjects" + obj.physicsObj.position[0]);
-            console.log("   playerShip" + playerShip.physicsObj.position[0]);
+
+            console.log("distance:"+Math.abs(Math.abs(obj.physicsObj.position[1]) - Math.abs(playerShip.physicsObj.position[1])));
             let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
                                                  obj.physicsObj.position[1],
                                                  playerShip.physicsObj.position[0],
@@ -484,8 +484,6 @@ export default class HelmRenderer {
                 if (docking.id == null && (playerShip.dockedId == null || playerShip.dockedId < 0)) {
                     if (docking.target == obj.id && distance <= 200 & Math.abs(closing) < 100) {
 
-                        // console.log("1)"+alias+":"+Math.round(distance)+ " @"+Math.round(closing));
-
                         // dock if progress >= 100 (docking is instant on server)
                         if (docking.progress >= 5) {
 
@@ -511,8 +509,6 @@ export default class HelmRenderer {
 
 
                     } else if (docking.target == obj.id && distance <= 1000) {
-
-                        // console.log("2)"+alias+":"+Math.round(distance)+ " @"+Math.round(closing));
 
                         // reduce the progress
                         docking.progress = docking.progress - (dt / 100); // 100% is 10s
@@ -683,7 +679,6 @@ export default class HelmRenderer {
                 }
 
                 // update the grid
-                console.log("X:"+playerShip.physicsObj.position[0]);
                 this.updateGrid(playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
 
                 // set the player ship rotation
@@ -862,7 +857,6 @@ export default class HelmRenderer {
                 // remove any objects that we no-longer have
                 Object.keys(mapObjects).forEach((key) => {
                     if (!serverObjects[key]) {
-                        console.log("removing "+key);
                         this.removeFromMap(key);
                     }
                 });

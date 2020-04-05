@@ -13,10 +13,10 @@ const defaults = {
     delayInputCount: 5,
     scheduler: 'render-schedule',
     syncOptions: {
-        sync: qsOptions.sync || 'extrapolate',
-        localObjBending: 0.8,
-        remoteObjBending: 1.0,
-        bendingIncrements: 6
+      sync: qsOptions.sync || 'extrapolate',
+      localObjBending: 0.6,
+      remoteObjBending: 0.6,
+      bendingIncrements: 6
     }
 };
 let options = Object.assign(defaults, qsOptions);

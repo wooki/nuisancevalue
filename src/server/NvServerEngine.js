@@ -70,6 +70,7 @@ export default class NvServerEngine extends ServerEngine {
             x: SolarObjects.Earth.orbit + stationOrbitDistance,
             y: 0,
             dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
+            // dX: 0, dY: 0,
             mass: 0.1, size: 280, // need to read mass and size from hull
             hull: 'station',
             angle: 0,
@@ -84,6 +85,7 @@ export default class NvServerEngine extends ServerEngine {
             x: SolarObjects.Earth.orbit + shipOrbitDistance + 250,
             y: 250,
             dX: 0, dY: (0 - (earthOrbitSpeed + shipOrbitSpeed)),
+            // dX: 0, dY: 0,
             mass: 0.01, size: 100, // need to read mass and size from hull
             hull: 'bushido',
             angle: Math.PI,
