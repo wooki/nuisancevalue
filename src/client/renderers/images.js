@@ -7,6 +7,7 @@ module.exports = {
 		sol: 'assets/sol.png',
 		earth: 'assets/earth.png',
 		mars: 'assets/mars.png',
+		jupiter: 'assets/jupiter.png',
 		explosion: 'assets/explosion.json',
 		dashboard: 'assets/dashboard.jpg',
 		waypoint: 'assets/waypoint.png'

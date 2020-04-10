@@ -27,8 +27,8 @@ export default class Asteroid extends PhysicalObject2D {
         let shape = this.shape = new p2.Circle({
             radius: Math.floor(this.size / 2),
             collisionGroup: game.ASTEROID,
-            // collisionMask: game.ASTEROID | game.SHIP
-            collisionMask: game.SHIP // don't collide with other asteroids or planets
+            collisionMask: game.SHIP | game.PLANET
+            // collisionMask: game.SHIP // don't collide with other asteroids or planets
         });
         this.physicsObj = new p2.Body({
             mass: this.mass,

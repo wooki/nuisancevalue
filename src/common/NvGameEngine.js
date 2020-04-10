@@ -105,7 +105,7 @@ export default class NvGameEngine extends GameEngine {
 
                         obj.physicsObj.angularVelocity = 0;
                         obj.physicsObj.position = [mothership.physicsObj.position[0], mothership.physicsObj.position[1]];
-                        // obj.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];                      
+                        // obj.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];
                     }
 
                     // console.log("obj.physicsObj.position:");
@@ -270,6 +270,8 @@ export default class NvGameEngine extends GameEngine {
                     ship.applyManeuver(direction);
                 }
             }
+
+            // dock - check ship and target then remove ship from game and transfer the players (!!!???)
 
             // handle dock - helm only
             if (inputData.input == 'dock') {

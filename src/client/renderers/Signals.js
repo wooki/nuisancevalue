@@ -98,6 +98,7 @@ export default class SignalsRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.jupiter);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);

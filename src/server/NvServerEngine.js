@@ -16,51 +16,42 @@ export default class NvServerEngine extends ServerEngine {
     start() {
         super.start();
 
-        // create an asteroid
-        // this.gameEngine.addAsteroid({
-        //     x: SolarObjects.adjustedOrbit('Earth') + 2000, y: -1000,
-        //     dX: 0, dY: -15,
-        //     mass: Math.random() * 100, size: 50 + Math.random() * 100,
-        //     angle: Math.random() * 2 * Math.PI,
-        //     angularVelocity: Math.random()
-        // });
-
         // add the sun
-        // let sol = this.gameEngine.addPlanet({
-        //     x: 0, y: 0,
-        //     dX: 0, dY: 0,
-        //     mass: SolarObjects.Sol.mass,
-        //     size: SolarObjects.Sol.diameter,
-        //     angle: Math.random() * 2 * Math.PI,
-        //     angularVelocity: 0,
-        //     texture: 'sol'
-        // });
+        let sol = this.gameEngine.addPlanet({
+            x: 0, y: 0,
+            dX: 0, dY: 0,
+            mass: SolarObjects.Sol.mass,
+            size: SolarObjects.Sol.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'sol'
+        });
 
         // add the earth
         let earthOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Earth.orbit);
-        // let earth = this.gameEngine.addPlanet({
-        //     x: SolarObjects.Earth.orbit, y: 0,
-        //     dX: 0, dY: 0 - earthOrbitSpeed,
-        //     mass: SolarObjects.Earth.mass,
-        //     size: SolarObjects.Earth.diameter,
-        //     angle: Math.random() * 2 * Math.PI,
-        //     angularVelocity: 0,
-        //     texture: 'earth',
-        //     fixedgravity: sol.id.toString()
-        // });
+        let earth = this.gameEngine.addPlanet({
+            x: SolarObjects.Earth.orbit, y: 0,
+            dX: 0, dY: 0 - earthOrbitSpeed,
+            mass: SolarObjects.Earth.mass,
+            size: SolarObjects.Earth.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'earth',
+            fixedgravity: sol.id.toString()
+        });
 
         // add mars
-        // let marsOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Mars.orbit);
-        // this.gameEngine.addPlanet({
-        //     x: SolarObjects.Mars.orbit, y: 0,
-        //     dX: 0, dY: 0 - marsOrbitSpeed,
-        //     mass: SolarObjects.Mars.mass,
-        //     size: SolarObjects.Mars.diameter,
-        //     angle: Math.random() * 2 * Math.PI,
-        //     angularVelocity: 0,
-        //     texture: 'mars',
-        //     fixedgravity: sol.id.toString()
-        // });
+        let marsOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Mars.orbit);
+        this.gameEngine.addPlanet({
+            x: SolarObjects.Mars.orbit, y: 0,
+            dX: 0, dY: 0 - marsOrbitSpeed,
+            mass: SolarObjects.Mars.mass,
+            size: SolarObjects.Mars.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'mars',
+            fixedgravity: sol.id.toString()
+        });
 
         // create a station around earth
         let stationOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
@@ -70,11 +61,20 @@ export default class NvServerEngine extends ServerEngine {
             x: SolarObjects.Earth.orbit + stationOrbitDistance,
             y: 0,
             dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
-            // dX: 0, dY: 0,
             mass: 0.1, size: 280, // need to read mass and size from hull
             hull: 'station',
             angle: 0,
-            // fixedgravity: earth.id.toString()
+            fixedgravity: earth.id.toString()
+        });
+
+        // create an asteroid
+        this.gameEngine.addAsteroid({
+            x: SolarObjects.Earth.orbit + stationOrbitDistance + 1000,
+            y: 500,
+            dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
+            mass: Math.random() * 100, size: 50 + Math.random() * 100,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: Math.random()
         });
 
         // create a single player ship for now name, x, y, dX, dY, mass, hull, size, angle (radians)
@@ -85,12 +85,42 @@ export default class NvServerEngine extends ServerEngine {
             x: SolarObjects.Earth.orbit + shipOrbitDistance + 250,
             y: 250,
             dX: 0, dY: (0 - (earthOrbitSpeed + shipOrbitSpeed)),
-            // dX: 0, dY: 0,
             mass: 0.01, size: 100, // need to read mass and size from hull
             hull: 'bushido',
             angle: Math.PI,
             playable: 1
         });
+
+        // add jupiter
+        let jupiterOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Jupiter.orbit);
+        let jupiter = this.gameEngine.addPlanet({
+            x: 0 - SolarObjects.Jupiter.orbit, y: 0,
+            dX: 0, dY: jupiterOrbitSpeed,
+            mass: SolarObjects.Jupiter.mass,
+            size: SolarObjects.Jupiter.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'jupiter',
+            fixedgravity: sol.id.toString()
+        });
+
+        // create a station around jupiter
+        let jupiterstationOrbitDistance = Math.floor(SolarObjects.Jupiter.diameter/2) + 5000;
+        let jupiterstationOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Jupiter.mass) / jupiterstationOrbitDistance);
+        this.gameEngine.addShip({
+            name: "Jupiter Station 1",
+            x: 0 - (SolarObjects.Jupiter.orbit + jupiterstationOrbitDistance),
+            y: 0,
+            dX: 0, dY: (0 - (jupiterOrbitSpeed + jupiterstationOrbitSpeed)),
+            mass: 0.08, size: 180, // need to read mass and size from hull
+            hull: 'station',
+            angle: 0,
+            fixedgravity: jupiter.id.toString()
+        });
+
+
+
+
 
         // also needs a room
         // this.createRoom("Nuisance Value");
