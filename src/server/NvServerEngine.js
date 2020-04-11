@@ -123,7 +123,7 @@ export default class NvServerEngine extends ServerEngine {
         let asteroidDistance = SolarObjects.Mars.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mars.orbit) / 2);
         let asteroidDistanceVariance = SolarObjects.Jupiter.diameter * 15;
 
-        for (let asteroidIndex = 0; asteroidIndex < 99; asteroidIndex++) {
+        for (let asteroidIndex = 0; asteroidIndex < 12; asteroidIndex++) {
 
             // create a point and vector then rotate to a random position
             let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
