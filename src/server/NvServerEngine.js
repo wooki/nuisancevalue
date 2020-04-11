@@ -43,8 +43,8 @@ export default class NvServerEngine extends ServerEngine {
         // add mars
         let marsOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Mars.orbit);
         this.gameEngine.addPlanet({
-            x: SolarObjects.Mars.orbit, y: 0,
-            dX: 0, dY: 0 - marsOrbitSpeed,
+            x: 0, y: 0 - SolarObjects.Mars.orbit,
+            dX: 0 - marsOrbitSpeed, dY: 0,
             mass: SolarObjects.Mars.mass,
             size: SolarObjects.Mars.diameter,
             angle: Math.random() * 2 * Math.PI,
@@ -117,6 +117,19 @@ export default class NvServerEngine extends ServerEngine {
             angle: 0,
             fixedgravity: jupiter.id.toString()
         });
+
+        // create lots of asteroids
+        for (let asteroidIndex = 0; asteroidIndex < 40; asteroidIndex++) {
+
+            this.gameEngine.addAsteroid({
+                x: 0 - (10000 + (Math.random() * 100000)), y: 0 - (3000 + SolarObjects.Mars.orbit + (Math.random() * 100000)),
+                dX: 0 - (marsOrbitSpeed * 2), dY: marsOrbitSpeed * 0.1,
+                mass: Math.random() * 100, size: 40 + Math.random() * 250,
+                angle: Math.random() * 2 * Math.PI,
+                angularVelocity: Math.random(),
+                // fixedgravity: sol.id.toString()
+            });
+        }
 
 
 
