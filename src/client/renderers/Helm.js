@@ -425,7 +425,6 @@ export default class HelmRenderer {
                 widthRatio = hullData.width;
             }
 
-            console.log("distance:"+Math.abs(Math.abs(obj.physicsObj.position[1]) - Math.abs(playerShip.physicsObj.position[1])));
             let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
                                                  obj.physicsObj.position[1],
                                                  playerShip.physicsObj.position[0],
