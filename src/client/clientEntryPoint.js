@@ -10,7 +10,7 @@ import '../css/main.scss';
 // is sent to both game engine and client engine
 const defaults = {
     traceLevel: Lib.Trace.TRACE_ALL,
-    delayInputCount: 0,
+    delayInputCount: 100,
     scheduler: 'render-schedule',
     syncOptions: {
       sync: qsOptions.sync || 'extrapolate',
