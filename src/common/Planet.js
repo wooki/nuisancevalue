@@ -29,7 +29,7 @@ export default class Planet extends PhysicalObject2D {
         let shape = this.shape = new p2.Circle({
             radius: Math.floor(this.size / 2),
             collisionGroup: game.PLANET,
-            collisionMask: game.SHIP | game.PLANET
+            collisionMask: game.SHIP | game.PLANET | game.ASTEROID
         });
         this.physicsObj = new p2.Body({
             mass: this.mass,

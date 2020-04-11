@@ -115,7 +115,7 @@ export default class Ship extends PhysicalObject2D {
         this.physicsObj.addShape(this.shape);
 
         console.log("dock:"+mothership.physicsObj.velocity[0] + "," + mothership.physicsObj.velocity[1]);
-        
+
         // match position and velocity to dock
         this.physicsObj.angularVelocity = 0;
         this.physicsObj.position = [mothership.physicsObj.position[0], mothership.physicsObj.position[1]];

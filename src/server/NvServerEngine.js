@@ -3,6 +3,7 @@ import Asteroid from '../common/Asteroid';
 import Bullet from '../common/Bullet';
 import Ship from '../common/Ship';
 import SolarObjects from '../common/SolarObjects';
+import Victor from 'victor';
 
 export default class NvServerEngine extends ServerEngine {
 
@@ -118,12 +119,29 @@ export default class NvServerEngine extends ServerEngine {
             fixedgravity: jupiter.id.toString()
         });
 
-        // create lots of asteroids
-        for (let asteroidIndex = 0; asteroidIndex < 40; asteroidIndex++) {
+        // asteroids between mars and jupiter
+        let asteroidDistance = SolarObjects.Mars.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mars.orbit) / 2);
+        let asteroidDistanceVariance = SolarObjects.Jupiter.diameter * 15;
 
+        for (let asteroidIndex = 0; asteroidIndex < 99; asteroidIndex++) {
+
+            // create a point and vector then rotate to a random position
+            let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
+            let position = new Victor(x, 0);
+            let asteroidOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / x);
+            let v = new Victor(0, 0 - asteroidOrbitSpeed);
+
+            // rotate degrees
+            let r = Math.random() * 359;
+            position = position.rotateDeg(r);
+            v = v.rotateDeg(r);
+
+            // add an actual asteroid
             this.gameEngine.addAsteroid({
-                x: 0 - (10000 + (Math.random() * 100000)), y: 0 - (3000 + SolarObjects.Mars.orbit + (Math.random() * 100000)),
-                dX: 0 - (marsOrbitSpeed * 2), dY: marsOrbitSpeed * 0.1,
+                x: position.x,
+                y: position.y,
+                dX: v.x,
+                dY: v.y,
                 mass: Math.random() * 100, size: 40 + Math.random() * 250,
                 angle: Math.random() * 2 * Math.PI,
                 angularVelocity: Math.random(),

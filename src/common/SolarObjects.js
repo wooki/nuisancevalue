@@ -6,21 +6,6 @@
 // ¹²³⁴⁵⁶⁷⁸⁹⁰
 module.exports = {
 
-	// use a formula to scale down
-	// adjustedDiameter: function(key) {
-	// 	return Math.floor(Math.sqrt(this[key].diameter)*10);
-	// },
-
-	// adjustedMass: function(key) {
-	// 	// return Math.floor(Math.sqrt(this[key].mass)*100);
-	// 	// return Math.floor(Math.sqrt(this[key].mass)) * 100000;
-	// 	return Math.floor(this[key].mass) * Math.pow(10, 8);
-	// },
-
-	// adjustedOrbit: function(key) {
-	// 	return Math.floor(Math.sqrt(this[key].orbit)*10);
-	// },
-
 	units: {
 		speed: ' Mm/s',
 		distance: ' Mm',
