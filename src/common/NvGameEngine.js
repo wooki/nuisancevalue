@@ -278,7 +278,8 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 if (ship) {
                     if (inputData.options.target != undefined) {
-                        ship.dock(inputData.options.target);
+                        // ship.dock(inputData.options.target);
+                        this.emit('dock', { ship: ship, target: inputData.options.target });
                     }
                 }
             }
@@ -288,7 +289,8 @@ export default class NvGameEngine extends GameEngine {
 
                 let ship = this.getPlayerShip(playerId);
                 if (ship) {
-                    ship.undock();
+                    // ship.undock();
+                    this.emit('undock', { ship: ship });
                 }
             }
 

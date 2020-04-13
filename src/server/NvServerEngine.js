@@ -151,7 +151,16 @@ export default class NvServerEngine extends ServerEngine {
 
 
 
+        // listen to server only events
+        this.gameEngine.on('dock', e => {
+            // e.ship, e.target
+            e.ship.dock(e.target);
+        });
 
+        this.gameEngine.on('undock', e => {
+            // e.ship
+            e.ship.undock();
+        });
 
         // also needs a room
         // this.createRoom("Nuisance Value");
