@@ -10,7 +10,8 @@ module.exports = {
 		jupiter: 'assets/jupiter.png',
 		explosion: 'assets/explosion.json',
 		dashboard: 'assets/dashboard.jpg',
-		waypoint: 'assets/waypoint.png'
+		waypoint: 'assets/waypoint.png',
+		space: 'assets/space.png'
 	},
 	Colors: {
 		Black: 0x000000,

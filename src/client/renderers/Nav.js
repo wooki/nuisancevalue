@@ -3,6 +3,7 @@ const PIXI = require('pixi.js');
 const Assets = require('./images.js');
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
+import {CRTFilter} from '@pixi/filter-crt';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -31,13 +32,14 @@ let settings = {
     minimumSpriteSize: 8,
     waypointSize: 16,
     zIndex: {
-        grid: 1,
-        asteroid: 10,
-        planet: 11,
-        ship: 50,
-        waypoints: 60,
-        dashboard: 100,
-        ui: 101
+      background: 1,
+      grid: 2,
+      asteroid: 10,
+      planet: 11,
+      ship: 50,
+      waypoints: 60,
+      dashboard: 100,
+      ui: 101
     }
 };
 let pixiApp = null;
@@ -47,7 +49,18 @@ let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 let effects = {
     hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
-    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1)
+    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
+    crt: new CRTFilter({
+      curvature: 8,
+      lineWidth: 10,
+      lineContrast: 0.4,
+      noise: 0.2,
+      noiseSize: 1.2,
+      vignetting: 0,
+      vignettingAlpha: 0,
+      seed: 0,
+      time: 0
+    })
 };
 let aliases = {}; // keep track of everything added to map using easier address
 let commandBuffer = [];
@@ -77,6 +90,15 @@ export default class NavRenderer {
             backgroundColor: Assets.Colors.Black,
             resolution: window.devicePixelRatio || 1
         });
+        // animate the mapContainers filter once it exists
+        PIXI.Ticker.shared.add(function (time) {
+          if (mapContainer.filters) {
+            mapContainer.filters.forEach((f) => {
+              f.time += 0.33;
+              f.seed = Math.random();
+            });
+          }
+        });
         pixiApp.stage.sortableChildren = true;
         pixiContainer = new PIXI.Container();
         pixiContainer.sortableChildren = true;
@@ -86,6 +108,7 @@ export default class NavRenderer {
         mapContainer.interactive = true;
         mapContainer.on('mousedown', this.canvasClick);
         mapContainer.on('touchstart', this.canvasClick);
+        mapContainer.filters = [effects.crt];
 
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;
@@ -103,6 +126,7 @@ export default class NavRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.jupiter);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.space);
 
         // load sprites for all hulls
         for (let [hullKey, hullData] of Object.entries(Hulls)) {
@@ -352,6 +376,17 @@ export default class NavRenderer {
             sprites.gridSprite.destroy(true);
             sprites.gridSprite = null;
         }
+
+        // add a background image
+        let backgroundTexture = settings.resources[settings.baseUrl+Assets.Images.space].texture;
+        sprites.backgroundSprite = new PIXI.TilingSprite(backgroundTexture, 1024, 1024);
+        sprites.backgroundSprite.anchor.set(0.5);
+        sprites.backgroundSprite.x = Math.floor(settings.UiWidth / 2);
+        sprites.backgroundSprite.y = Math.floor(settings.UiHeight / 2);
+        sprites.backgroundSprite.width = settings.UiWidth;
+        sprites.backgroundSprite.height = settings.UiHeight;
+        sprites.backgroundSprite.zIndex = settings.zIndex.background;
+        mapContainer.addChild(sprites.backgroundSprite);
 
         // create a texture for the grid background
         let gridGraphics = new PIXI.Graphics();

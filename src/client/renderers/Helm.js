@@ -4,6 +4,7 @@ const Assets = require('./images.js');
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
+import {CRTFilter} from '@pixi/filter-crt';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -12,7 +13,6 @@ import Hulls from './../../common/Hulls';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
 import SolarObjects from './../../common/SolarObjects';
-// import {CRTFilter} from '@pixi/filter-crt';
 
 let el = null;
 let uiEls = {};
@@ -20,12 +20,13 @@ let game = null;
 let client = null;
 let settings = {
     baseUrl: '/',
-    mapSize: 4000,
+    mapSize: 6000,
     loadedSprites: false,
-    gridSize: 1024,
+    gridSize: 1000, // set in setSizes
     waypointTexture: null,
     zIndex: {
-        grid: 1,
+        background: 1,
+        grid: 2,
         asteroid: 10,
         planet: 11,
         ship: 50,
@@ -42,7 +43,18 @@ let mapObjects = {}; // keep track of what we have added
 let effects = {
     hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
     waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
-    bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9})
+    bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9}),
+    crt: new CRTFilter({
+      curvature: 8,
+      lineWidth: 10,
+      lineContrast: 0.4,
+      noise: 0.2,
+      noiseSize: 1.2,
+      vignetting: 0,
+      vignettingAlpha: 0,
+      seed: 0,
+      time: 0
+    })
 };
 let docking = {
     dockable: null, // closest id < 1000 - allows us to start dock
@@ -74,6 +86,15 @@ export default class HelmRenderer {
             backgroundColor: Assets.Colors.Black,
             resolution: window.devicePixelRatio || 1
         });
+        // animate the mapContainers filter once it exists
+        PIXI.Ticker.shared.add(function (time) {
+          if (mapContainer.filters) {
+            mapContainer.filters.forEach((f) => {
+              f.time += 0.33;
+              f.seed = Math.random();
+            });
+          }
+        });
         pixiApp.stage.sortableChildren = true;
         pixiContainer = new PIXI.Container();
         pixiContainer.sortableChildren = true;
@@ -81,10 +102,7 @@ export default class HelmRenderer {
         mapContainer = new PIXI.Container();
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;
-        // mapContainer.filters = [new CRTFilter({ // doesn't really work with black background
-        //     lineWidth: 10,
-        //     lineContrast: 0.75
-        // })];
+        mapContainer.filters = [effects.crt];
         pixiApp.stage.addChild(pixiContainer);
         pixiApp.stage.addChild(mapContainer);
         el.append(pixiApp.view); // add to the page
@@ -101,6 +119,7 @@ export default class HelmRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.space);
 
         // load sprites for all hulls
         for (let [hullKey, hullData] of Object.entries(Hulls)) {
@@ -309,6 +328,17 @@ export default class HelmRenderer {
         settings.loadedSprites = true;
         settings.resources = resources;
 
+        // add a background image
+        let backgroundTexture = settings.resources[settings.baseUrl+Assets.Images.space].texture;
+        sprites.backgroundSprite = new PIXI.TilingSprite(backgroundTexture, 1024, 1024);
+        sprites.backgroundSprite.anchor.set(0.5);
+        sprites.backgroundSprite.x = Math.floor(settings.UiWidth / 2);
+        sprites.backgroundSprite.y = Math.floor(settings.UiHeight / 2);
+        sprites.backgroundSprite.width = settings.UiWidth;
+        sprites.backgroundSprite.height = settings.UiHeight;
+        sprites.backgroundSprite.zIndex = settings.zIndex.background;
+        mapContainer.addChild(sprites.backgroundSprite);
+
         // create a texture for the grid background
         let gridGraphics = new PIXI.Graphics();
         gridGraphics.lineStyle(1, Assets.Colors.Grid);
@@ -323,6 +353,7 @@ export default class HelmRenderer {
         sprites.gridSprite.height = settings.UiHeight;
         sprites.gridSprite.zIndex = settings.zIndex.grid;
         mapContainer.addChild(sprites.gridSprite);
+
 
         // UI create a texture to overlay on top of the background
         let dashboardGraphics = new PIXI.Graphics();
@@ -846,7 +877,7 @@ export default class HelmRenderer {
                     // remove gravity from UI
                     if (sprites.gravityText) {
                         sprites.gravityText.destroy();
-                        sprites.gravityText = null;
+                        sprites.ColorsgravityText = null;
                     }
                 }
 
