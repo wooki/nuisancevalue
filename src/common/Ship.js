@@ -79,20 +79,29 @@ export default class Ship extends PhysicalObject2D {
 
         if (maneuver == 'l') {
 
-            this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), 0]);
-            this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), this.size]);
+            if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.2) {
+                this.physicsObj.angularVelocity = 0;
+            } else {
+                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), this.size]);
+            }
 
         } else if (maneuver == 'r') {
 
-            this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), 0]);
-            this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), this.size]);
+            if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.2) {
+                this.physicsObj.angularVelocity = 0;
+            } else {
+                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), this.size]);
+            }
+
         } else if (maneuver == 'f') {
 
-            this.physicsObj.applyForceLocal([0, 0.05], [Math.floor(this.size/2), Math.floor(this.size)]);
+            this.physicsObj.applyForceLocal([0, 0.05], [Math.floor(this.size/2), Math.floor(this.size/2)]);
 
         } else if (maneuver == 'b') {
 
-            this.physicsObj.applyForceLocal([0, -0.05], [Math.floor(this.size/2), 0]);
+            this.physicsObj.applyForceLocal([0, -0.05], [Math.floor(this.size/2), Math.floor(this.size/2)]);
         }
 
     }
