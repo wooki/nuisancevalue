@@ -11,7 +11,9 @@ module.exports = {
 		explosion: 'assets/explosion.json',
 		dashboard: 'assets/dashboard.jpg',
 		waypoint: 'assets/waypoint.png',
-		space: 'assets/space.png'
+		space: 'assets/space.png',
+		exhaust: 'assets/exhaust.json',
+		exhaustflame: 'assets/exhaustflame.json'				
 	},
 	Colors: {
 		Black: 0x000000,
