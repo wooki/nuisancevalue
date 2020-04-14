@@ -95,11 +95,15 @@ export default class NvGameEngine extends GameEngine {
                 let mothership = this.world.queryObject({ id: parseInt(obj.dockedId) });
                 if (mothership) {
                     // console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
-                    if (isNaN(mothership.position.x)) {
+                    if (isNaN(mothership.physicsObj.position[0])) {
+
+                        // HAPENS ONLY CLIENT AFTER RECONNECT !!!
                         // console.log("MOTHERSHIP pos NaN!");
+                        // console.dir(mothership);
                         // this.world.forEachObject(function(index, o) {
                         //     console.dir(o);
                         // });
+                        // throw "DEBUGGING !";
                     } else {
                         // console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
 
@@ -271,14 +275,12 @@ export default class NvGameEngine extends GameEngine {
                 }
             }
 
-            // dock - check ship and target then remove ship from game and transfer the players (!!!???)
-
             // handle dock - helm only
             if (inputData.input == 'dock') {
                 let ship = this.getPlayerShip(playerId);
                 if (ship) {
                     if (inputData.options.target != undefined) {
-                        // ship.dock(inputData.options.target);
+                        // ship.dock(inputData.options.target); // MOVED TO SERVER ONLY via event
                         this.emit('dock', { ship: ship, target: inputData.options.target });
                     }
                 }
@@ -289,7 +291,7 @@ export default class NvGameEngine extends GameEngine {
 
                 let ship = this.getPlayerShip(playerId);
                 if (ship) {
-                    // ship.undock();
+                    // ship.undock(); // MOVED TO SERVER ONLY via event
                     this.emit('undock', { ship: ship });
                 }
             }

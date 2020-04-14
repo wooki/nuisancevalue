@@ -150,7 +150,6 @@ export default class NvServerEngine extends ServerEngine {
         }
 
 
-
         // listen to server only events
         this.gameEngine.on('dock', e => {
             // e.ship, e.target

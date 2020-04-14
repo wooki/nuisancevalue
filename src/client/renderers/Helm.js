@@ -63,6 +63,7 @@ let docking = {
     id: null, // id docked with
     progress: 0 // percent progress
 }
+let debugging = false;
 
 export default class HelmRenderer {
 
@@ -185,6 +186,7 @@ export default class HelmRenderer {
         });
 
         uiEls.manBackEl = this.createButton(document, uiManeuverContainer, "manBackBtn", "v", () => {
+            debugging = true;
             this.setManeuver('b');
         });
 
@@ -654,12 +656,22 @@ export default class HelmRenderer {
                 }
             });
 
+            if (debugging) {
+                if (isNaN(playerShip.position.x)) {
+                    console.dir(playerShip);
+                    console.dir(gameObjects);
+                    debugging = false;
+                }
+            }
             if (playerShip) {
 
                 serverObjects[playerShip.id] = true;
 
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {
+                    console.log("first instance:");
+                    console.dir(playerShip);
+                    console.log("debugging...");
                     settings.playerShipId = playerShip.id;
                     let hullData = Hulls[playerShip.hull];
                     this.addToMap(playerShip.name,

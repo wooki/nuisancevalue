@@ -23,7 +23,11 @@ export default class Ship extends PhysicalObject2D {
             waypoints: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
-            }
+            },
+            // docked: {
+            //     type: BaseTypes.TYPES.LIST,
+            //     itemType: BaseTypes.TYPES.CLASSINSTANCE
+            // }
         }, super.netScheme);
     }
 
@@ -132,6 +136,19 @@ export default class Ship extends PhysicalObject2D {
 
         // NOTE: client side we will remove sprite and add sprite to dock target sprite
     }
+
+    // add to mothership and remove from game
+    // dock(dockWith) {
+    //     console.log("dock: "+dockWith);
+
+    //     // find the target
+    //     let mothership = game.world.objects[dockWith];
+
+    //     // update our data
+    //     this.dockedId = dockWith;
+
+    //     mothership.docked.push(this)
+    // }
 
     undock() {
 
