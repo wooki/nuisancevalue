@@ -2,6 +2,7 @@ import { ServerEngine, TwoVector } from 'lance-gg';
 import Asteroid from '../common/Asteroid';
 import Bullet from '../common/Bullet';
 import Ship from '../common/Ship';
+import Hulls from '../common/Hulls';
 import SolarObjects from '../common/SolarObjects';
 import Victor from 'victor';
 
@@ -78,6 +79,10 @@ export default class NvServerEngine extends ServerEngine {
             angularVelocity: Math.random()
         });
 
+        // let hullName = 'blockade-runner';
+        let hullName = 'bushido';
+        // let hullName = 'tug';
+        let hullData = Hulls[hullName];
         // create a single player ship for now name, x, y, dX, dY, mass, hull, size, angle (radians)
         let shipOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
         let shipOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / shipOrbitDistance);
@@ -86,8 +91,8 @@ export default class NvServerEngine extends ServerEngine {
             x: SolarObjects.Earth.orbit + shipOrbitDistance + 250,
             y: 250,
             dX: 0, dY: (0 - (earthOrbitSpeed + shipOrbitSpeed)),
-            mass: 0.01, size: 100, // need to read mass and size from hull
-            hull: 'bushido',
+            hull: hullName,
+            mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
             angle: Math.PI,
             playable: 1
         });
