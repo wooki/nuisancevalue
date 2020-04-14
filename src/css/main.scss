@@ -142,3 +142,39 @@ label {
     display: block;
     color: white;
 }
+
+.lobby {
+    margin: 30px auto;
+    padding: 25px;
+    border: 1px solid #777;
+    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+    border-radius: 21px;
+    max-width: 400px;
+}
+
+.lobby .name {
+    text-align: center;
+    font-size: 32px;
+    line-height: 32px;
+    font-weight: bold;
+    margin: 20px;
+}
+
+.lobby .description {
+    text-align: center;
+    font-size: 22px;
+    line-height: 22px;
+    margin: 20px 20px 40px 20px;
+}
+
+.lobby .join {
+    margin: 20px;
+    padding: 10px 30px;
+    text-align: center;
+    background-color: #163516;
+    font-size: 22px;
+    line-height: 22px;
+    color: white;
+    border-radius: 21px;
+    cursor: pointer;
+}

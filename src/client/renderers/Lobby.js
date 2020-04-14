@@ -14,6 +14,7 @@ export default class LobbyRenderer {
     	let root = document.getElementById('game');
     	root.innerHTML = '';
     	el = document.createElement('div');
+    	el.classList.add('lobby');
 
     	root.append(el);
     }
