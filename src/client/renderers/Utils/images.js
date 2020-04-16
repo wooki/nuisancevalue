@@ -1,8 +1,5 @@
 module.exports = {
 	Images: {
-		starfury: 'assets/starfury.png',
-		// ship: 'assets/ship.png',
-		// bushido: 'assets/ship.png',
 		asteroid: 'assets/asteroid.png',
 		sol: 'assets/sol.png',
 		earth: 'assets/earth.png',
@@ -13,7 +10,7 @@ module.exports = {
 		waypoint: 'assets/waypoint.png',
 		space: 'assets/space.png',
 		exhaust: 'assets/exhaust.json',
-		exhaustflame: 'assets/exhaustflame.json'				
+		exhaustflame: 'assets/exhaustflame.json'
 	},
 	Colors: {
 		Black: 0x000000,

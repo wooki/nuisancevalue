@@ -1,6 +1,6 @@
 import KeyboardControls from '../NvKeyboardControls.js';
 const PIXI = require('pixi.js');
-const Assets = require('./images.js');
+const Assets = require('./Utils/images.js');
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
@@ -14,6 +14,7 @@ import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
 import Comms from './../../common/Comms';
 import SolarObjects from './../../common/SolarObjects';
+import DrawingUtils from './Utils/DrawingUtils';
 
 let el = null;
 let uiEls = {};
@@ -112,22 +113,7 @@ export default class SignalsRenderer {
         const loader = PIXI.Loader.shared;
 
         // load sprites
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.asteroid);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.jupiter);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.space);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.exhaust);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.exhaustflame);
-
-        // load sprites for all hulls
-        for (let [hullKey, hullData] of Object.entries(Hulls)) {
-            pixiApp.loader.add(settings.baseUrl+hullData.image);
-        }
+        DrawingUtils.loadAllAssets(pixiApp.loader, settings.baseUrl);
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -200,6 +186,8 @@ export default class SignalsRenderer {
 
     // clicked an object, do some stuff...
     objectClick(guid, eventData) {
+      console.log("objectClick");
+      console.dir(guid)
 
         eventData.stopPropagation();
 
@@ -355,26 +343,6 @@ export default class SignalsRenderer {
         }
     }
 
-
-
-    getUseSize(width, height, minimumScale, minimumSize) {
-
-        let useScale = settings.scale;
-        if (useScale < minimumScale) {
-            useScale = minimumScale;
-        }
-
-        let useWidth = Math.floor(width * useScale);
-        let useHeight = Math.floor(height * useScale);
-        if (useWidth < minimumSize) { useWidth = minimumSize; }
-        if (useHeight < minimumSize) { useHeight = minimumSize; }
-
-        return {
-            useWidth: useWidth,
-            useHeight: useHeight
-        };
-    }
-
     addSpriteToMap(sprite, alias, guid, addLabel, useSize) {
 
       mapObjects[guid] = sprite;
@@ -422,7 +390,7 @@ export default class SignalsRenderer {
 
     createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
 
-      let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+      let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
       let hullData = Hulls[ship.hull];
       let texture = settings.resources[settings.baseUrl+hullData.image].texture;
 
@@ -470,9 +438,17 @@ export default class SignalsRenderer {
       return container;
     }
 
+    // wrap default addToMap
+    addInteractiveToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
+      let sprite = this.addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel);
+      sprite.interactive = true;
+      sprite.on('mousedown', (e) => { this.objectClick(guid, e) });
+      sprite.on('touchstart', (e) => { this.objectClick(guid, e) });
+    }
+
     addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
 
-        let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+        let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].width = useSize.useWidth;
@@ -683,7 +659,7 @@ export default class SignalsRenderer {
                                                  settings.scale);
 
             if (!mapObjects[obj.id]) {
-                this.addToMap(alias,
+                this.addInteractiveToMap(alias,
                               obj.id,
                               texture,
                               obj.size * widthRatio, obj.size,
@@ -702,7 +678,7 @@ export default class SignalsRenderer {
 
             // if selected then highlight somehow
             if (selectedObjId == obj.id) {
-                // let useSize = this.getUseSize(obj.size + 4, obj.size + 4, 0.05, 16);
+                // let useSize = DrawingUtils.getUseSize(settings.scale, obj.size + 4, obj.size + 4, 0.05, 16);
 
                 if (sprites.selection) {
                     sprites.selection.x = coord.x;
@@ -742,7 +718,7 @@ export default class SignalsRenderer {
 
         if (!mapObjects["waypoint-"+waypoint.name]) {
 
-            this.addToMap(waypoint.name,
+            this.addInteractiveToMap(waypoint.name,
                           "waypoint-"+waypoint.name,
                           settings.waypointTexture,
                           16, 16,
@@ -789,7 +765,7 @@ export default class SignalsRenderer {
                 serverObjects[playerShip.id] = true;
 
                 let hullData = Hulls[playerShip.hull];
-                let useSize = this.getUseSize(playerShip.size * hullData.width, playerShip.size, 0.01, 16);
+                let useSize = DrawingUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
 
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {
@@ -797,7 +773,7 @@ export default class SignalsRenderer {
                     console.dir(playerShip);
                     console.log("debugging...");
                     settings.playerShipId = playerShip.id;
-                    // this.addToMap(playerShip.name,
+                    // this.addInteractiveToMap(playerShip.name,
                     //               playerShip.id,
                     //               settings.resources[settings.baseUrl+hullData.image].texture,
                     //               playerShip.size * hullData.width, playerShip.size ,
@@ -806,6 +782,9 @@ export default class SignalsRenderer {
 
                     let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
                     this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
+                    playershipSprite.interactive = true;
+                    playershipSprite.on('mousedown', (e) => { this.objectClick(playerShip.id, e) });
+                    playershipSprite.on('touchstart', (e) => { this.objectClick(playerShip.id, e) });
                 } else {
                   this.updateShipEngine(playerShip, playerShip.id, useSize);
                 }

@@ -1,6 +1,6 @@
 import KeyboardControls from '../NvKeyboardControls.js';
 const PIXI = require('pixi.js');
-const Assets = require('./images.js');
+const Assets = require('./Utils/images.js');
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {CRTFilter} from '@pixi/filter-crt';
@@ -12,6 +12,7 @@ import Hulls from './../../common/Hulls';
 import NavCom from './Utils/NavCom';
 import SolarObjects from './../../common/SolarObjects';
 import Victor from 'victor';
+import DrawingUtils from './Utils/DrawingUtils';
 
 // import styles from './css/nav.scss';
 
@@ -119,19 +120,7 @@ export default class NavRenderer {
         const loader = PIXI.Loader.shared;
 
         // load sprites
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.asteroid);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.jupiter);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.space);
-
-        // load sprites for all hulls
-        for (let [hullKey, hullData] of Object.entries(Hulls)) {
-            pixiApp.loader.add(settings.baseUrl+hullData.image);
-        }
+        DrawingUtils.loadAllAssets(pixiApp.loader, settings.baseUrl);
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -294,24 +283,6 @@ export default class NavRenderer {
 
     }
 
-    getUseSize(width, height, minimumScale, minimumSize) {
-
-        let useScale = settings.scale;
-        if (useScale < minimumScale) {
-            useScale = minimumScale;
-        }
-
-        let useWidth = Math.floor(width * useScale);
-        let useHeight = Math.floor(height * useScale);
-        if (useWidth < minimumSize) { useWidth = minimumSize; }
-        if (useHeight < minimumSize) { useHeight = minimumSize; }
-
-        return {
-            useWidth: useWidth,
-            useHeight: useHeight
-        };
-    }
-
     addToMap(name, guid, texture, width, height, x, y, angle, zIndex, minimumScale, minimumSize) {
 
         // give anything added to the map an alias
@@ -321,7 +292,7 @@ export default class NavRenderer {
         }
         aliases[alias] = guid; // alias just keeps actual guid
 
-        let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+        let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].filters = [ effects.hudGlow ];
@@ -600,7 +571,7 @@ export default class NavRenderer {
                     let angle = this.adjustAngle(obj.physicsObj.angle);
                     mapObjects[obj.id].rotation = angle;
                     if (scaleChange) {
-                        let useSize = this.getUseSize(obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
+                        let useSize = DrawingUtils.getUseSize(settings.scale, obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
                         mapObjects[obj.id].width = useSize.useWidth;
                         mapObjects[obj.id].height = useSize.useHeight;
                     }

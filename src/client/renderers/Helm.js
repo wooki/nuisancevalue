@@ -1,6 +1,6 @@
 import KeyboardControls from '../NvKeyboardControls.js';
 const PIXI = require('pixi.js');
-const Assets = require('./images.js');
+const Assets = require('./Utils/images.js');
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
@@ -13,6 +13,7 @@ import Hulls from './../../common/Hulls';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
 import SolarObjects from './../../common/SolarObjects';
+import DrawingUtils from './Utils/DrawingUtils';
 
 let el = null;
 let uiEls = {};
@@ -112,22 +113,7 @@ export default class HelmRenderer {
         const loader = PIXI.Loader.shared;
 
         // load sprites
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.asteroid);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.sol);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.earth);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.mars);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.jupiter);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.explosion);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.space);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.exhaust);
-        pixiApp.loader.add(settings.baseUrl+Assets.Images.exhaustflame);
-
-        // load sprites for all hulls
-        for (let [hullKey, hullData] of Object.entries(Hulls)) {
-            pixiApp.loader.add(settings.baseUrl+hullData.image);
-        }
+        DrawingUtils.loadAllAssets(pixiApp.loader, settings.baseUrl);
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -263,24 +249,6 @@ export default class HelmRenderer {
         settings.gridSize = Math.floor(1000 * settings.scale);
     }
 
-    getUseSize(width, height, minimumScale, minimumSize) {
-
-        let useScale = settings.scale;
-        if (useScale < minimumScale) {
-            useScale = minimumScale;
-        }
-
-        let useWidth = Math.floor(width * useScale);
-        let useHeight = Math.floor(height * useScale);
-        if (useWidth < minimumSize) { useWidth = minimumSize; }
-        if (useHeight < minimumSize) { useHeight = minimumSize; }
-
-        return {
-            useWidth: useWidth,
-            useHeight: useHeight
-        };
-    }
-
     addSpriteToMap(sprite, alias, guid, addLabel, useSize) {
 
       mapObjects[guid] = sprite;
@@ -328,7 +296,7 @@ export default class HelmRenderer {
 
     createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
 
-      let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+      let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
       let hullData = Hulls[ship.hull];
       let texture = settings.resources[settings.baseUrl+hullData.image].texture;
 
@@ -378,7 +346,7 @@ export default class HelmRenderer {
 
     addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
 
-        let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+        let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].width = useSize.useWidth;
@@ -749,7 +717,7 @@ export default class HelmRenderer {
                 serverObjects[playerShip.id] = true;
 
                 let hullData = Hulls[playerShip.hull];
-                let useSize = this.getUseSize(playerShip.size * hullData.width, playerShip.size, 0.01, 16);
+                let useSize = DrawingUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
 
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {
