@@ -45,6 +45,7 @@ body, html {
         background: radial-gradient(circle, #163516 0%, #203F20 75%, #355435 100%);
         text-align: center;
         color: black;
+        text-shadow: -1px -1px 2px #265026;
         box-sizing: border-box;
         padding: 6px 15px 5px 16px;
         box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
@@ -52,6 +53,19 @@ body, html {
         border-bottom-color: #265026;
         border-left-color: #0c2b0c;
         border-right-color: #072607;
+        user-select: none;
+        outline: none;
+        &:focus {
+          outline: none;
+        }
+        &::-moz-focus-inner {
+          border: 0;
+        }
+        &:active {
+          outline: none;
+          transform: translate(2px, 2px);
+          box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2);
+        }
       }
     }
 }
