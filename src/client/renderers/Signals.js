@@ -121,6 +121,8 @@ export default class SignalsRenderer {
         pixiApp.loader.add(settings.baseUrl+Assets.Images.dashboard);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.waypoint);
         pixiApp.loader.add(settings.baseUrl+Assets.Images.space);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.exhaust);
+        pixiApp.loader.add(settings.baseUrl+Assets.Images.exhaustflame);
 
         // load sprites for all hulls
         for (let [hullKey, hullData] of Object.entries(Hulls)) {
@@ -373,6 +375,101 @@ export default class SignalsRenderer {
         };
     }
 
+    addSpriteToMap(sprite, alias, guid, addLabel, useSize) {
+
+      mapObjects[guid] = sprite;
+      mapContainer.addChild(sprite);
+
+      if (addLabel) {
+          sprites[guid+'-label'] = new PIXI.Text(alias, {fontFamily : 'Arial', fontSize: 12, fill : 0xFFFFFF, align : 'center'});
+          sprites[guid+'-label'].filters = [ effects.hudGlow ];
+          sprites[guid+'-label'].anchor.set(0, 0.5);
+          sprites[guid+'-label'].x = sprite.x + (3 + Math.floor(useSize.useWidth));
+          sprites[guid+'-label'].y = sprite.y - (3 + Math.floor(useSize.useHeight));
+          sprites[guid+'-label'].rotation = (-0.25 * Math.PI);
+          sprites[guid+'-label'].zIndex = settings.zIndex.ui;
+
+          mapObjects[guid+'-label'] = sprites[guid+'-label'];
+          mapContainer.addChild(sprites[guid+'-label']);
+      }
+
+      mapContainer.sortChildren();
+      return sprite;
+    }
+
+    updateShipEngine(ship, guid, useSize) {
+
+      let hullData = Hulls[ship.hull];
+      if (hullData.enginePositions) {
+
+        let sprite = mapObjects[guid];
+
+        if (sprite) {
+          hullData.enginePositions.forEach(function(e, i) {
+            let size = (ship.engine || 0) * useSize.useWidth * e[0];
+
+            // scale based on ship engine level
+            let exhaustSprite = sprite.getChildByName('exhaust-'+i);
+            if (exhaustSprite) {
+              exhaustSprite.width = size;
+              exhaustSprite.height = size; // sprite needs to be square
+            }
+
+          });
+        }
+      }
+    }
+
+    createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
+
+      let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
+      let hullData = Hulls[ship.hull];
+      let texture = settings.resources[settings.baseUrl+hullData.image].texture;
+
+      // container is actually twice the size (for effects etc)
+      let container = new PIXI.Container();
+      container.width = useSize.useWidth * 2;
+      container.height = useSize.useHeight * 2;
+      container.pivot.x = useSize.useWidth;
+      container.pivot.y = useSize.useHeight;
+      container.x = x;
+      container.y = y;
+      container.zIndex = zIndex;
+
+      // ships are containers for a main sprite plus engines and possibly other sprites
+      let body = new PIXI.Sprite(texture);
+      body.width = useSize.useWidth;
+      body.height = useSize.useHeight;
+      body.anchor.set(0.5);
+      body.x = useSize.useWidth;
+      body.y = useSize.useHeight;
+      body.zIndex = 10;
+      container.addChild(body);
+
+      // create the engine sprite but make it invisible
+      if (hullData.enginePositions) {
+        let exhaustSheet = settings.resources[settings.baseUrl+Assets.Images[hullData.exhaustImage]].spritesheet;
+
+        hullData.enginePositions.forEach(function(e, i) {
+          let size = (ship.engine || 0) * useSize.useWidth * e[0];
+          let exhaust = new PIXI.AnimatedSprite(exhaustSheet.animations[hullData.exhaustImage]);
+          exhaust.width = size;
+          exhaust.height = size; // sprite needs to be square
+          exhaust.anchor.set(0.5, 0);
+          exhaust.x = (useSize.useWidth*0.5) + (useSize.useWidth * e[1]);
+          exhaust.y = (useSize.useHeight*0.5) + (useSize.useHeight * e[2]);
+          exhaust.loop = true;
+          exhaust.play();
+          exhaust.zIndex = 5;
+          exhaust.name = 'exhaust-'+i;
+          container.addChild(exhaust);
+
+        });
+      }
+
+      return container;
+    }
+
     addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
 
         let useSize = this.getUseSize(width, height, minimumScale, minimumSize);
@@ -390,28 +487,8 @@ export default class SignalsRenderer {
             sprites[guid].filters = [ effects.hudGlow ];
         }
         // sprites[guid].tint = tint; // tint is rubbish - ships need color switch filters for palette
-        sprites[guid].interactive = true;
-        sprites[guid].on('mousedown', (e) => { this.objectClick(guid, e) });
-        sprites[guid].on('touchstart', (e) => { this.objectClick(guid, e) });
 
-        mapObjects[guid] = sprites[guid];
-        mapContainer.addChild(sprites[guid]);
-
-        if (addLabel) {
-            sprites[guid+'-label'] = new PIXI.Text(alias, {fontFamily : 'Arial', fontSize: 12, fill : 0xFFFFFF, align : 'center'});
-            sprites[guid+'-label'].filters = [ effects.hudGlow ];
-            sprites[guid+'-label'].anchor.set(0, 0.5);
-            sprites[guid+'-label'].x = x + (3 + Math.floor(useSize.useWidth));
-            sprites[guid+'-label'].y = y - (3 + Math.floor(useSize.useHeight));
-            sprites[guid+'-label'].rotation = (-0.25 * Math.PI);
-            sprites[guid+'-label'].zIndex = settings.zIndex.ui;
-
-            mapObjects[guid+'-label'] = sprites[guid+'-label'];
-            mapContainer.addChild(sprites[guid+'-label']);
-        }
-
-        mapContainer.sortChildren();
-        return sprites[guid];
+        return this.addSpriteToMap(sprites[guid], alias, guid, addLabel, useSize);
     }
 
     removeFromMap(guid) {
@@ -711,16 +788,26 @@ export default class SignalsRenderer {
 
                 serverObjects[playerShip.id] = true;
 
+                let hullData = Hulls[playerShip.hull];
+                let useSize = this.getUseSize(playerShip.size * hullData.width, playerShip.size, 0.01, 16);
+
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {
+                    console.log("first instance:");
+                    console.dir(playerShip);
+                    console.log("debugging...");
                     settings.playerShipId = playerShip.id;
-                    let hullData = Hulls[playerShip.hull];
-                    this.addToMap(playerShip.name,
-                                  playerShip.id,
-                                  settings.resources[settings.baseUrl+hullData.image].texture,
-                                  playerShip.size * hullData.width, playerShip.size ,
-                                  Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2),
-                                  settings.zIndex.ship, 0.01, 16, false)
+                    // this.addToMap(playerShip.name,
+                    //               playerShip.id,
+                    //               settings.resources[settings.baseUrl+hullData.image].texture,
+                    //               playerShip.size * hullData.width, playerShip.size ,
+                    //               Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2),
+                    //               settings.zIndex.ship, 0.01, 16, false)
+
+                    let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
+                    this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
+                } else {
+                  this.updateShipEngine(playerShip, playerShip.id, useSize);
                 }
 
                 // draw waypoints (remember distance and direction)
