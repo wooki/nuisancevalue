@@ -18,6 +18,7 @@ body, html {
     font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
     line-height: 30px;
     font-size: 18px;
+    min-width: 140px;;
 
     & > * {
       margin: 30px 0;
@@ -71,6 +72,8 @@ body, html {
 }
 @media only screen and (orientation : portrait) {
   .ui-container {
+    min-width: inherit;
+    min-height: 140px;
     right: 0;
     width: auto;
     bottom: auto;
