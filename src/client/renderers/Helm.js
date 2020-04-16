@@ -823,6 +823,7 @@ export default class HelmRenderer {
                         uiWidth: settings.UiWidth,
                         uiHeight: settings.UiHeight,
                         scale: settings.scale,
+                        angularVelocity: playerShip.physicsObj.angularVelocity,
                         bearing: bearing,
                         course: course,
                         gravity: gravity ? gravity.angle() : null,
@@ -831,7 +832,7 @@ export default class HelmRenderer {
                     });
                     mapContainer.addChild(sprites.helmUi);
                 } else {
-                    sprites.helmUi.update(bearing, course, gravity ? gravity.angle() : null, helmUiWaypoints);
+                    sprites.helmUi.update(bearing, course, gravity ? gravity.angle() : null, helmUiWaypoints, playerShip.physicsObj.angularVelocity);
                 }
 
                 // draw distance and closing speed for waypoints
