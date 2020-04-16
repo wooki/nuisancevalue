@@ -330,14 +330,6 @@ export default class NavRenderer {
         return sprites[guid];
     }
 
-    removeFromMap(guid) {
-        if (mapObjects[guid]) {
-            mapObjects[guid].destroy();
-            mapObjects[guid] = null;
-            sprites[guid] = null;
-        }
-    }
-
     createGrid() {
 
         // remove old one
@@ -587,7 +579,7 @@ export default class NavRenderer {
             // spot any objects we no longer have and remove them
             Object.keys(mapObjects).forEach((key) => {
                 if (!gameObjects[key]) {
-                    this.removeFromMap(key);
+                    UiUtils.removeFromMap(mapObjects, sprites, key);
                 }
             });
 
