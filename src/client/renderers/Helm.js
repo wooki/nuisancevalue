@@ -130,8 +130,8 @@ export default class HelmRenderer {
         this.controls.bindKey('5', 'engine', { }, { level: 5 });
         this.controls.bindKey('left', 'maneuver', { }, { direction: 'l' });
         this.controls.bindKey('right', 'maneuver', { }, { direction: 'r' });
-        this.controls.bindKey('up', 'maneuver', { }, { direction: 'f' });
-        this.controls.bindKey('down', 'maneuver', { }, { direction: 'b' });
+        this.controls.bindKey('up', 'engine', { }, { level: '+' });
+        this.controls.bindKey('down', 'engine', { }, { level: '-' });
     }
 
     setEngine(level) {
@@ -150,12 +150,12 @@ export default class HelmRenderer {
         uiContainer.classList.add('helm');
         container.appendChild(uiContainer);
 
-        uiEls.engineEl5 = this.createButton(document, uiContainer, "engineOnBtn5", "Engine Burn 5", () => { this.setEngine(5); });
-        uiEls.engineEl4 = this.createButton(document, uiContainer, "engineOnBtn4", "Engine Burn 4", () => { this.setEngine(4); });
-        uiEls.engineEl3 = this.createButton(document, uiContainer, "engineOnBtn3", "Engine Burn 3", () => { this.setEngine(3); });
-        uiEls.engineEl2 = this.createButton(document, uiContainer, "engineOnBtn2", "Engine Burn 2", () => { this.setEngine(2); });
-        uiEls.engineEl1 = this.createButton(document, uiContainer, "engineOnBtn1", "Engine Burn 1", () => { this.setEngine(1); });
-        uiEls.engineEl0 = this.createButton(document, uiContainer, "engineOffBtn", "Cease Burn", () => { this.setEngine(0); });
+        uiEls.engineEl5 = this.createButton(document, uiContainer, "engineOnBtn5", "5", () => { this.setEngine(5); });
+        uiEls.engineEl4 = this.createButton(document, uiContainer, "engineOnBtn4", "4", () => { this.setEngine(4); });
+        uiEls.engineEl3 = this.createButton(document, uiContainer, "engineOnBtn3", "3", () => { this.setEngine(3); });
+        uiEls.engineEl2 = this.createButton(document, uiContainer, "engineOnBtn2", "2", () => { this.setEngine(2); });
+        uiEls.engineEl1 = this.createButton(document, uiContainer, "engineOnBtn1", "1", () => { this.setEngine(1); });
+        uiEls.engineEl0 = this.createButton(document, uiContainer, "engineOffBtn", "0", () => { this.setEngine(0); });
 
         let uiManeuverContainer = document.createElement("div");
         uiManeuverContainer.classList.add('maneuver');
@@ -169,15 +169,6 @@ export default class HelmRenderer {
             this.setManeuver('r');
         });
 
-        uiEls.manForwardEl = this.createButton(document, uiManeuverContainer, "manForwardBtn", "^", () => {
-            this.setManeuver('f');
-        });
-
-        uiEls.manBackEl = this.createButton(document, uiManeuverContainer, "manBackBtn", "v", () => {
-            debugging = true;
-            this.setManeuver('b');
-        });
-
         uiEls.uiDocking = document.createElement("div");
         uiEls.uiDocking.classList.add('ui-docking');
         uiEls.uiDocking.classList.add('inactive');
@@ -187,7 +178,6 @@ export default class HelmRenderer {
             docking.target = docking.dockable;
         });
         uiEls.dockCancelEl = this.createButton(document, uiEls.uiDocking, "dockCancelBtn", "Cancel Docking", () => {
-            // uiEls.uiDocking.classList.add('inactive');
             docking.id = null;
             docking.dockable = null;
             docking.progress = 0;

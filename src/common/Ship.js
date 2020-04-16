@@ -101,11 +101,11 @@ export default class Ship extends PhysicalObject2D {
 
         } else if (maneuver == 'f') {
 
-            this.physicsObj.applyForceLocal([0, 0.05], [Math.floor(this.size/2), Math.floor(this.size/2)]);
+            this.physicsObj.applyForceLocal([0, 0.5], [Math.floor(this.size/2), Math.floor(this.size/2)]);
 
         } else if (maneuver == 'b') {
 
-            this.physicsObj.applyForceLocal([0, -0.05], [Math.floor(this.size/2), Math.floor(this.size/2)]);
+            this.physicsObj.applyForceLocal([0, -0.5], [Math.floor(this.size/2), Math.floor(this.size/2)]);
         }
 
     }

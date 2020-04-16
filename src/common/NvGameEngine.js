@@ -258,6 +258,8 @@ export default class NvGameEngine extends GameEngine {
 
                 let ship = this.getPlayerShip(playerId);
                 let level = inputData.options.level;
+                if (level == '+') { level = ship.engine + 1; }
+                if (level == '-') { level = ship.engine - 1; }
                 if (ship) {
                     ship.engine = level || 0;
                     if (ship.engine < 0) { ship.engine = 0; }
