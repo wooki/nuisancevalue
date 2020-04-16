@@ -7,24 +7,97 @@ body, html {
     position: fixed;
     top: 0;
     left: 0;
-    width: 200px;
+    bottom: 0;
+    width: calc(calc(100vw - 100vh) / 2);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+    color: #00ff00;
+    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+    line-height: 30px;
+    font-size: 18px;
+
+    & > * {
+      margin: 30px 0;
+      box-sizing: border-box;
+    }
+    &.right {
+      left: auto;
+      right: 0;
+    }
+
+    button {
+      background-color: #163516;
+      color: black;
+      padding: 5px 15px;
+      font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+      line-height: 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 3px;
+      margin: 3px;
+
+      &.key {
+        position: relative;
+        background: #163516;
+        background: radial-gradient(circle, #163516 0%, #203F20 75%, #355435 100%);
+        text-align: center;
+        color: black;
+        box-sizing: border-box;
+        padding: 6px 15px 5px 16px;
+        box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
+        border: 8px solid #113011;
+        border-bottom-color: #265026;
+        border-left-color: #0c2b0c;
+        border-right-color: #072607;
+      }
+    }
+}
+@media only screen and (orientation : portrait) {
+  .ui-container {
+    right: 0;
+    width: auto;
+    bottom: auto;
+    height: calc(calc(100vh - 100vw) / 2);
+    flex-direction: row;
+    & > * {
+      margin: 0 30px;
+    }
+    &.right {
+      top: auto;
+      left: auto;
+      right: 0;
+      bottom: 0;
+    }
+  }
 }
 
 .helm.ui-container {
-    .ui-docking {
-        margin-top: auto;
+
+    .engine {
+      display: flex;
+      flex-direction: column;
+    }
+    .ui-docking, .ui-undock {
+        margin: auto 0 30px 0;
         display: block;
         &.inactive {
             display: none;
         }
     }
-    .ui-undock {
-        margin-top: auto;
-        display: block;
-        &.inactive {
-            display: none;
-        }
-    }
+}
+@media only screen and (orientation : portrait) {
+  .helm.ui-container {
+      .engine {
+        flex-direction: row-reverse;
+      }
+      .ui-docking, .ui-undock {
+        margin-top: 0;
+        margin-left: auto;
+      }
+  }
 }
 
 .signals.ui-container {
@@ -91,13 +164,9 @@ body, html {
     padding: 2px 0 2px 5px;
 }
 .nav.ui-container .console {
-    color: #00ff00;
-    flex: 1 0 auto;
-    line-height: 30px;
-    font-size: 18px;
-    opacity: 0.9;
-    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
     pointer-events: none;
+    flex: 1 0 auto;
+    opacity: 0.9;
     max-width: 100vw;
     width: 100vw;
     white-space: pre-line;
@@ -135,7 +204,7 @@ body, html {
 }
 
 button.active {
-    opacity: 0.2;
+    opacity: 0.5;
 }
 
 label {

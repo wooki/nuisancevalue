@@ -34,6 +34,10 @@ module.exports = {
           useWidth: useWidth,
           useHeight: useHeight
       };
-  }
+  },
+
+  getEngineUi() {
+    
+  },
 
 }

@@ -150,12 +150,15 @@ export default class HelmRenderer {
         uiContainer.classList.add('helm');
         container.appendChild(uiContainer);
 
-        uiEls.engineEl5 = this.createButton(document, uiContainer, "engineOnBtn5", "5", () => { this.setEngine(5); });
-        uiEls.engineEl4 = this.createButton(document, uiContainer, "engineOnBtn4", "4", () => { this.setEngine(4); });
-        uiEls.engineEl3 = this.createButton(document, uiContainer, "engineOnBtn3", "3", () => { this.setEngine(3); });
-        uiEls.engineEl2 = this.createButton(document, uiContainer, "engineOnBtn2", "2", () => { this.setEngine(2); });
-        uiEls.engineEl1 = this.createButton(document, uiContainer, "engineOnBtn1", "1", () => { this.setEngine(1); });
-        uiEls.engineEl0 = this.createButton(document, uiContainer, "engineOffBtn", "0", () => { this.setEngine(0); });
+        let uiEngineContainer = document.createElement("div");
+        uiEngineContainer.classList.add('engine');
+        uiContainer.appendChild(uiEngineContainer);
+        uiEls.engineEl5 = this.createButton(document, uiEngineContainer, "engineOnBtn5", "5", () => { this.setEngine(5); });
+        uiEls.engineEl4 = this.createButton(document, uiEngineContainer, "engineOnBtn4", "4", () => { this.setEngine(4); });
+        uiEls.engineEl3 = this.createButton(document, uiEngineContainer, "engineOnBtn3", "3", () => { this.setEngine(3); });
+        uiEls.engineEl2 = this.createButton(document, uiEngineContainer, "engineOnBtn2", "2", () => { this.setEngine(2); });
+        uiEls.engineEl1 = this.createButton(document, uiEngineContainer, "engineOnBtn1", "1", () => { this.setEngine(1); });
+        uiEls.engineEl0 = this.createButton(document, uiEngineContainer, "engineOffBtn", "0", () => { this.setEngine(0); });
 
         let uiManeuverContainer = document.createElement("div");
         uiManeuverContainer.classList.add('maneuver');
@@ -204,6 +207,7 @@ export default class HelmRenderer {
         let button = document.createElement("button");
         button.id = id;
         button.classList.add('button');
+        button.classList.add('key');
         button.innerHTML = innerHTML;
         button.addEventListener('click', onClick);
         container.appendChild(button);
