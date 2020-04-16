@@ -179,6 +179,7 @@ body, html {
     max-width: 300px;
     flex-direction: column-reverse;
     padding: 2px 0 2px 5px;
+    align-items: flex-start;
 }
 .nav.ui-container .console {
     pointer-events: none;
@@ -188,6 +189,7 @@ body, html {
     width: 100vw;
     white-space: pre-line;
     user-select: none;
+    margin: 0;
 }
 .nav.ui-container .console-input-container {
     flex: 0 0 auto;
@@ -198,6 +200,7 @@ body, html {
     font-size: 18px;
     flex-direction: row;
     font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+    margin: 0;
 }
 .nav.ui-container .console-input {
     display:  block;

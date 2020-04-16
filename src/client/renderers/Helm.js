@@ -13,12 +13,13 @@ import Hulls from './../../common/Hulls';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
 import SolarObjects from './../../common/SolarObjects';
-import DrawingUtils from './Utils/DrawingUtils';
+import UiUtils from './Utils/UiUtils';
 
 let el = null;
 let uiEls = {};
 let game = null;
 let client = null;
+const GridDefault = 1000;
 let settings = {
     baseUrl: '/',
     mapSize: 6000,
@@ -79,7 +80,7 @@ export default class HelmRenderer {
         root.append(el);
 
         // work out some sizes for UI - populates settings var
-        this.setSizes();
+        UiUtils.setSizes(settings, window, GridDefault);
 
         // create pixie app and container
         pixiApp = new PIXI.Application({
@@ -113,7 +114,7 @@ export default class HelmRenderer {
         const loader = PIXI.Loader.shared;
 
         // load sprites
-        DrawingUtils.loadAllAssets(pixiApp.loader, settings.baseUrl);
+        UiUtils.loadAllAssets(pixiApp.loader, settings.baseUrl);
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -203,44 +204,11 @@ export default class HelmRenderer {
     }
 
     createButton(document, container, id, innerHTML, onClick) {
-
-        let button = document.createElement("button");
-        button.id = id;
-        button.classList.add('button');
-        button.classList.add('key');
-        button.innerHTML = innerHTML;
-        button.addEventListener('click', onClick);
-        container.appendChild(button);
-        return button;
+        return UiUtils.addElement(container, document, "button", id, ['button', 'key'], innerHTML, onClick);
     }
 
     createLabel(document, container, id, innerHTML) {
-
-        let label = document.createElement("label");
-        label.id = id;
-        label.classList.add('label');
-        label.innerHTML = innerHTML;
-        container.appendChild(label);
-        return label;
-    }
-
-    // read window sizes and set scale etc.
-    setSizes() {
-
-        // get the smaller of the two dimensions, work to that
-        // size for the map etc. so we can draw a circle
-        settings.UiWidth = window.innerWidth;
-        settings.UiHeight = window.innerHeight;
-        settings.narrowUi = window.innerWidth;
-        if (settings.UiHeight < settings.narrowUi) {
-            settings.narrowUi = settings.UiHeight;
-        }
-
-        // decide how much "game space" is represented by the narrowUI dimension
-        settings.scale = (settings.narrowUi / settings.mapSize);
-
-        // grid is always 1000 but scaled
-        settings.gridSize = Math.floor(1000 * settings.scale);
+        return UiUtils.addElement(container, document, "label", id, ['label'], innerHTML, null);
     }
 
     addSpriteToMap(sprite, alias, guid, addLabel, useSize) {
@@ -290,7 +258,7 @@ export default class HelmRenderer {
 
     createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
 
-      let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
+      let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
       let hullData = Hulls[ship.hull];
       let texture = settings.resources[settings.baseUrl+hullData.image].texture;
 
@@ -340,7 +308,7 @@ export default class HelmRenderer {
 
     addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
 
-        let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
+        let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].width = useSize.useWidth;
@@ -711,7 +679,7 @@ export default class HelmRenderer {
                 serverObjects[playerShip.id] = true;
 
                 let hullData = Hulls[playerShip.hull];
-                let useSize = DrawingUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
+                let useSize = UiUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
 
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {

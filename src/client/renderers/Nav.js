@@ -12,7 +12,7 @@ import Hulls from './../../common/Hulls';
 import NavCom from './Utils/NavCom';
 import SolarObjects from './../../common/SolarObjects';
 import Victor from 'victor';
-import DrawingUtils from './Utils/DrawingUtils';
+import UiUtils from './Utils/UiUtils';
 
 // import styles from './css/nav.scss';
 
@@ -21,6 +21,7 @@ let el = null;
 let uiEls = {};
 let game = null;
 let client = null;
+const GridDefault = 50000;
 let settings = {
     baseUrl: '/',
     mapSize: 500000, // this is set in setSizes
@@ -120,7 +121,7 @@ export default class NavRenderer {
         const loader = PIXI.Loader.shared;
 
         // load sprites
-        DrawingUtils.loadAllAssets(pixiApp.loader, settings.baseUrl);
+        UiUtils.loadAllAssets(pixiApp.loader, settings.baseUrl);
 
         // manage loading of resources
         pixiApp.loader.load(this.loadResources.bind(this));
@@ -240,10 +241,8 @@ export default class NavRenderer {
             input.focus();
         } );
         uiEls.console.classList.add('console');
-        uiEls.console.innerHTML = 'This is test console content.';
+        uiEls.console.innerHTML = navCom.help();
         uiContainer.appendChild(uiEls.console);
-
-
     }
 
     // read window sizes and set scale etc.
@@ -259,7 +258,7 @@ export default class NavRenderer {
         scaleChange = true;
 
         // grid is always 1000 but scaled
-        settings.gridSize = Math.floor(50000 * settings.scale);
+        settings.gridSize = Math.floor(GridDefault * settings.scale);
     }
 
     // clicked an object, do some stuff...
@@ -292,7 +291,7 @@ export default class NavRenderer {
         }
         aliases[alias] = guid; // alias just keeps actual guid
 
-        let useSize = DrawingUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
+        let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].filters = [ effects.hudGlow ];
@@ -571,7 +570,7 @@ export default class NavRenderer {
                     let angle = this.adjustAngle(obj.physicsObj.angle);
                     mapObjects[obj.id].rotation = angle;
                     if (scaleChange) {
-                        let useSize = DrawingUtils.getUseSize(settings.scale, obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
+                        let useSize = UiUtils.getUseSize(settings.scale, obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
                         mapObjects[obj.id].width = useSize.useWidth;
                         mapObjects[obj.id].height = useSize.useHeight;
                     }

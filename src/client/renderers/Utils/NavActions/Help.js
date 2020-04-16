@@ -11,6 +11,6 @@ export default class Help {
             cmd = this.command.parameters.command;
         }
         let help = this.navCom.help(cmd);
-        log.innerHTML = log.innerHTML + help;
+        log.innerHTML = log.innerHTML + '\n' + help;
 	}
 }

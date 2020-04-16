@@ -208,7 +208,7 @@ export default class NavCom {
                 }
 
             } else {
-                h = h + "Command '"+command.name + "' not found";
+                h = h + "Command '"+(command ? command.name : '') + "' not found";
             }
 
         } else {
@@ -223,8 +223,8 @@ export default class NavCom {
                 h = h + delim + c.name;
                 delim = ', ';
             });
-            h = h + "------\n";
-            h = h + "Replace any parameter with a '.' to use the last returned data.\n";
+            h = h + "\n------\n";
+            h = h + "Replace any parameter with a '.' to use the last returned data.";
 
         }
 
