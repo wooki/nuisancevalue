@@ -183,9 +183,9 @@ export default class HelmRenderer {
         });
         uiEls.dockCancelEl = this.createButton(document, uiEls.uiDocking, "dockCancelBtn", "Cancel Docking", () => {
             docking.id = null;
-            docking.dockable = null;
             docking.progress = 0;
             docking.target = null;
+            docking.distance = null;
         });
         uiEls.dockDistanceEl = this.createLabel(document, uiEls.uiDocking, "dockDistanceEl", "Distance:");
         uiEls.dockClosingEl = this.createLabel(document, uiEls.uiDocking, "dockClosingEl", "Closing:");
@@ -194,9 +194,9 @@ export default class HelmRenderer {
         uiEls.dockUndockEl = this.createButton(document, uiContainer, "dockUndockBtn", "Undock", () => {
             // do the undock
             docking.id = null;
-            docking.dockable = null;
             docking.progress = 0;
             docking.target = null;
+            docking.distance = null;
             client.undock();
         });
         uiEls.dockUndockEl.classList.add('ui-undock');
@@ -484,10 +484,10 @@ export default class HelmRenderer {
                 //     progress: 0 // percent progress
                 // }
                 if (docking.id == null && (playerShip.dockedId == null || playerShip.dockedId < 0)) {
-                    if (docking.target == obj.id && distance <= 200 & Math.abs(closing) < 100) {
+                    if (docking.target == obj.id && distance <= 500 & Math.abs(closing) < 200) {
 
                         // dock if progress >= 100 (docking is instant on server)
-                        if (docking.progress >= 5) {
+                        if (docking.progress >= 100) {
 
                             client.setEngine(0); // stop engine
 
@@ -502,10 +502,10 @@ export default class HelmRenderer {
 
                         } else {
                             // add progress (dt should = 16ms)
-                            docking.progress = docking.progress + (dt / 100); // 100% is 10s
+                            docking.progress = docking.progress + (dt / 50); // 100% is 10s
 
-                            uiEls.dockDistanceEl.innerHTML = "Distance: "+Math.round(distance);
-                            uiEls.dockClosingEl.innerHTML = "Closing: "+closingDesc;
+                            uiEls.dockDistanceEl.innerHTML = "Distance: "+Math.round(distance)+ "/500";
+                            uiEls.dockClosingEl.innerHTML = "Closing: "+closingDesc+ "/200";
                             uiEls.dockProgressEl.innerHTML = "Progress: "+Math.round(docking.progress)+'%';
                         }
 
@@ -518,8 +518,8 @@ export default class HelmRenderer {
                             docking.progress = 0;
                         }
 
-                        uiEls.dockDistanceEl.innerHTML = "Distance: "+Math.round(distance);
-                        uiEls.dockClosingEl.innerHTML = "Closing: "+closingDesc;
+                        uiEls.dockDistanceEl.innerHTML = "Distance: "+Math.round(distance)+ "/500";
+                        uiEls.dockClosingEl.innerHTML = "Closing: "+closingDesc+ "/200";
                         uiEls.dockProgressEl.innerHTML = "Progress: "+Math.round(docking.progress)+'%';
 
                     } else if (docking.target == obj.id) {
