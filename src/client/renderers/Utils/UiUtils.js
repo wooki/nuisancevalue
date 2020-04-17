@@ -72,15 +72,7 @@ module.exports = {
       settings.scale = (settings.narrowUi / settings.mapSize);
 
       // grid is always 1000 but scaled
-      settings.gridSize = Math.floor(gridSize * settings.scale);
-  },
-
-  removeFromMap(mapObjects, sprites, guid) {
-      if (mapObjects[guid]) {
-          mapObjects[guid].destroy();
-          mapObjects[guid] = null;
-          sprites[guid] = null;
-      }
+      settings.gridSize = Math.floor(1000 * settings.scale);
   }
 
 }

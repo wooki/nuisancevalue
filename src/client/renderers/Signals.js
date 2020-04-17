@@ -436,6 +436,14 @@ export default class SignalsRenderer {
         return this.addSpriteToMap(sprites[guid], alias, guid, addLabel, useSize);
     }
 
+    removeFromMap(guid) {
+        if (mapObjects[guid]) {
+            mapObjects[guid].destroy();
+            mapObjects[guid] = null;
+            sprites[guid] = null;
+        }
+    }
+
     createGrid() {
 
         // remove old one
@@ -956,14 +964,14 @@ export default class SignalsRenderer {
                 // remove any objects that we no-longer have
                 Object.keys(mapObjects).forEach((key) => {
                     if (!serverObjects[key]) {
-                        UiUtils.removeFromMap(mapObjects, sprites, key);
+                        this.removeFromMap(key);
                     }
                 });
 
 
             } else if (settings.playerShipId) {
                 if (mapObjects[settings.playerShipId]) {
-                    UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
+                    this.removeFromMap(settings.playerShipId);
                 }
             }
         }
