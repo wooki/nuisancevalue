@@ -330,14 +330,6 @@ export default class NavRenderer {
         return sprites[guid];
     }
 
-    removeFromMap(guid) {
-        if (mapObjects[guid]) {
-            mapObjects[guid].destroy();
-            mapObjects[guid] = null;
-            sprites[guid] = null;
-        }
-    }
-
     createGrid() {
 
         // remove old one
@@ -400,25 +392,9 @@ export default class NavRenderer {
         this.createGrid();
 
         // set the grid to the 0,0 point at the start
-        this.updateGrid(settings.focus[0], settings.focus[1]);
+        UiUtils.updateGrid(settings, sprites, settings.focus[0], settings.focus[1]);
 
         pixiApp.stage.sortChildren();
-    }
-
-    // update includes scaling of offset, so nothing else should scale (except size) of player ship
-    // additional objects position will need to be scaled (player ship is always centre)
-    updateGrid(x, y) {
-
-        if (sprites.gridSprite) {
-            let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
-            sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
-            sprites.gridSprite.tilePosition.y = Math.floor(settings.UiHeight / 2) - (positionChange.y);
-        }
-    }
-
-    // because y axis is flipped, all rotations are 180 off
-    adjustAngle(angle) {
-        return (angle + Math.PI) % (2 * Math.PI);
     }
 
     // convert a game coord to the coord on screen ie. relative to the focus point
@@ -553,7 +529,7 @@ export default class NavRenderer {
                                                      0, // obj.physicsObj.angle, // might need to add Math.PI
                                                      settings.scale);
 
-                let angle = this.adjustAngle(obj.physicsObj.angle);
+                let angle = UiUtils.adjustAngle(obj.physicsObj.angle);
 
                 if (!mapObjects[obj.id]) {
                     this.addToMap(alias,
@@ -567,7 +543,7 @@ export default class NavRenderer {
                     // update position & scale
                     mapObjects[obj.id].x = coord.x;
                     mapObjects[obj.id].y = coord.y;
-                    let angle = this.adjustAngle(obj.physicsObj.angle);
+                    let angle = UiUtils.adjustAngle(obj.physicsObj.angle);
                     mapObjects[obj.id].rotation = angle;
                     if (scaleChange) {
                         let useSize = UiUtils.getUseSize(settings.scale, obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
@@ -587,7 +563,7 @@ export default class NavRenderer {
             // spot any objects we no longer have and remove them
             Object.keys(mapObjects).forEach((key) => {
                 if (!gameObjects[key]) {
-                    this.removeFromMap(key);
+                    UiUtils.removeFromMap(mapObjects, sprites, key);
                 }
             });
 

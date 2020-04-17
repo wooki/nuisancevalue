@@ -282,7 +282,7 @@ export default class HelmRenderer {
       body.zIndex = 10;
       container.addChild(body);
 
-      // create the engine sprite but make it invisible
+      // create the engine sprite
       if (hullData.enginePositions) {
         let exhaustSheet = settings.resources[settings.baseUrl+Assets.Images[hullData.exhaustImage]].spritesheet;
 
@@ -325,14 +325,6 @@ export default class HelmRenderer {
         // sprites[guid].tint = tint; // tint is rubbish - ships need color switch filters for palette
 
         return this.addSpriteToMap(sprites[guid], alias, guid, addLabel, useSize);
-    }
-
-    removeFromMap(guid) {
-        if (mapObjects[guid]) {
-            mapObjects[guid].destroy();
-            mapObjects[guid] = null;
-            sprites[guid] = null;
-        }
     }
 
     loadResources(loader, resources) {
@@ -406,39 +398,6 @@ export default class HelmRenderer {
         pixiApp.stage.sortChildren();
     }
 
-    // update includes scaling of offset, so nothing else should scale (except size) of player ship
-    // additional objects position will need to be scaled (player ship is always centre)
-    updateGrid(x, y) {
-        if (sprites.gridSprite) {
-            let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
-            sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
-            sprites.gridSprite.tilePosition.y = Math.floor(settings.UiHeight / 2) - (positionChange.y);
-        }
-    }
-
-    // because y axis is flipped, all rotations are 180 off
-    adjustAngle(angle) {
-        return (angle + Math.PI) % (2 * Math.PI);
-    }
-
-    // convert a game coord to the coord on screen ie. relative to the player ship in the centre
-    relativeScreenCoord(x, y, focusX, focusY, screenWidth, screenHeight, angle, scale) {
-
-        let screenX = Math.floor(screenWidth / 2);
-        let screenY = Math.floor(screenHeight / 2);
-
-        let matrix = new PIXI.Matrix();
-        matrix.translate(x, y);
-        matrix.translate(0 - focusX, 0 - focusY);
-        matrix.scale(scale, scale);
-        // matrix.rotate(angle);
-        matrix.translate(screenX, screenY);
-        let p = new PIXI.Point(0, 0);
-        p = matrix.apply(p);
-
-        return p;
-    }
-
     drawObjects(gameObjects, playerShip, t, dt) {
 
         // keep track of and return ids of stuff we have
@@ -468,7 +427,7 @@ export default class HelmRenderer {
                 widthRatio = hullData.width;
             }
 
-            let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
+            let coord = UiUtils.relativeScreenCoord(obj.physicsObj.position[0],
                                                  obj.physicsObj.position[1],
                                                  playerShip.physicsObj.position[0],
                                                  playerShip.physicsObj.position[1],
@@ -613,7 +572,7 @@ export default class HelmRenderer {
 
     drawWaypoint(waypoint, playerShip) {
 
-        let coord = this.relativeScreenCoord(waypoint.x,
+        let coord = UiUtils.relativeScreenCoord(waypoint.x,
              waypoint.y,
              playerShip.physicsObj.position[0],
              playerShip.physicsObj.position[1],
@@ -740,10 +699,10 @@ export default class HelmRenderer {
                 }
 
                 // update the grid
-                this.updateGrid(playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
+                UiUtils.updateGrid(settings, sprites, playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
 
                 // set the player ship rotation
-                mapObjects[playerShip.id].rotation = this.adjustAngle(playerShip.physicsObj.angle);
+                mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
 
                 // update engine
                 settings.engineLevel = playerShip.engine;
@@ -919,14 +878,14 @@ export default class HelmRenderer {
                 // remove any objects that we no-longer have
                 Object.keys(mapObjects).forEach((key) => {
                     if (!serverObjects[key]) {
-                        this.removeFromMap(key);
+                        UiUtils.removeFromMap(mapObjects, sprites, key);
                     }
                 });
 
 
             } else if (settings.playerShipId) {
                 if (mapObjects[settings.playerShipId]) {
-                    this.removeFromMap(settings.playerShipId);
+                    UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
                 }
             }
         }

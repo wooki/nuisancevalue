@@ -436,14 +436,6 @@ export default class SignalsRenderer {
         return this.addSpriteToMap(sprites[guid], alias, guid, addLabel, useSize);
     }
 
-    removeFromMap(guid) {
-        if (mapObjects[guid]) {
-            mapObjects[guid].destroy();
-            mapObjects[guid] = null;
-            sprites[guid] = null;
-        }
-    }
-
     createGrid() {
 
         // remove old one
@@ -544,40 +536,6 @@ export default class SignalsRenderer {
         pixiApp.stage.sortChildren();
     }
 
-    // update includes scaling of offset, so nothing else should scale (except size) of player ship
-    // additional objects position will need to be scaled (player ship is always centre)
-    updateGrid(x, y) {
-
-        if (sprites.gridSprite) {
-            let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
-            sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
-            sprites.gridSprite.tilePosition.y = Math.floor(settings.UiHeight / 2) - (positionChange.y);
-        }
-    }
-
-    // because y axis is flipped, all rotations are 180 off
-    adjustAngle(angle) {
-        return (angle + Math.PI) % (2 * Math.PI);
-    }
-
-    // convert a game coord to the coord on screen ie. relative to the player ship in the centre
-    relativeScreenCoord(x, y, focusX, focusY, screenWidth, screenHeight, angle, scale) {
-
-        let screenX = Math.floor(screenWidth / 2);
-        let screenY = Math.floor(screenHeight / 2);
-
-        let matrix = new PIXI.Matrix();
-        matrix.translate(x, y);
-        matrix.translate(0 - focusX, 0 - focusY);
-        matrix.scale(scale, scale);
-        // matrix.rotate(angle);
-        matrix.translate(screenX, screenY);
-        let p = new PIXI.Point(0, 0);
-        p = matrix.apply(p);
-
-        return p;
-    }
-
     drawObjects(gameObjects, playerShip, t, dt) {
 
         // keep track of and return ids of stuff we have
@@ -618,7 +576,7 @@ export default class SignalsRenderer {
                 labelObj = true;
             }
 
-            let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
+            let coord = UiUtils.relativeScreenCoord(obj.physicsObj.position[0],
                                                  obj.physicsObj.position[1],
                                                  playerShip.physicsObj.position[0],
                                                  playerShip.physicsObj.position[1],
@@ -676,7 +634,7 @@ export default class SignalsRenderer {
 
     drawWaypoint(waypoint, playerShip) {
 
-        let coord = this.relativeScreenCoord(waypoint.x,
+        let coord = UiUtils.relativeScreenCoord(waypoint.x,
              waypoint.y,
              playerShip.physicsObj.position[0],
              playerShip.physicsObj.position[1],
@@ -795,10 +753,10 @@ export default class SignalsRenderer {
                 }
 
                 // update the grid
-                this.updateGrid(playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
+                UiUtils.updateGrid(settings, sprites, playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
 
                 // set the player ship rotation
-                mapObjects[playerShip.id].rotation = this.adjustAngle(playerShip.physicsObj.angle);
+                mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
 
                 // update engine
                 settings.engineLevel = playerShip.engine;
@@ -964,14 +922,14 @@ export default class SignalsRenderer {
                 // remove any objects that we no-longer have
                 Object.keys(mapObjects).forEach((key) => {
                     if (!serverObjects[key]) {
-                        this.removeFromMap(key);
+                        UiUtils.removeFromMap(mapObjects, sprites, key);
                     }
                 });
 
 
             } else if (settings.playerShipId) {
                 if (mapObjects[settings.playerShipId]) {
-                    this.removeFromMap(settings.playerShipId);
+                    UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
                 }
             }
         }

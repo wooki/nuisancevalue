@@ -1,5 +1,6 @@
 const Assets = require('./images.js');
 const Hulls = require('../../../common/Hulls');
+const PIXI = require('pixi.js');
 
 // common functions used across multiple stations
 module.exports = {
@@ -72,7 +73,50 @@ module.exports = {
       settings.scale = (settings.narrowUi / settings.mapSize);
 
       // grid is always 1000 but scaled
-      settings.gridSize = Math.floor(1000 * settings.scale);
-  }
+      settings.gridSize = Math.floor(gridSize * settings.scale);
+  },
+
+	removeFromMap(mapObjects, sprites, guid) {
+			if (mapObjects[guid]) {
+					mapObjects[guid].destroy();
+					mapObjects[guid] = null;
+					sprites[guid] = null;
+			}
+	},
+
+	// convert a game coord to the coord on screen ie. relative to the player ship in the centre
+	relativeScreenCoord(x, y, focusX, focusY, screenWidth, screenHeight, angle, scale) {
+
+			let screenX = Math.floor(screenWidth / 2);
+			let screenY = Math.floor(screenHeight / 2);
+
+			let matrix = new PIXI.Matrix();
+			matrix.translate(x, y);
+			matrix.translate(0 - focusX, 0 - focusY);
+			matrix.scale(scale, scale);
+			// matrix.rotate(angle);
+			matrix.translate(screenX, screenY);
+			let p = new PIXI.Point(0, 0);
+			p = matrix.apply(p);
+
+			return p;
+	},
+
+	// update includes scaling of offset, so nothing else should scale (except size) of player ship
+	// additional objects position will need to be scaled (player ship is always centre)
+	updateGrid(settings, sprites, x, y) {
+			if (sprites.gridSprite) {
+					let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
+					sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
+					sprites.gridSprite.tilePosition.y = Math.floor(settings.UiHeight / 2) - (positionChange.y);
+			}
+	},
+
+	// because y axis is flipped, all rotations are 180 off
+	adjustAngle(angle) {
+			return (angle + Math.PI) % (2 * Math.PI);
+	}
+
+
 
 }
