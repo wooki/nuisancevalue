@@ -97,6 +97,21 @@ export default class NvServerEngine extends ServerEngine {
             playable: 1
         });
 
+        let hullName2 = 'blockade-runner';
+        let hullData2 = Hulls[hullName2];
+        let shipOrbitDistance2 = Math.floor(SolarObjects.Mars.diameter/2) + 2000;
+        let shipOrbitSpeed2 = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / shipOrbitDistance2);
+        this.gameEngine.addShip({
+            name: "Profit Margin",
+            x: 0,
+            y: 0 - (SolarObjects.Mars.orbit + shipOrbitDistance2),
+            dX: (0 - (marsOrbitSpeed + shipOrbitSpeed2)), dY: 0,
+            hull: hullName2,
+            mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
+            angle: Math.PI,
+            playable: 1
+        });
+
         // add jupiter
         let jupiterOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Jupiter.orbit);
         let jupiter = this.gameEngine.addPlanet({

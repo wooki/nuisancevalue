@@ -114,8 +114,64 @@ module.exports = {
 
 	// because y axis is flipped, all rotations are 180 off
 	adjustAngle(angle) {
-			return (angle + Math.PI) % (2 * Math.PI);
-	}
+      return (angle + Math.PI) % (2 * Math.PI);
+  },
+
+  radiansToDegrees(radians) {
+      if (radians < 0) {
+        return this.radiansToDegrees((radians + (Math.PI*2)));
+      } else if (radians > (Math.PI*2)) {
+        return this.radiansToDegrees((radians - (Math.PI*2)));
+      } else {
+        return ((radians + Math.PI) % (2 * Math.PI)) * (180 / Math.PI);
+      }
+  },
+
+  // UI for a helm item (name, target closing speed etc.)
+  helmDataItem(item) {
+
+    let el = document.createElement('div');
+    el.classList.add('helm-data-item');
+
+    if (item.type) {
+      el.classList.add('type-'+item.type);
+    }
+    Object.keys(item).forEach(function(key) {
+      let line = document.createElement('div');
+
+      if (key == 'type') {
+        line.classList.add('LED');
+        line.classList.add('type-'+item[key]);
+      } else {
+        line.classList.add('line');
+        let name = document.createElement('label');
+        name.innerHTML = key;
+        line.append(name);
+        let value = document.createElement('data');
+        value.innerHTML = item[key];
+        line.append(value);
+      }
+
+      el.append(line);
+    });
+
+    return el;
+  },
+
+  // UI for a list of helm items (names, and details)
+  helmDataItems(items) {
+
+    let el = document.createElement('div');
+    el.classList.add('ui-container');
+    el.classList.add('helm');
+    el.classList.add('right');
+
+    items.forEach(function(item) {
+      el.append(this.helmDataItem(item));
+    }.bind(this));
+
+    return el;
+  }
 
 
 

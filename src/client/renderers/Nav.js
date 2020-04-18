@@ -50,7 +50,13 @@ let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 let effects = {
-    hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
+    hudGlow: new GlowFilter({
+      distance: 3,
+      outerStrength: 5,
+      innerStrength: 0,
+      color: 0x000000,
+      quality: 0.5
+    }),
     waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
     crt: new CRTFilter({
       curvature: 8,
@@ -395,6 +401,10 @@ export default class NavRenderer {
         UiUtils.updateGrid(settings, sprites, settings.focus[0], settings.focus[1]);
 
         pixiApp.stage.sortChildren();
+    }
+
+    updateGrid() {
+        UiUtils.updateGrid(settings, sprites, settings.focus[0], settings.focus[1]);
     }
 
     // convert a game coord to the coord on screen ie. relative to the focus point

@@ -31,7 +31,9 @@ export default class LobbyRenderer {
     	let ships = game.world.forEachObject((objId, obj) => {
     		if (obj instanceof Ship && obj.playable === 1) {
 	    		if (!shipEls[objId]) {
+
 	    			shipEls[objId] = document.createElement('div');
+	    			shipEls[objId].classList.add('ship');
 	    			let shipName = document.createElement('div');
 	    			let shipDesc = document.createElement('div');
 	    			shipName.innerHTML = obj.name;

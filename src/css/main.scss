@@ -15,7 +15,7 @@ body, html {
     align-items: center;
     box-sizing: border-box;
     color: #00ff00;
-    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+    font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
     line-height: 30px;
     font-size: 18px;
     min-width: 140px;;
@@ -33,7 +33,7 @@ body, html {
       background-color: #163516;
       color: black;
       padding: 5px 15px;
-      font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+      font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
       line-height: 30px;
       font-size: 18px;
       border: none;
@@ -93,6 +93,9 @@ body, html {
 
 .helm.ui-container {
 
+    &.right {
+      overflow: auto;
+    }
     .engine {
       display: flex;
       flex-direction: column;
@@ -101,8 +104,89 @@ body, html {
         margin: auto 0 30px 0;
         display: block;
         &.inactive {
-            display: none;            
+            display: none;
         }
+    }
+    .helm-data-item {
+      display: flex;
+      flex-direction: column;
+      max-width: 200px;
+      width: 200px;
+      font-size: 12px;
+      line-height: 18px;
+      margin: 10px 0 10px 0;
+      padding: 20px 15px 10px 15px;
+      background: #0c2b0c;
+      background: radial-gradient(circle, #0c2b0c 0%, #163516 75%, #355435 100%);
+      box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
+      position: relative;
+      &.type-heading {
+        order: 1;
+      }
+      &.type-bearing {
+        order: 2;
+      }
+      &.type-gravity {
+        order: 3;
+      }
+      &.type-waypoint {
+        order: 4;
+      }
+      .LED {
+        z-index: 98;
+        position: absolute;
+        top: 8px;
+        left: 14px;
+        height: 10px;
+        width: 10px;
+        box-sizing: border-box;
+        background-color: #cccc00;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
+        box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
+        &.type-heading {
+          background-color: #00cc00;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #00cc00;
+        }
+        &.type-bearing {
+          background-color: #cc0000;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cc0000;
+        }
+        &.type-gravity {
+          background-color: #0000cc;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #0000cc;
+        }
+        &.type-waypoint {
+          background-color: #cccc00;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
+        }
+      }
+      .line {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 0 0 2px 0;
+        text-transform: uppercase;
+        overflow: hidden;
+      }
+      label {
+        flex: 0 0 auto;
+        text-align: left;
+        color: black;
+        text-shadow: -1px -1px 2px #265026;
+        font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+        margin-right: 5px;
+        &:after {
+          content: ": ";
+        }
+      }
+      data {
+        font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+        flex: 0 1 auto;
+        text-align: right;
+        background-color: #060606;
+        color: #aaa;
+        padding: 0 5px;
+      }
     }
 }
 @media only screen and (orientation : portrait) {
@@ -190,6 +274,8 @@ body, html {
     white-space: pre-line;
     user-select: none;
     margin: 0;
+    font-size: 18px;
+    font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
 }
 .nav.ui-container .console-input-container {
     flex: 0 0 auto;
@@ -199,7 +285,7 @@ body, html {
     line-height: 30px;
     font-size: 18px;
     flex-direction: row;
-    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+    font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
     margin: 0;
 }
 .nav.ui-container .console-input {
@@ -213,7 +299,7 @@ body, html {
     line-height: 30px;
     font-size: 18px;
     background: transparent;
-    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+    font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
 }
 .nav.ui-container .console-input-prefix {
     content: 'NAV:COM$';
@@ -233,12 +319,20 @@ label {
 }
 
 .lobby {
-    margin: 30px auto;
-    padding: 25px;
-    border: 1px solid #777;
-    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
-    border-radius: 21px;
-    max-width: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.lobby .ship {
+  flex: 0 0 auto;
+  margin: 30px;
+  padding: 25px;
+  border: 1px solid #777;
+  font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+  border-radius: 21px;
+  max-width: 400px;
 }
 
 .lobby .name {

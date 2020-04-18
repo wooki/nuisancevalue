@@ -14,6 +14,7 @@ import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
 import SolarObjects from './../../common/SolarObjects';
 import UiUtils from './Utils/UiUtils';
+import morphdom from 'morphdom';
 
 let el = null;
 let uiEls = {};
@@ -43,7 +44,13 @@ let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
 let effects = {
-    hudGlow: new GlowFilter(3, 5, 0, 0x000000, 0.5),
+    hudGlow: new GlowFilter({
+      distance: 3,
+      outerStrength: 5,
+      innerStrength: 0,
+      color: 0x000000,
+      quality: 0.5
+    }),
     waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
     bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9}),
     crt: new CRTFilter({
@@ -201,6 +208,13 @@ export default class HelmRenderer {
         });
         uiEls.dockUndockEl.classList.add('ui-undock');
         uiEls.dockUndockEl.classList.add('inactive');
+
+
+        uiEls.infoContainer = document.createElement("div");
+        uiEls.infoContainer.classList.add('ui-container');
+        uiEls.infoContainer.classList.add('helm');
+        uiEls.infoContainer.classList.add('right');
+        container.appendChild(uiEls.infoContainer);
     }
 
     createButton(document, container, id, innerHTML, onClick) {
@@ -728,7 +742,7 @@ export default class HelmRenderer {
                 let speedV = Victor.fromArray(playerShip.physicsObj.velocity);
                 let speed = Math.abs(Math.round(speedV.length()));
 
-                let course = Victor.fromArray(playerShip.physicsObj.velocity).angle();
+                let course = speedV.angle();
                 let bearing = (playerShip.physicsObj.angle + (0.5 * Math.PI)) % (2 * Math.PI);
                 let gravity = null;
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
@@ -736,6 +750,19 @@ export default class HelmRenderer {
                     // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
                     // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
                 }
+/////////////
+                // build a list of UI data for display
+                let uiDataItems = [];
+                let reversedSpeedV = new Victor(playerShip.physicsObj.velocity[0], 0 - playerShip.physicsObj.velocity[1]);
+                uiDataItems.push({
+                  type: 'bearing',
+                  bearing: Math.round(UiUtils.radiansToDegrees((bearing - (0.5 * Math.PI)) % (2 * Math.PI))) + "°"
+                });
+                uiDataItems.push({
+                  type: 'heading',
+                  Heading: ((Math.round(reversedSpeedV.verticalAngleDeg()) + 360) % 360) + "°",
+                  speed: Math.round(speedV.magnitude()) + SolarObjects.units.speed
+                });
 
                 // draw a marker to show bearing
                 if (!sprites.helmUi) {
@@ -791,6 +818,14 @@ export default class HelmRenderer {
                         sprites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);;
                     }
 
+                    uiDataItems.push({
+                      type: 'waypoint',
+                      name: waypoint.name,
+                      bearing: Math.round(UiUtils.radiansToDegrees((waypoint.bearing - (0.5 * Math.PI)) % (2 * Math.PI))) + "°",
+                      distance: Math.round(waypoint.distanceToWaypoint) + SolarObjects.units.distance,
+                      closing: waypoint.closing.toPrecision(3) + SolarObjects.units.speed
+                    });
+
                 });
 
                 // remove helm waypoint markers for waypoints not in use
@@ -837,11 +872,15 @@ export default class HelmRenderer {
                         closing = ((speedV.clone().subtract(gravityHeading)).dot(gravity) / gravity.length());
                     }
 
-                    // let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
-                    //                gravityAmountText + SolarObjects.units.force + "\n" +
-                    //                closing.toPrecision(3) + SolarObjects.units.speed;
                     let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
                                    closing.toPrecision(3) + SolarObjects.units.speed;
+
+                    uiDataItems.push({
+                      type: 'gravity',
+                      bearing: ((Math.round(gravity.angleDeg()) + 450) % 360) + "°",
+                      distance: gravityDistanceText + SolarObjects.units.distance,
+                      closing: closing.toPrecision(3) + SolarObjects.units.speed
+                    });
 
                     if (!sprites.gravityText) {
                         sprites.gravityText = new PIXI.Text(gravText, {
@@ -870,6 +909,10 @@ export default class HelmRenderer {
                         sprites.ColorsgravityText = null;
                     }
                 }
+
+/////////////
+                // update the data
+                morphdom(uiEls.infoContainer, UiUtils.helmDataItems(uiDataItems));
 
                 // draw stuff on the map
                 let drawnObjects = this.drawObjects(gameObjects, playerShip, t, dt);
