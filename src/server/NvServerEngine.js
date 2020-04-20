@@ -26,7 +26,8 @@ export default class NvServerEngine extends ServerEngine {
             size: SolarObjects.Sol.diameter,
             angle: Math.random() * 2 * Math.PI,
             angularVelocity: 0,
-            texture: 'sol'
+            texture: 'sol',
+            ignoregravity: 1
         });
 
         // add the earth

@@ -145,6 +145,10 @@ export default class NvGameEngine extends GameEngine {
                             gravSourceAmount = g;
                             gravSource = gravObj;
                         }
+                    } else if (obj.ignoregravity) {
+
+                        // allow a planet to ignore gravity (the sun doesn't get attracted to other planets)
+
                     } else {
 
                         // find biggest gravity effect, only apply gravity on smaller objects
@@ -391,6 +395,7 @@ export default class NvGameEngine extends GameEngine {
         p.size = params['size'];
         p.texture = params['texture'];
         p.fixedgravity = params['fixedgravity'] || '';
+        p.ignoregravity = params['ignoregravity'] || 0;
         return this.addObjectToWorld(p);
     }
 
