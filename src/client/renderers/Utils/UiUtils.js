@@ -79,8 +79,8 @@ module.exports = {
 	removeFromMap(mapObjects, sprites, guid) {
 			if (mapObjects[guid]) {
 					mapObjects[guid].destroy();
-					mapObjects[guid] = null;
-					sprites[guid] = null;
+					delete mapObjects[guid];
+					delete sprites[guid];					
 			}
 	},
 

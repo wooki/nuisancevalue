@@ -69,7 +69,7 @@ export default class Ship extends PhysicalObject2D {
         });
 
         if (currentWaypointIndex >= 0) {
-            this.waypoints.splice(currentWaypointIndex, 1);
+            this.waypoints.splice(currentWaypointIndex, 1);            
             // note - delete this.waypoints[currentWaypointIndex] didn't work!!!
         }
     }

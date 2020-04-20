@@ -182,6 +182,14 @@ export default class NvServerEngine extends ServerEngine {
             e.ship.undock();
         });
 
+        this.gameEngine.on('addwaypoint', e => {
+            e.ship.addWaypoint(e.name, e.x, e.y);
+        });
+
+        this.gameEngine.on('removewaypoint', e => {
+            e.ship.removeWaypoint(e.name);
+        });
+
         // also needs a room
         // this.createRoom("Nuisance Value");
     }

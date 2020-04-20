@@ -574,6 +574,11 @@ export default class NavRenderer {
             Object.keys(mapObjects).forEach((key) => {
                 if (!gameObjects[key]) {
                     UiUtils.removeFromMap(mapObjects, sprites, key);
+                    Object.keys(aliases).forEach(function(k) {
+                      if (key == aliases[k]) {
+                        delete aliases[k];
+                      }
+                    });
                 }
             });
 

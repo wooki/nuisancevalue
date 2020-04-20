@@ -310,9 +310,11 @@ export default class NvGameEngine extends GameEngine {
                 let x = inputData.options.x;
                 let y = inputData.options.y;
                 if (x === undefined || y === undefined) {
-                    ship.removeWaypoint(name);
+                    // ship.removeWaypoint(name); // MOVED TO SERVER ONLY via event
+                    this.emit('removewaypoint', { ship: ship, name: name });
                 } else {
-                    ship.addWaypoint(name, x, y);
+                    // ship.addWaypoint(name, x, y); // MOVED TO SERVER ONLY via event
+                    this.emit('addwaypoint', { ship: ship, name: name, x: x, y: y });
                 }
             }
 
