@@ -46,12 +46,14 @@ export default class Ship extends PhysicalObject2D {
 
     // if the ship has active engines then apply force
     applyEngine() {
+        let hullData = Hulls[this.hull];
+
         if (this.dockedId !== null && this.dockedId >= 0) {
             return; // can't do this while docked
         }
 
-        if (this.engine && this.engine > 0) {
-            this.physicsObj.applyForceLocal([0, this.engine * 0.1]);
+        if (this.engine && this.engine > 0) { // IS THIS WRONG!?!?
+            this.physicsObj.applyForceLocal([0, this.engine * hullData.thrust * (1/60)]);
         }
     }
 
@@ -80,6 +82,8 @@ export default class Ship extends PhysicalObject2D {
 
     // apply two forces opposite corners to create rotation
     applyManeuver(maneuver) {
+        let hullData = Hulls[this.hull];
+
 
         if (this.dockedId !== null && this.dockedId >= 0) {
             return; // can't do this while docked
@@ -90,8 +94,8 @@ export default class Ship extends PhysicalObject2D {
             if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.2) {
                 this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
             }
 
         } else if (maneuver == 'r') {
@@ -99,17 +103,17 @@ export default class Ship extends PhysicalObject2D {
             if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.2) {
                 this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([1, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([-1, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
             }
 
         } else if (maneuver == 'f') {
 
-            this.physicsObj.applyForceLocal([0, 0.5], [Math.floor(this.size/2), Math.floor(this.size/2)]);
+            this.physicsObj.applyForceLocal([0, hullData.maneuver / 2], [Math.floor(this.size/2), Math.floor(this.size/2)]);
 
         } else if (maneuver == 'b') {
 
-            this.physicsObj.applyForceLocal([0, -0.5], [Math.floor(this.size/2), Math.floor(this.size/2)]);
+            this.physicsObj.applyForceLocal([0, 0 - (0 - hullData.maneuver / 2)], [Math.floor(this.size/2), Math.floor(this.size/2)]);
         }
 
     }

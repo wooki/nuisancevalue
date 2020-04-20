@@ -3,6 +3,7 @@ import Asteroid from '../../../../common/Asteroid';
 import Planet from '../../../../common/Planet';
 import SolarObjects from '../../../../common/SolarObjects';
 import Victor from 'victor';
+import Hulls from '../../../../common/Hulls';
 
 export default class Info {
 
@@ -29,7 +30,7 @@ export default class Info {
                 log.innerHTML = log.innerHTML + "\nDesignation: Asteroid";
             }
 
-            // vector of object
+            // vector of objectc
             let v = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
 
             log.innerHTML = log.innerHTML + "\nMass: " + obj.physicsObj.mass.toPrecision(3) + SolarObjects.units.mass;
@@ -66,11 +67,29 @@ export default class Info {
                 log.innerHTML = log.innerHTML + "\nClosing: " + closing.toPrecision(3) + SolarObjects.units.speed;
 
             } else {
-              // it is us - show grid info
-              log.innerHTML = log.innerHTML + "\nHull: " + us.hull;
+              // it is us - show grid info and more
+              let hullData = Hulls[us.hull];
+
+              let accn1 = (hullData.thrust / hullData.mass) * (1/60);
+              let accn2 = (hullData.thrust*2 / hullData.mass) * (1/60);
+              let accn3 = (hullData.thrust*3 / hullData.mass) * (1/60);
+              let accn4 = (hullData.thrust*4 / hullData.mass) * (1/60);
+              let accn5 = (hullData.thrust*5 / hullData.mass) * (1/60);
+              let timeTo1000 = (1000 / accn5);
+
+              log.innerHTML = log.innerHTML + "\nHull: " + hullData.name;
+              log.innerHTML = log.innerHTML + "\nEngine 1: "+ accn1.toFixed(3) + SolarObjects.units.speed+'/s';
+              log.innerHTML = log.innerHTML + "\nEngine 2: "+ accn2.toFixed(3) + SolarObjects.units.speed+'/s';
+              log.innerHTML = log.innerHTML + "\nEngine 3: "+ accn3.toFixed(3) + SolarObjects.units.speed+'/s';
+              log.innerHTML = log.innerHTML + "\nEngine 4: "+ accn4.toFixed(3) + SolarObjects.units.speed+'/s';
+              log.innerHTML = log.innerHTML + "\nEngine 5: "+ accn5.toFixed(3) + SolarObjects.units.speed+'/s';
+              log.innerHTML = log.innerHTML + "\n1000 "+SolarObjects.units.speed+" in "+timeTo1000.toFixed(3)+"s";
               log.innerHTML = log.innerHTML + "\nNavCom Grid Nav: 50,000 and 10,000" + SolarObjects.units.distance;
               log.innerHTML = log.innerHTML + "\nNavCom Grid Signals: 10,000 and 2,000" + SolarObjects.units.distance;
               log.innerHTML = log.innerHTML + "\nNavCom Grid Helm: 1,000" + SolarObjects.units.distance;
+
+              // work out our acceleration
+
             }
 
 
