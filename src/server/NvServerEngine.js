@@ -174,12 +174,31 @@ export default class NvServerEngine extends ServerEngine {
         // listen to server only events
         this.gameEngine.on('dock', e => {
             // e.ship, e.target
-            e.ship.dock(e.target);
+
+            // shunt ship into targets dock, remove ship from map
+            let mothership = this.gameEngine.world.objects[e.target];
+            if (mothership) {
+              e.ship.dock(e.target);
+              mothership.docked.push(e.ship);
+              this.gameEngine.removeObjectFromWorld(e.ship);
+            }
         });
 
         this.gameEngine.on('undock', e => {
             // e.ship
-            e.ship.undock();
+
+            // add ship back into game
+            if (e.ship.dockedId != null && e.ship.dockedId >= 0) {
+
+              let mothership = this.gameEngine.world.objects[e.ship.dockedId];
+              if (mothership) {
+                mothership.docked = mothership.docked.filter(function(m) {
+                  return !(m.id == e.ship.id);
+                });
+                e.ship.undock(mothership);
+                this.gameEngine.addObjectToWorld(e.ship);
+              }
+            }
         });
 
         this.gameEngine.on('addwaypoint', e => {

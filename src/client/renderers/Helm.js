@@ -626,18 +626,40 @@ export default class HelmRenderer {
 
             // find the player ship first, so we can set objects positions relative to it
             let playerShip = null;
+            let isDocked = false;
             let gameObjects = [];
             game.world.forEachObject((objId, obj) => {
                 if (obj instanceof Ship) {
                     if (obj.helmPlayerId == game.playerId) {
                         playerShip = obj;
                     } else {
+
                         gameObjects.push(obj);
                     }
                 } else {
                     gameObjects.push(obj);
                 }
             });
+
+            // check docked if we haven't found yet
+            if (!playerShip) {
+              game.world.forEachObject((objId, obj) => {
+                if (obj instanceof Ship) {
+                  if (obj.docked && obj.docked.length > 0) {
+                    let dockedMatch = obj.docked.find(function(dockedShip) {
+                      return (dockedShip.helmPlayerId == game.playerId);
+                    });
+                    if (dockedMatch) {
+                      isDocked = true;
+                      playerShip = obj;
+                      gameObjects = gameObjects.filter(function(mothership) {
+                        return (mothership.id != obj.id);
+                      });
+                    }
+                  }
+                }
+              });
+            }
 
             if (debugging) {
                 if (isNaN(playerShip.position.x)) {
@@ -732,7 +754,7 @@ export default class HelmRenderer {
                     uiEls['engineEl'+playerShip.engine].classList.add('active');
                 }
 
-                if (playerShip.dockedId !== null && playerShip.dockedId >= 0) {
+                if (isDocked) {
                     uiEls.dockUndockEl.classList.remove('inactive');
                 } else {
                     uiEls.dockUndockEl.classList.add('inactive');
@@ -750,7 +772,7 @@ export default class HelmRenderer {
                     // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
                     // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
                 }
-/////////////
+
                 // build a list of UI data for display
                 let uiDataItems = [];
                 let reversedSpeedV = new Victor(playerShip.physicsObj.velocity[0], 0 - playerShip.physicsObj.velocity[1]);
@@ -910,7 +932,6 @@ export default class HelmRenderer {
                     }
                 }
 
-/////////////
                 // update the data
                 morphdom(uiEls.infoContainer, UiUtils.helmDataItems(uiDataItems));
 

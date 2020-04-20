@@ -69,14 +69,6 @@ export default class NvGameEngine extends GameEngine {
     }
 
 
-    // degreesToRadians: function(degrees) {
-    //   return degrees * (Math.PI/180);
-    // },
-
-    // radiansToDegrees: function(radians) {
-    //   return radians * (180/Math.PI);
-    // },
-
     // update world objects for engines/gravity etc
     preStep(params) {
 
@@ -91,31 +83,7 @@ export default class NvGameEngine extends GameEngine {
             // from the ship they are docked with
             if (obj.dockedId !== null && obj.dockedId >= 0) {
 
-                // get the object we're docked with
-                let mothership = this.world.queryObject({ id: parseInt(obj.dockedId) });
-                if (mothership) {
-                    // console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
-                    if (isNaN(mothership.physicsObj.position[0])) {
-
-                        // HAPENS ONLY CLIENT AFTER RECONNECT !!!
-                        // console.log("MOTHERSHIP pos NaN!");
-                        // console.dir(mothership);
-                        // this.world.forEachObject(function(index, o) {
-                        //     console.dir(o);
-                        // });
-                        // throw "DEBUGGING !";
-                    } else {
-                        // console.log("mothership.physicsObj.position:"+mothership.physicsObj.position[0] + "," + mothership.physicsObj.position[1]);
-
-                        obj.physicsObj.angularVelocity = 0;
-                        obj.physicsObj.position = [mothership.physicsObj.position[0], mothership.physicsObj.position[1]];
-                        // obj.physicsObj.velocity = [mothership.physicsObj.velocity[0], mothership.physicsObj.velocity[1]];
-                    }
-
-                    // console.log("obj.physicsObj.position:");
-                    // console.dir(obj.physicsObj.position);
-
-                }
+                // docked objects not on the map so ignore (although this should never happen)
 
             } else {
                 // only certain types have engines
@@ -231,13 +199,27 @@ export default class NvGameEngine extends GameEngine {
             }
         });
 
+        // check docked
+        if (!ship) {
+          this.world.forEachObject((objId, obj) => {
+            if (obj instanceof Ship) {
+              if (!ship) {
+                ship = obj.docked.find(function(dockedShip) {
+                  return (dockedShip.helmPlayerId == playerId || dockedShip.navPlayerId == playerId || dockedShip.signalsPlayerId == playerId);
+                });
+              }
+            }
+          });
+        }
+
         return ship;
     }
 
     processInput(inputData, playerId) {
 
         super.processInput(inputData, playerId);
-        // console.log("processInput:"+playerId);
+        // console
+        ("processInput:"+playerId);
         // console.dir(inputData);
 
         if (playerId != 0) {
@@ -245,6 +227,19 @@ export default class NvGameEngine extends GameEngine {
             // handle joining ship
             if (inputData.input == 'join-ship') {
                 let ship = this.world.objects[inputData.options.objId];
+
+                // might be docked
+                if (!ship) {
+                  this.world.forEachObject((objId, obj) => {
+                    if (obj instanceof Ship && !ship) {
+                      ship = obj.docked.find(function(dockedShip) {
+                        return (objId == obj.id);
+                      });
+                    }
+                  });
+                }
+
+                // try and add them
                 if (inputData.options.station == "helm" && ship.helmPlayerId == 0) {
                     ship.helmPlayerId = playerId;
                     ship.playerId = playerId; // set the ownership to last player to join
@@ -366,6 +361,7 @@ export default class NvGameEngine extends GameEngine {
         s.commsState = params['commsState'] || 0;
         s.commsTargetId = params['commsTargetId'] || -1;
         s.dockedId = params['dockedId'] || -1;
+        s.docked = [];
 
         return this.addObjectToWorld(s);
     }

@@ -1,4 +1,5 @@
 import Ship from './../../common/Ship';
+import morphdom from 'morphdom';
 
 let el = null;
 let shipEls = {};
@@ -24,63 +25,75 @@ export default class LobbyRenderer {
     	client.joinShip(shipId, station);
     }
 
+    drawShipUi(obj) {
+
+      let shipEl = document.createElement('div');
+      shipEl.classList.add('ship');
+      let shipName = document.createElement('div');
+      let shipDesc = document.createElement('div');
+      shipName.innerHTML = obj.name;
+      shipDesc.innerHTML = obj.hull + " class";
+      shipName.classList.add('name');
+      shipDesc.classList.add('description');
+      shipEl.append(shipName);
+      shipEl.append(shipDesc);
+
+      if (obj.helmPlayerId == 0) {
+        let helmEl = document.createElement('div');
+        helmEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'helm') } );
+        helmEl.innerHTML = "Join as helm";
+        helmEl.classList.add('join');
+        shipEl.append(helmEl);
+      }
+
+      if (obj.navPlayerId == 0) {
+        let navEl = document.createElement('div');
+        navEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'nav') } );
+        navEl.innerHTML = "Join as navigator";
+        navEl.classList.add('join');
+        shipEl.append(navEl);
+      }
+
+      if (obj.signalsPlayerId == 0) {
+        let signalsEl = document.createElement('div');
+        signalsEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'signals') } );
+        signalsEl.innerHTML = "Join as signals";
+        signalsEl.classList.add('join');
+        shipEl.append(signalsEl);
+      }
+
+      return shipEl;
+    }
+
+    addShip(obj) {
+      if (!shipEls[obj.id]) {
+        shipEls[obj.id] = this.drawShipUi(obj);
+        el.append(shipEls[obj.id]);
+      } else {
+        morphdom(shipEls[obj.id], this.drawShipUi(obj));
+      }
+    }
+
     // just draw rooms (ships) to join
     draw(t, dt) {
 
-    	let shipsList = '';
     	let ships = game.world.forEachObject((objId, obj) => {
-    		if (obj instanceof Ship && obj.playable === 1) {
-	    		if (!shipEls[objId]) {
+    		if (obj instanceof Ship) {
 
-	    			shipEls[objId] = document.createElement('div');
-	    			shipEls[objId].classList.add('ship');
-	    			let shipName = document.createElement('div');
-	    			let shipDesc = document.createElement('div');
-	    			shipName.innerHTML = obj.name;
-	    			shipDesc.innerHTML = obj.hull + " class";
-	    			shipEls[objId].classList.add('ship');
-	    			shipName.classList.add('name');
-	    			shipDesc.classList.add('description');
-	    			shipEls[objId].append(shipName);
-	    			shipEls[objId].append(shipDesc);
-	    			el.append(shipEls[objId]);
-	    		}
+          if (obj.playable === 1) {
+            this.addShip(obj);
+          }
 
-	    		if (obj.helmPlayerId == 0 && !shipEls[objId+'-helm']) {
-	    			shipEls[objId+'-helm'] = document.createElement('div');
-	    			shipEls[objId+'-helm'].addEventListener('click', (event) => { this.joinShip(objId, 'helm') } );
-	    			shipEls[objId+'-helm'].innerHTML = "Join as helm";
-	    			shipEls[objId+'-helm'].classList.add('join');
-	    			shipEls[objId].append(shipEls[objId+'-helm']);
-	    		} else if (obj.helmPlayerId != 0 && shipEls[objId+'-helm']) {
-	    			shipEls[objId+'-helm'].remove();
-	    			shipEls[objId+'-helm'] = null;
-	    		}
-
-    			if (obj.navPlayerId == 0 && !shipEls[objId+'-nav']) {
-		    		shipEls[objId+'-nav'] = document.createElement('div');
-	    			shipEls[objId+'-nav'].addEventListener('click', (event) => { this.joinShip(objId, 'nav') } );
-	    			shipEls[objId+'-nav'].innerHTML = "Join as navigator";
-	    			shipEls[objId+'-nav'].classList.add('join');
-	    			shipEls[objId].append(shipEls[objId+'-nav']);
-	    		} else if (obj.navPlayerId != 0 && shipEls[objId+'-nav']) {
-	    			shipEls[objId+'-nav'].remove();
-	    			shipEls[objId+'-nav'] = null;
-	    		}
-
-	    		if (obj.signalsPlayerId == 0 && !shipEls[objId+'-signals']) {
-		    		shipEls[objId+'-signals'] = document.createElement('div');
-	    			shipEls[objId+'-signals'].addEventListener('click', (event) => { this.joinShip(objId, 'signals') } );
-	    			shipEls[objId+'-signals'].innerHTML = "Join as signals";
-	    			shipEls[objId+'-signals'].classList.add('join');
-	    			shipEls[objId].append(shipEls[objId+'-signals']);
-	    		} else if (obj.signalsPlayerId != 0 && shipEls[objId+'-signals']) {
-	    			shipEls[objId+'-signals'].remove();
-	    			shipEls[objId+'-signals'] = null;
-	    		}
-
+          if (obj.docked && obj.docked.length > 0) {
+            obj.docked.forEach((dockedObj) => {
+              if (dockedObj instanceof Ship && dockedObj.playable === 1) {
+                this.addShip(dockedObj);
+              }
+            });
+          }
 	    	}
     	});
+
     }
 
 }
