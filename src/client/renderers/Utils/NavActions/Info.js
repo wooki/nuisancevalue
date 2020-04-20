@@ -47,7 +47,10 @@ export default class Info {
                 direction = new Victor(direction.x, 0 - direction.y);
 
                 log.innerHTML = log.innerHTML + "\nBearing: " + ((Math.round(direction.verticalAngleDeg()) + 360) % 360) + "°";
-                log.innerHTML = log.innerHTML + "\nDistance: " + direction.magnitude().toPrecision(3) + SolarObjects.units.distance;
+                // log.innerHTML = log.innerHTML + "\nDistance: " + direction.magnitude().toPrecision(3) + SolarObjects.units.distance;
+                // log.innerHTML = log.innerHTML + "\nDistance: " + direction.magnitude().toPrecision(6) + SolarObjects.units.distance;
+                log.innerHTML = log.innerHTML + "\nDistance: " + Math.round(direction.magnitude()).toLocaleString() + SolarObjects.units.distance;
+
 
                 if (obj instanceof Planet) {
                     let g = Math.round(((SolarObjects.constants.G * obj.physicsObj.mass) / Math.pow((obj.size / 2), 2)) * 100) / 100;
@@ -62,6 +65,12 @@ export default class Info {
                 let closing = ((ourVelocity.clone().subtract(v)).dot(direction) / direction.length());
                 log.innerHTML = log.innerHTML + "\nClosing: " + closing.toPrecision(3) + SolarObjects.units.speed;
 
+            } else {
+              // it is us - show grid info
+              log.innerHTML = log.innerHTML + "\nHull: " + us.hull;
+              log.innerHTML = log.innerHTML + "\nNavCom Grid Nav: 50,000 and 10,000" + SolarObjects.units.distance;
+              log.innerHTML = log.innerHTML + "\nNavCom Grid Signals: 10,000 and 2,000" + SolarObjects.units.distance;
+              log.innerHTML = log.innerHTML + "\nNavCom Grid Helm: 1,000" + SolarObjects.units.distance;
             }
 
 
