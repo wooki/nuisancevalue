@@ -92,6 +92,8 @@ export default class NvServerEngine extends ServerEngine {
             dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
             mass: 0.1, size: 280, // need to read mass and size from hull
             hull: 'station',
+            commsScript: 0,
+            dockedCommsScript: 1,
             angle: 0,
             fixedgravity: earth.id.toString()
         });
@@ -214,6 +216,8 @@ export default class NvServerEngine extends ServerEngine {
             dX: 0, dY: (0 - (jupiterOrbitSpeed + jupiterstationOrbitSpeed)),
             mass: 0.08, size: 180, // need to read mass and size from hull
             hull: 'station',
+            commsScript: 0,
+            dockedCommsScript: 1,
             angle: 0,
             fixedgravity: jupiter.id.toString()
         });
@@ -228,6 +232,8 @@ export default class NvServerEngine extends ServerEngine {
             dX: 0, dY: (0 - (saturnOrbitSpeed + saturnStationOrbitSpeed)),
             mass: 0.07, size: 160, // need to read mass and size from hull
             hull: 'station',
+            commsScript: 0,
+            dockedCommsScript: 1,
             angle: 0,
             fixedgravity: saturn.id.toString()
         });

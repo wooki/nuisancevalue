@@ -17,6 +17,7 @@ export default class Ship extends PhysicalObject2D {
             navPlayerId: { type: BaseTypes.TYPES.UINT8 },
             signalsPlayerId: { type: BaseTypes.TYPES.UINT8 },
             commsScript: { type: BaseTypes.TYPES.UINT8 },
+            dockedCommsScript: { type: BaseTypes.TYPES.UINT8 },
             commsState: { type: BaseTypes.TYPES.UINT8 },
             commsTargetId: { type: BaseTypes.TYPES.INT16 },
             dockedId: { type: BaseTypes.TYPES.INT16 },
@@ -188,6 +189,7 @@ export default class Ship extends PhysicalObject2D {
         this.signalsPlayerId = other.signalsPlayerId;
         this.waypoints = other.waypoints;
         this.commsScript = other.commsScript;
+        this.dockedCommsScript = other.dockedCommsScript;
         this.commsState = other.commsState;
         this.commsTargetId = other.commsTargetId;
         this.dockedId = other.dockedId;

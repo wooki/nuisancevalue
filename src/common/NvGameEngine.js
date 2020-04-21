@@ -358,6 +358,7 @@ export default class NvGameEngine extends GameEngine {
         s.waypoints = [];
         s.playable = params['playable'] || 0;
         s.commsScript = params['commsScript'] || 0;
+        s.dockedCommsScript = params['dockedCommsScript'] || 0;
         s.commsState = params['commsState'] || 0;
         s.commsTargetId = params['commsTargetId'] || -1;
         s.dockedId = params['dockedId'] || -1;

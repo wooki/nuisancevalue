@@ -168,7 +168,11 @@ export default class SignalsRenderer {
 
         let selectedGuid = parseInt(guid);
         let obj = game.world.queryObject({ id: selectedGuid });
-        if (obj && obj.signalsPlayerId != game.playerId) {
+console.log("debugging:");
+console.dir(obj);
+console.log("obj.signalsPlayerId:"+ obj.playerId);
+console.log("game.playerId:"+ game.playerId);
+        if (obj && obj.signalsPlayerId != game.playerId) { // the sane if DOCKED!!
 
             if (selectedObjId != selectedGuid) {
                 this.removeCommsUi();

@@ -1,9 +1,10 @@
 const Ship = require('./CommScripts/Ship');
 const Station = require('./CommScripts/Station');
+const DockedStation = require('./CommScripts/DockedStation');
 
 // comms scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [Station, Ship];
+const scripts = [Station, DockedStation, Ship];
 
 let game = null;
 let client = null;
@@ -33,6 +34,9 @@ export default class Comms {
 		if (selectedObj.playable != 1 && (selectedObj.commsTargetId < 0 || selectedObj.commsTargetId == playerShip.id)) {
 
 			let script = scripts[selectedObj.commsScript];
+			if (selectedObj.dockedId == selectedObj.commsTargetId) {
+				script = scripts[selectedObj.dockedCommsScript];
+			}
 
 			// get the current state
 			let state = script[selectedObj.commsState];
@@ -65,6 +69,9 @@ export default class Comms {
 		if (selectedObj.playable != 1 && selectedObj.commsTargetId == playerShip.id) {
 
 			let script = scripts[selectedObj.commsScript];
+			if (selectedObj.dockedId == selectedObj.commsTargetId) {
+				script = scripts[selectedObj.dockedCommsScript];
+			}
 
 			// get current state
 			let state = script[selectedObj.commsState];
@@ -97,6 +104,9 @@ export default class Comms {
 
 	getState(selectedObj) {
 		let script = scripts[selectedObj.commsScript];
+		if (selectedObj.dockedId == selectedObj.commsTargetId) {
+			script = scripts[selectedObj.dockedCommsScript];
+		}
 		let state = script[selectedObj.commsState];
 		return state;
 	}
