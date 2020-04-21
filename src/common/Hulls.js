@@ -6,8 +6,8 @@ module.exports = {
 		image: 'assets/ship.png',
 		size: 100, // used for height
 		width: 1, // ratio to height
-		mass: 0.008,
-		thrust: 1.2,
+		mass: 0.011,
+		thrust: 0.04,
 		maneuver: 1.4,
 		enginePositions: [[0.2, 0.4, 0.9], [0.2, 0.6, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust' // or exhaustflame
@@ -18,8 +18,8 @@ module.exports = {
 		image: 'assets/bushido.png',
 		size: 120, // used for height
 		width: 0.93, // ratio to height
-		mass: 0.01,
-		thrust: 2.0,
+		mass: 0.012,
+		thrust: 0.05,
 		maneuver: 1.2,
 		enginePositions: [[0.4, 0.5, 0.8]],// [scale, %x, %y]
 		exhaustImage: 'exhaust'
@@ -31,7 +31,7 @@ module.exports = {
 		size: 200, // used for height
 		width: 0.53, // ratio to height
 		mass: 0.008,
-		thrust: 2.4,
+		thrust: 0.07,
 		maneuver: 0.8,
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust'
