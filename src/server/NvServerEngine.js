@@ -30,6 +30,32 @@ export default class NvServerEngine extends ServerEngine {
             ignoregravity: 1
         });
 
+        // add mercury
+        let mercuryOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Mercury.orbit);
+        let mercury = this.gameEngine.addPlanet({
+            x: SolarObjects.Mercury.orbit, y: 0,
+            dX: 0, dY: 0 - mercuryOrbitSpeed,
+            mass: SolarObjects.Mercury.mass,
+            size: SolarObjects.Mercury.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'mercury',
+            fixedgravity: sol.id.toString()
+        });
+
+        // add venus
+        let venusOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Venus.orbit);
+        let venus = this.gameEngine.addPlanet({
+            x: SolarObjects.Venus.orbit, y: 0,
+            dX: 0, dY: 0 - venusOrbitSpeed,
+            mass: SolarObjects.Venus.mass,
+            size: SolarObjects.Venus.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'venus',
+            fixedgravity: sol.id.toString()
+        });
+
         // add the earth
         let earthOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Earth.orbit);
         let earth = this.gameEngine.addPlanet({
@@ -123,6 +149,58 @@ export default class NvServerEngine extends ServerEngine {
             angle: Math.random() * 2 * Math.PI,
             angularVelocity: 0,
             texture: 'jupiter',
+            fixedgravity: sol.id.toString()
+        });
+
+        // add saturn
+        let saturnOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Saturn.orbit);
+        let saturn = this.gameEngine.addPlanet({
+            x: SolarObjects.Saturn.orbit, y: 0,
+            dX: 0, dY: 0 - saturnOrbitSpeed,
+            mass: SolarObjects.Saturn.mass,
+            size: SolarObjects.Saturn.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'saturn',
+            fixedgravity: sol.id.toString()
+        });
+
+        // add uranus
+        let uranusOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Uranus.orbit);
+        let uranus = this.gameEngine.addPlanet({
+            x: SolarObjects.Uranus.orbit, y: 0,
+            dX: 0, dY: 0 - uranusOrbitSpeed,
+            mass: SolarObjects.Uranus.mass,
+            size: SolarObjects.Uranus.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'uranus',
+            fixedgravity: sol.id.toString()
+        });
+
+        // add neptune
+        let neptuneOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Neptune.orbit);
+        let neptune = this.gameEngine.addPlanet({
+            x: SolarObjects.Neptune.orbit, y: 0,
+            dX: 0, dY: 0 - neptuneOrbitSpeed,
+            mass: SolarObjects.Neptune.mass,
+            size: SolarObjects.Neptune.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'neptune',
+            fixedgravity: sol.id.toString()
+        });
+
+        // add pluto
+        let plutoOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / SolarObjects.Pluto.orbit);
+        let pluto = this.gameEngine.addPlanet({
+            x: SolarObjects.Pluto.orbit, y: 0,
+            dX: 0, dY: 0 - plutoOrbitSpeed,
+            mass: SolarObjects.Pluto.mass,
+            size: SolarObjects.Pluto.diameter,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: 0,
+            texture: 'pluto',
             fixedgravity: sol.id.toString()
         });
 

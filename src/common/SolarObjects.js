@@ -26,6 +26,18 @@ module.exports = {
 		orbit: 0
 	},
 
+	Mercury: {
+		diameter: Math.sqrt(4879) * 10,
+		mass: Math.sqrt(0.33) * Math.pow(10, 18),
+		orbit: Math.sqrt(57.9 * Math.pow(10, 6)) * 10
+	},
+
+	Venus: {
+		diameter: Math.sqrt(12104) * 10,
+		mass: Math.sqrt(4.87) * Math.pow(10, 18),
+		orbit: Math.sqrt(108.8 * Math.pow(10, 6)) * 10
+	},
+
 	Earth: {
 		// diameter: 12756,
 		// mass: 5.97 * Math.pow(10, 24),
@@ -53,13 +65,28 @@ module.exports = {
 		orbit: Math.sqrt(778.6 * Math.pow(10, 6)) * 10
 	},
 
+	Saturn: {
+		diameter: Math.sqrt(268000) * 10,
+		mass: Math.sqrt(568) * Math.pow(10, 18),
+		orbit: Math.sqrt(1433.5 * Math.pow(10, 6)) * 10
+	},
+
+	Uranus: {
+		diameter: Math.sqrt(51118) * 10,
+		mass: Math.sqrt(86.8) * Math.pow(10, 18),
+		orbit: Math.sqrt(2872.5 * Math.pow(10, 6)) * 10
+	},
+
 	Neptune: {
-		// diameter: 49528,
-		// mass: 102 * Math.pow(10, 8),
-		// orbit: 4495.1 * Math.pow(10, 6)
 		diameter: Math.sqrt(49528) * 10,
 		mass: Math.sqrt(102) * Math.pow(10, 18),
 		orbit: Math.sqrt(4495.1 * Math.pow(10, 6)) * 10
+	},
+
+	Pluto: {
+		diameter: Math.sqrt(2370) * 10,
+		mass: Math.sqrt(0.015) * Math.pow(10, 18),
+		orbit: Math.sqrt(5906.4 * Math.pow(10, 6)) * 10
 	}
 
 }
