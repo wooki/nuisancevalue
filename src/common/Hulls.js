@@ -7,7 +7,7 @@ module.exports = {
 		size: 100, // used for height
 		width: 1, // ratio to height
 		mass: 0.008,
-		thrust: 0.3,
+		thrust: 0.15,
 		maneuver: 0.8,
 		enginePositions: [[0.2, 0.4, 0.9], [0.2, 0.6, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust' // or exhaustflame
@@ -19,7 +19,7 @@ module.exports = {
 		size: 120, // used for height
 		width: 0.93, // ratio to height
 		mass: 0.01,
-		thrust: 0.5,
+		thrust: 0.3,
 		maneuver: 1.0,
 		enginePositions: [[0.4, 0.5, 0.8]],// [scale, %x, %y]
 		exhaustImage: 'exhaust'
@@ -31,8 +31,8 @@ module.exports = {
 		size: 200, // used for height
 		width: 0.53, // ratio to height
 		mass: 0.008,
-		thrust: 0.6,
-		maneuver: 0.5,
+		thrust: 0.35,
+		maneuver: 0.3,
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust'
 	},
@@ -44,6 +44,6 @@ module.exports = {
 		width: 1.07, // ratio to height
 		thrust: 0,
 		maneuver: 0,
-		mass: 0.01
+		mass: 0.1
 	}
 }

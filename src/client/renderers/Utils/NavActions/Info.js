@@ -70,11 +70,11 @@ export default class Info {
               // it is us - show grid info and more
               let hullData = Hulls[us.hull];
 
-              let accn1 = (hullData.thrust / hullData.mass) * (1/60);
-              let accn2 = (hullData.thrust*2 / hullData.mass) * (1/60);
-              let accn3 = (hullData.thrust*3 / hullData.mass) * (1/60);
-              let accn4 = (hullData.thrust*4 / hullData.mass) * (1/60);
-              let accn5 = (hullData.thrust*5 / hullData.mass) * (1/60);
+              let accn1 = (hullData.thrust / hullData.mass);
+              let accn2 = (hullData.thrust*2 / hullData.mass);
+              let accn3 = (hullData.thrust*3 / hullData.mass);
+              let accn4 = (hullData.thrust*4 / hullData.mass);
+              let accn5 = (hullData.thrust*5 / hullData.mass);
               let timeTo1000 = (1000 / accn5);
 
               log.innerHTML = log.innerHTML + "\nHull: " + hullData.name;
@@ -83,12 +83,10 @@ export default class Info {
               log.innerHTML = log.innerHTML + "\nEngine 3: "+ accn3.toFixed(3) + SolarObjects.units.speed+'/s';
               log.innerHTML = log.innerHTML + "\nEngine 4: "+ accn4.toFixed(3) + SolarObjects.units.speed+'/s';
               log.innerHTML = log.innerHTML + "\nEngine 5: "+ accn5.toFixed(3) + SolarObjects.units.speed+'/s';
-              log.innerHTML = log.innerHTML + "\n1000 "+SolarObjects.units.speed+" in "+timeTo1000.toFixed(3)+"s";
+              log.innerHTML = log.innerHTML + "\n0 to 1000 "+SolarObjects.units.speed+" in "+timeTo1000.toFixed(3)+"s";
               log.innerHTML = log.innerHTML + "\nNavCom Grid Nav: 50,000 and 10,000" + SolarObjects.units.distance;
               log.innerHTML = log.innerHTML + "\nNavCom Grid Signals: 10,000 and 2,000" + SolarObjects.units.distance;
               log.innerHTML = log.innerHTML + "\nNavCom Grid Helm: 1,000" + SolarObjects.units.distance;
-
-              // work out our acceleration
 
             }
 

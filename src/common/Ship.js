@@ -52,8 +52,8 @@ export default class Ship extends PhysicalObject2D {
             return; // can't do this while docked
         }
 
-        if (this.engine && this.engine > 0) { // IS THIS WRONG!?!?
-            this.physicsObj.applyForceLocal([0, this.engine * hullData.thrust * (1/60)]);
+        if (this.engine && this.engine > 0) {
+            this.physicsObj.applyForceLocal([0, this.engine * hullData.thrust]);
         }
     }
 
