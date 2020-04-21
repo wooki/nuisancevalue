@@ -110,7 +110,7 @@ export default class NvServerEngine extends ServerEngine {
 
         // let hullName = 'blockade-runner';
         let hullName = 'bushido';
-        // let hullName = 'tug';
+        // // let hullName = 'tug';
         let hullData = Hulls[hullName];
         // create a single player ship for now name, x, y, dX, dY, mass, hull, size, angle (radians)
         let shipOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
@@ -125,7 +125,6 @@ export default class NvServerEngine extends ServerEngine {
             angle: Math.PI,
             playable: 1
         });
-
         let hullName2 = 'blockade-runner';
         let hullData2 = Hulls[hullName2];
         let shipOrbitDistance2 = Math.floor(SolarObjects.Mars.diameter/2) + 2000;
@@ -267,7 +266,6 @@ export default class NvServerEngine extends ServerEngine {
                 // fixedgravity: sol.id.toString()
             });
         }
-
 
         // listen to server only events
         this.gameEngine.on('dock', e => {

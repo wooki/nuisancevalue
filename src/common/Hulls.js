@@ -44,6 +44,6 @@ module.exports = {
 		width: 1.07, // ratio to height
 		thrust: 0,
 		maneuver: 0,
-		mass: 0.01
+		mass: 0.1
 	}
 }
