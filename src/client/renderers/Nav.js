@@ -479,6 +479,7 @@ export default class NavRenderer {
 
             let playerShip = null;
             let gameObjects = {};
+            let isDocked = false;
             game.world.forEachObject((objId, obj) => {
 
                 // remember all objects in this loop (to remove old objects later)
@@ -495,6 +496,19 @@ export default class NavRenderer {
                     // hard-code alias for self
                     aliases['self'] = obj.id;
                     aliases['me'] = obj.id;
+                } else if (obj instanceof Ship && obj.docked && obj.docked.length > 0) {
+                  // check docked if we haven't found yet
+                  let dockedMatch = obj.docked.find(function(dockedShip) {
+                    return (dockedShip.navPlayerId == game.playerId);
+                  });
+                  if (dockedMatch) {
+                    isDocked = true;
+                    playerShip = obj;
+
+                    // hard-code alias for self
+                    aliases['self'] = obj.id;
+                    aliases['me'] = obj.id;
+                  }
                 }
 
                 let texture = null;

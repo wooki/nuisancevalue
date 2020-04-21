@@ -72,7 +72,6 @@ let docking = {
     id: null, // id docked with
     progress: 0 // percent progress
 }
-let debugging = false;
 
 export default class HelmRenderer {
 
@@ -661,13 +660,6 @@ export default class HelmRenderer {
               });
             }
 
-            if (debugging) {
-                if (isNaN(playerShip.position.x)) {
-                    console.dir(playerShip);
-                    console.dir(gameObjects);
-                    debugging = false;
-                }
-            }
             if (playerShip) {
                 // console.dir(playerShip);
 
@@ -678,17 +670,7 @@ export default class HelmRenderer {
 
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {
-                    console.log("first instance:");
-                    console.dir(playerShip);
-                    console.log("debugging...");
                     settings.playerShipId = playerShip.id;
-                    // this.addToMap(playerShip.name,
-                    //               playerShip.id,
-                    //               settings.resources[settings.baseUrl+hullData.image].texture,
-                    //               playerShip.size * hullData.width, playerShip.size ,
-                    //               Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2),
-                    //               settings.zIndex.ship, 0.01, 16, false)
-
                     let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
                     this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
                 } else {

@@ -680,6 +680,7 @@ export default class SignalsRenderer {
 
             // find the player ship first, so we can set objects positions relative to it
             let playerShip = null;
+            let isDocked = false;
             let gameObjects = [];
             game.world.forEachObject((objId, obj) => {
                 if (obj instanceof Ship) {
@@ -693,6 +694,26 @@ export default class SignalsRenderer {
                 }
             });
 
+            // check docked if we haven't found yet
+            if (!playerShip) {
+              game.world.forEachObject((objId, obj) => {
+                if (obj instanceof Ship) {
+                  if (obj.docked && obj.docked.length > 0) {
+                    let dockedMatch = obj.docked.find(function(dockedShip) {
+                      return (dockedShip.signalsPlayerId == game.playerId);
+                    });
+                    if (dockedMatch) {
+                      isDocked = true;
+                      playerShip = obj;
+                      gameObjects = gameObjects.filter(function(mothership) {
+                        return (mothership.id != obj.id);
+                      });
+                    }
+                  }
+                }
+              });
+            }
+
             if (playerShip) {
 
                 serverObjects[playerShip.id] = true;
@@ -702,9 +723,6 @@ export default class SignalsRenderer {
 
                 // add the player ship sprite if we haven't got it
                 if (!mapObjects[playerShip.id]) {
-                    console.log("first instance:");
-                    console.dir(playerShip);
-                    console.log("debugging...");
                     settings.playerShipId = playerShip.id;
                     // this.addInteractiveToMap(playerShip.name,
                     //               playerShip.id,
