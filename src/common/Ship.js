@@ -148,15 +148,6 @@ export default class Ship extends PhysicalObject2D {
             collisionGroup: game.SHIP,
             collisionMask: game.ASTEROID | game.SHIP | game.PLANET
         });
-        // let shape = this.shape = new p2.Box({
-        //     width: this.size,
-        //     height: Math.floor(this.size / 3),
-        //     collisionGroup: game.SHIP,
-        //     collisionMask: game.ASTEROID | game.SHIP
-        // });
-
-        // depends on hull !
-        // fromPolygon ---> http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon
 
         this.physicsObj = new p2.Body({
             mass: this.mass,
