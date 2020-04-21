@@ -208,7 +208,7 @@ export default class NvServerEngine extends ServerEngine {
         let jupiterstationOrbitDistance = Math.floor(SolarObjects.Jupiter.diameter/2) + 5000;
         let jupiterstationOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Jupiter.mass) / jupiterstationOrbitDistance);
         this.gameEngine.addShip({
-            name: "Jupiter Station 1",
+            name: "Jupiter Station",
             x: 0 - (SolarObjects.Jupiter.orbit + jupiterstationOrbitDistance),
             y: 0,
             dX: 0, dY: (0 - (jupiterOrbitSpeed + jupiterstationOrbitSpeed)),
@@ -216,6 +216,20 @@ export default class NvServerEngine extends ServerEngine {
             hull: 'station',
             angle: 0,
             fixedgravity: jupiter.id.toString()
+        });
+
+        // create a station around saturn
+        let saturnStationOrbitDistance = Math.floor(SolarObjects.Saturn.diameter/2) + 5000;
+        let saturnStationOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Saturn.mass) / saturnStationOrbitDistance);
+        this.gameEngine.addShip({
+            name: "Saturn Station",
+            x: SolarObjects.Saturn.orbit + saturnStationOrbitDistance,
+            y: 0,
+            dX: 0, dY: (0 - (saturnOrbitSpeed + saturnStationOrbitSpeed)),
+            mass: 0.07, size: 160, // need to read mass and size from hull
+            hull: 'station',
+            angle: 0,
+            fixedgravity: saturn.id.toString()
         });
 
         // asteroids between mars and jupiter
