@@ -12,7 +12,7 @@ module.exports = [
 				nextState: 2
 			}
 		],
-		onEnter: function(ship, game) {
+		onEnter: function(ship, playerShip, game) {
 			// potentially do something to the ship or game when moving TO this state
 			console.log("onEnter in state 0:");
 		}
@@ -25,7 +25,7 @@ module.exports = [
 				nextState: 2
 			}
 		],
-		onEnter: function(ship, game) {
+		onEnter: function(ship, playerShip, game) {
 			// potentially do something to the ship or game when moving TO this state
 			console.log("onEnter in state 1:");
 		}
@@ -38,7 +38,7 @@ module.exports = [
 				nextState: 0
 			}
 		],
-		onEnter: function(ship, game) {
+		onEnter: function(ship, playerShip, game) {
 			// potentially do something to the ship or game when moving TO this state
 			console.log("onEnter in state 2:");
 		}

@@ -1,3 +1,8 @@
+let resetState = function(ship, playerShip, game) {
+	// potentially do something to the ship or game when moving TO this state
+	ship.commsState = 0; // reset to the start
+};
+
 // rules for transitioning state
 module.exports = [
 	{ // state 0
@@ -12,10 +17,11 @@ module.exports = [
 				nextState: 2
 			}
 		],
-		onEnter: function(ship, game) {
+		onEnter: function(ship, playerShip, game) {
 			// potentially do something to the ship or game when moving TO this state
 			console.log("onEnter in state 0:");
-		}
+		},
+		OnCloseComms: resetState
 	},
 	{ // state 1
 		text: "station) this is state 1.",
@@ -25,10 +31,11 @@ module.exports = [
 				nextState: 2
 			}
 		],
-		onEnter: function(ship, game) {
+		onEnter: function(ship, playerShip, game) {
 			// potentially do something to the ship or game when moving TO this state
 			console.log("onEnter in state 1:");
-		}
+		},
+		OnCloseComms: resetState
 	},
 	{ // state 1
 		text: "station) this is state 2.",
@@ -38,9 +45,10 @@ module.exports = [
 				nextState: 0
 			}
 		],
-		onEnter: function(ship, game) {
+		onEnter: function(ship, playerShip, game) {
 			// potentially do something to the ship or game when moving TO this state
 			console.log("onEnter in state 2:");
-		}
+		},
+		OnCloseComms: resetState
 	}
 ];

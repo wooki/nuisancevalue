@@ -168,14 +168,7 @@ export default class SignalsRenderer {
 
         let selectedGuid = parseInt(guid);
         let obj = game.world.queryObject({ id: selectedGuid });
-console.log("debugging:");
-// console.dir(obj);
-console.log("obj.signalsPlayerId:"+ obj.playerId);
-console.log("game.playerId:"+ game.playerId);
         if (obj && obj.signalsPlayerId != game.playerId) {
-
-          console.log("selectedObjId:"+ selectedObjId);
-          console.log("selectedGuid:"+ selectedGuid);
 
             if (selectedObjId != selectedGuid) { // the sane if DOCKED!!
                 this.removeCommsUi();
@@ -214,8 +207,6 @@ console.log("game.playerId:"+ game.playerId);
         uiEls.uiContainer.appendChild(uiEls.uiComms);
 
         let objects = this.getPlayerAndSelected();
-console.log("createInitialCommsUi:")        ;
-console.dir(objects);
         if (objects) {
 
             // open comms button

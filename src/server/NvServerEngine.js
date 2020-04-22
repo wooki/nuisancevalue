@@ -85,11 +85,21 @@ export default class NvServerEngine extends ServerEngine {
         // create a station around earth
         let stationOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
         let stationOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / stationOrbitDistance);
+
+        // create a position and vector and rotate to position
+        let position = new Victor(stationOrbitDistance, 0);
+        let velocity = new Victor(0, 0 - stationOrbitSpeed);
+        position = position.rotateDeg(45);
+        velocity = velocity.rotateDeg(45);
+
         this.gameEngine.addShip({
             name: "Earth Station 1",
-            x: SolarObjects.Earth.orbit + stationOrbitDistance,
-            y: 0,
-            dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
+            // x: SolarObjects.Earth.orbit + stationOrbitDistance,
+            x: SolarObjects.Earth.orbit + position.x,
+            y: position.y,
+            dX: velocity.x,
+            // dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
+            dY: (0 - earthOrbitSpeed) + velocity.y,
             mass: 0.1, size: 280, // need to read mass and size from hull
             hull: 'station',
             commsScript: 0,
@@ -98,28 +108,23 @@ export default class NvServerEngine extends ServerEngine {
             fixedgravity: earth.id.toString()
         });
 
-        // create an asteroid
-        this.gameEngine.addAsteroid({
-            x: SolarObjects.Earth.orbit + stationOrbitDistance + 1000,
-            y: 500,
-            dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
-            mass: Math.random() * 100, size: 50 + Math.random() * 100,
-            angle: Math.random() * 2 * Math.PI,
-            angularVelocity: Math.random()
-        });
-
         // let hullName = 'blockade-runner';
         let hullName = 'bushido';
         // // let hullName = 'tug';
         let hullData = Hulls[hullName];
         // create a single player ship for now name, x, y, dX, dY, mass, hull, size, angle (radians)
-        let shipOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
-        let shipOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / shipOrbitDistance);
+        // let shipOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
+        // let shipOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / shipOrbitDistance);
+        position = position.rotateDeg(10);
+        velocity = velocity.rotateDeg(10);
         this.gameEngine.addShip({
             name: "Nuisance Value",
-            x: SolarObjects.Earth.orbit + shipOrbitDistance + 250,
-            y: 250,
-            dX: 0, dY: (0 - (earthOrbitSpeed + shipOrbitSpeed)),
+            // x: SolarObjects.Earth.orbit + shipOrbitDistance + 250,
+            x: SolarObjects.Earth.orbit + position.x,
+            y: position.y,
+            dX: velocity.x,
+            // dY: (0 - (earthOrbitSpeed + shipOrbitSpeed)),
+            dY: (0 - earthOrbitSpeed) + velocity.y,
             hull: hullName,
             mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
             angle: Math.PI,
@@ -138,6 +143,16 @@ export default class NvServerEngine extends ServerEngine {
             mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
             angle: Math.PI,
             playable: 1
+        });
+
+        // create an asteroid
+        this.gameEngine.addAsteroid({
+            x: SolarObjects.Earth.orbit + stationOrbitDistance + 1000,
+            y: 500,
+            dX: 0, dY: (0 - (earthOrbitSpeed + stationOrbitSpeed)),
+            mass: Math.random() * 100, size: 50 + Math.random() * 100,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: Math.random()
         });
 
         // add jupiter

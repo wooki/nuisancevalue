@@ -102,21 +102,31 @@ export default class Comms {
 		}
 	}
 
-	getState(selectedObj) {
+	getState(selectedObj, playerShip) {
 		let script = scripts[selectedObj.commsScript];
-		if (selectedObj.dockedId == selectedObj.commsTargetId) {
+		if (selectedObj.dockedId == selectedObj.id) {
 			script = scripts[selectedObj.dockedCommsScript];
 		}
 		let state = script[selectedObj.commsState];
 		return state;
 	}
 
-	executeOnEnter(selectedObj) {
+	executeOnEnter(selectedObj, playerShip) {
 
 		// chance for script to send commands to ship
-		let state = this.getState(selectedObj);
+		let state = this.getState(selectedObj, playerShip);
 		if (state.onEnter) {
-			state.onEnter(selectedObj, game);
+			state.onEnter(selectedObj, playerShip, game);
+		}
+
+	}
+
+	executeOnCloseComms(selectedObj, playerShip) {
+
+		// chance for script to send commands to ship
+		let state = this.getState(selectedObj, playerShip);
+		if (state.OnCloseComms) {
+			state.OnCloseComms(selectedObj, playerShip, game);
 		}
 
 	}

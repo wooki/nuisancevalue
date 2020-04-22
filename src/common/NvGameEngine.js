@@ -317,21 +317,23 @@ export default class NvGameEngine extends GameEngine {
 
                 let ship = this.world.objects[inputData.options.id];
                 if (inputData.options.target != undefined) {
+
+                    let originalShip = this.getPlayerShip(ship.commsTargetId);
                     ship.commsTargetId = inputData.options.target;
+
+                    // chance to change/update script/state when ending call
+                    if (ship.commsTargetId == -1) {
+                      let c = new Comms(this, null);
+                      c.executeOnCloseComms(ship, originalShip);
+                    }
                 }
                 if (inputData.options.state != undefined){
                     // let previousState = ship.commsState;
                     ship.commsState = inputData.options.state;
 
-                    // sometimes this check stops it from firing on client, not sure why
-                    // but as long as we don't send the same state through as an update
-                    // leaving out this check should be fine
-                    // if (ship.commsState != previousState) {
-
-                        // chance for script to send commands to ship or game
-                        let c = new Comms(this, null);
-                        c.executeOnEnter(ship);
-                    // }
+                    // chance for script to send commands to ship or game
+                    let c = new Comms(this, null);
+                    c.executeOnEnter(ship);
                 }
             }
 
