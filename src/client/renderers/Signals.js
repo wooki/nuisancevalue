@@ -169,12 +169,15 @@ export default class SignalsRenderer {
         let selectedGuid = parseInt(guid);
         let obj = game.world.queryObject({ id: selectedGuid });
 console.log("debugging:");
-console.dir(obj);
+// console.dir(obj);
 console.log("obj.signalsPlayerId:"+ obj.playerId);
 console.log("game.playerId:"+ game.playerId);
-        if (obj && obj.signalsPlayerId != game.playerId) { // the sane if DOCKED!!
+        if (obj && obj.signalsPlayerId != game.playerId) {
 
-            if (selectedObjId != selectedGuid) {
+          console.log("selectedObjId:"+ selectedObjId);
+          console.log("selectedGuid:"+ selectedGuid);
+
+            if (selectedObjId != selectedGuid) { // the sane if DOCKED!!
                 this.removeCommsUi();
                 selectedObjId = selectedGuid; // keep reference
                 this.createInitialCommsUi(obj);
@@ -211,6 +214,8 @@ console.log("game.playerId:"+ game.playerId);
         uiEls.uiContainer.appendChild(uiEls.uiComms);
 
         let objects = this.getPlayerAndSelected();
+console.log("createInitialCommsUi:")        ;
+console.dir(objects);
         if (objects) {
 
             // open comms button
@@ -250,21 +255,38 @@ console.log("game.playerId:"+ game.playerId);
         if (selectedObjId) {
 
             let selectedObj = game.world.queryObject({ id: selectedObjId });
+            let playerActualShip = null;
             if (selectedObj && selectedObj.commsScript !== undefined) {
 
                 let playerShip = null;
                 game.world.forEachObject((objId, obj) => {
                     if (obj instanceof Ship && obj.playable == 1) {
                         if (obj.signalsPlayerId == game.playerId) {
-                            playerShip = obj;
+                            playerActualShip = obj;
                         }
                     }
                 });
 
-                if (playerShip) {
+                // check docked if we haven't found yet
+                if (!playerActualShip) {
+                  game.world.forEachObject((objId, obj) => {
+                    if (obj instanceof Ship) {
+                      if (obj.docked && obj.docked.length > 0) {
+                        let dockedMatch = obj.docked.find(function(dockedShip) {
+                          return (dockedShip.signalsPlayerId == game.playerId);
+                        });
+                        if (dockedMatch) {
+                          playerActualShip = dockedMatch;
+                        }
+                      }
+                    }
+                  });
+                }
+
+                if (playerActualShip) {
                     return {
                         selectedObj: selectedObj,
-                        playerShip: playerShip
+                        playerShip: playerActualShip
                     }
                 }
             }
@@ -615,31 +637,34 @@ console.log("game.playerId:"+ game.playerId);
 
             // if selected then highlight somehow
             if (selectedObjId == obj.id) {
-                // let useSize = UiUtils.getUseSize(settings.scale, obj.size + 4, obj.size + 4, 0.05, 16);
-
-                if (sprites.selection) {
-                    sprites.selection.x = coord.x;
-                    sprites.selection.y = coord.y;
-                    // sprites.selection.width = useSize.useWidth;
-                    // sprites.selection.height = useSize.useHeight;
-                } else {
-                    sprites.selection = new PIXI.Sprite(settings.waypointTexture);
-                    sprites.selection.width = 16;
-                    sprites.selection.height = 16;
-                    // sprites.selection.width = useSize.useWidth;
-                    // sprites.selection.height = useSize.useHeight;
-                    sprites.selection.anchor.set(0.5);
-                    sprites.selection.x = coord.x;
-                    sprites.selection.y = coord.y;
-                    sprites.selection.zIndex = settings.zIndex.waypoints;
-                    sprites.selection.filters = [ effects.selectionColor, effects.hudGlow ];
-                    mapContainer.addChild(sprites.selection);
-                }
+                this.drawSelection(coord);
             }
 
         });
 
         return drawnObjects;
+    }
+
+    drawSelection(coord) {
+      // let useSize = UiUtils.getUseSize(settings.scale, obj.size + 4, obj.size + 4, 0.05, 16);
+      if (sprites.selection) {
+          sprites.selection.x = coord.x;
+          sprites.selection.y = coord.y;
+          // sprites.selection.width = useSize.useWidth;
+          // sprites.selection.height = useSize.useHeight;
+      } else {
+          sprites.selection = new PIXI.Sprite(settings.waypointTexture);
+          sprites.selection.width = 16;
+          sprites.selection.height = 16;
+          // sprites.selection.width = useSize.useWidth;
+          // sprites.selection.height = useSize.useHeight;
+          sprites.selection.anchor.set(0.5);
+          sprites.selection.x = coord.x;
+          sprites.selection.y = coord.y;
+          sprites.selection.zIndex = settings.zIndex.waypoints;
+          sprites.selection.filters = [ effects.selectionColor, effects.hudGlow ];
+          mapContainer.addChild(sprites.selection);
+      }
     }
 
     drawWaypoint(waypoint, playerShip) {
@@ -742,6 +767,10 @@ console.log("game.playerId:"+ game.playerId);
                     playershipSprite.on('touchstart', (e) => { this.objectClick(playerShip.id, e) });
                 } else {
                   this.updateShipEngine(playerShip, playerShip.id, useSize);
+                }
+
+                if (selectedObjId == settings.playerShipId) {
+                  this.drawSelection(new PIXI.Point(Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2)));
                 }
 
                 // draw waypoints (remember distance and direction)

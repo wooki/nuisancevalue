@@ -34,7 +34,7 @@ export default class Comms {
 		if (selectedObj.playable != 1 && (selectedObj.commsTargetId < 0 || selectedObj.commsTargetId == playerShip.id)) {
 
 			let script = scripts[selectedObj.commsScript];
-			if (selectedObj.dockedId == selectedObj.commsTargetId) {
+			if (playerShip.dockedId == selectedObj.id) {
 				script = scripts[selectedObj.dockedCommsScript];
 			}
 
@@ -69,7 +69,7 @@ export default class Comms {
 		if (selectedObj.playable != 1 && selectedObj.commsTargetId == playerShip.id) {
 
 			let script = scripts[selectedObj.commsScript];
-			if (selectedObj.dockedId == selectedObj.commsTargetId) {
+			if (playerShip.dockedId == selectedObj.id) {
 				script = scripts[selectedObj.dockedCommsScript];
 			}
 
