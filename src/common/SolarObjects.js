@@ -1,3 +1,5 @@
+const Victor = require('victor');
+
 // some reference data for objects we can use in game
 // units are...
 // diameter km
@@ -87,6 +89,88 @@ module.exports = {
 		diameter: Math.sqrt(2370) * 10,
 		mass: Math.sqrt(0.015) * Math.pow(10, 18),
 		orbit: Math.sqrt(5906.4 * Math.pow(10, 6)) * 10
+	},
+
+	addStandardPlanet: function(gameEngine, dataName, texture, rotation, fixedGravityId) {
+
+		let orbitSpeed = Math.sqrt((this.constants.G * this.Sol.mass) / this[dataName].orbit);
+		let position = new Victor(this[dataName].orbit, 0);
+		let velocity = new Victor(0, 0 - orbitSpeed);
+		position = position.rotateDeg(rotation);
+		velocity = velocity.rotateDeg(rotation);
+		return gameEngine.addPlanet({
+				x: position.x,
+				y: position.y,
+				dX: velocity.x,
+				dY: velocity.y,
+				mass: this[dataName].mass,
+				size: this[dataName].diameter,
+				angle: Math.random() * 2 * Math.PI,
+				angularVelocity: 0,
+				texture: texture,
+				fixedgravity: fixedGravityId
+		});
+	},
+
+
+	// create a standard solarsystem
+	addSolarSystem: function(gameEngine, rotations) {
+
+		// use default rotations (or passed in)
+		rotations = Object.assign(rotations, {
+			Mercury: 135,
+			Venus: 240,
+			Earth: 175,
+			Mars: 110,
+			Jupiter: 75,
+			Saturn: 60,
+			Uranus: 340,
+			Neptune: 20,
+			Pluto: 65,
+		});
+
+		// add the sun
+		let sol = gameEngine.addPlanet({
+				x: 0, y: 0,
+				dX: 0, dY: 0,
+				mass: this.Sol.mass,
+				size: this.Sol.diameter,
+				angle: Math.random() * 2 * Math.PI,
+				angularVelocity: 0,
+				texture: 'sol',
+				ignoregravity: 1
+		});
+
+		// let mercuryOrbitSpeed = Math.sqrt((this.constants.G * this.Sol.mass) / this.Mercury.orbit);
+
+		// add the planets
+		let mercury = this.addStandardPlanet(gameEngine, 'Mercury', 'mercury', rotations.Mercury, sol.id.toString());
+		let venus = this.addStandardPlanet(gameEngine, 'Venus', 'venus', rotations.Venus, sol.id.toString());
+		let earth = this.addStandardPlanet(gameEngine, 'Earth', 'earth', rotations.Earth, sol.id.toString());
+		let mars = this.addStandardPlanet(gameEngine, 'Mars', 'mars', rotations.Mars, sol.id.toString());
+		let jupiter = this.addStandardPlanet(gameEngine, 'Jupiter', 'jupiter', rotations.Jupiter, sol.id.toString());
+		let saturn = this.addStandardPlanet(gameEngine, 'Saturn', 'saturn', rotations.Saturn, sol.id.toString());
+		let uranus = this.addStandardPlanet(gameEngine, 'Uranus', 'uranus', rotations.Uranus);
+		let neptune = this.addStandardPlanet(gameEngine, 'Neptune', 'neptune', rotations.Neptune, sol.id.toString());
+		let pluto = this.addStandardPlanet(gameEngine, 'Pluto', 'pluto', rotations.Pluto, sol.id.toString());
+
+		// add some asteroids between mars and jupiter
+
+		// add some ateroids out by pluto
+
+		// return the references
+		return {
+			Sol: sol,
+			Mercury: mercury,
+			Venus: venus,
+			Earth: earth,
+			Mars: mars,
+			Jupiter: jupiter,
+			Saturn: saturn,
+			Uranus: uranus,
+			Neptune: neptune,
+			Pluto: pluto
+		}
 	}
 
 }
