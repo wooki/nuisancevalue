@@ -30,6 +30,7 @@ let settings = {
     zIndex: {
         background: 1,
         grid: 2,
+        courses: 3, // draw lines above the grid but below everything else
         asteroid: 10,
         planet: 11,
         ship: 50,
@@ -662,6 +663,11 @@ export default class HelmRenderer {
 
             if (playerShip) {
                 // console.dir(playerShip);
+                // predict a path for x seconds into the future
+                let path = UiUtils.predictPath(playerShip, 30);
+                console.log("predict path:");
+                console.dir(path);
+                throw "DEBUGGING";
 
                 serverObjects[playerShip.id] = true;
 

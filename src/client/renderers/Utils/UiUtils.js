@@ -1,6 +1,7 @@
 const Assets = require('./images.js');
 const Hulls = require('../../../common/Hulls');
 const PIXI = require('pixi.js');
+const Victor = require('victor');
 
 // common functions used across multiple stations
 module.exports = {
@@ -80,7 +81,7 @@ module.exports = {
 			if (mapObjects[guid]) {
 					mapObjects[guid].destroy();
 					delete mapObjects[guid];
-					delete sprites[guid];					
+					delete sprites[guid];
 			}
 	},
 
@@ -171,7 +172,70 @@ module.exports = {
     }.bind(this));
 
     return el;
-  }
+  },
+
+	// using the velocity and gravity effecting the object, predict a path
+	// for the next s seconds
+	predictPath(obj, s) {
+
+		// ignore if we don't have a physicsObj
+		if (!obj.physicsObj) {
+			return [];
+		}
+
+		let predictionsPerSecond = 1;
+		let timeStep = (1 / predictionsPerSecond);
+		let predictions = [new Victor(obj.physicsObj.position[0], obj.physicsObj.position[1])]; // start at the current position
+
+		// data we may have in obj.gravityData
+		//  {
+		// 		source: gravSource.physicsObj.position,
+		// 		direction: direction,
+		// 		amount: gravSourceAmount,
+		// 		vector: gravVector,
+		// 		mass: gravSource.physicsObj.mass,
+		// 		velocity: gravSource.physicsObj.velocity
+		// }
+
+		// if we have a gravity source, predict it's path first
+		if (obj.gravityData) {
+			// let gravitySource
+
+		}
+
+		// keep track of velocity, as that can change with gravity and engine
+		let currentVelocity = new Victor(obj.physicsObj.velocity[0], obj.physicsObj.velocity[1]);
+
+		// iterate timeStep for duration
+		let currentTime = 0;
+		while (currentTime < s) {
+
+			// start 1 timeStep into the future
+			currentTime = currentTime + timeStep;
+
+			// start at the previous position
+			let lastPrediction = predictions[predictions.length - 1]; // we always have at least one, so no need to check
+			let currentPos = lastPrediction.clone();
+
+			// apply engine to velocity
+			// TODO: engine
+
+			// apply gravity (from predicted gravity position) to velocity
+			// TODO: gravity
+
+			// multiply current velocity to adjust for our step time
+			let v = currentVelocity.clone().multiply(new Victor(timeStep, timeStep));
+
+			// apply current velocity
+			currentPos = currentPos.add(v);
+
+			// then add
+			predictions.push(currentPos);
+		}
+
+		// return
+		return predictions;
+	}
 
 
 
