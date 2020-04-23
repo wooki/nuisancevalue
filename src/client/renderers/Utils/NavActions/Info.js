@@ -84,8 +84,13 @@ export default class Info {
               log.innerHTML = log.innerHTML + "\nEngine 4: "+ accn4.toFixed(3) + SolarObjects.units.speed+'/s';
               log.innerHTML = log.innerHTML + "\nEngine 5: "+ accn5.toFixed(3) + SolarObjects.units.speed+'/s';
               log.innerHTML = log.innerHTML + "\n0 to 1000 "+SolarObjects.units.speed+" in "+timeTo1000.toFixed(3)+"s";
-              log.innerHTML = log.innerHTML + "\nNavCom Grid Nav: 50,000 and 10,000" + SolarObjects.units.distance;
-              log.innerHTML = log.innerHTML + "\nNavCom Grid Signals: 10,000 and 2,000" + SolarObjects.units.distance;
+              
+              let smallGrid = "";
+      				if (settings.smallGridDimenion) {
+      					smallGrid = " / "+settings.smallGridDimenion;
+      				}
+      				log.innerHTML = log.innerHTML + "\NavCom Grid Nav: "+settings.GridDefault+smallGrid;
+              log.innerHTML = log.innerHTML + "\nNavCom Grid Signals: 10,000 / 1,000" + SolarObjects.units.distance;
               log.innerHTML = log.innerHTML + "\nNavCom Grid Helm: 1,000" + SolarObjects.units.distance;
 
             }

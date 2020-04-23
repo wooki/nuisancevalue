@@ -23,7 +23,7 @@ let client = null;
 const GridDefault = 1000;
 let settings = {
     baseUrl: '/',
-    mapSize: 6000,
+    mapSize: 10000,
     loadedSprites: false,
     gridSize: 1000, // set in setSizes
     waypointTexture: null,

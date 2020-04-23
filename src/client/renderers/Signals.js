@@ -23,7 +23,7 @@ let client = null;
 const GridDefault = 10000;
 let settings = {
     baseUrl: '/',
-    mapSize: 24000, // this is set in setSizes
+    mapSize: 36000, // this is set in setSizes
     loadedSprites: false,
     gridSize: 10000, // this is set in setSizes
     waypointTexture: null,
@@ -482,21 +482,22 @@ export default class SignalsRenderer {
         // create a texture for the grid background
         let gridGraphics = new PIXI.Graphics();
         // once the grid is large draw extra lines
-        if (settings.gridSize >= 500) {
+        let smallGridDivisions = 10;
+        settings.smallGridDimenion = settings.GridDefault / 10;
 
-            let smallGridSize = Math.round(settings.gridSize/5);
-
-            gridGraphics.lineStyle(1, Assets.Colors.GridSmall);
-            gridGraphics.moveTo(smallGridSize, 1); gridGraphics.lineTo(smallGridSize, settings.gridSize - 1);
-            gridGraphics.moveTo(smallGridSize*2, 1); gridGraphics.lineTo(smallGridSize*2, settings.gridSize - 1);
-            gridGraphics.moveTo(smallGridSize*3, 1); gridGraphics.lineTo(smallGridSize*3, settings.gridSize - 1);
-            gridGraphics.moveTo(settings.gridSize - smallGridSize, 1); gridGraphics.lineTo(settings.gridSize - smallGridSize, settings.gridSize - 1);
-
-            gridGraphics.moveTo(1, smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize);
-            gridGraphics.moveTo(1, smallGridSize*2); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*2);
-            gridGraphics.moveTo(1, smallGridSize*3); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*3);
-            gridGraphics.moveTo(1, settings.gridSize - smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, settings.gridSize - smallGridSize);
+        // draw grid depending on sizes
+        let smallGridSize = Math.round(settings.gridSize/smallGridDivisions);
+        gridGraphics.lineStyle(1, Assets.Colors.GridSmall);
+        for (let iX = 0; iX < (smallGridDivisions-1); iX++) {
+          gridGraphics.moveTo(smallGridSize*iX, 1); gridGraphics.lineTo(smallGridSize*iX, settings.gridSize - 1);
         }
+        gridGraphics.moveTo(settings.gridSize - smallGridSize, 1); gridGraphics.lineTo(settings.gridSize - smallGridSize, settings.gridSize - 1);
+
+        for (let iY = 0; iY < (smallGridDivisions-1); iY++) {
+          gridGraphics.moveTo(1, smallGridSize*iY); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*iY);
+        }
+        gridGraphics.moveTo(1, settings.gridSize - smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, settings.gridSize - smallGridSize);
+
 
         gridGraphics.lineStyle(1, Assets.Colors.Grid);
         gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
