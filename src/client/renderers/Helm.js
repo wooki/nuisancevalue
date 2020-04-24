@@ -816,8 +816,8 @@ export default class HelmRenderer {
                       points: path,
                     },
                     {
-                      color1: 0x0066FF,
-                      color2: 0x0033CC,
+                      color1: 0x00FF00,
+                      color2: 0xFFFF00,
                       points: gravityPath
                     }]);
                 }
