@@ -111,7 +111,7 @@ export default class SignalsRenderer {
         mapContainer.interactive = true;
         mapContainer.on('mousedown', this.canvasClick.bind(this));
         mapContainer.on('touchstart', this.canvasClick.bind(this));
-        mapContainer.filters = [effects.crt];
+        // mapContainer.filters = [effects.crt];
         pixiApp.stage.addChild(pixiContainer);
         pixiApp.stage.addChild(mapContainer);
         el.append(pixiApp.view); // add to the page

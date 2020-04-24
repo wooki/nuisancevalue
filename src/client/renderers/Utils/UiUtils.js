@@ -2,6 +2,7 @@ const Assets = require('./images.js');
 const Hulls = require('../../../common/Hulls');
 const PIXI = require('pixi.js');
 const Victor = require('victor');
+const SolarObjects = require('../../../common/SolarObjects');
 
 // common functions used across multiple stations
 module.exports = {
@@ -103,6 +104,23 @@ module.exports = {
 			return p;
 	},
 
+	// convert an array of points
+	relativeScreenCoords(points, focusX, focusY, screenWidth, screenHeight, angle, scale) {
+		let convertedPoints = [];
+		if (points) {
+			points.forEach(function(p) {
+				let x = p.x;
+				let y = p.y;
+				if (x === undefined) { x = p[0]; }
+				if (y === undefined) { y = p[1]; }
+
+				convertedPoints.push(this.relativeScreenCoord(x, y, focusX, focusY, screenWidth, screenHeight, angle, scale));
+
+			}.bind(this));
+		}
+		return convertedPoints;
+	},
+
 	// update includes scaling of offset, so nothing else should scale (except size) of player ship
 	// additional objects position will need to be scaled (player ship is always centre)
 	updateGrid(settings, sprites, x, y) {
@@ -177,6 +195,7 @@ module.exports = {
 	// using the velocity and gravity effecting the object, predict a path
 	// for the next s seconds
 	predictPath(obj, s) {
+		// console.time('predictPath');
 
 		// ignore if we don't have a physicsObj
 		if (!obj.physicsObj) {
@@ -197,14 +216,25 @@ module.exports = {
 		// 		velocity: gravSource.physicsObj.velocity
 		// }
 
-		// if we have a gravity source, predict it's path first
+		// if we have a gravity source, predict it's path first (this ignores gravity/engine acting on it)
+		let gravityPath = null;
 		if (obj.gravityData) {
-			// let gravitySource
-
+			gravityPath = this.predictPath({
+				physicsObj: {
+					position: obj.gravityData.source,
+					velocity: obj.gravityData.velocity,
+					mass: obj.gravityData.mass
+				}
+			}, s);
 		}
 
 		// keep track of velocity, as that can change with gravity and engine
 		let currentVelocity = new Victor(obj.physicsObj.velocity[0], obj.physicsObj.velocity[1]);
+
+		let hullData = null;
+		if (obj.hull) {
+			hullData = Hulls[obj.hull];
+		}
 
 		// iterate timeStep for duration
 		let currentTime = 0;
@@ -217,11 +247,35 @@ module.exports = {
 			let lastPrediction = predictions[predictions.length - 1]; // we always have at least one, so no need to check
 			let currentPos = lastPrediction.clone();
 
-			// apply engine to velocity
-			// TODO: engine
+			// apply engine to velocity (angularVelocity effects engine direction!)
+			if (hullData && obj.engine && this.engine > 0) {
+
+					// acceleration due to engine = F=m*a : a=F/m
+					let engineVector = new Victor(0, (obj.engine * hullData.thrust) / obj.physicsObj.mass);
+
+					// rotate to our facing
+					engineVector = engineVector.rotate(obj.physicsObj.angle);
+
+					// apply
+					currentVelocity = currentVelocity.add(engineVector);
+			}
 
 			// apply gravity (from predicted gravity position) to velocity
-			// TODO: gravity
+			if (obj.gravityData) {
+				let gravityPosition = gravityPath[predictions.length - 1];
+
+				// work out gravity from our position to this position
+				let d = currentPos.distance(gravityPosition);
+				let g = (SolarObjects.constants.G * obj.physicsObj.mass * obj.gravityData.mass) / (d*d);
+				let direction = gravityPosition.clone().subtract(currentPos);
+
+				// acceleration due to gravity = F=m*a : a=F/m
+				let accelerationVector = direction.clone().normalize().multiply(new Victor((g/obj.physicsObj.mass), (g/obj.physicsObj.mass)));
+
+				// velocity = v=a*t (timeStep already adjusts at the end - so we're using 1s everywhere - can ignore)
+				// accelerate towards the gravity source
+				currentVelocity = currentVelocity.add(accelerationVector);
+			}
 
 			// multiply current velocity to adjust for our step time
 			let v = currentVelocity.clone().multiply(new Victor(timeStep, timeStep));
@@ -234,6 +288,7 @@ module.exports = {
 		}
 
 		// return
+		// console.timeEnd('predictPath');
 		return predictions;
 	}
 

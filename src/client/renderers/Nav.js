@@ -116,7 +116,7 @@ export default class NavRenderer {
         mapContainer.interactive = true;
         mapContainer.on('mousedown', this.canvasClick);
         mapContainer.on('touchstart', this.canvasClick);
-        mapContainer.filters = [effects.crt];
+        // mapContainer.filters = [effects.crt];
 
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;

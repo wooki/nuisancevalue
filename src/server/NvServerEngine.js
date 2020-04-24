@@ -162,6 +162,18 @@ export default class NvServerEngine extends ServerEngine {
 
     addTestMap1() {
 
+      this.gameEngine.addPlanet({
+        x: -10000,
+        y: 3000,
+        dX: 100,
+        dY: 0,
+        mass: SolarObjects.Mars.mass,
+        size: SolarObjects.Mars.diameter,
+        texture: 'mars',
+        angle: Math.random() * 2 * Math.PI,
+        angularVelocity: Math.random()
+      });
+
       let hullName = 'bushido';
       let hullData = Hulls[hullName];
       this.gameEngine.addShip({

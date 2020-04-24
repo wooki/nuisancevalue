@@ -12,6 +12,7 @@ import Planet from './../../common/Planet';
 import Hulls from './../../common/Hulls';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
+import HelmPathUi from './Utils/HelmPathUi';
 import SolarObjects from './../../common/SolarObjects';
 import UiUtils from './Utils/UiUtils';
 import morphdom from 'morphdom';
@@ -30,7 +31,7 @@ let settings = {
     zIndex: {
         background: 1,
         grid: 2,
-        courses: 3, // draw lines above the grid but below everything else
+        paths: 2,
         asteroid: 10,
         planet: 11,
         ship: 50,
@@ -112,7 +113,7 @@ export default class HelmRenderer {
         mapContainer = new PIXI.Container();
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;
-        mapContainer.filters = [effects.crt];
+        // mapContainer.filters = [effects.crt];
         pixiApp.stage.addChild(pixiContainer);
         pixiApp.stage.addChild(mapContainer);
         el.append(pixiApp.view); // add to the page
@@ -663,12 +664,6 @@ export default class HelmRenderer {
 
             if (playerShip) {
                 // console.dir(playerShip);
-                // predict a path for x seconds into the future
-                let path = UiUtils.predictPath(playerShip, 30);
-                console.log("predict path:");
-                console.dir(path);
-                throw "DEBUGGING";
-
                 serverObjects[playerShip.id] = true;
 
                 let hullData = Hulls[playerShip.hull];
@@ -755,10 +750,29 @@ export default class HelmRenderer {
                 let course = speedV.angle();
                 let bearing = (playerShip.physicsObj.angle + (0.5 * Math.PI)) % (2 * Math.PI);
                 let gravity = null;
+                let gravityPath = null;
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
                     gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
                     // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
                     // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
+
+                    let predictedGravityPath = UiUtils.predictPath({
+                      physicsObj: {
+              					position: playerShip.gravityData.source,
+              					velocity: playerShip.gravityData.velocity,
+              					mass: playerShip.gravityData.mass
+                      }
+            				}, 60);
+                    // console.dir(predictedGravityPath);
+                    // throw "debugging";
+                    gravityPath = UiUtils.relativeScreenCoords(predictedGravityPath,
+                                                           playerShip.physicsObj.position[0],
+                                                           playerShip.physicsObj.position[1],
+                                                           pixiApp.screen.width,
+                                                           pixiApp.screen.height,
+                                                           playerShip.physicsObj.angle,
+                                                           settings.scale);
+
                 }
 
                 // build a list of UI data for display
@@ -773,6 +787,41 @@ export default class HelmRenderer {
                   Heading: ((Math.round(reversedSpeedV.verticalAngleDeg()) + 360) % 360) + "°",
                   speed: Math.round(speedV.magnitude()) + SolarObjects.units.speed
                 });
+
+                // predict a path for x seconds into the future
+                let predictedPath = UiUtils.predictPath(playerShip, 60);
+                let path = UiUtils.relativeScreenCoords(predictedPath,
+                                                       playerShip.physicsObj.position[0],
+                                                       playerShip.physicsObj.position[1],
+                                                       pixiApp.screen.width,
+                                                       pixiApp.screen.height,
+                                                       playerShip.physicsObj.angle,
+                                                       settings.scale);
+
+                // draw predicted paths
+                if (!sprites.helmPathUi) {
+                    sprites.helmPathUi = new HelmPathUi({
+                        uiSize: settings.narrowUi,
+                        uiWidth: settings.UiWidth,
+                        uiHeight: settings.UiHeight,
+                        scale: settings.scale,
+                        zIndex: settings.zIndex.paths,
+                        paths: [path, gravityPath]
+                    });
+                    mapContainer.addChild(sprites.helmPathUi);
+                } else {
+                    sprites.helmPathUi.update([{
+                      color1: 0x00FF00,
+                      color2: 0xFFFF00,
+                      points: path,
+                    },
+                    {
+                      color1: 0x0066FF,
+                      color2: 0x0033CC,
+                      points: gravityPath
+                    }]);
+                }
+
 
                 // draw a marker to show bearing
                 if (!sprites.helmUi) {
@@ -790,7 +839,7 @@ export default class HelmRenderer {
                     });
                     mapContainer.addChild(sprites.helmUi);
                 } else {
-                    sprites.helmUi.update(bearing, course, gravity ? gravity.angle() : null, helmUiWaypoints, playerShip.physicsObj.angularVelocity);
+                    sprites.helmUi.update(bearing, course, gravity ? gravity.angle() : null, helmUiWaypoints, playerShip.physicsObj.angularVelocity, path);
                 }
 
                 // draw distance and closing speed for waypoints
@@ -818,7 +867,7 @@ export default class HelmRenderer {
                         sprites.waypoints[waypoint.name].x = Math.floor(settings.UiWidth / 2);
                         sprites.waypoints[waypoint.name].y = Math.floor(settings.UiHeight / 2);
                         sprites.waypoints[waypoint.name].pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 22));
-                        sprites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);
+                        speffects.hudGlowrites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);
                         sprites.waypoints[waypoint.name].zIndex = settings.zIndex.ui;
                         mapContainer.addChild(sprites.waypoints[waypoint.name]);
                         mapContainer.sortChildren();
