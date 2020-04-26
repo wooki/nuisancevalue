@@ -38,7 +38,8 @@ let settings = {
         waypoints: 60,
         dashboard: 100,
         ui: 101
-    }
+    },
+    predictTime: 120
 };
 let pixiApp = null;
 let pixiContainer = null;
@@ -751,18 +752,19 @@ export default class HelmRenderer {
                 let bearing = (playerShip.physicsObj.angle + (0.5 * Math.PI)) % (2 * Math.PI);
                 let gravity = null;
                 let gravityPath = null;
+                let predictedGravityPath = null;
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
                     gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
                     // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
                     // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
 
-                    let predictedGravityPath = UiUtils.predictPath({
+                    predictedGravityPath = UiUtils.predictPath({
                       physicsObj: {
               					position: playerShip.gravityData.source,
               					velocity: playerShip.gravityData.velocity,
               					mass: playerShip.gravityData.mass
                       }
-            				}, 60);
+            				}, settings.predictTime);
                     // console.dir(predictedGravityPath);
                     // throw "debugging";
                     gravityPath = UiUtils.relativeScreenCoords(predictedGravityPath,
@@ -789,9 +791,27 @@ export default class HelmRenderer {
                 });
 
                 // predict a path for x seconds into the future
-                let predictedPath = UiUtils.predictPath(playerShip, 60);
+                let predictedPath = UiUtils.predictPath(playerShip, settings.predictTime);
+
+                // adjust the path to be relative to the gravity source
+                if (predictedGravityPath) {
+                  let gravitySourcePosition = Victor.fromArray(playerShip.gravityData.source);
+                  // console.dir(gravitySourcePosition);
+                  for (let pathIndex = 0; pathIndex < predictedPath.length; pathIndex++) {
+                    // subtract the difference from the grav objects current position from position at same step
+                    // console.log("pathIndex: "+pathIndex);
+                    // console.log("typeof: "+ (typeof predictedGravityPath[pathIndex]));
+                    // console.dir(predictedGravityPath[pathIndex]);
+                    let gravitySourceDelta = predictedGravityPath[pathIndex].clone().subtract(gravitySourcePosition);
+                    // console.dir(gravitySourceDelta);
+                    // console.dir(predictedPath[pathIndex]);
+                    predictedPath[pathIndex] = predictedPath[pathIndex].clone().subtract(gravitySourceDelta);
+                    // throw "debugging";
+                  }
+                }
+
                 let path = UiUtils.relativeScreenCoords(predictedPath,
-                                                       playerShip.physicsObj.position[0],
+                                                       playerShip.physicsObj.position[0], // adjust to relative to planet (as it moves)
                                                        playerShip.physicsObj.position[1],
                                                        pixiApp.screen.width,
                                                        pixiApp.screen.height,
@@ -867,7 +887,7 @@ export default class HelmRenderer {
                         sprites.waypoints[waypoint.name].x = Math.floor(settings.UiWidth / 2);
                         sprites.waypoints[waypoint.name].y = Math.floor(settings.UiHeight / 2);
                         sprites.waypoints[waypoint.name].pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 22));
-                        speffects.hudGlowrites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);
+                        sprites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);
                         sprites.waypoints[waypoint.name].zIndex = settings.zIndex.ui;
                         mapContainer.addChild(sprites.waypoints[waypoint.name]);
                         mapContainer.sortChildren();
