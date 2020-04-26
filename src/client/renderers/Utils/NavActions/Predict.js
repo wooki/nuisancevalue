@@ -1,4 +1,5 @@
 import Victor from 'victor';
+import UiUtils from '../UiUtils';
 
 export default class Predict {
 
@@ -18,25 +19,29 @@ export default class Predict {
             let time = parseInt(this.command.parameters.time);
 
             // get the velocity of the object
-            let v = new Victor(obj.physicsObj.velocity[0], obj.physicsObj.velocity[1]);
+            // let v = new Victor(obj.physicsObj.velocity[0], obj.physicsObj.velocity[1]);
 
-            // apply gravity
-            if (obj.gravityData) {
+            // // apply gravity
+            // if (obj.gravityData) {
 
-            	// this simply applies the same gravity over the time
-            	// (aprox works - only accurate if we and grav source are stationary)
-            	let gravV = obj.gravityData.vector.clone().divide(new Victor(obj.mass, obj.mass));
-	            v = v.add(gravV);
+            // 	// this simply applies the same gravity over the time
+            // 	// (aprox works - only accurate if we and grav source are stationary)
+            // 	let gravV = obj.gravityData.vector.clone().divide(new Victor(obj.mass, obj.mass));
+	           //  v = v.add(gravV);
 
-	            // instead apply gravity in direction of source - assuming it is stationary - better but not perfect
-            }
+	           //  // instead apply gravity in direction of source - assuming it is stationary - better but not perfect
+            // }
 
-            // apply the vector for the time
-            v = v.multiply(new Victor(time, time));
+            // // apply the vector for the time
+            // v = v.multiply(new Victor(time, time));
 
-            // work out position based on vector
-            let predictedPos = new Victor(obj.physicsObj.position[0], obj.physicsObj.position[1]);
-            predictedPos = predictedPos.add(v);
+            // // work out position based on vector
+            // let predictedPos = new Victor(obj.physicsObj.position[0], obj.physicsObj.position[1]);
+            // predictedPos = predictedPos.add(v);
+
+            // USE NEW METHOD
+            let predictedPath = UiUtils.predictPath(obj, time);
+            let predictedPos = predictedPath[predictedPath.length - 1];
 
             // remember our calculated position
             nav.navComSavedData = Math.round(predictedPos.x) + "," + Math.round(predictedPos.y);

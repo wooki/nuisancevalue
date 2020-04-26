@@ -12,6 +12,7 @@ import Planet from './../../common/Planet';
 import Hulls from './../../common/Hulls';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
+import HelmPathUi from './Utils/HelmPathUi';
 import Comms from './../../common/Comms';
 import SolarObjects from './../../common/SolarObjects';
 import UiUtils from './Utils/UiUtils';
@@ -32,13 +33,15 @@ let settings = {
     zIndex: {
       background: 1,
       grid: 2,
+      paths: 2,
       asteroid: 10,
       planet: 11,
       ship: 50,
       waypoints: 60,
       dashboard: 100,
       ui: 101
-    }
+    },
+    predictTime: 120
 };
 let pixiApp = null;
 let pixiContainer = null;
@@ -828,10 +831,70 @@ export default class SignalsRenderer {
                 let course = Victor.fromArray(playerShip.physicsObj.velocity).angle();
                 let bearing = (playerShip.physicsObj.angle + (0.5 * Math.PI)) % (2 * Math.PI);
                 let gravity = null;
+                let gravityPath = null;
+                let predictedGravityPath = null;
                 if (playerShip.gravityData && playerShip.gravityData.direction) {
-                    gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
-                    // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
-                    // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
+                  gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
+
+                  predictedGravityPath = UiUtils.predictPath({
+                    physicsObj: {
+                      position: playerShip.gravityData.source,
+                      velocity: playerShip.gravityData.velocity,
+                      mass: playerShip.gravityData.mass
+                    }
+                  }, settings.predictTime);
+                  gravityPath = UiUtils.relativeScreenCoords(predictedGravityPath,
+                                                         playerShip.physicsObj.position[0],
+                                                         playerShip.physicsObj.position[1],
+                                                         pixiApp.screen.width,
+                                                         pixiApp.screen.height,
+                                                         playerShip.physicsObj.angle,
+                                                         settings.scale);
+                }
+
+                // predict a path for x seconds into the future
+                let predictedPath = UiUtils.predictPath(playerShip, settings.predictTime);
+
+                // adjust the path to be relative to the gravity source
+                if (predictedGravityPath) {
+                  let gravitySourcePosition = Victor.fromArray(playerShip.gravityData.source);
+                  for (let pathIndex = 0; pathIndex < predictedPath.length; pathIndex++) {
+                    // subtract the difference from the grav objects current position from position at same step
+                    let gravitySourceDelta = predictedGravityPath[pathIndex].clone().subtract(gravitySourcePosition);
+                    predictedPath[pathIndex] = predictedPath[pathIndex].clone().subtract(gravitySourceDelta);
+                  }
+                }
+
+                let path = UiUtils.relativeScreenCoords(predictedPath,
+                                                       playerShip.physicsObj.position[0], // adjust to relative to planet (as it moves)
+                                                       playerShip.physicsObj.position[1],
+                                                       pixiApp.screen.width,
+                                                       pixiApp.screen.height,
+                                                       playerShip.physicsObj.angle,
+                                                       settings.scale);
+
+                // draw predicted paths
+                if (!sprites.helmPathUi) {
+                    sprites.helmPathUi = new HelmPathUi({
+                        uiSize: settings.narrowUi,
+                        uiWidth: settings.UiWidth,
+                        uiHeight: settings.UiHeight,
+                        scale: settings.scale,
+                        zIndex: settings.zIndex.paths,
+                        paths: [path, gravityPath]
+                    });
+                    mapContainer.addChild(sprites.helmPathUi);
+                } else {
+                    sprites.helmPathUi.update([{
+                      color1: 0x00FF00,
+                      color2: 0xFFFF00,
+                      points: path,
+                    },
+                    {
+                      color1: 0x00FF00,
+                      color2: 0xFFFF00,
+                      points: gravityPath
+                    }]);
                 }
 
                 // draw a marker to show bearing

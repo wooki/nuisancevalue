@@ -765,8 +765,6 @@ export default class HelmRenderer {
               					mass: playerShip.gravityData.mass
                       }
             				}, settings.predictTime);
-                    // console.dir(predictedGravityPath);
-                    // throw "debugging";
                     gravityPath = UiUtils.relativeScreenCoords(predictedGravityPath,
                                                            playerShip.physicsObj.position[0],
                                                            playerShip.physicsObj.position[1],
@@ -796,17 +794,10 @@ export default class HelmRenderer {
                 // adjust the path to be relative to the gravity source
                 if (predictedGravityPath) {
                   let gravitySourcePosition = Victor.fromArray(playerShip.gravityData.source);
-                  // console.dir(gravitySourcePosition);
                   for (let pathIndex = 0; pathIndex < predictedPath.length; pathIndex++) {
                     // subtract the difference from the grav objects current position from position at same step
-                    // console.log("pathIndex: "+pathIndex);
-                    // console.log("typeof: "+ (typeof predictedGravityPath[pathIndex]));
-                    // console.dir(predictedGravityPath[pathIndex]);
                     let gravitySourceDelta = predictedGravityPath[pathIndex].clone().subtract(gravitySourcePosition);
-                    // console.dir(gravitySourceDelta);
-                    // console.dir(predictedPath[pathIndex]);
                     predictedPath[pathIndex] = predictedPath[pathIndex].clone().subtract(gravitySourceDelta);
-                    // throw "debugging";
                   }
                 }
 

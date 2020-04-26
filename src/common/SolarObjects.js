@@ -151,7 +151,7 @@ module.exports = {
 		let mars = this.addStandardPlanet(gameEngine, 'Mars', 'mars', rotations.Mars, sol.id.toString());
 		let jupiter = this.addStandardPlanet(gameEngine, 'Jupiter', 'jupiter', rotations.Jupiter, sol.id.toString());
 		let saturn = this.addStandardPlanet(gameEngine, 'Saturn', 'saturn', rotations.Saturn, sol.id.toString());
-		let uranus = this.addStandardPlanet(gameEngine, 'Uranus', 'uranus', rotations.Uranus);
+		let uranus = this.addStandardPlanet(gameEngine, 'Uranus', 'uranus', rotations.Uranus, sol.id.toString());
 		let neptune = this.addStandardPlanet(gameEngine, 'Neptune', 'neptune', rotations.Neptune, sol.id.toString());
 		let pluto = this.addStandardPlanet(gameEngine, 'Pluto', 'pluto', rotations.Pluto, sol.id.toString());
 

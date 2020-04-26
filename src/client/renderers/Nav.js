@@ -13,6 +13,7 @@ import NavCom from './Utils/NavCom';
 import SolarObjects from './../../common/SolarObjects';
 import Victor from 'victor';
 import UiUtils from './Utils/UiUtils';
+import HelmPathUi from './Utils/HelmPathUi';
 
 // import styles from './css/nav.scss';
 
@@ -36,13 +37,15 @@ let settings = {
     zIndex: {
       background: 1,
       grid: 2,
+      paths: 2,
       asteroid: 10,
       planet: 11,
       ship: 50,
       waypoints: 60,
       dashboard: 100,
       ui: 101
-    }
+    },
+    predictTime: 360
 };
 let pixiApp = null;
 let pixiContainer = null;
@@ -420,6 +423,23 @@ export default class NavRenderer {
         UiUtils.updateGrid(settings, sprites, settings.focus[0], settings.focus[1]);
     }
 
+    // convert an array of points
+    relativeScreenCoords(points, focusX, focusY, screenWidth, screenHeight, angle, scale) {
+        let convertedPoints = [];
+        if (points) {
+            points.forEach(function(p) {
+                let x = p.x;
+                let y = p.y;
+                if (x === undefined) { x = p[0]; }
+                if (y === undefined) { y = p[1]; }
+
+                convertedPoints.push(this.relativeScreenCoord(x, y, focusX, focusY, screenWidth, screenHeight, angle, scale));
+
+            }.bind(this));
+        }
+        return convertedPoints;
+    }
+
     // convert a game coord to the coord on screen ie. relative to the focus point
     relativeScreenCoord(x, y, focusX, focusY, screenWidth, screenHeight, angle, scale) {
 
@@ -493,6 +513,7 @@ export default class NavRenderer {
             let playerShip = null;
             let gameObjects = {};
             let isDocked = false;
+            let predictedPaths = [];
             game.world.forEachObject((objId, obj) => {
 
                 // remember all objects in this loop (to remove old objects later)
@@ -502,9 +523,11 @@ export default class NavRenderer {
                 // keep track of the player object
                 let isPlayer = false;
                 let alias = obj.id;
+                let predictThisPath = false;
                 if (obj instanceof Ship && obj.navPlayerId == game.playerId) {
                     playerShip = obj;
                     isPlayer = true;
+                    predictThisPath = true;
 
                     // hard-code alias for self
                     aliases['self'] = obj.id;
@@ -517,12 +540,15 @@ export default class NavRenderer {
                   if (dockedMatch) {
                     isDocked = true;
                     playerShip = obj;
+                    predictThisPath = true;
 
                     // hard-code alias for self
                     aliases['self'] = obj.id;
                     aliases['me'] = obj.id;
                   }
                 }
+
+
 
                 let texture = null;
                 let zIndex = settings.zIndex.asteroid;
@@ -551,6 +577,7 @@ export default class NavRenderer {
                     texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                     zIndex = settings.zIndex.planet;
                     alias = obj.texture;
+                    predictThisPath = true;
                 }
 
                 if (isPlayer) {
@@ -595,6 +622,45 @@ export default class NavRenderer {
                         mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
                     }
                 }
+
+                // predict the path for this object
+                if (predictThisPath) {
+                    let predictedPath = UiUtils.predictPath(obj, settings.predictTime);
+
+                    // adjust the path to be relative to the gravity source
+                    if (obj.gravityData) {
+
+                    let predictedGravityPath = UiUtils.predictPath({
+                        physicsObj: {
+                            position: obj.gravityData.source,
+                            velocity: obj.gravityData.velocity,
+                            mass: obj.gravityData.mass
+                        }
+                    }, settings.predictTime);
+
+                      let gravitySourcePosition = Victor.fromArray(obj.gravityData.source);
+                      for (let pathIndex = 0; pathIndex < predictedPath.length; pathIndex++) {
+                        // subtract the difference from the grav objects current position from position at same step
+                        let gravitySourceDelta = predictedGravityPath[pathIndex].clone().subtract(gravitySourcePosition);
+                        predictedPath[pathIndex] = predictedPath[pathIndex].clone().subtract(gravitySourceDelta);
+                      }
+                    }
+
+                    let path = this.relativeScreenCoords(predictedPath,
+                                                     settings.focus[0],
+                                                     settings.focus[1],
+                                                     pixiApp.screen.width,
+                                                     pixiApp.screen.height,
+                                                     0, // obj.physicsObj.angle, // might need to add Math.PI
+                                                     settings.scale);
+                    predictedPaths.push({
+                      color1: 0x00FF00,
+                      color2: 0xFFFF00,
+                      points: path,
+                    });
+                }
+
+
             });
 
             // spot any objects we no longer have and remove them
@@ -609,6 +675,31 @@ export default class NavRenderer {
                 }
             });
 
+            // predict a path for x seconds into the future
+            // draw predicted paths
+            if (!sprites.helmPathUi) {
+                sprites.helmPathUi = new HelmPathUi({
+                    uiSize: settings.narrowUi,
+                    uiWidth: settings.UiWidth,
+                    uiHeight: settings.UiHeight,
+                    scale: settings.scale,
+                    zIndex: settings.zIndex.paths,
+                    paths: predictedPaths
+                });
+                mapContainer.addChild(sprites.helmPathUi);
+            } else {
+                sprites.helmPathUi.update(predictedPaths);
+                // sprites.helmPathUi.update([{
+                //   color1: 0x00FF00,
+                //   color2: 0xFFFF00,
+                //   points: path,
+                // },
+                // {
+                //   color1: 0x00FF00,
+                //   color2: 0xFFFF00,
+                //   points: gravityPath
+                // }]);
+            }
         }
 
         mapContainer.sortChildren();
