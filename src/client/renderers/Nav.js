@@ -553,6 +553,7 @@ export default class NavRenderer {
                 let texture = null;
                 let zIndex = settings.zIndex.asteroid;
                 let widthRatio = 1;
+                let predictColor = Assets.Colors.ForTexture[obj.texture];
                 if (obj instanceof Ship) {
                     let hullData = Hulls[obj.hull];
                     texture = settings.resources[settings.baseUrl+hullData.image].texture;
@@ -560,6 +561,9 @@ export default class NavRenderer {
                     alias = obj.hull;
                     widthRatio = hullData.width;
 
+                    if (isPlayer) {
+                      predictColor = 0x00FF00;
+                    }
                     // draw waypoints
                     if (isPlayer && obj.waypoints) {
 
@@ -573,11 +577,15 @@ export default class NavRenderer {
                     texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                     zIndex = settings.zIndex.asteroid;
                     alias = 'asteroid';
+
                 } else if (obj instanceof Planet) {
                     texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                     zIndex = settings.zIndex.planet;
                     alias = obj.texture;
                     predictThisPath = true;
+                }
+                if (predictColor === undefined) {
+                  predictColor = Assets.Colors.GridSmall;
                 }
 
                 if (isPlayer) {
@@ -625,18 +633,18 @@ export default class NavRenderer {
 
                 // predict the path for this object
                 if (predictThisPath) {
-                    let predictedPath = UiUtils.predictPath(obj, settings.predictTime);
+                    let predictedPath = UiUtils.predictPath(obj, settings.predictTime, 1);
 
                     // adjust the path to be relative to the gravity source
                     if (obj.gravityData) {
 
-                    let predictedGravityPath = UiUtils.predictPath({
-                        physicsObj: {
-                            position: obj.gravityData.source,
-                            velocity: obj.gravityData.velocity,
-                            mass: obj.gravityData.mass
-                        }
-                    }, settings.predictTime);
+                      let predictedGravityPath = UiUtils.predictPath({
+                          physicsObj: {
+                              position: obj.gravityData.source,
+                              velocity: obj.gravityData.velocity,
+                              mass: obj.gravityData.mass
+                          }
+                      }, settings.predictTime, 1);
 
                       let gravitySourcePosition = Victor.fromArray(obj.gravityData.source);
                       for (let pathIndex = 0; pathIndex < predictedPath.length; pathIndex++) {
@@ -654,8 +662,8 @@ export default class NavRenderer {
                                                      0, // obj.physicsObj.angle, // might need to add Math.PI
                                                      settings.scale);
                     predictedPaths.push({
-                      color1: 0x00FF00,
-                      color2: 0xFFFF00,
+                      color1: predictColor,
+                      color2: predictColor,
                       points: path,
                     });
                 }
@@ -684,7 +692,8 @@ export default class NavRenderer {
                     uiHeight: settings.UiHeight,
                     scale: settings.scale,
                     zIndex: settings.zIndex.paths,
-                    paths: predictedPaths
+                    paths: predictedPaths,
+                    alpha: 0.5
                 });
                 mapContainer.addChild(sprites.helmPathUi);
             } else {

@@ -25,6 +25,18 @@ module.exports = {
 		White: 0xFFFFFF,
 		Red: 0xFF0000,
 		Dashboard: 0x2c332c,
-		Waypoint: 0xFFFF00
+		Waypoint: 0xFFFF00,
+		ForTexture: {
+			sol: 0xfed25b,
+			mercury: 0x46436d,
+			venus: 0xd4b07c,
+			earth: 0x809ad1,
+			mars: 0xbf593a,
+			jupiter: 0xcf9764,
+			saturn: 0xdcc983,
+			uranus: 0xcef4f5,
+			neptune: 0x3e59d8,
+			pluto: 0xdbcebb
+		}
 	}
 }

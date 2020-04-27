@@ -194,7 +194,7 @@ module.exports = {
 
 	// using the velocity and gravity effecting the object, predict a path
 	// for the next s seconds
-	predictPath(obj, s) {
+	predictPath(obj, s, predictionsPerSecond) {
 		// console.time('predictPath');
 
 		// ignore if we don't have a physicsObj
@@ -202,7 +202,9 @@ module.exports = {
 			return [];
 		}
 
-		let predictionsPerSecond = 1;
+		if (predictionsPerSecond === undefined) {
+			predictionsPerSecond = 1;
+		}
 		let timeStep = (1 / predictionsPerSecond);
 		let predictions = [new Victor(obj.physicsObj.position[0], obj.physicsObj.position[1])]; // start at the current position
 
@@ -225,7 +227,7 @@ module.exports = {
 					velocity: obj.gravityData.velocity,
 					mass: obj.gravityData.mass
 				}
-			}, s);
+			}, s, predictionsPerSecond);
 		}
 
 		// keep track of velocity, as that can change with gravity and engine
