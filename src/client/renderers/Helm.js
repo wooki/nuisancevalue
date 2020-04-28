@@ -63,9 +63,9 @@ let effects = {
     crt: new CRTFilter({
       curvature: 8,
       lineWidth: 10,
-      lineContrast: 0.4,
-      noise: 0.2,
-      noiseSize: 1.2,
+      lineContrast: 0.8, // 0.4,
+      noise: 0.4, // 0.2,
+      noiseSize: 1.6, // 1.2,
       vignetting: 0,
       vignettingAlpha: 0,
       seed: 0,
@@ -824,6 +824,23 @@ export default class HelmRenderer {
                                                        playerShip.physicsObj.angle,
                                                        settings.scale);
 
+                 // get predictedPaths for the UI
+                 let predictedPaths = [];
+                 if (path && path.length > 0) {
+                   predictedPaths.push({
+                     color1: 0x00FF00,
+                     color2: 0xFFFF00,
+                     points: path
+                   });
+                 }
+                 if (gravityPath && gravityPath.length > 0) {
+                   predictedPaths.push({
+                     color1: 0x00FF00,
+                     color2: 0xFFFF00,
+                     points: gravityPath
+                   });
+                 }
+
                 // draw predicted paths
                 if (!sprites.helmPathUi) {
                     sprites.helmPathUi = new HelmPathUi({
@@ -832,20 +849,11 @@ export default class HelmRenderer {
                         uiHeight: settings.UiHeight,
                         scale: settings.scale,
                         zIndex: settings.zIndex.paths,
-                        paths: [path, gravityPath]
+                        paths: predictedPaths
                     });
                     mapContainer.addChild(sprites.helmPathUi);
                 } else {
-                    sprites.helmPathUi.update([{
-                      color1: 0x00FF00,
-                      color2: 0xFFFF00,
-                      points: path,
-                    },
-                    {
-                      color1: 0x00FF00,
-                      color2: 0xFFFF00,
-                      points: gravityPath
-                    }]);
+                    sprites.helmPathUi.update(predictedPaths);
                 }
 
 

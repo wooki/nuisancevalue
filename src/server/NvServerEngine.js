@@ -11,7 +11,7 @@ export default class NvServerEngine extends ServerEngine {
 
     constructor(io, gameEngine, inputOptions) {
         super(io, gameEngine, inputOptions);
-        // gameEngine.physicsEngine.world.on('beginContact', this.handleCollision.bind(this));
+        gameEngine.physicsEngine.world.on('beginContact', this.handleCollision.bind(this));
         // gameEngine.on('shoot', this.shoot.bind(this));
     }
 
@@ -163,20 +163,33 @@ export default class NvServerEngine extends ServerEngine {
           });
       }
 
-    }
+    } // addMap
+
 
     addTestMap1() {
+      let damage = new Damage();
 
-      this.gameEngine.addPlanet({
-        x: -10000,
-        y: 3000,
-        dX: 100,
-        dY: 0,
-        mass: SolarObjects.Mars.mass,
-        size: SolarObjects.Mars.diameter,
-        texture: 'mars',
-        angle: Math.random() * 2 * Math.PI,
-        angularVelocity: Math.random()
+      // this.gameEngine.addPlanet({
+      //   x: -10000,
+      //   y: 3000,
+      //   dX: 100,
+      //   dY: 0,
+      //   mass: SolarObjects.Mars.mass,
+      //   size: SolarObjects.Mars.diameter,
+      //   texture: 'mars',
+      //   angle: Math.random() * 2 * Math.PI,
+      //   angularVelocity: Math.random()
+      // });
+
+      // add an actual asteroid
+      this.gameEngine.addAsteroid({
+          x: 0-5000,
+          y: 30,
+          dX: 500,
+          dY: 0,
+          mass: 300, size: 300,
+          angle: Math.random() * 2 * Math.PI,
+          angularVelocity: Math.random()
       });
 
       let hullName = 'bushido';
@@ -190,18 +203,19 @@ export default class NvServerEngine extends ServerEngine {
           hull: hullName,
           mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
           angle: Math.PI,
-          playable: 1
+          playable: 1,
+          damage: damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
       });
 
 
-    }
+    } // addTestMap1
 
     // create/load world and scenario
     start() {
         super.start();
 
-        this.addMap();
-        // this.addTestMap1();
+        // this.addMap();
+        this.addTestMap1();
 
         // listen to server only events
         this.gameEngine.on('dock', e => {
@@ -241,33 +255,40 @@ export default class NvServerEngine extends ServerEngine {
             e.ship.removeWaypoint(e.name);
         });
 
-        // also needs a room
+        // also needs a room?
         // this.createRoom("Nuisance Value");
     }
 
     // handle a collision on server only
-    // handleCollision(evt) {
+    handleCollision(e) {
 
-    //     // identify the two objects which collided
-    //     let A;
-    //     let B;
-    //     this.gameEngine.world.forEachObject((id, obj) => {
-    //         if (obj.physicsObj === evt.bodyA) A = obj;
-    //         if (obj.physicsObj === evt.bodyB) B = obj;
-    //     });
+      console.log("handleCollision");
+      console.dir(e);
+        // identify the two objects which collided
+        let A;
+        let B;
+        this.gameEngine.world.forEachObject((id, obj) => {
+            if (obj.physicsObj === e.bodyA) A = obj;
+            if (obj.physicsObj === e.bodyB) B = obj;
+        });
 
-    //     // check bullet-asteroid and ship-asteroid collisions
-    //     if (!A || !B) return;
-    //     this.gameEngine.trace.trace(() => `collision between A=${A.toString()}`);
-    //     this.gameEngine.trace.trace(() => `collision and     B=${B.toString()}`);
+        if (!A || !B) return;
+
+        // possibly useful info
+        // e.bodyA.inertia; // e.bodyB.inertia;
+        // e.contactEquations.contactPointA; // [Float32Array]
+        // e.contactEquations.penetrationVec; // [Float32Array]
+        // e.contactEquations.contactPointB; // [Float32Array]
+
+
+        // do stuff depending on types
+
     //     if (A instanceof Bullet && B instanceof Asteroid) this.gameEngine.explode(B, A);
     //     if (B instanceof Bullet && A instanceof Asteroid) this.gameEngine.explode(A, B);
     //     if (A instanceof Ship && B instanceof Asteroid) this.kill(A);
     //     if (B instanceof Ship && A instanceof Asteroid) this.kill(B);
 
-    //     // restart game
-    //     if (this.gameEngine.world.queryObjects({ instanceType: Asteroid }).length === 0) this.gameEngine.addAsteroids();
-    // }
+  } // handleCollision
 
     // shooting creates a bullet
     // shoot(player) {
