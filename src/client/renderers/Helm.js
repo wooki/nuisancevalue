@@ -1,10 +1,12 @@
-import KeyboardControls from '../NvKeyboardControls.js';
 const PIXI = require('pixi.js');
-const Assets = require('./Utils/images.js');
+
+import KeyboardControls from '../NvKeyboardControls.js';
+import Assets from './Utils/images.js';
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
 import {CRTFilter} from '@pixi/filter-crt';
+// import {OldFilmFilter} from '@pixi/filter-old-film';
 
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
@@ -16,7 +18,9 @@ import HelmPathUi from './Utils/HelmPathUi';
 import SolarObjects from './../../common/SolarObjects';
 import UiUtils from './Utils/UiUtils';
 import morphdom from 'morphdom';
+import Damage from './../../common/Damage';
 
+let damage = new Damage();
 let el = null;
 let uiEls = {};
 let game = null;
@@ -66,7 +70,10 @@ let effects = {
       vignettingAlpha: 0,
       seed: 0,
       time: 0
-    })
+    }),
+    // crt: new OldFilmFilter({
+    //
+    // })
 };
 let docking = {
     dockable: null, // closest id < 1000 - allows us to start dock
@@ -114,7 +121,6 @@ export default class HelmRenderer {
         mapContainer = new PIXI.Container();
         mapContainer.sortableChildren = true;
         mapContainer.zIndex = 1;
-        // mapContainer.filters = [effects.crt];
         pixiApp.stage.addChild(pixiContainer);
         pixiApp.stage.addChild(mapContainer);
         el.append(pixiApp.view); // add to the page
@@ -665,8 +671,17 @@ export default class HelmRenderer {
 
             if (playerShip) {
                 // console.dir(playerShip);
-                serverObjects[playerShip.id] = true;
 
+                // check for damage
+                if (playerShip.damage > 0) {
+                  if ((playerShip.damage & damage.HELM_CONSOLE_INTERFERENCE) > 0) {
+                    mapContainer.filters = [effects.crt];
+                  } else {
+                    mapContainer.filters = [];
+                  }
+                }
+
+                serverObjects[playerShip.id] = true;
                 let hullData = Hulls[playerShip.hull];
                 let useSize = UiUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
 

@@ -5,6 +5,7 @@ import Ship from '../common/Ship';
 import Hulls from '../common/Hulls';
 import SolarObjects from '../common/SolarObjects';
 import Victor from 'victor';
+import Damage from '../common/Damage';
 
 export default class NvServerEngine extends ServerEngine {
 
@@ -15,6 +16,7 @@ export default class NvServerEngine extends ServerEngine {
     }
 
     addMap() {
+      let damage = new Damage();
 
       let planets = SolarObjects.addSolarSystem(this.gameEngine, {});
 
@@ -50,7 +52,7 @@ export default class NvServerEngine extends ServerEngine {
       velocity = velocity.rotateDeg(55);
       position = position.add(new Victor(planets.Earth.position.x, planets.Earth.position.y));
       velocity = velocity.add(new Victor(planets.Earth.velocity.x, planets.Earth.velocity.y));
-      this.gameEngine.addShip({
+      let nv = this.gameEngine.addShip({
           name: "Nuisance Value",
           x: position.x,
           y: position.y,
@@ -59,8 +61,10 @@ export default class NvServerEngine extends ServerEngine {
           hull: hullName,
           mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
           angle: Math.PI,
-          playable: 1
+          playable: 1,
+          damage: damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
       });
+
 
       let hullName2 = 'blockade-runner';
       let hullData2 = Hulls[hullName2];
@@ -81,7 +85,8 @@ export default class NvServerEngine extends ServerEngine {
           hull: hullName2,
           mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
           angle: Math.PI,
-          playable: 1
+          playable: 1,
+          damage: damage.getRandomDamage(2, 1, hullData.damage) // do some dummy damage for testing
       });
 
       let jupiterstationOrbitDistance = Math.floor(SolarObjects.Jupiter.diameter/2) + 5000;

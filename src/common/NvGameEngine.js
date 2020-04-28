@@ -365,6 +365,7 @@ export default class NvGameEngine extends GameEngine {
         s.commsTargetId = params['commsTargetId'] || -1;
         s.dockedId = params['dockedId'] || -1;
         s.docked = [];
+        s.damage = params['damage'] || 0;
 
         return this.addObjectToWorld(s);
     }

@@ -6,6 +6,7 @@ import Waypoint from './NavActions/Waypoint';
 import Orbit from './NavActions/Orbit';
 import Predict from './NavActions/Predict';
 import Info from './NavActions/Info';
+import Damage from './NavActions/Damage';
 
 const testString = /^[A-Za-z0-9]+$/;
 const testNumber = /^-?[0-9]+$/;
@@ -14,15 +15,23 @@ const testCoord = /^[\-A-Za-z0-9,]+$/;
 
 const commands = [
 	{
-        name: 'predict',
-        parameters: [
-            { name: "alias", test: testString, help: "Object to predict position." },
-            { name: "time", test: testNumber, help: "Number of seconds in the future." }
-        ],
-        description: "Calculates the future position of a body assuming forces do not change.",
-        action: Predict
-    },
-    {
+			name: 'damage',
+			parameters: [
+				{ name: "alias", test: testString, help: "Use report for a summary of damage to the ship." },				
+			],
+			description: "Report on damage to ships systems.",
+			action: Damage
+	},
+	{
+			name: 'predict',
+			parameters: [
+					{ name: "alias", test: testString, help: "Object to predict position." },
+					{ name: "time", test: testNumber, help: "Number of seconds in the future." }
+			],
+			description: "Calculates the future position of a body assuming forces do not change.",
+			action: Predict
+	},
+	{
         name: 'orbit',
         parameters: [
             { name: "alias", test: testString, help: "Object to orbit around." },
@@ -91,9 +100,11 @@ export default class NavCom {
 
         // inject variables
         words = words.map((word) => {
-            if (word == '.') { // special keyword to use stored data
-                return navComSavedData;
-            } else {
+					if (word == '.') { // special keyword to use stored data
+							return navComSavedData;
+					} else if (word.toLowerCase() == 'report') { // special keyword
+							return 'me';
+					} else {
                 return word;
             }
         });

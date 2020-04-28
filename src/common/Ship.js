@@ -29,10 +29,7 @@ export default class Ship extends PhysicalObject2D {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
             },
-            // docked: {
-            //     type: BaseTypes.TYPES.LIST,
-            //     itemType: BaseTypes.TYPES.CLASSINSTANCE
-            // }
+            damage: { type: BaseTypes.TYPES.INT32 }
         }, super.netScheme);
     }
 

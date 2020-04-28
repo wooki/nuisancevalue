@@ -1,11 +1,12 @@
-const Assets = require('./images.js');
-const Hulls = require('../../../common/Hulls');
 const PIXI = require('pixi.js');
-const Victor = require('victor');
-const SolarObjects = require('../../../common/SolarObjects');
+
+import Assets from './images.js';
+import Hulls from '../../../common/Hulls';
+import Victor from 'victor';
+import SolarObjects from '../../../common/SolarObjects';
 
 // common functions used across multiple stations
-module.exports = {
+export default {
 
   // iterate all our assets in the images
 	loadAllAssets(loader, baseUrl) {
