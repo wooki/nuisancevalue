@@ -15,8 +15,7 @@ export default class NvGameEngine extends GameEngine {
         super(options);
 
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
-        this.physicsEngine.world.defaultContactMaterial.friction = 1;
-        this.physicsEngine.world.on('beginContact', this.handleCollision.bind(this));
+        this.physicsEngine.world.defaultContactMaterial.friction = 100;
 
         // game variables
         Object.assign(this, {
@@ -43,31 +42,6 @@ export default class NvGameEngine extends GameEngine {
             }
         }
     }
-
-    // handle a collision on server only
-    handleCollision(evt) {
-
-// console.log("handleCollision");
-
-        // identify the two objects which collided
-        let A;
-        let B;
-        this.world.forEachObject((id, obj) => {
-            if (obj.physicsObj === evt.bodyA) A = obj;
-            if (obj.physicsObj === evt.bodyB) B = obj;
-        });
-
-        // check bullet-asteroid and ship-asteroid collisions
-        if (!A || !B) return;
-// console.log("A) " + A.toString());
-// console.log("B) " + B.toString());
-
-        // if (A instanceof Ship && B instanceof Asteroid) this.kill(A);
-        // if (B instanceof Ship && A instanceof Asteroid) this.kill(B);
-
-
-    }
-
 
     // update world objects for engines/gravity etc
     preStep(params) {

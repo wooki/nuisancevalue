@@ -874,29 +874,38 @@ export default class SignalsRenderer {
                                                        playerShip.physicsObj.angle,
                                                        settings.scale);
 
-                // draw predicted paths
-                if (!sprites.helmPathUi) {
-                    sprites.helmPathUi = new HelmPathUi({
-                        uiSize: settings.narrowUi,
-                        uiWidth: settings.UiWidth,
-                        uiHeight: settings.UiHeight,
-                        scale: settings.scale,
-                        zIndex: settings.zIndex.paths,
-                        paths: [path, gravityPath]
-                    });
-                    mapContainer.addChild(sprites.helmPathUi);
-                } else {
-                    sprites.helmPathUi.update([{
-                      color1: 0x00FF00,
-                      color2: 0xFFFF00,
-                      points: path,
-                    },
-                    {
-                      color1: 0x00FF00,
-                      color2: 0xFFFF00,
-                      points: gravityPath
-                    }]);
-                }
+               // get predictedPaths for the UI
+               let predictedPaths = [];
+               if (path && path.length > 0) {
+                 predictedPaths.push({
+                   color1: 0x00FF00,
+                   color2: 0xFFFF00,
+                   points: path
+                 });
+               }
+               if (gravityPath && gravityPath.length > 0) {
+                 predictedPaths.push({
+                   color1: 0x00FF00,
+                   color2: 0xFFFF00,
+                   points: gravityPath
+                 });
+               }
+
+              // draw predicted paths
+              if (!sprites.helmPathUi) {
+                  sprites.helmPathUi = new HelmPathUi({
+                      uiSize: settings.narrowUi,
+                      uiWidth: settings.UiWidth,
+                      uiHeight: settings.UiHeight,
+                      scale: settings.scale,
+                      zIndex: settings.zIndex.paths,
+                      paths: predictedPaths
+                  });
+                  mapContainer.addChild(sprites.helmPathUi);
+              } else {
+                  sprites.helmPathUi.update(predictedPaths);
+              }
+
 
                 // draw a marker to show bearing
                 if (!sprites.helmUi) {
