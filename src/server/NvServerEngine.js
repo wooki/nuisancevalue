@@ -7,11 +7,13 @@ import Hulls from '../common/Hulls';
 import SolarObjects from '../common/SolarObjects';
 import Victor from 'victor';
 import Damage from '../common/Damage';
+import CollisionUtils from './CollisionUtils';
 
 export default class NvServerEngine extends ServerEngine {
 
     constructor(io, gameEngine, inputOptions) {
         super(io, gameEngine, inputOptions);
+        this.collisionUtils = new CollisionUtils(this, gameEngine);
         gameEngine.physicsEngine.world.on('impact', this.handleCollision.bind(this));
         // gameEngine.on('shoot', this.shoot.bind(this));
         this.damage = new Damage();
@@ -185,9 +187,18 @@ export default class NvServerEngine extends ServerEngine {
       this.gameEngine.addAsteroid({
           x: 0-5000,
           y: 100,
-          dX: 500,
+          dX: 700,
           dY: 0,
           mass: 1, size: 300,
+          angle: Math.random() * 2 * Math.PI,
+          angularVelocity: Math.random()
+      });
+      this.gameEngine.addAsteroid({
+          x: 4600,
+          y: 0-500,
+          dX: 0-500,
+          dY: 0,
+          mass: 1, size: 800,
           angle: Math.random() * 2 * Math.PI,
           angularVelocity: Math.random()
       });
@@ -212,7 +223,7 @@ export default class NvServerEngine extends ServerEngine {
       let asteroidDistance = 4000;
       let asteroidDistanceVariance = 2000;
 
-      for (let asteroidIndex = 0; asteroidIndex < 100; asteroidIndex++) {
+      for (let asteroidIndex = 0; asteroidIndex < 50; asteroidIndex++) {
 
           // create a point and vector then rotate to a random position
           let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
@@ -227,7 +238,7 @@ export default class NvServerEngine extends ServerEngine {
           v = v.rotateDeg(r);
 
           // mass
-          let asteroidSize = Math.random() * 300;
+          let asteroidSize = Math.random() * 600;
 
           // add an actual asteroid
           this.gameEngine.addAsteroid({
@@ -235,7 +246,7 @@ export default class NvServerEngine extends ServerEngine {
               y: position.y,
               dX: v.x,
               dY: v.y,
-              mass: (asteroidSize/100), size: asteroidSize,
+              mass: (asteroidSize/300), size: asteroidSize,
               angle: Math.random() * 2 * Math.PI,
               angularVelocity: Math.random() * Math.PI
           });
@@ -295,73 +306,13 @@ export default class NvServerEngine extends ServerEngine {
     // handle a collision on server only
     handleCollision(e) {
 
-      console.log("handleCollision");
-      // console.dir(e);
-        // identify the two objects which collided
-      let A;
-      let B;
-      this.gameEngine.world.forEachObject((id, obj) => {
-        if (obj.physicsObj === e.bodyA) { A = obj; }
-        if (obj.physicsObj === e.bodyB) { B = obj; }
-      });
-
-      if (!A || !B) return;
+      // identify the two objects which collided
+      // NOT NEEDED AT PRESENT (just used in damage)
+      // let [A, B] = this.collisionUtils.getObjects(e);
+      // if (!A || !B) return;
 
       // do stuff depending on types
-
-      // anything hitting a planet (except another planet is destroyed instantly)
-      if (A instanceof Planet && !(B instanceof Asteroid)) {
-
-      // anything hitting a planet (except another planet is destroyed instantly)
-      } else if (B instanceof Planet) {
-
-      } else { // anything else
-
-        // damage done is dependent on the change in velocity
-        const deltaV_A = Victor.fromArray(e.bodyA.vlambda).magnitude();
-        const deltaV_B = Victor.fromArray(e.bodyB.vlambda).magnitude();
-
-        // 1 major damage for every 300, 1 minor damage for every 40 (left over)
-        const severeDamageThreshold = 300;
-        const lightDamageThreshold = 40;
-        if (A instanceof Ship) {
-          const hullData = Hulls[A.hull];
-          const severe = Math.floor(deltaV_A / severeDamageThreshold);
-          const light = Math.floor((deltaV_A % severeDamageThreshold) / lightDamageThreshold);
-          if (light > 0 || severe > 0) {
-            A.damage = A.damage | this.damage.getRandomDamage(light, severe, hullData.damage);
-          }
-
-        }
-        if (B instanceof Ship) {
-          const hullData = Hulls[B.hull];
-          const severe = Math.floor(deltaV_B / severeDamageThreshold);
-          const light = Math.floor((deltaV_B % severeDamageThreshold) / lightDamageThreshold);
-          if (light > 0 || severe > 0) {
-            B.damage = B.damage | this.damage.getRandomDamage(light, severe, hullData.damage);
-          }
-        }
-
-        console.log("A.damage: "+A.damage);
-        console.log("B.damage: "+B.damage);
-
-        // could do damage based on actual contact location - but not yet!!
-        // console.log("Contact Eq contactPointA:");
-        // console.dir(e.contactEquations[0].contactPointA);
-        // console.log("Contact Eq penetrationVec:");
-        // console.dir(e.contactEquations[0].penetrationVec);
-        // console.log("Contact Eq contactPointB:");
-        // console.dir(e.contactEquations[0].contactPointB);
-        // console.log("Contact Eq normalA:");
-        // console.dir(e.contactEquations[0].normalA);
-
-
-      }
-
-    //     if (A instanceof Bullet && B instanceof Asteroid) this.gameEngine.explode(B, A);
-    //     if (B instanceof Bullet && A instanceof Asteroid) this.gameEngine.explode(A, B);
-    //     if (A instanceof Ship && B instanceof Asteroid) this.kill(A);
-    //     if (B instanceof Ship && A instanceof Asteroid) this.kill(B);
+      this.collisionUtils.assignDamage(e);
 
   } // handleCollision
 

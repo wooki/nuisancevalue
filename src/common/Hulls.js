@@ -4,7 +4,7 @@ import {default as GameDamage} from './Damage';
 const gd = new GameDamage();
 const STANDARD_SYSTEMS = gd.HELM_CONSOLE_INTERFERENCE |
 													gd.NAV_CONSOLE_INTERFERENCE |
-													// gd.SIGNALS_CONSOLE_INTERFERENCE |
+													gd.SIGNALS_CONSOLE_INTERFERENCE |
 													gd.ENGINE_OFFLINE |
 													gd.MANEUVER_OFFLINE;
 
