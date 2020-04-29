@@ -212,7 +212,7 @@ export default class NvServerEngine extends ServerEngine {
       let asteroidDistance = 4000;
       let asteroidDistanceVariance = 2000;
 
-      for (let asteroidIndex = 0; asteroidIndex < 0; asteroidIndex++) {
+      for (let asteroidIndex = 0; asteroidIndex < 100; asteroidIndex++) {
 
           // create a point and vector then rotate to a random position
           let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
@@ -331,6 +331,7 @@ export default class NvServerEngine extends ServerEngine {
           if (light > 0 || severe > 0) {
             A.damage = A.damage | this.damage.getRandomDamage(light, severe, hullData.damage);
           }
+
         }
         if (B instanceof Ship) {
           const hullData = Hulls[B.hull];
