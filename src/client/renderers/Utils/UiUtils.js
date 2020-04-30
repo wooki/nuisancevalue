@@ -22,6 +22,36 @@ export default {
     }
   },
 
+	leaveTimer(message, rootEl) {
+		let p = new Promise(function(resolve, reject) {
+
+		let uiDestroyed = document.createElement("div");
+		uiDestroyed.classList.add('ui-leaving');
+		uiDestroyed.innerHTML = "<div>"+message+"</div>";
+		let root = document.getElementById('game');
+		rootEl.append(uiDestroyed);
+		let leaveTimer = 10;
+		let countDown = function() {
+			uiDestroyed.innerHTML = "<div>"+leaveTimer+"</div>";
+			leaveTimer = leaveTimer - 1;
+			if (leaveTimer < 0) {
+				resolve();
+			} else {
+				setTimeout(() => {
+					countDown();
+				}, 1000);
+			}
+		};
+
+		// go back to the lobby after a bit
+		setTimeout(() => {
+				countDown();
+			}, 3000);
+		});
+
+		return p;
+	},
+
   getUseSize(scale, width, height, minimumScale, minimumSize) {
 
       let useScale = scale;

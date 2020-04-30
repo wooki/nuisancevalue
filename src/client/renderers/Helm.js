@@ -20,11 +20,14 @@ import UiUtils from './Utils/UiUtils';
 import morphdom from 'morphdom';
 import Damage from './../../common/Damage';
 
+let destroyed = false;
+let backToLobby = false;
 let damage = new Damage();
 let el = null;
 let uiEls = {};
 let game = null;
 let client = null;
+let leaveTimer = false;
 const GridDefault = 1000;
 let settings = {
     baseUrl: '/',
@@ -45,6 +48,7 @@ let settings = {
     },
     predictTime: 120
 };
+let lastPlayerShip = null;
 let pixiApp = null;
 let pixiContainer = null;
 let mapContainer = null;
@@ -157,6 +161,23 @@ export default class HelmRenderer {
 
     setManeuver(direction) {
         client.setManeuver(direction);
+    }
+
+    destroyed() {
+      if (destroyed) return;
+      destroyed = true;
+
+      // remove some stuff
+      if (mapObjects[settings.playerShipId]) {
+          UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
+      }
+      if (sprites.helmPathUi) sprites.helmPathUi.clear();
+      if (sprites.helmUi) sprites.helmUi.clear();
+
+      let root = document.getElementById('game');
+      UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function() {
+        backToLobby = true;
+      });
     }
 
     // draw some controls
@@ -669,342 +690,352 @@ export default class HelmRenderer {
               });
             }
 
+            if (!playerShip) {
+              // must have been destroyed, keep original ship but flag as such
+              playerShip = lastPlayerShip;
+              this.destroyed();
+            } else {
+              lastPlayerShip = playerShip;
+            }
+
             if (playerShip) {
                 // console.dir(playerShip);
 
                 // check for damage
-                if (playerShip.damage > 0) {
-                  if ((playerShip.damage & damage.HELM_CONSOLE_INTERFERENCE) > 0) {
-                    mapContainer.filters = [effects.crt];
+                if ((playerShip.damage & damage.HELM_CONSOLE_INTERFERENCE) > 0) {
+                  mapContainer.filters = [effects.crt];
+                } else {
+                  mapContainer.filters = [];
+                }
+
+                if (!destroyed) {
+
+                  serverObjects[playerShip.id] = true;
+                  let hullData = Hulls[playerShip.hull];
+                  let useSize = UiUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
+
+                  // add the player ship sprite if we haven't got it
+                  if (!mapObjects[playerShip.id]) {
+                      settings.playerShipId = playerShip.id;
+                      let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
+                      this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
                   } else {
-                    mapContainer.filters = [];
+                    this.updateShipEngine(playerShip, playerShip.id, useSize);
                   }
-                }
 
-                serverObjects[playerShip.id] = true;
-                let hullData = Hulls[playerShip.hull];
-                let useSize = UiUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
+                  // draw waypoints (remember distance and direction)
+                  let helmUiWaypoints = [];
+                  if (playerShip.waypoints) {
 
-                // add the player ship sprite if we haven't got it
-                if (!mapObjects[playerShip.id]) {
-                    settings.playerShipId = playerShip.id;
-                    let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
-                    this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
-                } else {
-                  this.updateShipEngine(playerShip, playerShip.id, useSize);
-                }
+                      playerShip.waypoints.forEach((wp) => {
 
-                // draw waypoints (remember distance and direction)
-                let helmUiWaypoints = [];
-                if (playerShip.waypoints) {
+                          let waypointParams = wp.split(',');
+                          let waypoint = {
+                              name: waypointParams[0],
+                              x: parseInt(waypointParams[1]),
+                              y: parseInt(waypointParams[2])
+                          }
 
-                    playerShip.waypoints.forEach((wp) => {
+                          // check if the waypoint will be on screen, or to be drawn on the helm UI
+                          waypoint.ourPos = Victor.fromArray(playerShip.physicsObj.position);
+                          waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
+                          waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
+                          waypoint.waypointDirection = new Victor(waypoint.waypointDirection.x, waypoint.waypointDirection.y);
+                          waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
+                          waypoint.bearing = waypoint.waypointDirection.angle() % (2 * Math.PI);
 
-                        let waypointParams = wp.split(',');
-                        let waypoint = {
-                            name: waypointParams[0],
-                            x: parseInt(waypointParams[1]),
-                            y: parseInt(waypointParams[2])
+                          let ourSpeed = Victor.fromArray(playerShip.physicsObj.velocity);
+                          waypoint.closing = 0;
+                          if (waypoint.distanceToWaypoint != 0) {
+                              waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+                          }
+
+                          if (waypoint.distanceToWaypoint < (settings.mapSize / 2)) {
+                              // draw to map
+                              serverObjects["waypoint-"+waypoint.name] = true;
+                              serverObjects["waypoint-"+waypoint.name+'-label'] = true;
+                              this.drawWaypoint(waypoint, playerShip);
+                          } else {
+                              // draw on the edge of the screen - helm UI
+                              helmUiWaypoints.push(waypoint);
+                          }
+                      });
+                  }
+
+                  // update the grid
+                  UiUtils.updateGrid(settings, sprites, playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
+
+                  // set the player ship rotation
+                  mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
+
+                  // update engine
+                  settings.engineLevel = playerShip.engine;
+
+                  // set the engine buttons
+                  if (playerShip.engine !== undefined) {
+                      uiEls.engineEl0.classList.remove('active');
+                      uiEls.engineEl1.classList.remove('active');
+                      uiEls.engineEl2.classList.remove('active');
+                      uiEls.engineEl3.classList.remove('active');
+                      uiEls.engineEl4.classList.remove('active');
+                      uiEls.engineEl5.classList.remove('active');
+                      uiEls['engineEl'+playerShip.engine].classList.add('active');
+                  }
+
+                  if (isDocked) {
+                      uiEls.dockUndockEl.classList.remove('inactive');
+                  } else {
+                      uiEls.dockUndockEl.classList.add('inactive');
+                  }
+
+                  // update the UI
+                  let speedV = Victor.fromArray(playerShip.physicsObj.velocity);
+                  let speed = Math.abs(Math.round(speedV.length()));
+
+                  let course = speedV.angle();
+                  let bearing = (playerShip.physicsObj.angle + (0.5 * Math.PI)) % (2 * Math.PI);
+                  let gravity = null;
+                  let gravityPath = null;
+                  let predictedGravityPath = null;
+                  if (playerShip.gravityData && playerShip.gravityData.direction) {
+                      gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
+                      // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
+                      // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
+
+                      predictedGravityPath = UiUtils.predictPath({
+                        physicsObj: {
+                					position: playerShip.gravityData.source,
+                					velocity: playerShip.gravityData.velocity,
+                					mass: playerShip.gravityData.mass
                         }
+              				}, settings.predictTime);
+                      gravityPath = UiUtils.relativeScreenCoords(predictedGravityPath,
+                                                             playerShip.physicsObj.position[0],
+                                                             playerShip.physicsObj.position[1],
+                                                             pixiApp.screen.width,
+                                                             pixiApp.screen.height,
+                                                             playerShip.physicsObj.angle,
+                                                             settings.scale);
 
-                        // check if the waypoint will be on screen, or to be drawn on the helm UI
-                        waypoint.ourPos = Victor.fromArray(playerShip.physicsObj.position);
-                        waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
-                        waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
-                        waypoint.waypointDirection = new Victor(waypoint.waypointDirection.x, waypoint.waypointDirection.y);
-                        waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
-                        waypoint.bearing = waypoint.waypointDirection.angle() % (2 * Math.PI);
+                  }
 
-                        let ourSpeed = Victor.fromArray(playerShip.physicsObj.velocity);
-                        waypoint.closing = 0;
-                        if (waypoint.distanceToWaypoint != 0) {
-                            waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
-                        }
+                  // build a list of UI data for display
+                  let uiDataItems = [];
+                  let reversedSpeedV = new Victor(playerShip.physicsObj.velocity[0], 0 - playerShip.physicsObj.velocity[1]);
+                  uiDataItems.push({
+                    type: 'bearing',
+                    bearing: Math.round(UiUtils.radiansToDegrees((bearing - (0.5 * Math.PI)) % (2 * Math.PI))) + "°"
+                  });
+                  uiDataItems.push({
+                    type: 'heading',
+                    Heading: ((Math.round(reversedSpeedV.verticalAngleDeg()) + 360) % 360) + "°",
+                    speed: Math.round(speedV.magnitude()) + SolarObjects.units.speed
+                  });
 
-                        if (waypoint.distanceToWaypoint < (settings.mapSize / 2)) {
-                            // draw to map
-                            serverObjects["waypoint-"+waypoint.name] = true;
-                            serverObjects["waypoint-"+waypoint.name+'-label'] = true;
-                            this.drawWaypoint(waypoint, playerShip);
-                        } else {
-                            // draw on the edge of the screen - helm UI
-                            helmUiWaypoints.push(waypoint);
-                        }
-                    });
-                }
+                  // predict a path for x seconds into the future
+                  let predictedPath = UiUtils.predictPath(playerShip, settings.predictTime);
 
-                // update the grid
-                UiUtils.updateGrid(settings, sprites, playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
+                  // adjust the path to be relative to the gravity source
+                  if (predictedGravityPath) {
+                    let gravitySourcePosition = Victor.fromArray(playerShip.gravityData.source);
+                    for (let pathIndex = 0; pathIndex < predictedPath.length; pathIndex++) {
+                      // subtract the difference from the grav objects current position from position at same step
+                      let gravitySourceDelta = predictedGravityPath[pathIndex].clone().subtract(gravitySourcePosition);
+                      predictedPath[pathIndex] = predictedPath[pathIndex].clone().subtract(gravitySourceDelta);
+                    }
+                  }
 
-                // set the player ship rotation
-                mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
+                  let path = UiUtils.relativeScreenCoords(predictedPath,
+                                                         playerShip.physicsObj.position[0], // adjust to relative to planet (as it moves)
+                                                         playerShip.physicsObj.position[1],
+                                                         pixiApp.screen.width,
+                                                         pixiApp.screen.height,
+                                                         playerShip.physicsObj.angle,
+                                                         settings.scale);
 
-                // update engine
-                settings.engineLevel = playerShip.engine;
+                   // get predictedPaths for the UI
+                   let predictedPaths = [];
+                   if (path && path.length > 0) {
+                     predictedPaths.push({
+                       color1: 0x00FF00,
+                       color2: 0xFFFF00,
+                       points: path
+                     });
+                   }
+                   if (gravityPath && gravityPath.length > 0) {
+                     predictedPaths.push({
+                       color1: 0x00FF00,
+                       color2: 0xFFFF00,
+                       points: gravityPath
+                     });
+                   }
 
-                // set the engine buttons
-                if (playerShip.engine !== undefined) {
-                    uiEls.engineEl0.classList.remove('active');
-                    uiEls.engineEl1.classList.remove('active');
-                    uiEls.engineEl2.classList.remove('active');
-                    uiEls.engineEl3.classList.remove('active');
-                    uiEls.engineEl4.classList.remove('active');
-                    uiEls.engineEl5.classList.remove('active');
-                    uiEls['engineEl'+playerShip.engine].classList.add('active');
-                }
+                  // draw predicted paths
+                  if (!sprites.helmPathUi) {
+                      sprites.helmPathUi = new HelmPathUi({
+                          uiSize: settings.narrowUi,
+                          uiWidth: settings.UiWidth,
+                          uiHeight: settings.UiHeight,
+                          scale: settings.scale,
+                          zIndex: settings.zIndex.paths,
+                          paths: predictedPaths
+                      });
+                      mapContainer.addChild(sprites.helmPathUi);
+                  } else {
+                      sprites.helmPathUi.update(predictedPaths);
+                  }
 
-                if (isDocked) {
-                    uiEls.dockUndockEl.classList.remove('inactive');
-                } else {
-                    uiEls.dockUndockEl.classList.add('inactive');
-                }
 
-                // update the UI
-                let speedV = Victor.fromArray(playerShip.physicsObj.velocity);
-                let speed = Math.abs(Math.round(speedV.length()));
+                  // draw a marker to show bearing
+                  if (!sprites.helmUi) {
+                      sprites.helmUi = new HelmUi({
+                          uiSize: settings.narrowUi,
+                          uiWidth: settings.UiWidth,
+                          uiHeight: settings.UiHeight,
+                          scale: settings.scale,
+                          angularVelocity: playerShip.physicsObj.angularVelocity,
+                          bearing: bearing,
+                          course: course,
+                          gravity: gravity ? gravity.angle() : null,
+                          zIndex: settings.zIndex.ui,
+                          waypoints: helmUiWaypoints
+                      });
+                      mapContainer.addChild(sprites.helmUi);
+                  } else {
+                      sprites.helmUi.update(bearing, course, gravity ? gravity.angle() : null, helmUiWaypoints, playerShip.physicsObj.angularVelocity, path);
+                  }
 
-                let course = speedV.angle();
-                let bearing = (playerShip.physicsObj.angle + (0.5 * Math.PI)) % (2 * Math.PI);
-                let gravity = null;
-                let gravityPath = null;
-                let predictedGravityPath = null;
-                if (playerShip.gravityData && playerShip.gravityData.direction) {
-                    gravity = Victor.fromArray([playerShip.gravityData.direction.x, playerShip.gravityData.direction.y]);
-                    // let orbitV = Math.sqrt((SolarObjects.constants.G * playerShip.gravityData.mass) / gravity.length() + 1);
-                    // uiEls.gravOrbitV.innerHTML = "Grav V: " +  Math.round(orbitV) + " or " + Math.round(orbitV / 3);
+                  // draw distance and closing speed for waypoints
+                  helmUiWaypoints.forEach((waypoint) => {
 
-                    predictedGravityPath = UiUtils.predictPath({
-                      physicsObj: {
-              					position: playerShip.gravityData.source,
-              					velocity: playerShip.gravityData.velocity,
-              					mass: playerShip.gravityData.mass
+                      if (!sprites.waypoints) {
+                          sprites.waypoints = {};
                       }
-            				}, settings.predictTime);
-                    gravityPath = UiUtils.relativeScreenCoords(predictedGravityPath,
-                                                           playerShip.physicsObj.position[0],
-                                                           playerShip.physicsObj.position[1],
-                                                           pixiApp.screen.width,
-                                                           pixiApp.screen.height,
-                                                           playerShip.physicsObj.angle,
-                                                           settings.scale);
 
-                }
+                      let wayPointText = waypoint.name + "\n" +
+                                  Math.round(waypoint.distanceToWaypoint) + SolarObjects.units.distance + "\n" +
+                                 waypoint.closing.toPrecision(3) + SolarObjects.units.speed;
 
-                // build a list of UI data for display
-                let uiDataItems = [];
-                let reversedSpeedV = new Victor(playerShip.physicsObj.velocity[0], 0 - playerShip.physicsObj.velocity[1]);
-                uiDataItems.push({
-                  type: 'bearing',
-                  bearing: Math.round(UiUtils.radiansToDegrees((bearing - (0.5 * Math.PI)) % (2 * Math.PI))) + "°"
-                });
-                uiDataItems.push({
-                  type: 'heading',
-                  Heading: ((Math.round(reversedSpeedV.verticalAngleDeg()) + 360) % 360) + "°",
-                  speed: Math.round(speedV.magnitude()) + SolarObjects.units.speed
-                });
 
-                // predict a path for x seconds into the future
-                let predictedPath = UiUtils.predictPath(playerShip, settings.predictTime);
+                      if (!sprites.waypoints[waypoint.name]) {
 
-                // adjust the path to be relative to the gravity source
-                if (predictedGravityPath) {
-                  let gravitySourcePosition = Victor.fromArray(playerShip.gravityData.source);
-                  for (let pathIndex = 0; pathIndex < predictedPath.length; pathIndex++) {
-                    // subtract the difference from the grav objects current position from position at same step
-                    let gravitySourceDelta = predictedGravityPath[pathIndex].clone().subtract(gravitySourcePosition);
-                    predictedPath[pathIndex] = predictedPath[pathIndex].clone().subtract(gravitySourceDelta);
+                          sprites.waypoints[waypoint.name] = new PIXI.Text(wayPointText, {
+                              fontFamily : 'Arial',
+                              fontSize: 9,
+                              fill : 0xFFFFFF,
+                              align : 'center'
+                          });
+                          sprites.waypoints[waypoint.name].filters = [ effects.hudGlow ];
+                          sprites.waypoints[waypoint.name].anchor.set(0.5);
+                          sprites.waypoints[waypoint.name].x = Math.floor(settings.UiWidth / 2);
+                          sprites.waypoints[waypoint.name].y = Math.floor(settings.UiHeight / 2);
+                          sprites.waypoints[waypoint.name].pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 22));
+                          sprites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);
+                          sprites.waypoints[waypoint.name].zIndex = settings.zIndex.ui;
+                          mapContainer.addChild(sprites.waypoints[waypoint.name]);
+                          mapContainer.sortChildren();
+
+                      } else {
+                          sprites.waypoints[waypoint.name].text = wayPointText;
+                          sprites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);;
+                      }
+
+                      uiDataItems.push({
+                        type: 'waypoint',
+                        name: waypoint.name,
+                        bearing: Math.round(UiUtils.radiansToDegrees((waypoint.bearing - (0.5 * Math.PI)) % (2 * Math.PI))) + "°",
+                        distance: Math.round(waypoint.distanceToWaypoint) + SolarObjects.units.distance,
+                        closing: waypoint.closing.toPrecision(3) + SolarObjects.units.speed
+                      });
+
+                  });
+
+                  // remove helm waypoint markers for waypoints not in use
+                  if (sprites.waypoints) {
+                      Object.keys(sprites.waypoints).forEach(function(key) {
+                          if (key) {
+                              // look for waypoint in ships waypoints
+                              let wp = helmUiWaypoints.find(function(waypoint) {
+                                  return (waypoint.name == key);
+                              });
+                              if (!wp) {
+                                  sprites.waypoints[key].destroy();
+                                  delete sprites.waypoints[key];
+                              }
+                          }
+                      });
                   }
-                }
 
-                let path = UiUtils.relativeScreenCoords(predictedPath,
-                                                       playerShip.physicsObj.position[0], // adjust to relative to planet (as it moves)
-                                                       playerShip.physicsObj.position[1],
-                                                       pixiApp.screen.width,
-                                                       pixiApp.screen.height,
-                                                       playerShip.physicsObj.angle,
-                                                       settings.scale);
+                  // draw speed and gravity text
+                  if (!sprites.speedText) {
+                      sprites.speedText = new PIXI.Text(speed + SolarObjects.units.speed, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
+                      sprites.speedText.filters = [ effects.hudGlow ];
+                      sprites.speedText.anchor.set(0.5);
+                      sprites.speedText.x = Math.floor(settings.UiWidth / 2);
+                      sprites.speedText.y = Math.floor(settings.UiHeight / 2);
+                      sprites.speedText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 16));
+                      sprites.speedText.rotation = (course + (0.5 * Math.PI)) % (2 * Math.PI);
+                      sprites.speedText.zIndex = settings.zIndex.ui;
+                      mapContainer.addChild(sprites.speedText);
+                      mapContainer.sortChildren();
+                  } else {
+                      sprites.speedText.text = speed + SolarObjects.units.speed;
+                      sprites.speedText.rotation = (course + (0.5 * Math.PI)) % (2 * Math.PI);
+                  }
 
-                 // get predictedPaths for the UI
-                 let predictedPaths = [];
-                 if (path && path.length > 0) {
-                   predictedPaths.push({
-                     color1: 0x00FF00,
-                     color2: 0xFFFF00,
-                     points: path
-                   });
-                 }
-                 if (gravityPath && gravityPath.length > 0) {
-                   predictedPaths.push({
-                     color1: 0x00FF00,
-                     color2: 0xFFFF00,
-                     points: gravityPath
-                   });
-                 }
+                  if (gravity) {
 
-                // draw predicted paths
-                if (!sprites.helmPathUi) {
-                    sprites.helmPathUi = new HelmPathUi({
-                        uiSize: settings.narrowUi,
-                        uiWidth: settings.UiWidth,
-                        uiHeight: settings.UiHeight,
-                        scale: settings.scale,
-                        zIndex: settings.zIndex.paths,
-                        paths: predictedPaths
-                    });
-                    mapContainer.addChild(sprites.helmPathUi);
-                } else {
-                    sprites.helmPathUi.update(predictedPaths);
-                }
+                      let gravityDistanceText = Math.round(gravity.length());
+                      let gravityAmountText = Math.round((playerShip.gravityData.amount / (playerShip.physicsObj.mass)) * 100) / 100;
 
+                      let gravityHeading = Victor.fromArray([playerShip.gravityData.velocity.x, playerShip.gravityData.velocity.y]);
+                      let closing = 0;
+                      if (gravity.length() != 0) {
+                          closing = ((speedV.clone().subtract(gravityHeading)).dot(gravity) / gravity.length());
+                      }
 
-                // draw a marker to show bearing
-                if (!sprites.helmUi) {
-                    sprites.helmUi = new HelmUi({
-                        uiSize: settings.narrowUi,
-                        uiWidth: settings.UiWidth,
-                        uiHeight: settings.UiHeight,
-                        scale: settings.scale,
-                        angularVelocity: playerShip.physicsObj.angularVelocity,
-                        bearing: bearing,
-                        course: course,
-                        gravity: gravity ? gravity.angle() : null,
-                        zIndex: settings.zIndex.ui,
-                        waypoints: helmUiWaypoints
-                    });
-                    mapContainer.addChild(sprites.helmUi);
-                } else {
-                    sprites.helmUi.update(bearing, course, gravity ? gravity.angle() : null, helmUiWaypoints, playerShip.physicsObj.angularVelocity, path);
-                }
+                      let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
+                                     closing.toPrecision(3) + SolarObjects.units.speed;
 
-                // draw distance and closing speed for waypoints
-                helmUiWaypoints.forEach((waypoint) => {
+                      uiDataItems.push({
+                        type: 'gravity',
+                        bearing: ((Math.round(gravity.angleDeg()) + 450) % 360) + "°",
+                        distance: gravityDistanceText + SolarObjects.units.distance,
+                        closing: closing.toPrecision(3) + SolarObjects.units.speed
+                      });
 
-                    if (!sprites.waypoints) {
-                        sprites.waypoints = {};
-                    }
+                      if (!sprites.gravityText) {
+                          sprites.gravityText = new PIXI.Text(gravText, {
+                              fontFamily : 'Arial',
+                              fontSize: 9,
+                              fill : 0xFFFFFF,
+                              align : 'center'
+                          });
+                          sprites.gravityText.filters = [ effects.hudGlow ];
+                          sprites.gravityText.anchor.set(0.5);
+                          sprites.gravityText.x = Math.floor(settings.UiWidth / 2);
+                          sprites.gravityText.y = Math.floor(settings.UiHeight / 2);
+                          sprites.gravityText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 22));
+                          sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
+                          sprites.gravityText.zIndex = settings.zIndex.ui;
+                          mapContainer.addChild(sprites.gravityText);
+                          mapContainer.sortChildren();
+                      } else {
+                          sprites.gravityText.text = gravText;
+                          sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
+                      }
+                  } else {
+                      // remove gravity from UI
+                      if (sprites.gravityText) {
+                          sprites.gravityText.destroy();
+                          sprites.ColorsgravityText = null;
+                      }
+                  }
 
-                    let wayPointText = waypoint.name + "\n" +
-                                Math.round(waypoint.distanceToWaypoint) + SolarObjects.units.distance + "\n" +
-                               waypoint.closing.toPrecision(3) + SolarObjects.units.speed;
+                  // update the data
+                  morphdom(uiEls.infoContainer, UiUtils.helmDataItems(uiDataItems));
 
-
-                    if (!sprites.waypoints[waypoint.name]) {
-
-                        sprites.waypoints[waypoint.name] = new PIXI.Text(wayPointText, {
-                            fontFamily : 'Arial',
-                            fontSize: 9,
-                            fill : 0xFFFFFF,
-                            align : 'center'
-                        });
-                        sprites.waypoints[waypoint.name].filters = [ effects.hudGlow ];
-                        sprites.waypoints[waypoint.name].anchor.set(0.5);
-                        sprites.waypoints[waypoint.name].x = Math.floor(settings.UiWidth / 2);
-                        sprites.waypoints[waypoint.name].y = Math.floor(settings.UiHeight / 2);
-                        sprites.waypoints[waypoint.name].pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 22));
-                        sprites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);
-                        sprites.waypoints[waypoint.name].zIndex = settings.zIndex.ui;
-                        mapContainer.addChild(sprites.waypoints[waypoint.name]);
-                        mapContainer.sortChildren();
-
-                    } else {
-                        sprites.waypoints[waypoint.name].text = wayPointText;
-                        sprites.waypoints[waypoint.name].rotation = (waypoint.bearing + (0.5 * Math.PI)) % (2 * Math.PI);;
-                    }
-
-                    uiDataItems.push({
-                      type: 'waypoint',
-                      name: waypoint.name,
-                      bearing: Math.round(UiUtils.radiansToDegrees((waypoint.bearing - (0.5 * Math.PI)) % (2 * Math.PI))) + "°",
-                      distance: Math.round(waypoint.distanceToWaypoint) + SolarObjects.units.distance,
-                      closing: waypoint.closing.toPrecision(3) + SolarObjects.units.speed
-                    });
-
-                });
-
-                // remove helm waypoint markers for waypoints not in use
-                if (sprites.waypoints) {
-                    Object.keys(sprites.waypoints).forEach(function(key) {
-                        if (key) {
-                            // look for waypoint in ships waypoints
-                            let wp = helmUiWaypoints.find(function(waypoint) {
-                                return (waypoint.name == key);
-                            });
-                            if (!wp) {
-                                sprites.waypoints[key].destroy();
-                                delete sprites.waypoints[key];
-                            }
-                        }
-                    });
-                }
-
-                // draw speed and gravity text
-                if (!sprites.speedText) {
-                    sprites.speedText = new PIXI.Text(speed + SolarObjects.units.speed, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
-                    sprites.speedText.filters = [ effects.hudGlow ];
-                    sprites.speedText.anchor.set(0.5);
-                    sprites.speedText.x = Math.floor(settings.UiWidth / 2);
-                    sprites.speedText.y = Math.floor(settings.UiHeight / 2);
-                    sprites.speedText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 16));
-                    sprites.speedText.rotation = (course + (0.5 * Math.PI)) % (2 * Math.PI);
-                    sprites.speedText.zIndex = settings.zIndex.ui;
-                    mapContainer.addChild(sprites.speedText);
-                    mapContainer.sortChildren();
-                } else {
-                    sprites.speedText.text = speed + SolarObjects.units.speed;
-                    sprites.speedText.rotation = (course + (0.5 * Math.PI)) % (2 * Math.PI);
-                }
-
-                if (gravity) {
-
-                    let gravityDistanceText = Math.round(gravity.length());
-                    let gravityAmountText = Math.round((playerShip.gravityData.amount / (playerShip.physicsObj.mass)) * 100) / 100;
-
-                    let gravityHeading = Victor.fromArray([playerShip.gravityData.velocity.x, playerShip.gravityData.velocity.y]);
-                    let closing = 0;
-                    if (gravity.length() != 0) {
-                        closing = ((speedV.clone().subtract(gravityHeading)).dot(gravity) / gravity.length());
-                    }
-
-                    let gravText = gravityDistanceText + SolarObjects.units.distance + "\n" +
-                                   closing.toPrecision(3) + SolarObjects.units.speed;
-
-                    uiDataItems.push({
-                      type: 'gravity',
-                      bearing: ((Math.round(gravity.angleDeg()) + 450) % 360) + "°",
-                      distance: gravityDistanceText + SolarObjects.units.distance,
-                      closing: closing.toPrecision(3) + SolarObjects.units.speed
-                    });
-
-                    if (!sprites.gravityText) {
-                        sprites.gravityText = new PIXI.Text(gravText, {
-                            fontFamily : 'Arial',
-                            fontSize: 9,
-                            fill : 0xFFFFFF,
-                            align : 'center'
-                        });
-                        sprites.gravityText.filters = [ effects.hudGlow ];
-                        sprites.gravityText.anchor.set(0.5);
-                        sprites.gravityText.x = Math.floor(settings.UiWidth / 2);
-                        sprites.gravityText.y = Math.floor(settings.UiHeight / 2);
-                        sprites.gravityText.pivot = new PIXI.Point(0, (Math.floor(settings.narrowUi / 2) - 22));
-                        sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
-                        sprites.gravityText.zIndex = settings.zIndex.ui;
-                        mapContainer.addChild(sprites.gravityText);
-                        mapContainer.sortChildren();
-                    } else {
-                        sprites.gravityText.text = gravText;
-                        sprites.gravityText.rotation = (gravity.angle() + (0.5 * Math.PI)) % (2 * Math.PI);
-                    }
-                } else {
-                    // remove gravity from UI
-                    if (sprites.gravityText) {
-                        sprites.gravityText.destroy();
-                        sprites.ColorsgravityText = null;
-                    }
-                }
-
-                // update the data
-                morphdom(uiEls.infoContainer, UiUtils.helmDataItems(uiDataItems));
+                } // !destroyed
 
                 // draw stuff on the map
                 let drawnObjects = this.drawObjects(gameObjects, playerShip, t, dt);
@@ -1017,13 +1048,9 @@ export default class HelmRenderer {
                     }
                 });
 
-
-            } else if (settings.playerShipId) {
-                if (mapObjects[settings.playerShipId]) {
-                    UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
-                }
             }
         }
+        return backToLobby;
     }
 
 }

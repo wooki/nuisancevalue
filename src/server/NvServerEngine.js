@@ -64,8 +64,7 @@ export default class NvServerEngine extends ServerEngine {
           hull: hullName,
           mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
           angle: Math.PI,
-          playable: 1,
-          damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
+          playable: 1
       });
 
 
@@ -88,8 +87,7 @@ export default class NvServerEngine extends ServerEngine {
           hull: hullName2,
           mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
           angle: Math.PI,
-          playable: 1,
-          damage: this.damage.getRandomDamage(2, 1, hullData.damage) // do some dummy damage for testing
+          playable: 1
       });
 
       let jupiterstationOrbitDistance = Math.floor(SolarObjects.Jupiter.diameter/2) + 5000;
@@ -223,7 +221,7 @@ export default class NvServerEngine extends ServerEngine {
       let asteroidDistance = 4000;
       let asteroidDistanceVariance = 2000;
 
-      for (let asteroidIndex = 0; asteroidIndex < 50; asteroidIndex++) {
+      for (let asteroidIndex = 0; asteroidIndex < 0; asteroidIndex++) {
 
           // create a point and vector then rotate to a random position
           let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
@@ -258,8 +256,8 @@ export default class NvServerEngine extends ServerEngine {
     start() {
         super.start();
 
-        // this.addMap();
-        this.addTestMap1();
+        this.addMap();
+        // this.addTestMap1();
 
         // listen to server only events
         this.gameEngine.on('dock', e => {

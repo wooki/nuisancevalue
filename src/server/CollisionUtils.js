@@ -46,12 +46,12 @@ export default class CollisionUtils {
         const light = Math.floor((acceleration % severeDamageThreshold) / lightDamageThreshold);
         if (light > 0 || severe > 0) {
           const d = this.damage.getRandomDamage(light, severe, hullData.damage);
-          // console.log("d="+d+", accn="+acceleration);
           A.damage = A.damage | d
         }
         // every major & minor damage adds to a % chance of destruction
-        const destructionChance = ((severe * 0.05) + (light * 0.01));
-        if (Math.random() < destructionChance) {
+        const destructionChance = ((severe * 0.1) + (light * 0.02));
+        const randomDestruction = Math.random();
+        if (randomDestruction < destructionChance) {
           A.damage = A.damage | this.damage.DESTROYED;
         }
       }

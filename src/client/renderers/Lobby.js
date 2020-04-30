@@ -2,7 +2,6 @@ import Ship from './../../common/Ship';
 import morphdom from 'morphdom';
 
 let el = null;
-let shipEls = {};
 let game = null;
 let client = null;
 
@@ -11,6 +10,8 @@ export default class LobbyRenderer {
     constructor(gameEngine, clientEngine) {
     	game = gameEngine;
     	client = clientEngine;
+
+      this.shipEls = {};
 
     	let root = document.getElementById('game');
     	root.innerHTML = '';
@@ -66,11 +67,11 @@ export default class LobbyRenderer {
     }
 
     addShip(obj) {
-      if (!shipEls[obj.id]) {
-        shipEls[obj.id] = this.drawShipUi(obj);
-        el.append(shipEls[obj.id]);
+      if (!this.shipEls[obj.id]) {
+        this.shipEls[obj.id] = this.drawShipUi(obj);
+        el.append(this.shipEls[obj.id]);
       } else {
-        morphdom(shipEls[obj.id], this.drawShipUi(obj));
+        morphdom(this.shipEls[obj.id], this.drawShipUi(obj));
       }
     }
 
@@ -78,8 +79,8 @@ export default class LobbyRenderer {
     draw(t, dt) {
 
     	let ships = game.world.forEachObject((objId, obj) => {
-    		if (obj instanceof Ship) {
 
+    		if (obj instanceof Ship) {
           if (obj.playable === 1) {
             this.addShip(obj);
           }
@@ -94,6 +95,7 @@ export default class LobbyRenderer {
 	    	}
     	});
 
+      return false; // stay here until ship chosen
     }
 
 }

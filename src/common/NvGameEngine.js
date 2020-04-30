@@ -6,6 +6,7 @@ import Planet from './Planet';
 import Victor from 'victor';
 import SolarObjects from './SolarObjects';
 import Comms from './Comms';
+import Damage from '../common/Damage';
 
 let gravityObjects = {};
 
@@ -16,6 +17,8 @@ export default class NvGameEngine extends GameEngine {
 
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
         this.physicsEngine.world.defaultContactMaterial.friction = 100;
+
+        this.damage = new Damage();
 
         // game variables
         Object.assign(this, {
@@ -53,9 +56,15 @@ export default class NvGameEngine extends GameEngine {
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
 
-            // docked ships can ignore everything and just copy the position and vector
-            // from the ship they are docked with
-            if (obj.dockedId !== null && obj.dockedId >= 0) {
+            if (obj.damage && ((obj.damage | this.damage.DESTROYED) > 0)) {
+
+              // remove the object
+              this.removeObjectFromWorld(obj);
+
+            } else if (obj.dockedId !== null && obj.dockedId >= 0) {
+
+              // docked ships can ignore everything and just copy the position and vector
+              // from the ship they are docked with
 
                 // docked objects not on the map so ignore (although this should never happen)
 
@@ -211,18 +220,19 @@ export default class NvGameEngine extends GameEngine {
                       });
                     }
                   });
-                }
+                } else {
 
-                // try and add them
-                if (inputData.options.station == "helm" && ship.helmPlayerId == 0) {
-                    ship.helmPlayerId = playerId;
-                    ship.playerId = playerId; // set the ownership to last player to join
-                } else if (inputData.options.station == "nav" && ship.navPlayerId == 0) {
-                    ship.navPlayerId = playerId;
-                    ship.playerId = playerId; // set the ownership to last player to join
-                } else if (inputData.options.station == "signals" && ship.signalsPlayerId == 0) {
-                    ship.signalsPlayerId = playerId;
-                    ship.playerId = playerId; // set the ownership to last player to join
+                  // try and add them
+                  if (inputData.options.station == "helm" && ship.helmPlayerId == 0) {
+                      ship.helmPlayerId = playerId;
+                      ship.playerId = playerId; // set the ownership to last player to join
+                  } else if (inputData.options.station == "nav" && ship.navPlayerId == 0) {
+                      ship.navPlayerId = playerId;
+                      ship.playerId = playerId; // set the ownership to last player to join
+                  } else if (inputData.options.station == "signals" && ship.signalsPlayerId == 0) {
+                      ship.signalsPlayerId = playerId;
+                      ship.playerId = playerId; // set the ownership to last player to join
+                  }
                 }
             }
 

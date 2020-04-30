@@ -3,6 +3,23 @@ body, html {
     margin: 0;
 }
 
+.ui-leaving {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 7vw;
+  color: white;
+  text-align: center;
+  font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+  div {
+    text-align: center;
+  }
+}
 .ui-container {
     position: fixed;
     top: 0;
@@ -248,7 +265,7 @@ body, html {
 			font-size: 24px;
 			padding: 10px 30px;
 			text-align: center;
-			margin: 10px;			
+			margin: 10px;
 		}
 	}
 }
