@@ -17,6 +17,8 @@ import HelmPathUi from './Utils/HelmPathUi';
 
 // import styles from './css/nav.scss';
 
+let destroyed = false;
+let backToLobby = false;
 let navCom = new NavCom();
 let el = null;
 let uiEls = {};
@@ -137,6 +139,21 @@ export default class NavRenderer {
 
         // add ui might as well use html for the stuff it's good at
         this.drawUi(root);
+    }
+
+    destroyed() {
+      if (destroyed) return;
+      destroyed = true;
+
+      // remove some stuff
+      if (mapObjects[settings.playerShipId]) {
+          UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
+      }
+
+      let root = document.getElementById('game');
+      UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function() {
+        backToLobby = true;
+      });
     }
 
     canvasClick(event) {
@@ -698,21 +715,18 @@ export default class NavRenderer {
                 mapContainer.addChild(sprites.helmPathUi);
             } else {
                 sprites.helmPathUi.update(predictedPaths);
-                // sprites.helmPathUi.update([{
-                //   color1: 0x00FF00,
-                //   color2: 0xFFFF00,
-                //   points: path,
-                // },
-                // {
-                //   color1: 0x00FF00,
-                //   color2: 0xFFFF00,
-                //   points: gravityPath
-                // }]);
             }
-        }
+
+            if (!playerShip) {
+              // must have been destroyed, keep original ship but flag as such
+              this.destroyed();
+            }
+
+        } // settings.loadedSprites
 
         mapContainer.sortChildren();
         scaleChange = false;
-    }
+        return backToLobby;
+    } // draw
 
 }

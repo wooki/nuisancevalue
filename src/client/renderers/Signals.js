@@ -18,6 +18,8 @@ import Comms from './../../common/Comms';
 import SolarObjects from './../../common/SolarObjects';
 import UiUtils from './Utils/UiUtils';
 
+let destroyed = false;
+let backToLobby = false;
 let el = null;
 let uiEls = {};
 let game = null;
@@ -44,6 +46,7 @@ let settings = {
     },
     predictTime: 120
 };
+let lastPlayerShip = null;
 let pixiApp = null;
 let pixiContainer = null;
 let mapContainer = null;
@@ -131,6 +134,23 @@ export default class SignalsRenderer {
 
         // add ui might as well use html for the stuff it's good at
         this.drawUi(root);
+    }
+
+    destroyed() {
+      if (destroyed) return;
+      destroyed = true;
+
+      // remove some stuff
+      if (mapObjects[settings.playerShipId]) {
+          UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
+      }
+      if (sprites.helmPathUi) sprites.helmPathUi.clear();
+      if (sprites.helmUi) sprites.helmUi.clear();
+
+      let root = document.getElementById('game');
+      UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function() {
+        backToLobby = true;
+      });
     }
 
     canvasClick(event) {
@@ -739,91 +759,94 @@ export default class SignalsRenderer {
               });
             }
 
+            if (!playerShip) {
+              // must have been destroyed, keep original ship but flag as such
+              playerShip = lastPlayerShip;
+              this.destroyed();
+            } else {
+              lastPlayerShip = playerShip;
+            }
+
             if (playerShip) {
 
-                serverObjects[playerShip.id] = true;
-
-                let hullData = Hulls[playerShip.hull];
-                let useSize = UiUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
-
-                // add the player ship sprite if we haven't got it
-                if (!mapObjects[playerShip.id]) {
-                    settings.playerShipId = playerShip.id;
-                    // this.addInteractiveToMap(playerShip.name,
-                    //               playerShip.id,
-                    //               settings.resources[settings.baseUrl+hullData.image].texture,
-                    //               playerShip.size * hullData.width, playerShip.size ,
-                    //               Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2),
-                    //               settings.zIndex.ship, 0.01, 16, false)
-
-                    let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
-                    this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
-                    playershipSprite.interactive = true;
-                    playershipSprite.on('mousedown', (e) => { this.objectClick(playerShip.id, e) });
-                    playershipSprite.on('touchstart', (e) => { this.objectClick(playerShip.id, e) });
-                } else {
-                  this.updateShipEngine(playerShip, playerShip.id, useSize);
-                }
-
-                if (selectedObjId == settings.playerShipId) {
-                  this.drawSelection(new PIXI.Point(Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2)));
-                }
-
-                // draw waypoints (remember distance and direction)
                 let helmUiWaypoints = [];
-                if (playerShip.waypoints) {
 
-                    playerShip.waypoints.forEach((wp) => {
+                if (!destroyed) {
 
-                        let waypointParams = wp.split(',');
-                        let waypoint = {
-                            name: waypointParams[0],
-                            x: parseInt(waypointParams[1]),
-                            y: parseInt(waypointParams[2])
-                        }
+                  serverObjects[playerShip.id] = true;
 
-                        // check if the waypoint will be on screen, or to be drawn on the helm UI
-                        waypoint.ourPos = Victor.fromArray(playerShip.physicsObj.position);
-                        waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
-                        waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
-                        waypoint.waypointDirection = new Victor(waypoint.waypointDirection.x, waypoint.waypointDirection.y);
-                        waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
-                        waypoint.bearing = waypoint.waypointDirection.angle() % (2 * Math.PI);
+                  let hullData = Hulls[playerShip.hull];
+                  let useSize = UiUtils.getUseSize(settings.scale, playerShip.size * hullData.width, playerShip.size, 0.01, 16);
 
-                        let ourSpeed = Victor.fromArray(playerShip.physicsObj.velocity);
-                        waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+                  // add the player ship sprite if we haven't got it
+                  if (!mapObjects[playerShip.id]) {
+                      settings.playerShipId = playerShip.id;
+                      // this.addInteractiveToMap(playerShip.name,
+                      //               playerShip.id,
+                      //               settings.resources[settings.baseUrl+hullData.image].texture,
+                      //               playerShip.size * hullData.width, playerShip.size ,
+                      //               Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2),
+                      //               settings.zIndex.ship, 0.01, 16, false)
 
-                        if (waypoint.distanceToWaypoint < (settings.mapSize / 2)) {
-                            // draw to map
-                            serverObjects["waypoint-"+waypoint.name] = true;
-                            serverObjects["waypoint-"+waypoint.name+'-label'] = true;
-                            this.drawWaypoint(waypoint, playerShip);
-                        } else {
-                            // draw on the edge of the screen - helm UI
-                            helmUiWaypoints.push(waypoint);
-                        }
-                    });
+                      let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
+                      this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
+                      playershipSprite.interactive = true;
+                      playershipSprite.on('mousedown', (e) => { this.objectClick(playerShip.id, e) });
+                      playershipSprite.on('touchstart', (e) => { this.objectClick(playerShip.id, e) });
+                  } else {
+                    this.updateShipEngine(playerShip, playerShip.id, useSize);
+                  }
+
+                  if (selectedObjId == settings.playerShipId) {
+                    this.drawSelection(new PIXI.Point(Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2)));
+                  }
+
+                  // draw waypoints (remember distance and direction)
+                  if (playerShip.waypoints) {
+
+                      playerShip.waypoints.forEach((wp) => {
+
+                          let waypointParams = wp.split(',');
+                          let waypoint = {
+                              name: waypointParams[0],
+                              x: parseInt(waypointParams[1]),
+                              y: parseInt(waypointParams[2])
+                          }
+
+                          // check if the waypoint will be on screen, or to be drawn on the helm UI
+                          waypoint.ourPos = Victor.fromArray(playerShip.physicsObj.position);
+                          waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
+                          waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
+                          waypoint.waypointDirection = new Victor(waypoint.waypointDirection.x, waypoint.waypointDirection.y);
+                          waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
+                          waypoint.bearing = waypoint.waypointDirection.angle() % (2 * Math.PI);
+
+                          let ourSpeed = Victor.fromArray(playerShip.physicsObj.velocity);
+                          waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+
+                          if (waypoint.distanceToWaypoint < (settings.mapSize / 2)) {
+                              // draw to map
+                              serverObjects["waypoint-"+waypoint.name] = true;
+                              serverObjects["waypoint-"+waypoint.name+'-label'] = true;
+                              this.drawWaypoint(waypoint, playerShip);
+                          } else {
+                              // draw on the edge of the screen - helm UI
+                              helmUiWaypoints.push(waypoint);
+                          }
+                      });
+                  }
                 }
 
                 // update the grid
                 UiUtils.updateGrid(settings, sprites, playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
 
                 // set the player ship rotation
-                mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
+                if (mapObjects[playerShip.id]) {
+                  mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
+                }
 
                 // update engine
                 settings.engineLevel = playerShip.engine;
-
-                // // set the engine buttons
-                // if (playerShip.engine !== undefined) {
-                //     uiEls.engineEl0.classList.remove('active');
-                //     uiEls.engineEl1.classList.remove('active');
-                //     uiEls.engineEl2.classList.remove('active');
-                //     uiEls.engineEl3.classList.remove('active');
-                //     uiEls.engineEl4.classList.remove('active');
-                //     uiEls.engineEl5.classList.remove('active');
-                //     uiEls['engineEl'+playerShip.engine].classList.add('active');
-                // }
 
                 // update the UI
                 let speedV = Victor.fromArray(playerShip.physicsObj.velocity);
@@ -1049,12 +1072,11 @@ export default class SignalsRenderer {
                 });
 
 
-            } else if (settings.playerShipId) {
-                if (mapObjects[settings.playerShipId]) {
-                    UiUtils.removeFromMap(mapObjects, sprites, settings.playerShipId);
-                }
             }
+
         }
+
+        return backToLobby;
     }
 
 }
