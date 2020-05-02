@@ -349,6 +349,10 @@ export default class HelmRenderer {
       return container;
     }
 
+    addExplosion(width, height, x, y, minimumScale, minimumSize) {
+
+    }
+
     addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
 
         let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
