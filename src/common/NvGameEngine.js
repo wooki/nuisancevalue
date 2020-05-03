@@ -7,6 +7,7 @@ import Victor from 'victor';
 import SolarObjects from './SolarObjects';
 import Comms from './Comms';
 import Damage from '../common/Damage';
+import EmitOnOff from 'emitonoff';
 
 let gravityObjects = {};
 
@@ -27,6 +28,8 @@ export default class NvGameEngine extends GameEngine {
 
         this.on('preStep', this.preStep.bind(this));
         this.on('playerDisconnected', this.playerDisconnected.bind(this));
+
+        this.emitonoff = EmitOnOff();
     }
 
     // when disconnected remove from any ship stations
@@ -60,6 +63,9 @@ export default class NvGameEngine extends GameEngine {
 
               // remove the object
               this.removeObjectFromWorld(obj);
+
+              // was destroyed, so tell the UI
+              this.emitonoff.emit('explosion', obj);
 
             } else if (obj.dockedId !== null && obj.dockedId >= 0) {
 

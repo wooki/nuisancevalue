@@ -139,6 +139,26 @@ export default class NavRenderer {
 
         // add ui might as well use html for the stuff it's good at
         this.drawUi(root);
+
+        // listen for explosion events
+        gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
+    }
+
+    addExplosion(obj) {
+      let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
+                                           obj.physicsObj.position[1],
+           settings.focus[0],
+           settings.focus[1],
+           pixiApp.screen.width,
+           pixiApp.screen.height,
+           0,
+           settings.scale);
+
+      let useSize = UiUtils.getUseSize(settings.scale, obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
+      UiUtils.addExplosion(settings.resources[settings.baseUrl+Assets.Images.explosion].spritesheet,
+        mapContainer,
+        useSize.useWidth, useSize.useHeight,
+        coord.x, coord.y, settings.zIndex.explosion);
     }
 
     destroyed() {

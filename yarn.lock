@@ -2837,6 +2837,11 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
+emitonoff@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/emitonoff/-/emitonoff-0.1.0.tgz#58cc0df766d07d896609372f101901732456d221"
+  integrity sha512-GkBUPqCrdVGyfoDFKWkPPTuwrtW3KPkTPlyIXAFvsof5Kmo6PSth20rtvAlHmdaaNFHSitUimruWNcCFlu+4Fg==
+
 emoji-regex@^7.0.1:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-7.0.3.tgz#933a04052860c85e83c122479c4748a8e4c72156"

@@ -22,6 +22,64 @@ export default {
     }
   },
 
+	// // build some caches of sprites
+	// loadedAssets(loader, resources) {
+	//
+	// 	// cache explosions
+	// 	explosionCache.push(this.createExplosion(resources));
+	// 	explosionCache.push(this.createExplosion(resources));
+	// 	explosionCache.push(this.createExplosion(resources));
+	//
+	// },
+	//
+	// createExplosion(resources) {
+	// 	console.log("createExplosion");
+	// 	// create explosion sprite
+	// 	let explosionSheet = resources['/assets/explosion.json'].spritesheet;
+	// 	let explosion = new PIXI.AnimatedSprite(explosionSheet.animations['explosion']);
+	// 	explosion.anchor.set(0.5);
+	// 	explosion.loop = false;
+	// 	return explosion;
+	// },
+	//
+	// addExplosion(resources, pixiContainer, width, height, x, y, zIndex) {
+	//
+	// 	// get from cache (or create)
+	// 	let explosion = explosionCache.pop();
+	// 	if (!explosion) explosion = this.createExplosion(resources);
+	// 	explosion.x = x;
+	// 	explosion.y = y;
+	// 	explosion.width = width;
+	// 	explosion.height = height;
+	// 	explosion.play();
+	// 	explosion.onComplete = function() {
+	// 		pixiContainer.removeChild(explosion);
+	// 		explosionCache.push(explosion);
+	// 	};
+	// 	explosion.zIndex = zIndex;
+	// 	pixiContainer.addChild(explosion);
+	// 	// return explosion;
+	// },
+	//
+	addExplosion(explosionSheet, pixiContainer, width, height, x, y, zIndex) {
+
+		// create explosion sprite
+		let explosion = new PIXI.AnimatedSprite(explosionSheet.animations['explosion']);
+		explosion.x = x;
+		explosion.y = y;
+		explosion.width = width;
+		explosion.height = height;
+		explosion.anchor.set(0.5);
+		explosion.loop = false;
+		explosion.play();
+		explosion.onComplete = function() {
+			explosion.destroy();
+		}.bind(this);
+		explosion.zIndex = zIndex;
+		pixiContainer.addChild(explosion);
+		return explosion;
+	},
+
 	leaveTimer(message, rootEl) {
 		let p = new Promise(function(resolve, reject) {
 

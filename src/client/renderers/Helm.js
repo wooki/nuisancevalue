@@ -43,6 +43,7 @@ let settings = {
         planet: 11,
         ship: 50,
         waypoints: 60,
+        explosion: 70,
         dashboard: 100,
         ui: 101
     },
@@ -92,9 +93,9 @@ export default class HelmRenderer {
     // create a PIXI app and add to the #game element, start load of resources
     constructor(gameEngine, clientEngine) {
     	game = gameEngine;
-        client = clientEngine;
+      client = clientEngine;
 
-    	let root = document.getElementById('game');
+      let root = document.getElementById('game');
     	root.innerHTML = '';
     	el = document.createElement('div');
         root.append(el);
@@ -152,6 +153,9 @@ export default class HelmRenderer {
         this.controls.bindKey('right', 'maneuver', { }, { direction: 'r' });
         this.controls.bindKey('up', 'engine', { }, { level: '+' });
         this.controls.bindKey('down', 'engine', { }, { level: '-' });
+
+        // listen for explosion events
+        gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));        
     }
 
     setEngine(level) {
@@ -163,7 +167,25 @@ export default class HelmRenderer {
         client.setManeuver(direction);
     }
 
-    destroyed() {
+    addExplosion(obj) {
+
+      let coord = UiUtils.relativeScreenCoord(obj.physicsObj.position[0],
+                                           obj.physicsObj.position[1],
+                                           lastPlayerShip.physicsObj.position[0],
+                                           lastPlayerShip.physicsObj.position[1],
+                                           pixiApp.screen.width,
+                                           pixiApp.screen.height,
+                                           lastPlayerShip.physicsObj.angle,
+                                           settings.scale);
+
+      let useSize = UiUtils.getUseSize(settings.scale, obj.size, obj.size, 0.01, 16);
+      UiUtils.addExplosion(settings.resources[settings.baseUrl+Assets.Images.explosion].spritesheet,
+        mapContainer,
+        useSize.useWidth, useSize.useHeight,
+        coord.x, coord.y, settings.zIndex.explosion);
+    }
+
+    destroyed(playerShip) {
       if (destroyed) return;
       destroyed = true;
 
@@ -347,10 +369,6 @@ export default class HelmRenderer {
       }
 
       return container;
-    }
-
-    addExplosion(width, height, x, y, minimumScale, minimumSize) {
-
     }
 
     addToMap(alias, guid, texture, width, height, x, y, zIndex, minimumScale, minimumSize, addLabel) {
@@ -697,7 +715,7 @@ export default class HelmRenderer {
             if (!playerShip) {
               // must have been destroyed, keep original ship but flag as such
               playerShip = lastPlayerShip;
-              this.destroyed();
+              this.destroyed(playerShip);
             } else {
               lastPlayerShip = playerShip;
             }

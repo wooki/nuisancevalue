@@ -6,6 +6,7 @@ import LobbyRenderer from './renderers/Lobby';
 import HelmRenderer from './renderers/Helm';
 import NavRenderer from './renderers/Nav';
 import SignalsRenderer from './renderers/Signals';
+import EmitOnOff from 'emitonoff';
 
 let ctx = null;
 let game = null;
