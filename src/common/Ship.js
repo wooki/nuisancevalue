@@ -168,6 +168,12 @@ export default class Ship extends PhysicalObject2D {
 
     onRemoveFromWorld(gameEngine) {
         game.physicsEngine.world.removeBody(this.physicsObj);
+
+        if (this.damage && ((this.damage | this.damage.DESTROYED) > 0)) {
+
+          // was destroyed, so tell the UI
+          gameEngine.emitonoff.emit('explosion', this);
+        }
     }
 
     toString() {
