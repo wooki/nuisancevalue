@@ -65,6 +65,7 @@ export default class NvGameEngine extends GameEngine {
               this.removeObjectFromWorld(obj);
 
               // was destroyed, so tell the UI
+              console.log("was destroyed, so tell the UI");
               this.emitonoff.emit('explosion', obj);
 
             } else if (obj.dockedId !== null && obj.dockedId >= 0) {
