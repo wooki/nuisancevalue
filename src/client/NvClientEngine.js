@@ -15,6 +15,10 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("target", { objId: objId });
     }
 
+    fireTorp(objId) {
+        this.sendInput("firetorp", { objId: objId });
+    }
+
     // send to game
     joinShip(objId, station) {
         this.sendInput("join-ship", { objId: objId, station: station });

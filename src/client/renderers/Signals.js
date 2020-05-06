@@ -177,10 +177,14 @@ export default class SignalsRenderer {
       client.setTarget(objId);
       this.removeCommsUi();
 
-      let objects = this.getPlayerAndSelected();
+      let objects = this.getPlayerAndSelected(objId);
+      console.log("setTarget:");
+      console.dir(objects);
       if (objects) {
+        console.log("A");
         if (objects.selectedObj.signalsPlayerId != game.playerId) {
-                this.createInitialCommsUi(objects.selectedObj);
+            console.log("B");
+            this.createInitialCommsUi(objects.selectedObj);
         }
       }
     }
@@ -206,6 +210,18 @@ export default class SignalsRenderer {
         container.appendChild(uiEls.uiContainer);
 
         // torps
+        uiEls.uiRightContainer = document.createElement("div");
+        uiEls.uiRightContainer.classList.add('ui-container');
+        uiEls.uiRightContainer.classList.add('signals');
+        uiEls.uiRightContainer.classList.add('right');
+        container.appendChild(uiEls.uiRightContainer);
+
+        uiEls.uiWeapons = document.createElement("div");
+        uiEls.uiWeapons.classList.add('ui-weapons');
+        uiEls.uiWeapons.classList.add('ui-comms');
+        uiEls.uiRightContainer.appendChild(uiEls.uiWeapons);
+
+        uiEls.uiFireTorp = this.createButton(document, uiEls.uiWeapons, "fireTorp", "Fire Torp", this.fireTorp.bind(this));
 
         // counter-measures / decoys
 
@@ -230,12 +246,7 @@ export default class SignalsRenderer {
         let obj = game.world.queryObject({ id: selectedGuid });
         if (obj && obj.signalsPlayerId != game.playerId) {
 
-            // let objects = this.getPlayerAndSelected();
-            // if (objects) {
-            //   if (playerShip.targetId != selectedGuid) { // the same if DOCKED!!
-                  this.setTarget(selectedGuid);
-            //   }
-            // }
+          this.setTarget(selectedGuid);
         }
     }
 
@@ -260,19 +271,19 @@ export default class SignalsRenderer {
         }
     }
 
-    createInitialCommsUi(obj) {
+    createInitialCommsUi() {
 
         // container
         uiEls.uiComms = document.createElement("div");
         uiEls.uiComms.classList.add('ui-comms');
         uiEls.uiContainer.appendChild(uiEls.uiComms);
 
-        let objects = this.getPlayerAndSelected();
-        if (objects) {
+        // let objects = this.getPlayerAndSelected();
+        // if (objects) {
 
             // open comms button
             uiEls.uiCommsOpen = this.createButton(document, uiEls.uiComms, "openComms", "Open Comms", this.openComms.bind(this));
-        }
+        // }
 
     }
 
@@ -303,7 +314,7 @@ export default class SignalsRenderer {
         }
     }
 
-    getPlayerAndSelected() {
+    getPlayerAndSelected(objId) {
 
         let playerActualShip = null;
         game.world.forEachObject((objId, obj) => {
@@ -330,9 +341,14 @@ export default class SignalsRenderer {
           });
         }
 
-        if (playerActualShip.targetId || playerActualShip.targetId === 0) {
+        if (objId === undefined) {
+          objId = playerActualShip.targetId;
+        }
 
-            let selectedGuid = parseInt(playerActualShip.targetId);
+        // if (playerActualShip.targetId || playerActualShip.targetId === 0) {
+        if (objId ||objId === 0) {
+
+            let selectedGuid = parseInt(objId);
             let selectedObj = game.world.queryObject({ id: selectedGuid });
             if (selectedObj) {
 
@@ -345,6 +361,13 @@ export default class SignalsRenderer {
             }
         }
         return false;
+    }
+
+    fireTorp() {
+      let objects = this.getPlayerAndSelected();
+      if (objects) {
+        client.fireTorp(objects.selectedGuid);
+      }
     }
 
     openComms() {
@@ -816,6 +839,9 @@ export default class SignalsRenderer {
                         sprites.selection = null;
                         this.unsetTarget();
                     }
+                    uiEls.uiWeapons.classList.add('inactive');
+                } else {
+                  uiEls.uiWeapons.classList.remove('inactive');
                 }
 
                 if (!destroyed) {

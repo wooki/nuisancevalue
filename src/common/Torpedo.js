@@ -3,9 +3,16 @@ import { PhysicalObject2D } from 'lance-gg';
 let game = null;
 let p2 = null;
 
-export default class Bullet extends PhysicalObject2D {
+export default class Torpedo extends PhysicalObject2D {
 
-    onAddToWorld() {
+  static get netScheme() {
+      return Object.assign({
+        targetId: { type: BaseTypes.TYPES.INT16 },
+        fuel: { type: BaseTypes.TYPES.INT16 }
+      }, super.netScheme);
+  }
+
+  onAddToWorld() {
         game = this.gameEngine;
         p2 = game.physicsEngine.p2;
 
@@ -17,9 +24,9 @@ export default class Bullet extends PhysicalObject2D {
 
          // Create bullet shape
         let shape = new p2.Circle({
-            radius: game.bulletRadius,
-            collisionGroup: game.BULLET, // Belongs to the BULLET group
-            collisionMask: game.ASTEROID // Can only collide with the ASTEROID group
+            radius: 10,
+            collisionGroup: game.TORPEDO, // Belongs to the BULLET group
+            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO
         });
         this.physicsObj.addShape(shape);
         game.physicsEngine.world.addBody(this.physicsObj);
@@ -31,9 +38,11 @@ export default class Bullet extends PhysicalObject2D {
 
     syncTo(other) {
         super.syncTo(other);
+        this.targetId = other.targetId;
+        this.fuel = other.fuel;
     }
 
     toString() {
-        return `Bullet::${super.toString()}`;
+        return `Torpedo::${super.toString()}`;
     }
 }

@@ -293,6 +293,41 @@ export default class NvServerEngine extends ServerEngine {
             e.ship.targetId = e.targetId;
         });
 
+        this.gameEngine.on('firetorp', e => {
+
+            console.log("SERVER firetorp");
+            
+            // drop facing the target, from the direction we are travelling from -
+            // at our velocity plus/minus low speed (so we can't hit it easily ourselves)
+            let ship = e.ship;
+            let target = this.gameEngine.world.objects[e.targetId];
+            if (target) {
+
+              // find direction to target
+              let shipPos = Victor.fromArray(ship.physicsObj.position);
+              let targetPos = Victor.fromArray(target.physicsObj.position);
+              let direction = targetPos.clone().subtract(shipPos);
+
+              // position is our size (plus torp size) in the direction
+              let startDistance = Math.round(ship.size/2) + 10;
+              let torpPos = direction.normalize().multiply(new Victor(startDistance, startDistance));
+              let torpVelocity = Victor.fromArray(ship.physicsObj.velocity);
+
+              this.gameEngine.addTorpedo({
+                  x: torpPos.x,
+                  y: torpPos.y,
+                  dX: torpVelocity.x,
+                  dY: torpVelocity.y,
+                  mass: 0.0005, size: 10,
+                  angle: direction.angle(),
+                  angularVelocity: 0,
+                  targetId: e.targetId,
+                  fuel: 100
+              });
+            }
+
+        });
+
         this.gameEngine.on('addwaypoint', e => {
             e.ship.addWaypoint(e.name, e.x, e.y);
         });

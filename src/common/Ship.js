@@ -145,7 +145,7 @@ export default class Ship extends PhysicalObject2D {
         this.shape = new p2.Circle({
             radius: Math.floor(this.size / 2),
             collisionGroup: game.SHIP,
-            collisionMask: game.ASTEROID | game.SHIP | game.PLANET
+            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO
         });
         // let shape = this.shape = new p2.Box({
         //     width: this.size,

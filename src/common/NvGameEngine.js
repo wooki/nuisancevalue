@@ -3,6 +3,7 @@ import { GameEngine, P2PhysicsEngine, TwoVector } from 'lance-gg';
 import Ship from './Ship';
 import Asteroid from './Asteroid';
 import Planet from './Planet';
+import Torpedo from './Torpedo';
 import Victor from 'victor';
 import SolarObjects from './SolarObjects';
 import Comms from './Comms';
@@ -23,7 +24,10 @@ export default class NvGameEngine extends GameEngine {
 
         // game variables
         Object.assign(this, {
-            SHIP: Math.pow(2, 0), PLANET: Math.pow(2, 1), ASTEROID: Math.pow(2, 2), DOCKED_SHIP: Math.pow(2, 3)
+            SHIP: Math.pow(2, 0),
+            PLANET: Math.pow(2, 1),
+            ASTEROID: Math.pow(2, 2),
+            TORPEDO: Math.pow(2, 3)
         });
 
         this.on('preStep', this.preStep.bind(this));
@@ -166,6 +170,7 @@ export default class NvGameEngine extends GameEngine {
         serializer.registerClass(Ship);
         serializer.registerClass(Asteroid);
         serializer.registerClass(Planet);
+        serializer.registerClass(Torpedo);
     }
 
     // finds the player (optionally in a specific role)
@@ -301,6 +306,13 @@ export default class NvGameEngine extends GameEngine {
                 }
             }
 
+            if (inputData.input == 'firetorp') {
+
+                let ship = this.getPlayerShip(playerId);
+                let targetId = inputData.options.objId;
+                this.emit('firetorp', { ship: ship, targetId: targetId });
+            }
+
             // handle target - signals only
             if (inputData.input == 'target') {
 
@@ -378,6 +390,22 @@ export default class NvGameEngine extends GameEngine {
             angle: params['angle']
         });
         a.size = params['size'];
+        return this.addObjectToWorld(a);
+    }
+
+    // create Torpedo
+    addTorpedo(params) {
+
+        // x, y, dX, dY, mass, size, angle, angularVelocity
+        let a = new Torpedo(this, {}, {
+            mass: params['mass'],
+            angularVelocity: params['angularVelocity'],
+            position: new TwoVector(params['x'], params['y']),
+            velocity: new TwoVector(params['dX'], params['dY']),
+            angle: params['angle']
+        });
+        a.targetId = params['targetId'];
+        a.fuel = params['fuel'];
         return this.addObjectToWorld(a);
     }
 

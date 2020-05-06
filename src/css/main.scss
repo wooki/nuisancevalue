@@ -35,7 +35,8 @@ body, html {
     font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
     line-height: 30px;
     font-size: 18px;
-    min-width: 140px;;
+    min-width: 140px;
+    z-index: 99;
 
     & > * {
       margin: 30px 0;
@@ -44,6 +45,7 @@ body, html {
     &.right {
       left: auto;
       right: 0;
+      z-index: 98;
     }
 
     button {
@@ -223,6 +225,9 @@ body, html {
         padding: 0;
         justify-content: flex-start;
         align-items: flex-start;
+    }
+    .ui-comms.inactive {
+      display: none;
     }
 	.ui-comms.open {
 		position: fixed;
