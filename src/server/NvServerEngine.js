@@ -185,7 +185,7 @@ export default class NvServerEngine extends ServerEngine {
       this.gameEngine.addAsteroid({
           x: 0-5000,
           y: 100,
-          dX: 700,
+          dX: 7,
           dY: 0,
           mass: 1, size: 300,
           angle: Math.random() * 2 * Math.PI,
@@ -194,7 +194,7 @@ export default class NvServerEngine extends ServerEngine {
       this.gameEngine.addAsteroid({
           x: 4600,
           y: 0-500,
-          dX: 0-500,
+          dX: 0-5,
           dY: 0,
           mass: 1, size: 800,
           angle: Math.random() * 2 * Math.PI,
@@ -256,8 +256,8 @@ export default class NvServerEngine extends ServerEngine {
     start() {
         super.start();
 
-        this.addMap();
-        // this.addTestMap1();
+        // this.addMap();
+        this.addTestMap1();
 
         // listen to server only events
         this.gameEngine.on('dock', e => {
@@ -287,6 +287,10 @@ export default class NvServerEngine extends ServerEngine {
                 this.gameEngine.addObjectToWorld(e.ship);
               }
             }
+        });
+
+        this.gameEngine.on('settarget', e => {
+            e.ship.targetId = e.targetId;
         });
 
         this.gameEngine.on('addwaypoint', e => {

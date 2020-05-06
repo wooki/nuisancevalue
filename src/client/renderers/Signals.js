@@ -75,7 +75,6 @@ let effects = {
       time: 0
     })
 };
-let selectedObjId = null;
 
 export default class SignalsRenderer {
 
@@ -136,7 +135,7 @@ export default class SignalsRenderer {
         this.drawUi(root);
 
         // listen for explosion events
-        gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));        
+        gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
     }
 
     addExplosion(obj) {
@@ -174,13 +173,29 @@ export default class SignalsRenderer {
       });
     }
 
+    setTarget(objId) {
+      client.setTarget(objId);
+      this.removeCommsUi();
+
+      let objects = this.getPlayerAndSelected();
+      if (objects) {
+        if (objects.selectedObj.signalsPlayerId != game.playerId) {
+                this.createInitialCommsUi(objects.selectedObj);
+        }
+      }
+    }
+
+    unsetTarget() {
+      client.setTarget(-1);
+      this.removeCommsUi();
+    }
+
     canvasClick(event) {
 
         event.stopPropagation();
 
         // unselect selection
-        selectedObjId = null;
-        this.removeCommsUi();
+        this.unsetTarget();
     }
 
     // draw some controls
@@ -215,11 +230,12 @@ export default class SignalsRenderer {
         let obj = game.world.queryObject({ id: selectedGuid });
         if (obj && obj.signalsPlayerId != game.playerId) {
 
-            if (selectedObjId != selectedGuid) { // the sane if DOCKED!!
-                this.removeCommsUi();
-                selectedObjId = selectedGuid; // keep reference
-                this.createInitialCommsUi(obj);
-            }
+            // let objects = this.getPlayerAndSelected();
+            // if (objects) {
+            //   if (playerShip.targetId != selectedGuid) { // the same if DOCKED!!
+                  this.setTarget(selectedGuid);
+            //   }
+            // }
         }
     }
 
@@ -288,36 +304,37 @@ export default class SignalsRenderer {
     }
 
     getPlayerAndSelected() {
-        if (selectedObjId) {
 
-            let selectedObj = game.world.queryObject({ id: selectedObjId });
-            let playerActualShip = null;
-            if (selectedObj && selectedObj.commsScript !== undefined) {
-
-                let playerShip = null;
-                game.world.forEachObject((objId, obj) => {
-                    if (obj instanceof Ship && obj.playable == 1) {
-                        if (obj.signalsPlayerId == game.playerId) {
-                            playerActualShip = obj;
-                        }
-                    }
-                });
-
-                // check docked if we haven't found yet
-                if (!playerActualShip) {
-                  game.world.forEachObject((objId, obj) => {
-                    if (obj instanceof Ship) {
-                      if (obj.docked && obj.docked.length > 0) {
-                        let dockedMatch = obj.docked.find(function(dockedShip) {
-                          return (dockedShip.signalsPlayerId == game.playerId);
-                        });
-                        if (dockedMatch) {
-                          playerActualShip = dockedMatch;
-                        }
-                      }
-                    }
-                  });
+        let playerActualShip = null;
+        game.world.forEachObject((objId, obj) => {
+            if (obj instanceof Ship && obj.playable == 1) {
+                if (obj.signalsPlayerId == game.playerId) {
+                    playerActualShip = obj;
                 }
+            }
+        });
+
+        // check docked if we haven't found yet
+        if (!playerActualShip) {
+          game.world.forEachObject((objId, obj) => {
+            if (obj instanceof Ship) {
+              if (obj.docked && obj.docked.length > 0) {
+                let dockedMatch = obj.docked.find(function(dockedShip) {
+                  return (dockedShip.signalsPlayerId == game.playerId);
+                });
+                if (dockedMatch) {
+                  playerActualShip = dockedMatch;
+                }
+              }
+            }
+          });
+        }
+
+        if (playerActualShip.targetId || playerActualShip.targetId === 0) {
+
+            let selectedGuid = parseInt(playerActualShip.targetId);
+            let selectedObj = game.world.queryObject({ id: selectedGuid });
+            if (selectedObj) {
 
                 if (playerActualShip) {
                     return {
@@ -355,7 +372,7 @@ export default class SignalsRenderer {
 
             uiEls.closeCommsButton = this.createButton(document, uiEls.uiComms, "response-close", "Close Comms", this.closeComms.bind(this));
 
-        }  // !selectedObjId
+        }
     }
 
     sendCommsResponse(event) {
@@ -611,7 +628,7 @@ export default class SignalsRenderer {
         let drawnObjects = {};
 
         // if we have no selection - remove the selection sprite
-        if (selectedObjId == null) {
+        if (playerShip.targetId == null) {
             if (sprites.selection) {
                 sprites.selection.destroy();
                 sprites.selection = null;
@@ -673,8 +690,8 @@ export default class SignalsRenderer {
             }
 
             // if selected then highlight somehow
-            if (selectedObjId == obj.id) {
-                this.drawSelection(coord);
+            if (playerShip.targetId === obj.id) {
+                this.drawTarget(coord);
             }
 
         });
@@ -682,7 +699,7 @@ export default class SignalsRenderer {
         return drawnObjects;
     }
 
-    drawSelection(coord) {
+    drawTarget(coord) {
       // let useSize = UiUtils.getUseSize(settings.scale, obj.size + 4, obj.size + 4, 0.05, 16);
       if (sprites.selection) {
           sprites.selection.x = coord.x;
@@ -792,6 +809,15 @@ export default class SignalsRenderer {
 
                 let helmUiWaypoints = [];
 
+                // if we have no target - remove the target sprite
+                if (playerShip.targetId < 0) {
+                    if (sprites.selection) {
+                        sprites.selection.destroy();
+                        sprites.selection = null;
+                        this.unsetTarget();
+                    }
+                }
+
                 if (!destroyed) {
 
                   serverObjects[playerShip.id] = true;
@@ -818,7 +844,7 @@ export default class SignalsRenderer {
                     this.updateShipEngine(playerShip, playerShip.id, useSize);
                   }
 
-                  if (selectedObjId == settings.playerShipId) {
+                  if (playerShip.targetId == settings.playerShipId) {
                     this.drawSelection(new PIXI.Point(Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2)));
                   }
 

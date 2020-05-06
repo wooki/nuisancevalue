@@ -301,6 +301,14 @@ export default class NvGameEngine extends GameEngine {
                 }
             }
 
+            // handle target - signals only
+            if (inputData.input == 'target') {
+
+                let ship = this.getPlayerShip(playerId);
+                let targetId = inputData.options.objId;
+                this.emit('settarget', { ship: ship, targetId: targetId });
+            }
+
             if (inputData.input == 'comms') {
 
                 let ship = this.world.objects[inputData.options.id];
@@ -351,6 +359,7 @@ export default class NvGameEngine extends GameEngine {
         s.dockedCommsScript = params['dockedCommsScript'] || 0;
         s.commsState = params['commsState'] || 0;
         s.commsTargetId = params['commsTargetId'] || -1;
+        s.targetId = params['targetId'] || -1;
         s.dockedId = params['dockedId'] || -1;
         s.docked = [];
         s.damage = params['damage'] || 0;

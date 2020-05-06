@@ -64,6 +64,7 @@ let effects = {
       quality: 0.5
     }),
     waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
+    targetColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
     bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9}),
     crt: new CRTFilter({
       curvature: 8,
@@ -155,7 +156,7 @@ export default class HelmRenderer {
         this.controls.bindKey('down', 'engine', { }, { level: '-' });
 
         // listen for explosion events
-        gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));        
+        gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
     }
 
     setEngine(level) {
@@ -520,6 +521,11 @@ export default class HelmRenderer {
                 }
             }
 
+            // if selected then highlight somehow
+            if (playerShip.targetId === obj.id) {
+                this.drawTarget(coord);
+            }
+
             // display docking UI
             if (obj instanceof Ship) {
                 let ourPos = Victor.fromArray(playerShip.physicsObj.position);
@@ -635,6 +641,24 @@ export default class HelmRenderer {
         return drawnObjects;
     }
 
+    drawTarget(coord) {
+      // let useSize = UiUtils.getUseSize(settings.scale, obj.size + 4, obj.size + 4, 0.05, 16);
+      if (sprites.target) {
+          sprites.target.x = coord.x;
+          sprites.target.y = coord.y;
+      } else {
+          sprites.target = new PIXI.Sprite(settings.waypointTexture);
+          sprites.target.width = 16;
+          sprites.target.height = 16;
+          sprites.target.anchor.set(0.5);
+          sprites.target.x = coord.x;
+          sprites.target.y = coord.y;
+          sprites.target.zIndex = settings.zIndex.waypoints;
+          sprites.target.filters = [ effects.targetColor, effects.hudGlow ];
+          mapContainer.addChild(sprites.target);
+      }
+    }
+
     drawWaypoint(waypoint, playerShip) {
 
         let coord = UiUtils.relativeScreenCoord(waypoint.x,
@@ -728,6 +752,14 @@ export default class HelmRenderer {
                   mapContainer.filters = [effects.crt];
                 } else {
                   mapContainer.filters = [];
+                }
+
+                // if we have no target - remove the target sprite
+                if (playerShip.targetId < 0) {
+                    if (sprites.target) {
+                        sprites.target.destroy();
+                        sprites.target = null;
+                    }
                 }
 
                 if (!destroyed) {
