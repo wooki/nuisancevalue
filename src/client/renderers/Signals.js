@@ -366,7 +366,7 @@ export default class SignalsRenderer {
     fireTorp() {
       let objects = this.getPlayerAndSelected();
       if (objects) {
-        client.fireTorp(objects.selectedGuid);
+        client.fireTorp(objects.selectedObj.id);
       }
     }
 

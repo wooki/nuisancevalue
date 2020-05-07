@@ -396,17 +396,20 @@ export default class NvGameEngine extends GameEngine {
     // create Torpedo
     addTorpedo(params) {
 
+        console.log("gameEngine.addTorpedo");
+        console.dir(params);
         // x, y, dX, dY, mass, size, angle, angularVelocity
-        let a = new Torpedo(this, {}, {
+        let t = new Torpedo(this, {}, {
             mass: params['mass'],
             angularVelocity: params['angularVelocity'],
             position: new TwoVector(params['x'], params['y']),
             velocity: new TwoVector(params['dX'], params['dY']),
             angle: params['angle']
         });
-        a.targetId = params['targetId'];
-        a.fuel = params['fuel'];
-        return this.addObjectToWorld(a);
+        t.targetId = params['targetId'];
+        t.fuel = params['fuel'];
+        t.engine = params['engine'];
+        return this.addObjectToWorld(t);
     }
 
     // create planet

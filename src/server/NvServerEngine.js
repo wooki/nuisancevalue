@@ -203,7 +203,7 @@ export default class NvServerEngine extends ServerEngine {
 
       let hullName = 'bushido';
       let hullData = Hulls[hullName];
-      this.gameEngine.addShip({
+      let nv = this.gameEngine.addShip({
           name: "Nuisance Value",
           x: 0,
           y: 0,
@@ -216,6 +216,17 @@ export default class NvServerEngine extends ServerEngine {
           // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
       });
 
+      this.gameEngine.addTorpedo({
+          x: 1000,
+          y: 1000,
+          dX: 0,
+          dY:0,
+          mass: 0.0005, size: 10,
+          angle: 0,
+          angularVelocity: 0,
+          targetId: nv.id,
+          fuel: 100
+      });
 
       // random asteroids
       let asteroidDistance = 4000;
@@ -295,8 +306,8 @@ export default class NvServerEngine extends ServerEngine {
 
         this.gameEngine.on('firetorp', e => {
 
-            console.log("SERVER firetorp");
-            
+            console.log("SERVER firetorp:"+e.targetId);
+
             // drop facing the target, from the direction we are travelling from -
             // at our velocity plus/minus low speed (so we can't hit it easily ourselves)
             let ship = e.ship;

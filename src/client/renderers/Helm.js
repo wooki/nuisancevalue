@@ -9,6 +9,7 @@ import {CRTFilter} from '@pixi/filter-crt';
 // import {OldFilmFilter} from '@pixi/filter-old-film';
 
 import Ship from './../../common/Ship';
+import Torpedo from './../../common/Torpedo';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
 import Hulls from './../../common/Hulls';
@@ -376,6 +377,13 @@ export default class HelmRenderer {
 
         let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
+        // if (x == 1000) {
+          console.log("adding "+alias);
+          console.log("x="+x);
+          console.log("y="+y);
+          console.log("width="+useSize.useWidth);
+          console.log("height="+useSize.useHeight);
+        // }
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].width = useSize.useWidth;
         sprites[guid].height = useSize.useHeight;
@@ -485,13 +493,22 @@ export default class HelmRenderer {
                 texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                 zIndex = settings.zIndex.planet;
                 alias = obj.texture;
-            } else if (obj instanceof Ship) {
-                let hullData = Hulls[obj.hull];
-                texture = settings.resources[settings.baseUrl+hullData.image].texture;
-                zIndex = settings.zIndex.ship;
-                alias = obj.hull;
-                widthRatio = hullData.width;
-            }
+              } else if (obj instanceof Ship) {
+                  let hullData = Hulls[obj.hull];
+                  texture = settings.resources[settings.baseUrl+hullData.image].texture;
+                  zIndex = settings.zIndex.ship;
+                  alias = obj.hull;
+                  widthRatio = hullData.width;
+              } else if (obj instanceof Torpedo) {
+                // console.log("torp:");
+                // console.dir(obj);
+                // throw "debugging";
+                  let hullData = Hulls[obj.hull];
+                  texture = settings.resources[settings.baseUrl+hullData.image].texture;
+                  zIndex = settings.zIndex.ship;
+                  alias = obj.hull;
+                  widthRatio = hullData.width;
+              }
 
             let coord = UiUtils.relativeScreenCoord(obj.physicsObj.position[0],
                                                  obj.physicsObj.position[1],
@@ -508,7 +525,7 @@ export default class HelmRenderer {
                               texture,
                               obj.size * widthRatio, obj.size,
                               coord.x, coord.y,
-                              zIndex, 0.05, 0, false)
+                              zIndex, 0.05, 8, false)
             } else {
                 // update position
                 mapObjects[obj.id].x = coord.x;

@@ -119,8 +119,8 @@ export default {
 
       let useWidth = Math.floor(width * useScale);
       let useHeight = Math.floor(height * useScale);
-      if (useWidth < minimumSize) { useWidth = minimumSize; }
-      if (useHeight < minimumSize) { useHeight = minimumSize; }
+      // if (useWidth < minimumSize) { useWidth = minimumSize; }
+      // if (useHeight < minimumSize) { useHeight = minimumSize; }
 
       return {
           useWidth: useWidth,
