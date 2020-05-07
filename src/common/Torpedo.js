@@ -1,4 +1,5 @@
 import { PhysicalObject2D, BaseTypes } from 'lance-gg';
+import Hulls from './Hulls';
 
 let game = null;
 let p2 = null;
@@ -17,6 +18,15 @@ export default class Torpedo extends PhysicalObject2D {
         fuel: { type: BaseTypes.TYPES.INT16 },
         engine: { type: BaseTypes.TYPES.UINT8 }
       }, super.netScheme);
+  }
+
+  // if the ship has active engines then apply force
+  applyEngine() {
+      let hullData = Hulls[this.hull];
+
+      if (this.engine && this.engine > 0) {
+          this.physicsObj.applyForceLocal([0, this.engine * hullData.thrust]);
+      }
   }
 
   onAddToWorld() {

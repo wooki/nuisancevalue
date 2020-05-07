@@ -119,7 +119,23 @@ export default {
 
       let useWidth = Math.floor(width * useScale);
       let useHeight = Math.floor(height * useScale);
-      // if (useWidth < minimumSize) { useWidth = minimumSize; }
+
+      // ensure ONE of the dimensions is larger than minimum size (but no need for both)
+      if (useWidth > useHeight) {
+      	// use width (if needed)
+      	if (useWidth < minimumSize) {
+      		let ratio = minimumSize / width;
+      		useWidth = minimumSize;
+      		useHeight = height * ratio;
+      	}
+      } else {
+  		// use height (if needed)
+      	if (useHeight < minimumSize) {
+      		let ratio = minimumSize / height;
+      		useHeight = minimumSize;
+      		useWidth = width * ratio;
+      	}
+	  }
       // if (useHeight < minimumSize) { useHeight = minimumSize; }
 
       return {

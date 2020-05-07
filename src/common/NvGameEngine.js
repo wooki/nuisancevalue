@@ -396,8 +396,6 @@ export default class NvGameEngine extends GameEngine {
     // create Torpedo
     addTorpedo(params) {
 
-        console.log("gameEngine.addTorpedo");
-        console.dir(params);
         // x, y, dX, dY, mass, size, angle, angularVelocity
         let t = new Torpedo(this, {}, {
             mass: params['mass'],

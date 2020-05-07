@@ -377,13 +377,6 @@ export default class HelmRenderer {
 
         let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
-        // if (x == 1000) {
-          console.log("adding "+alias);
-          console.log("x="+x);
-          console.log("y="+y);
-          console.log("width="+useSize.useWidth);
-          console.log("height="+useSize.useHeight);
-        // }
         sprites[guid] = new PIXI.Sprite(texture);
         sprites[guid].width = useSize.useWidth;
         sprites[guid].height = useSize.useHeight;
@@ -520,12 +513,18 @@ export default class HelmRenderer {
                                                  settings.scale);
 
             if (!mapObjects[obj.id]) {
-                this.addToMap(alias,
+                if (obj instanceof Ship || obj instanceof Torpedo) {
+                      let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.05, 12);
+                      let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                      this.addSpriteToMap(shipSprite, alias, obj.id, false, useSize);
+                    } else {
+                      this.addToMap(alias,
                               obj.id,
                               texture,
                               obj.size * widthRatio, obj.size,
                               coord.x, coord.y,
-                              zIndex, 0.05, 8, false)
+                              zIndex, 0.05, 12, false);
+                    }
             } else {
                 // update position
                 mapObjects[obj.id].x = coord.x;
@@ -535,6 +534,13 @@ export default class HelmRenderer {
                 if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
                     mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
                     mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
+                }
+
+                if (obj instanceof Ship || obj instanceof Torpedo) {
+                  if (obj.engine || obj.engine == 0) {
+                    let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                    this.updateShipEngine(obj, obj.id, useSize);
+                  }
                 }
             }
 

@@ -218,14 +218,15 @@ export default class NvServerEngine extends ServerEngine {
 
       this.gameEngine.addTorpedo({
           x: 1000,
-          y: 1000,
+          y: -6000,
           dX: 0,
           dY:0,
           mass: 0.0005, size: 10,
           angle: 0,
           angularVelocity: 0,
           targetId: nv.id,
-          fuel: 100
+          fuel: 100,
+          engine: 1
       });
 
       // random asteroids
