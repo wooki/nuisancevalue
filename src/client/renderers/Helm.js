@@ -493,9 +493,6 @@ export default class HelmRenderer {
                   alias = obj.hull;
                   widthRatio = hullData.width;
               } else if (obj instanceof Torpedo) {
-                // console.log("torp:");
-                // console.dir(obj);
-                // throw "debugging";
                   let hullData = Hulls[obj.hull];
                   texture = settings.resources[settings.baseUrl+hullData.image].texture;
                   zIndex = settings.zIndex.ship;
@@ -529,7 +526,7 @@ export default class HelmRenderer {
                 // update position
                 mapObjects[obj.id].x = coord.x;
                 mapObjects[obj.id].y = coord.y;
-                mapObjects[obj.id].rotation = obj.physicsObj.angle;
+                mapObjects[obj.id].rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
 
                 if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
                     mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
@@ -800,6 +797,9 @@ export default class HelmRenderer {
                     this.updateShipEngine(playerShip, playerShip.id, useSize);
                   }
 
+                  // set the player ship rotation
+                  mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
+
                   // draw waypoints (remember distance and direction)
                   let helmUiWaypoints = [];
                   if (playerShip.waypoints) {
@@ -841,9 +841,6 @@ export default class HelmRenderer {
 
                   // update the grid
                   UiUtils.updateGrid(settings, sprites, playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
-
-                  // set the player ship rotation
-                  mapObjects[playerShip.id].rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
 
                   // update engine
                   settings.engineLevel = playerShip.engine;

@@ -7,6 +7,7 @@ import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
 import {CRTFilter} from '@pixi/filter-crt';
 
+import Torpedo from './../../common/Torpedo';
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
@@ -178,12 +179,8 @@ export default class SignalsRenderer {
       this.removeCommsUi();
 
       let objects = this.getPlayerAndSelected(objId);
-      console.log("setTarget:");
-      console.dir(objects);
       if (objects) {
-        console.log("A");
         if (objects.selectedObj.signalsPlayerId != game.playerId) {
-            console.log("B");
             this.createInitialCommsUi(objects.selectedObj);
         }
       }
@@ -237,8 +234,6 @@ export default class SignalsRenderer {
 
     // clicked an object, do some stuff...
     objectClick(guid, eventData) {
-      console.log("objectClick");
-      console.dir(guid)
 
         eventData.stopPropagation();
 
@@ -418,6 +413,14 @@ export default class SignalsRenderer {
             let state = c.respond(objects.playerShip, objects.selectedObj, response);
             this.createResponseCommsUi(state);
         }
+    }
+
+    // wrap default addToMap
+    addInteractiveSpriteToMap(sprite, alias, guid, addLabel, useSize) {
+      this.addSpriteToMap(sprite, alias, guid, addLabel, useSize);
+      sprite.interactive = true;
+      sprite.on('mousedown', (e) => { this.objectClick(guid, e) });
+      sprite.on('touchstart', (e) => { this.objectClick(guid, e) });
     }
 
     addSpriteToMap(sprite, alias, guid, addLabel, useSize) {
@@ -683,6 +686,12 @@ export default class SignalsRenderer {
                 alias = obj.hull;
                 widthRatio = hullData.width;
                 labelObj = true;
+            } else if (obj instanceof Torpedo) {
+                let hullData = Hulls[obj.hull];
+                texture = settings.resources[settings.baseUrl+hullData.image].texture;
+                zIndex = settings.zIndex.ship;
+                alias = obj.hull;
+                widthRatio = hullData.width;
             }
 
             let coord = UiUtils.relativeScreenCoord(obj.physicsObj.position[0],
@@ -695,20 +704,34 @@ export default class SignalsRenderer {
                                                  settings.scale);
 
             if (!mapObjects[obj.id]) {
-                this.addInteractiveToMap(alias,
-                              obj.id,
-                              texture,
-                              obj.size * widthRatio, obj.size,
-                              coord.x, coord.y,
-                              zIndex, 0.05, 0, labelObj)
+                if (obj instanceof Ship || obj instanceof Torpedo) {
+                  let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.05, 12);
+                  let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                  this.addInteractiveSpriteToMap(shipSprite, alias, obj.id, false, useSize);
+                } else {
+                  this.addInteractiveToMap(alias,
+                          obj.id,
+                          texture,
+                          obj.size * widthRatio, obj.size,
+                          coord.x, coord.y,
+                          zIndex, 0.05, 12, labelObj)
+                }
             } else {
                 // update position
                 mapObjects[obj.id].x = coord.x;
                 mapObjects[obj.id].y = coord.y;
-                mapObjects[obj.id].rotation = obj.physicsObj.angle;
+                mapObjects[obj.id].rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
+
                 if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
                     mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
                     mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
+                }
+
+                if (obj instanceof Ship || obj instanceof Torpedo) {
+                  if (obj.engine || obj.engine == 0) {
+                    let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                    this.updateShipEngine(obj, obj.id, useSize);
+                  }
                 }
             }
 

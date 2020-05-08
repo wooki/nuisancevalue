@@ -9,7 +9,7 @@ export default class Torpedo extends PhysicalObject2D {
   constructor(gameEngine, options, props) {
       super(gameEngine, options, props);
       this.hull = "torpedo";
-      this.size = 30;
+      this.size = Hulls['torpedo'].size;
   }
 
   static get netScheme() {
@@ -25,7 +25,7 @@ export default class Torpedo extends PhysicalObject2D {
       let hullData = Hulls[this.hull];
 
       if (this.engine && this.engine > 0) {
-          this.physicsObj.applyForceLocal([0, this.engine * hullData.thrust]);
+        this.physicsObj.applyForceLocal([0, hullData.thrust]); // engine only fires 1
       }
   }
 
@@ -36,7 +36,9 @@ export default class Torpedo extends PhysicalObject2D {
         this.physicsObj = new p2.Body({
             mass: this.mass, damping: 0, angularDamping: 0,
             position: [this.position.x, this.position.y],
-            velocity: [this.velocity.x, this.velocity.y]
+            velocity: [this.velocity.x, this.velocity.y],
+            angle: this.angle,
+            angularVelocity: this.angularVelocity
         });
 
          // Create bullet shape

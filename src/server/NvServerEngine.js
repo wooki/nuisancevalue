@@ -212,28 +212,15 @@ export default class NvServerEngine extends ServerEngine {
           hull: hullName,
           mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
           angle: Math.PI,
-          playable: 1,
+          playable: 1
           // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
-      });
-
-      this.gameEngine.addTorpedo({
-          x: 1000,
-          y: -6000,
-          dX: 0,
-          dY:0,
-          mass: 0.0005, size: 10,
-          angle: 0,
-          angularVelocity: 0,
-          targetId: nv.id,
-          fuel: 100,
-          engine: 1
       });
 
       // random asteroids
       let asteroidDistance = 4000;
       let asteroidDistanceVariance = 2000;
 
-      for (let asteroidIndex = 0; asteroidIndex < 0; asteroidIndex++) {
+      for (let asteroidIndex = 0; asteroidIndex < 10; asteroidIndex++) {
 
           // create a point and vector then rotate to a random position
           let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
@@ -307,8 +294,6 @@ export default class NvServerEngine extends ServerEngine {
 
         this.gameEngine.on('firetorp', e => {
 
-            console.log("SERVER firetorp:"+e.targetId);
-
             // drop facing the target, from the direction we are travelling from -
             // at our velocity plus/minus low speed (so we can't hit it easily ourselves)
             let ship = e.ship;
@@ -321,20 +306,23 @@ export default class NvServerEngine extends ServerEngine {
               let direction = targetPos.clone().subtract(shipPos);
 
               // position is our size (plus torp size) in the direction
-              let startDistance = Math.round(ship.size/2) + 10;
-              let torpPos = direction.normalize().multiply(new Victor(startDistance, startDistance));
+              let startDistance = ship.size;
+              let torpPos = shipPos.add(direction.normalize().multiply(new Victor(startDistance, startDistance)));
               let torpVelocity = Victor.fromArray(ship.physicsObj.velocity);
+              let torpDirection = new Victor(0 - direction.x, direction.y);
+              let torpAngle = torpDirection.verticalAngle();
 
               this.gameEngine.addTorpedo({
                   x: torpPos.x,
                   y: torpPos.y,
                   dX: torpVelocity.x,
                   dY: torpVelocity.y,
-                  mass: 0.0005, size: 10,
-                  angle: direction.angle(),
+                  mass: 0.0005, size: 30,
+                  angle: torpAngle,
                   angularVelocity: 0,
                   targetId: e.targetId,
-                  fuel: 100
+                  fuel: 100,
+                  engine: 1
               });
             }
 

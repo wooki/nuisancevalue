@@ -67,7 +67,7 @@ export default class NvGameEngine extends GameEngine {
 
               // remove the object
               this.removeObjectFromWorld(obj);
-              // this.emitonoff.emit('explosion', obj);  // let object itself do this
+              this.emitonoff.emit('explosion', obj);  // object itself does this - but do here (in case we skip on client)
 
             } else if (obj.dockedId !== null && obj.dockedId >= 0) {
 
@@ -135,8 +135,6 @@ export default class NvGameEngine extends GameEngine {
                     // apply force towards source
                     if (gravSourceAmount && gravSource) {
 
-    // console.log(`d=${gravDistance}, g=${gravSourceAmount} obj=${obj.toString()}`);
-
                         // flip x coord of obj because our 0,0 is top left
                         // let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
                         let objV = Victor.fromArray(obj.physicsObj.position);
@@ -160,7 +158,11 @@ export default class NvGameEngine extends GameEngine {
 
                     }
                 } // if (obj.physicsObj)
-            } // not docked
+
+                // apply AI
+
+
+            } // not docked or destroyed
 
         });
 
@@ -428,33 +430,4 @@ export default class NvGameEngine extends GameEngine {
     }
 
 
-
-    // asteroid explosion
-    // explode(asteroid, bullet) {
-
-    //     // Remove asteroid and bullet
-    //     let asteroidBody = asteroid.physicsObj;
-    //     let level = asteroid.level;
-    //     let x = asteroidBody.position[0];
-    //     let y = asteroidBody.position[1];
-    //     let r = this.asteroidRadius * (this.numAsteroidLevels - level) / this.numAsteroidLevels;
-    //     this.removeObjectFromWorld(asteroid);
-    //     this.removeObjectFromWorld(bullet);
-
-    //     // Add new sub-asteroids
-    //     if (level < 3) {
-    //         let angleDisturb = Math.PI/2 * Math.random();
-    //         for (let i=0; i<4; i++) {
-    //             let angle = Math.PI/2 * i + angleDisturb;
-    //             let subAsteroid = new Asteroid(this, {}, {
-    //                 mass: 10,
-    //                 position: new TwoVector(x + r * Math.cos(angle), y + r * Math.sin(angle)),
-    //                 velocity: new TwoVector(this.rand(), this.rand())
-    //             });
-    //             subAsteroid.level = level + 1;
-    //             this.trace.info(() => `creating sub-asteroid with radius ${r}: ${subAsteroid.toString()}`);
-    //             this.addObjectToWorld(subAsteroid);
-    //         }
-    //     }
-    // }
 }
