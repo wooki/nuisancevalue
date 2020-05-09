@@ -10,6 +10,7 @@ export default class Torpedo extends PhysicalObject2D {
       super(gameEngine, options, props);
       this.hull = "torpedo";
       this.size = Hulls['torpedo'].size;
+      this.payload = Hulls['torpedo'].payload;
   }
 
   static get netScheme() {
@@ -53,6 +54,9 @@ export default class Torpedo extends PhysicalObject2D {
 
     onRemoveFromWorld(gameEngine) {
         game.physicsEngine.world.removeBody(this.physicsObj);
+
+        // was destroyed, so tell the UI
+        gameEngine.emitonoff.emit('explosion', this);
     }
 
     syncTo(other) {

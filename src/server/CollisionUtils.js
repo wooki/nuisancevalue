@@ -1,4 +1,5 @@
 import Ship from '../common/Ship';
+import Torpedo from '../common/Torpedo';
 import Planet from '../common/Planet';
 import Hulls from '../common/Hulls';
 import Victor from 'victor';
@@ -59,6 +60,9 @@ export default class CollisionUtils {
 
     assignDamage(e) {
 
+      // this.removeObjectFromWorld(obj);
+      // this.emitonoff.emit('explosion', obj);
+      //
       // identify the two objects which collided
       let [A, B] = this.getObjects(e);
       if (!A || !B) return;
@@ -66,12 +70,53 @@ export default class CollisionUtils {
       // anything hitting a planet (except another planet is destroyed instantly)
       if (A instanceof Planet && !(B instanceof Planet)) {
 
-        B.damage = B.damage | this.damage.DESTROYED;
+        // if this keeps track of damage then destroy it
+        if (B.damage || B.damage === 0) {
+          console.log("damage");
+          B.damage = B.damage | this.damage.DESTROYED;
+        } else {
+          console.log("destroy");
+          // anything else hitting a planet is auto-destroyed
+          this.gameEngine.removeObjectFromWorld(B);
+          this.gameEngine.emitonoff.emit('explosion', B);
+        }
+
 
       // anything hitting a planet (except another planet is destroyed instantly)
       } else if (B instanceof Planet) {
 
-        A.damage = A.damage | this.damage.DESTROYED;
+        // if this keeps track of damage then destroy it
+        if (A.damage || A.damage === 0) {
+          console.log("damage");
+          A.damage = A.damage | this.damage.DESTROYED;
+        } else {
+          console.log("destroy");
+          // anything else hitting a planet is auto-destroyed
+          this.gameEngine.removeObjectFromWorld(A);
+          this.gameEngine.emitonoff.emit('explosion', A);
+        }
+
+      } else if (A instanceof Torpedo || B instanceof Torpedo) {
+
+        // Destroy any torps and apply different damage
+        if (A instanceof Torpedo) {
+          // destroy this torp
+          this.gameEngine.removeObjectFromWorld(A);
+          this.gameEngine.emitonoff.emit('explosion', A);
+        } else if (!(B instanceof Torpedo)) {
+          // apply torp damage
+          this.assignDamageToObject(B, A.payload);
+        }
+
+        if (B instanceof Torpedo) {
+          // destroy this torp
+          this.gameEngine.removeObjectFromWorld(B);
+          this.gameEngine.emitonoff.emit('explosion', B);
+        } else if (!(A instanceof Torpedo)) {
+          // apply torp damage
+          this.assignDamageToObject(A, B.payload);
+        }
+
 
       } else { // anything else
 

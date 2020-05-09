@@ -34,7 +34,8 @@ export default {
 		maneuver: 0.2,
 		enginePositions: [[5, 0.5, 1.0]],// [scale, %x, %y]
 		exhaustImage: 'exhaustflame', // or exhaust
-		damage: 0
+		damage: 0, // has no systems to damage (although should never get checked)
+		payload: 300 // equivalent acceleration for damage
 	},
 
 	"bushido": {

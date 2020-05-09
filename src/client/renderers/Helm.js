@@ -42,6 +42,7 @@ let settings = {
         paths: 2,
         asteroid: 10,
         planet: 11,
+        torpedo: 49,
         ship: 50,
         waypoints: 60,
         explosion: 70,
@@ -495,7 +496,7 @@ export default class HelmRenderer {
               } else if (obj instanceof Torpedo) {
                   let hullData = Hulls[obj.hull];
                   texture = settings.resources[settings.baseUrl+hullData.image].texture;
-                  zIndex = settings.zIndex.ship;
+                  zIndex = settings.zIndex.torpedo;
                   alias = obj.hull;
                   widthRatio = hullData.width;
               }

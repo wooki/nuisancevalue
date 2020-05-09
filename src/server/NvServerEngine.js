@@ -15,7 +15,7 @@ export default class NvServerEngine extends ServerEngine {
         super(io, gameEngine, inputOptions);
         this.collisionUtils = new CollisionUtils(this, gameEngine);
         gameEngine.physicsEngine.world.on('impact', this.handleCollision.bind(this));
-        // gameEngine.on('shoot', this.shoot.bind(this));
+
         this.damage = new Damage();
     }
 
@@ -169,17 +169,17 @@ export default class NvServerEngine extends ServerEngine {
 
     addTestMap1() {
 
-      // this.gameEngine.addPlanet({
-      //   x: -10000,
-      //   y: 3000,
-      //   dX: 100,
-      //   dY: 0,
-      //   mass: SolarObjects.Mars.mass,
-      //   size: SolarObjects.Mars.diameter,
-      //   texture: 'mars',
-      //   angle: Math.random() * 2 * Math.PI,
-      //   angularVelocity: Math.random()
-      // });
+      this.gameEngine.addPlanet({
+        x: -10000,
+        y: 3000,
+        dX: 100,
+        dY: 0,
+        mass: SolarObjects.Mars.mass,
+        size: SolarObjects.Mars.diameter,
+        texture: 'mars',
+        angle: Math.random() * 2 * Math.PI,
+        angularVelocity: Math.random()
+      });
 
       // add an actual asteroid
       this.gameEngine.addAsteroid({
@@ -352,39 +352,6 @@ export default class NvServerEngine extends ServerEngine {
       this.collisionUtils.assignDamage(e);
 
   } // handleCollision
-
-    // shooting creates a bullet
-    // shoot(player) {
-
-    //     let radius = player.physicsObj.shapes[0].radius;
-    //     let angle = player.physicsObj.angle + Math.PI / 2;
-    //     let bullet = new Bullet(this.gameEngine, {}, {
-    //         mass: 0.05,
-    //         position: new TwoVector(
-    //             radius * Math.cos(angle) + player.physicsObj.position[0],
-    //             radius * Math.sin(angle) + player.physicsObj.position[1]
-    //         ),
-    //         velocity: new TwoVector(
-    //             2 * Math.cos(angle) + player.physicsObj.velocity[0],
-    //             2 * Math.sin(angle) + player.physicsObj.velocity[1]
-    //         ),
-    //         angularVelocity: 0
-    //     });
-    //     let obj = this.gameEngine.addObjectToWorld(bullet);
-    //     this.gameEngine.timer.add(this.gameEngine.bulletLifeTime, this.destroyBullet, this, [obj.id]);
-    // }
-
-    // // destroy the missile if it still exists
-    // destroyBullet(bulletId) {
-    //     if (this.gameEngine.world.objects[bulletId]) {
-    //         this.gameEngine.trace.trace(() => `bullet[${bulletId}] destroyed`);
-    //         this.gameEngine.removeObjectFromWorld(bulletId);
-    //     }
-    // }
-
-    // kill(ship) {
-    //     if(ship.lives-- === 0) this.gameEngine.removeObjectFromWorld(ship.id);
-    // }
 
     onPlayerConnected(socket) {
         super.onPlayerConnected(socket);
