@@ -18,28 +18,28 @@ module.exports = function(torpedo, game) {
 		// console.log("distance="+distance+" ourBearing="+ourBearing+" direction="+direction.verticalAngle());
 		let bearingDiffDeg = (ourBearing - theirBearing) / (Math.PI/180);
 
-		console.log("ourBearing:"+ourBearing+' theirBearing='+theirBearing);
-		console.log("distance:"+distance+" bearingDiffDeg:"+bearingDiffDeg+' angVel='+torpedo.physicsObj.angularVelocity);
+		// console.log("ourBearing:"+ourBearing+' theirBearing='+theirBearing);
+		// console.log("distance:"+distance+" bearingDiffDeg:"+bearingDiffDeg+' angVel='+torpedo.physicsObj.angularVelocity);
 		// should we turn?
-		if (distance < 5000 && Math.abs(bearingDiffDeg) > 1) {
+		if (distance < 5000 && Math.abs(bearingDiffDeg) > 2) {
 
 			// only apply turn if we're not already turning that way
-			if (bearingDiffDeg < 0 && torpedo.physicsObj.angularVelocity >= 0.01) {
-				console.log("R");
+			if (bearingDiffDeg < 0 && torpedo.physicsObj.angularVelocity <= 0.4) {
+				// console.log("R");
 				torpedo.applyManeuver('r');
-			} else if (bearingDiffDeg > 0 && torpedo.physicsObj.angularVelocity <= 0.01) {
-				console.log("L");
+			} else if (bearingDiffDeg > 0 && torpedo.physicsObj.angularVelocity >= -0.4) {
+				// console.log("L");
 				torpedo.applyManeuver('l');
 			}
 			torpedo.engine = 0;
 
-		} else if (Math.abs(bearingDiffDeg) > 5) {
+		} else if (Math.abs(bearingDiffDeg) > 15) {
 			// at greater range allow 5 degrees
-			if (bearingDiffDeg < 0 && torpedo.physicsObj.angularVelocity >= 0.01) {
-				console.log("R");
+			if (bearingDiffDeg < 0 && torpedo.physicsObj.angularVelocity <= 0.4) {
+				// console.log("R");
 				torpedo.applyManeuver('r');
-			} else if (bearingDiffDeg > 0 && torpedo.physicsObj.angularVelocity <= 0.01) {
-				console.log("L");
+			} else if (bearingDiffDeg > 0 && torpedo.physicsObj.angularVelocity >= -0.4) {
+				// console.log("L");
 				torpedo.applyManeuver('l');
 			}
 			torpedo.engine = 0;

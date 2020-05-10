@@ -31,7 +31,7 @@ export default {
 		width: 0.1875, // ratio to height
 		mass: 0.0001,
 		thrust: 0.2,
-		maneuver: 0.002,
+		maneuver: 0.0005,
 		enginePositions: [[5, 0.5, 1.0]],// [scale, %x, %y]
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
