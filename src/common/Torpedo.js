@@ -11,6 +11,7 @@ export default class Torpedo extends PhysicalObject2D {
       this.hull = "torpedo";
       this.size = Hulls['torpedo'].size;
       this.payload = Hulls['torpedo'].payload;
+      this.aiScript = 0; // torpedo ai script
   }
 
   static get netScheme() {
@@ -20,6 +21,31 @@ export default class Torpedo extends PhysicalObject2D {
         engine: { type: BaseTypes.TYPES.UINT8 }
       }, super.netScheme);
   }
+
+  applyManeuver(maneuver) {
+        let hullData = Hulls[this.hull];
+
+        if (maneuver == 'l') {
+
+            if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.2) {
+                this.physicsObj.angularVelocity = 0;
+            } else {
+                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+            }
+
+        } else if (maneuver == 'r') {
+
+            if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.2) {
+                this.physicsObj.angularVelocity = 0;
+            } else {
+                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+            }
+
+        }
+
+    }
 
   // if the ship has active engines then apply force
   applyEngine() {

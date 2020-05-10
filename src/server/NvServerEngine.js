@@ -217,7 +217,7 @@ export default class NvServerEngine extends ServerEngine {
 
       let hullName2 = 'tug';
       let hullData2 = Hulls[hullName2];
-      this.gameEngine.addShip({
+      let tug = this.gameEngine.addShip({
           name: "Target Practice",
           x: 500,
           y: -3000,
@@ -227,6 +227,18 @@ export default class NvServerEngine extends ServerEngine {
           mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
           angle: Math.PI*1.3,
           playable: 1
+      });
+
+      this.gameEngine.addTorpedo({
+          x: -3000,
+          y: -3000,
+          dX: 0,
+          dY: 0,
+          mass: 0.0005, size: 30,
+          angle: 0,
+          targetId: tug.id,
+          fuel: 100,
+          engine: 0
       });
 
       // random asteroids
@@ -283,8 +295,6 @@ export default class NvServerEngine extends ServerEngine {
 
             // only ships take damage at the moment
             if (A instanceof Ship) {
-
-              console.log("SERVER DAMAGE TO SHIP: "+A.name+" "+acceleration);
 
               // could do damage based on actual contact location - but not yet!!
               // console.log("Contact Eq contactPointA:");
@@ -376,7 +386,7 @@ export default class NvServerEngine extends ServerEngine {
                   angularVelocity: 0,
                   targetId: e.targetId,
                   fuel: 100,
-                  engine: 1
+                  engine: 0
               });
             }
 

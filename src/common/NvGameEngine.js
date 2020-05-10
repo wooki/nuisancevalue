@@ -10,6 +10,7 @@ import Comms from './Comms';
 import Damage from '../common/Damage';
 import EmitOnOff from 'emitonoff';
 import CollisionUtils from './CollisionUtils';
+import Ai from './Ai';
 
 let gravityObjects = {};
 
@@ -24,6 +25,7 @@ export default class NvGameEngine extends GameEngine {
         this.collisionUtils = new CollisionUtils(this);
 
         this.damage = new Damage();
+        this.ai = new Ai(this);
 
         // game variables
         Object.assign(this, {
@@ -163,7 +165,7 @@ export default class NvGameEngine extends GameEngine {
                 } // if (obj.physicsObj)
 
                 // apply AI
-
+                this.ai.execute(obj, dt);
 
             } // not docked or destroyed
 
@@ -222,8 +224,7 @@ export default class NvGameEngine extends GameEngine {
     processInput(inputData, playerId) {
 
         super.processInput(inputData, playerId);
-        // console
-        ("processInput:"+playerId);
+        // console("processInput:"+playerId);
         // console.dir(inputData);
 
         if (playerId != 0) {

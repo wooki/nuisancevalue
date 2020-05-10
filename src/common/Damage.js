@@ -15,6 +15,7 @@ export default class Damage {
     this.HELM_CONSOLE_INTERFERENCE = Math.pow(2, 2);
     this.NAV_CONSOLE_INTERFERENCE = Math.pow(2, 3);
     this.SIGNALS_CONSOLE_INTERFERENCE = Math.pow(2, 4);
+
     this.ENGINE_OFFLINE = Math.pow(2, 5);
     this.MANEUVER_OFFLINE = Math.pow(2, 6);
 
