@@ -1,6 +1,6 @@
 import { ServerEngine, TwoVector } from 'lance-gg';
 import Asteroid from '../common/Asteroid';
-import Bullet from '../common/Bullet';
+import Torpedo from '../common/Torpedo';
 import Ship from '../common/Ship';
 import Planet from '../common/Planet';
 import Hulls from '../common/Hulls';

@@ -1,5 +1,4 @@
 import { GameEngine, P2PhysicsEngine, TwoVector } from 'lance-gg';
-// import Bullet from './Bullet';
 import Ship from './Ship';
 import Asteroid from './Asteroid';
 import Planet from './Planet';

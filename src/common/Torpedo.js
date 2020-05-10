@@ -71,7 +71,7 @@ export default class Torpedo extends PhysicalObject2D {
          // Create bullet shape
         let shape = new p2.Circle({
             radius: (this.size/2),
-            collisionGroup: game.TORPEDO, // Belongs to the BULLET group
+            collisionGroup: game.TORPEDO,
             collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO
         });
         this.physicsObj.addShape(shape);
