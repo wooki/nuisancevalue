@@ -280,8 +280,8 @@ export default class NvServerEngine extends ServerEngine {
     start() {
         super.start();
 
-        // this.addMap();
-        this.addTestMap1();
+        this.addMap();
+        // this.addTestMap1();
 
         this.gameEngine.on('damage', e => {
 
