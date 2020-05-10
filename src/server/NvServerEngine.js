@@ -7,14 +7,13 @@ import Hulls from '../common/Hulls';
 import SolarObjects from '../common/SolarObjects';
 import Victor from 'victor';
 import Damage from '../common/Damage';
-import CollisionUtils from './CollisionUtils';
+import CollisionUtils from '../common/CollisionUtils';
 
 export default class NvServerEngine extends ServerEngine {
 
     constructor(io, gameEngine, inputOptions) {
         super(io, gameEngine, inputOptions);
-        this.collisionUtils = new CollisionUtils(this, gameEngine);
-        gameEngine.physicsEngine.world.on('impact', this.handleCollision.bind(this));
+        this.collisionUtils = new CollisionUtils(gameEngine);
 
         this.damage = new Damage();
     }
@@ -169,17 +168,17 @@ export default class NvServerEngine extends ServerEngine {
 
     addTestMap1() {
 
-      this.gameEngine.addPlanet({
-        x: -10000,
-        y: 3000,
-        dX: 100,
-        dY: 0,
-        mass: SolarObjects.Mars.mass,
-        size: SolarObjects.Mars.diameter,
-        texture: 'mars',
-        angle: Math.random() * 2 * Math.PI,
-        angularVelocity: Math.random()
-      });
+      // this.gameEngine.addPlanet({
+      //   x: -10000,
+      //   y: 3000,
+      //   dX: 100,
+      //   dY: 0,
+      //   mass: SolarObjects.Mars.mass,
+      //   size: SolarObjects.Mars.diameter,
+      //   texture: 'mars',
+      //   angle: Math.random() * 2 * Math.PI,
+      //   angularVelocity: Math.random()
+      // });
 
       // add an actual asteroid
       this.gameEngine.addAsteroid({
@@ -216,11 +215,25 @@ export default class NvServerEngine extends ServerEngine {
           // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
       });
 
+      let hullName2 = 'tug';
+      let hullData2 = Hulls[hullName2];
+      this.gameEngine.addShip({
+          name: "Target Practice",
+          x: 500,
+          y: -3000,
+          dX: 0,
+          dY: 0,
+          hull: hullName2,
+          mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
+          angle: Math.PI*1.3,
+          playable: 1
+      });
+
       // random asteroids
       let asteroidDistance = 4000;
       let asteroidDistanceVariance = 2000;
 
-      for (let asteroidIndex = 0; asteroidIndex < 10; asteroidIndex++) {
+      for (let asteroidIndex = 0; asteroidIndex < 0; asteroidIndex++) {
 
           // create a point and vector then rotate to a random position
           let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
@@ -257,6 +270,47 @@ export default class NvServerEngine extends ServerEngine {
 
         // this.addMap();
         this.addTestMap1();
+
+        this.gameEngine.on('damage', e => {
+
+            // this.gameEngine.emit('damage', { ship: A, payload: acceleration, collision: e });
+            let A = e.ship;
+            let acceleration = e.payload;
+
+            // 1 major damage for every 200, 1 minor damage for every 40 (left over)
+            const severeDamageThreshold = 200;
+            const lightDamageThreshold = 40;
+
+            // only ships take damage at the moment
+            if (A instanceof Ship) {
+
+              console.log("SERVER DAMAGE TO SHIP: "+A.name+" "+acceleration);
+
+              // could do damage based on actual contact location - but not yet!!
+              // console.log("Contact Eq contactPointA:");
+              // console.dir(e.contactEquations[0].contactPointA);
+              // console.log("Contact Eq penetrationVec:");
+              // console.dir(e.contactEquations[0].penetrationVec);
+              // console.log("Contact Eq contactPointB:");
+              // console.dir(e.contactEquations[0].contactPointB);
+              // console.log("Contact Eq normalA:");
+              // console.dir(e.contactEquations[0].normalA);
+
+              const hullData = Hulls[A.hull];
+              const severe = Math.floor(acceleration / severeDamageThreshold);
+              const light = Math.floor((acceleration % severeDamageThreshold) / lightDamageThreshold);
+              if (light > 0 || severe > 0) {
+                const d = this.damage.getRandomDamage(light, severe, hullData.damage);
+                A.damage = A.damage | d
+              }
+              // every major & minor damage adds to a % chance of destruction
+              const destructionChance = ((severe * 0.1) + (light * 0.02));
+              const randomDestruction = Math.random();
+              if (randomDestruction < destructionChance) {
+                A.damage = A.damage | this.damage.DESTROYED;
+              }
+            }
+        });
 
         // listen to server only events
         this.gameEngine.on('dock', e => {
@@ -341,17 +395,17 @@ export default class NvServerEngine extends ServerEngine {
     }
 
     // handle a collision on server only
-    handleCollision(e) {
+    // handleCollision(e) {
 
-      // identify the two objects which collided
-      // NOT NEEDED AT PRESENT (just used in damage)
-      // let [A, B] = this.collisionUtils.getObjects(e);
-      // if (!A || !B) return;
+    //   // identify the two objects which collided
+    //   // NOT NEEDED AT PRESENT (just used in damage)
+    //   // let [A, B] = this.collisionUtils.getObjects(e);
+    //   // if (!A || !B) return;
 
-      // do stuff depending on types
-      this.collisionUtils.assignDamage(e);
+    //   // do stuff depending on types
+    //   this.collisionUtils.assignDamage(e);
 
-  } // handleCollision
+  //} // handleCollision
 
     onPlayerConnected(socket) {
         super.onPlayerConnected(socket);

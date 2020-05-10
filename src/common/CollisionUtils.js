@@ -7,8 +7,7 @@ import Damage from '../common/Damage';
 
 export default class CollisionUtils {
 
-    constructor(serverEngine, gameEngine) {
-      this.serverEngine = serverEngine;
+    constructor(gameEngine) {
       this.gameEngine = gameEngine;
       this.damage = new Damage();
     }
@@ -24,45 +23,15 @@ export default class CollisionUtils {
       return [A, B];
     } // getObjects
 
+    // this fires an event, so only the server adds randomised damage
     assignDamageToObject(A, acceleration, e) {
-      // 1 major damage for every 300, 1 minor damage for every 40 (left over)
-      const severeDamageThreshold = 200;
-      const lightDamageThreshold = 40;
 
-      // only ships take damage at the moment
-      if (A instanceof Ship) {
-
-        // could do damage based on actual contact location - but not yet!!
-        // console.log("Contact Eq contactPointA:");
-        // console.dir(e.contactEquations[0].contactPointA);
-        // console.log("Contact Eq penetrationVec:");
-        // console.dir(e.contactEquations[0].penetrationVec);
-        // console.log("Contact Eq contactPointB:");
-        // console.dir(e.contactEquations[0].contactPointB);
-        // console.log("Contact Eq normalA:");
-        // console.dir(e.contactEquations[0].normalA);
-
-        const hullData = Hulls[A.hull];
-        const severe = Math.floor(acceleration / severeDamageThreshold);
-        const light = Math.floor((acceleration % severeDamageThreshold) / lightDamageThreshold);
-        if (light > 0 || severe > 0) {
-          const d = this.damage.getRandomDamage(light, severe, hullData.damage);
-          A.damage = A.damage | d
-        }
-        // every major & minor damage adds to a % chance of destruction
-        const destructionChance = ((severe * 0.1) + (light * 0.02));
-        const randomDestruction = Math.random();
-        if (randomDestruction < destructionChance) {
-          A.damage = A.damage | this.damage.DESTROYED;
-        }
-      }
+      // process on server only
+      this.gameEngine.emit('damage', { ship: A, payload: acceleration, collision: e });
     }
 
     assignDamage(e) {
 
-      // this.removeObjectFromWorld(obj);
-      // this.emitonoff.emit('explosion', obj);
-      //
       // identify the two objects which collided
       let [A, B] = this.getObjects(e);
       if (!A || !B) return;
@@ -72,10 +41,8 @@ export default class CollisionUtils {
 
         // if this keeps track of damage then destroy it
         if (B.damage || B.damage === 0) {
-          console.log("damage");
           B.damage = B.damage | this.damage.DESTROYED;
         } else {
-          console.log("destroy");
           // anything else hitting a planet is auto-destroyed
           this.gameEngine.removeObjectFromWorld(B);
           this.gameEngine.emitonoff.emit('explosion', B);
@@ -87,10 +54,8 @@ export default class CollisionUtils {
 
         // if this keeps track of damage then destroy it
         if (A.damage || A.damage === 0) {
-          console.log("damage");
           A.damage = A.damage | this.damage.DESTROYED;
         } else {
-          console.log("destroy");
           // anything else hitting a planet is auto-destroyed
           this.gameEngine.removeObjectFromWorld(A);
           this.gameEngine.emitonoff.emit('explosion', A);
@@ -103,18 +68,18 @@ export default class CollisionUtils {
           // destroy this torp
           this.gameEngine.removeObjectFromWorld(A);
           this.gameEngine.emitonoff.emit('explosion', A);
-        } else if (!(B instanceof Torpedo)) {
+        } else {
           // apply torp damage
-          this.assignDamageToObject(B, A.payload);
+          this.assignDamageToObject(A, B.payload, e);
         }
 
         if (B instanceof Torpedo) {
           // destroy this torp
           this.gameEngine.removeObjectFromWorld(B);
           this.gameEngine.emitonoff.emit('explosion', B);
-        } else if (!(A instanceof Torpedo)) {
+        } else {
           // apply torp damage
-          this.assignDamageToObject(A, B.payload);
+          this.assignDamageToObject(B, A.payload, e);
         }
 
 

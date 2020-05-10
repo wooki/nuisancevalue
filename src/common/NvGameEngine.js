@@ -9,6 +9,7 @@ import SolarObjects from './SolarObjects';
 import Comms from './Comms';
 import Damage from '../common/Damage';
 import EmitOnOff from 'emitonoff';
+import CollisionUtils from './CollisionUtils';
 
 let gravityObjects = {};
 
@@ -19,6 +20,8 @@ export default class NvGameEngine extends GameEngine {
 
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
         this.physicsEngine.world.defaultContactMaterial.friction = 100;
+        this.physicsEngine.world.on('impact', this.handleCollision.bind(this));
+        this.collisionUtils = new CollisionUtils(this);
 
         this.damage = new Damage();
 
@@ -208,6 +211,13 @@ export default class NvGameEngine extends GameEngine {
 
         return ship;
     }
+
+    handleCollision(e) {
+
+        // handle collission
+        this.collisionUtils.assignDamage(e);
+    }
+
 
     processInput(inputData, playerId) {
 
