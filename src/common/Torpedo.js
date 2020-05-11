@@ -30,8 +30,9 @@ export default class Torpedo extends PhysicalObject2D {
             if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.2) {
                 this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+                // this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
+                // this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.angularVelocity = this.physicsObj.angularVelocity - 0.5;
             }
 
         } else if (maneuver == 'r') {
@@ -39,8 +40,9 @@ export default class Torpedo extends PhysicalObject2D {
             if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.2) {
                 this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+                // this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
+                // this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.angularVelocity = this.physicsObj.angularVelocity + 0.5;
             }
 
         }
