@@ -170,7 +170,7 @@ export default class NvServerEngine extends ServerEngine {
 
       this.gameEngine.addPlanet({
         x: -10000,
-        y: 3000,
+        y: 5000,
         dX: 100,
         dY: 0,
         mass: SolarObjects.Mars.mass,
@@ -205,7 +205,7 @@ export default class NvServerEngine extends ServerEngine {
       let nv = this.gameEngine.addShip({
           name: "Nuisance Value",
           x: 0,
-          y: 0,
+          y: -100,
           dX: 0,
           dY: 0,
           hull: hullName,

@@ -1,8 +1,8 @@
-const Torpedo = require('./AiScripts/Torpedo');
+import TorpedoAi from './AiScripts/Torpedo';
 
 // ai scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [Torpedo];
+const scripts = [new TorpedoAi()];
 
 let game = null;
 
@@ -17,7 +17,7 @@ export default class Ai {
     	// load the AI script for that ship
     	if (ship.aiScript || ship.aiScript === 0) {
     		let script = scripts[ship.aiScript];
-    		script(ship, game);
+    		script.execute(ship, game);
     	}
     }
 
