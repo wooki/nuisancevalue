@@ -27,24 +27,11 @@ export default class Torpedo extends PhysicalObject2D {
 
         if (maneuver == 'l') {
 
-            if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.2) {
-                this.physicsObj.angularVelocity = 0;
-            } else {
-                // this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
-                // this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
-                this.physicsObj.angularVelocity = this.physicsObj.angularVelocity - (Math.PI * 0.25);
-            }
+          this.physicsObj.angularVelocity = this.physicsObj.angularVelocity - 0.1;
 
         } else if (maneuver == 'r') {
 
-            if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.2) {
-                this.physicsObj.angularVelocity = 0;
-            } else {
-                // this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
-                // this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
-                this.physicsObj.angularVelocity = this.physicsObj.angularVelocity + (Math.PI * 0.25);
-            }
-
+          this.physicsObj.angularVelocity = this.physicsObj.angularVelocity + 0.1;
         }
 
     }

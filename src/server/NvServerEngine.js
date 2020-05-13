@@ -206,8 +206,8 @@ export default class NvServerEngine extends ServerEngine {
           name: "Nuisance Value",
           x: 0,
           y: -100,
-          dX: 0,
-          dY: 0,
+          dX: -100,
+          dY: -50,
           hull: hullName,
           mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
           angle: Math.PI,
@@ -222,7 +222,7 @@ export default class NvServerEngine extends ServerEngine {
           x: 500,
           y: -3000,
           dX: 0,
-          dY: 0,
+          dY: -50,
           hull: hullName2,
           mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
           angle: Math.PI*1.3,
