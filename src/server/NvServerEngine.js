@@ -169,9 +169,9 @@ export default class NvServerEngine extends ServerEngine {
     addTestMap1() {
 
       this.gameEngine.addPlanet({
-        x: -10000,
-        y: 5000,
-        dX: 100,
+        x: -6000,
+        y: 3000,
+        dX: 200,
         dY: 0,
         mass: SolarObjects.Mars.mass,
         size: SolarObjects.Mars.diameter,
@@ -204,10 +204,10 @@ export default class NvServerEngine extends ServerEngine {
       let hullData = Hulls[hullName];
       let nv = this.gameEngine.addShip({
           name: "Nuisance Value",
-          x: 0,
-          y: -100,
-          dX: -100,
-          dY: -50,
+          x: -4000,
+          y: 1000,
+          dX: -200,
+          dY: 0,
           hull: hullName,
           mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
           angle: Math.PI,
@@ -219,27 +219,66 @@ export default class NvServerEngine extends ServerEngine {
       let hullData2 = Hulls[hullName2];
       let tug = this.gameEngine.addShip({
           name: "Target Practice",
-          x: 500,
-          y: -3000,
-          dX: 0,
-          dY: -50,
+          x: 1000,
+          y: 1000,
+          dX: 0-50,
+          dY: 0-5,
           hull: hullName2,
-          mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
+          mass: hullData2.mass,
+          size: hullData2.size, // need to read mass and size from hull
           angle: Math.PI*1.3,
-          playable: 1
+          playable: 1,
+          angularVelocity: Math.random()
       });
 
-      this.gameEngine.addTorpedo({
-          x: -3000,
-          y: -3000,
-          dX: 0,
-          dY: 0,
-          mass: 0.0005, size: 30,
-          angle: 0,
-          targetId: tug.id,
-          fuel: 100,
-          engine: 0
-      });
+      // setTimeout(function() {
+      //
+      //   this.gameEngine.addTorpedo({
+      //       x: -4000,
+      //       y: 8000,
+      //       dX: 0,
+      //       dY: 0,
+      //       mass: 0.0005, size: 30,
+      //       angle: 0,
+      //       targetId: nv.id,
+      //       fuel: 100,
+      //       engine: 0
+      //   });
+      //   this.gameEngine.addTorpedo({
+      //       x: 12000,
+      //       y: 4000,
+      //       dX: 0,
+      //       dY: 0,
+      //       mass: 0.0005, size: 30,
+      //       angle: 0,
+      //       targetId: nv.id,
+      //       fuel: 100,
+      //       engine: 0
+      //   });
+      //   this.gameEngine.addTorpedo({
+      //       x: 10000,
+      //       y: -5000,
+      //       dX: 0,
+      //       dY: 0,
+      //       mass: 0.0005, size: 30,
+      //       angle: 0,
+      //       targetId: nv.id,
+      //       fuel: 100,
+      //       engine: 0
+      //   });
+      // }.bind(this), 30000);
+
+      // this.gameEngine.addTorpedo({
+      //     x: -6000,
+      //     y: -3000,
+      //     dX: 0,
+      //     dY: 0,
+      //     mass: 0.0005, size: 30,
+      //     angle: Math.PI,
+      //     targetId: tug.id,
+      //     fuel: 100,
+      //     engine: 0
+      // });
 
       // random asteroids
       let asteroidDistance = 4000;

@@ -8,100 +8,83 @@ export default class TorpedoAi {
 		let target = game.world.objects[torpedo.targetId];
 	    if (target) {
 
-			// direction to target
+			// get our data
 			let ourPos = Victor.fromArray(torpedo.physicsObj.position);
+			let ourVelocity = new Victor(torpedo.physicsObj.velocity[0], 0 - torpedo.physicsObj.velocity[1]);
+
+			// get their data
 			let theirPos = Victor.fromArray(target.physicsObj.position);
-			let theirV = new Victor(target.physicsObj.velocity[0], 0 - target.physicsObj.velocity[1]);
+			let theirVelocity = new Victor(target.physicsObj.velocity[0], 0 - target.physicsObj.velocity[1]);
+
+			// get relative velocity
+			let relativeVelocity = theirVelocity.clone().subtract(ourVelocity);
+
+			// direction to target
 			let direction = theirPos.clone().subtract(ourPos);
 			direction = new Victor(0 - direction.x, direction.y);
 
-			// calculate closing speed
-			let ourVelocity = new Victor(torpedo.physicsObj.velocity[0], 0 - torpedo.physicsObj.velocity[1]);
-			let closing = (ourVelocity.clone().subtract(theirV)).dot(direction) / direction.length();
+			// estimate time to arrive - this isn't very accurarte but good enough
+			let time = direction / ourVelocity.magnitude();
+			if (time < 0 || isNaN(time)) time = 1;
+			if (time > 30) time = 1;
+
+			// set the target position to their current position plus our relative velocity over the time
+			let predictedPos = relativeVelocity.multiply(new Victor(time, time));
+			theirPos = theirPos.add(predictedPos);
+
+			// recalculate
+			direction = theirPos.clone().subtract(ourPos);
+			direction = new Victor(0 - direction.x, direction.y);
+
+			// compare our velocity to the direction
+			let ourHeading = ourVelocity.verticalAngle() % (Math.PI*2);
+			let angleToTarget = direction.verticalAngle() % (Math.PI*2);
+
+			// subtract our velocity from the direction to get the desired bearing
+			let desiredBearing = direction.clone().subtract(relativeVelocity).verticalAngle() % (Math.PI*2);
+
 			let distance = Math.abs(direction.magnitude());
 
-			// time to target at closing speed
-			let predictedPos = theirPos;
-			// let timeToTarget = Math.abs(Math.round(distance / closing));
-			// if (timeToTarget > 30) timeToTarget = 30;
-			// if (timeToTarget < 0) timeToTarget = 0;
-
-// 			if (timeToTarget >= 1) { // only predict when a small distance away
-// 				let predictedPath = Utils.predictPath(target, Math.floor(timeToTarget/2));
-// 				predictedPos = predictedPath[predictedPath.length - 1];
-
-// // 				// reverse our relative velocity and add to target position
-// // console.log("timeToTarget:"+timeToTarget);
-// // console.log("ourVelocity:"+ourVelocity);
-// // 				let v = ourVelocity.invert().normalize().multiply(new Victor(timeToTarget, timeToTarget));
-// // console.log("v:"+v);
-// // 				predictedPos = predictedPos.add(v);
-// console.log("predicted:"+timeToTarget);
-// 			}
-
-			// work out how we want torp to behave
-			direction = predictedPos.clone().subtract(ourPos);
-			direction = new Victor(0 - direction.x, direction.y);
+			// data to work out how we want torp to behave
 			let ourBearing = torpedo.physicsObj.angle % (Math.PI*2);
-			let theirBearing = direction.verticalAngle() % (Math.PI*2);
-
-			// average desired vector with opposite of our current vector
-// 			direction = direction.add(ourVelocity.invert()).divide(new Victor(2, 2));
-// console.log("direction:"+direction)
-// 			theirBearing = direction.verticalAngle() % (Math.PI*2);
-
-			let bearingDiff = (ourBearing - theirBearing);
-			let bearingDiffDeg = (ourBearing - theirBearing) / (Math.PI/180);
+			// let theirBearing = predictedDirection.verticalAngle() % (Math.PI*2);
+			let bearingDiff = (ourBearing - desiredBearing);
+			let bearingDiffDeg = ((ourBearing - desiredBearing) / (Math.PI/180)) % 360;
+			if (bearingDiffDeg > 180) bearingDiffDeg = 360 - bearingDiffDeg;
 
 			// should we turn?
-// console.log("bearingDiffDeg:"+bearingDiffDeg);
 			if (Math.abs(bearingDiffDeg) > 0.01) {
 
 				// only apply turn if we're not already turning that way
 				if (bearingDiffDeg < 0) {
-// console.log("R:"+torpedo.physicsObj.angularVelocity);
-					let turn = 'r';
+					// RIGHT - apply enough turn to turn us to our desired bearing in 1/60th of a second
+					let bearingChange = -60 * bearingDiff;
 
-					// if our current angularVelocity will mean we will arrive at our target
-					// given constant deceleration then do that deceleration
-					if (torpedo.physicsObj.angularVelocity > 0) {
-						let secondsToArriveAtHeading = bearingDiff / torpedo.physicsObj.angularVelocity;
-// console.log("?:"+secondsToArriveAtHeading);
-						if (Math.abs(torpedo.physicsObj.angularVelocity) > Math.abs(secondsToArriveAtHeading/2)) {
-							turn = 'l'
-						}
-					}
-// console.log("turn:"+turn);
-					torpedo.applyManeuver(turn);
-
+					// remove our current angular velocity
+					bearingChange = bearingChange - torpedo.physicsObj.angularVelocity;
+					torpedo.physicsObj.angularVelocity = torpedo.physicsObj.angularVelocity + (bearingChange);
 
 				} else if (bearingDiffDeg > 0) {
-// console.log("L:"+torpedo.physicsObj.angularVelocity);
-					let turn = 'l';
+					// LEFT - apply enough turn to turn us to our desired bearing in 1/60th of a second
+					let bearingChange = -60 * bearingDiff;
 
-					// if our current angularVelocity will mean we will arrive at our target
-					// given constant deceleration then do that deceleration
-					if (torpedo.physicsObj.angularVelocity < 0) {
-						let secondsToArriveAtHeading = bearingDiff / torpedo.physicsObj.angularVelocity;
-// console.log("?:"+secondsToArriveAtHeading);
-						if (Math.abs(torpedo.physicsObj.angularVelocity) > Math.abs(secondsToArriveAtHeading/2)) {
-							turn = 'r'
-						}
-					}
-// console.log("turn:"+turn);
-					torpedo.applyManeuver(turn);
-
+					// remove our current angular velocity
+					bearingChange = bearingChange - torpedo.physicsObj.angularVelocity;
+					torpedo.physicsObj.angularVelocity = torpedo.physicsObj.angularVelocity + (bearingChange);
 				}
-				if (Math.abs(bearingDiffDeg) > 0.2) torpedo.engine = 0;
+				// continue to fire engine if angle not too great
+				if (Math.abs(bearingDiffDeg) < 1) {
+					torpedo.engine = 0.5;
+				} else if (Math.abs(bearingDiffDeg) < 3) {
+					torpedo.engine = 0.3;
+				} else {
+					torpedo.engine = 0;
+				}
 
 			} else {
 				// fire engine if closing speed less than 100, otherwise stop it
-				// for now just apply a speed limit
-				// if (closing < 1000) {
-					torpedo.engine = 1;
-				// } else {
-				// 	torpedo.engine = 0;
-				// }
+				torpedo.physicsObj.angularVelocity = 0;
+				torpedo.engine = 1;
 			}
 
 
