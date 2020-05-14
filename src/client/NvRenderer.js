@@ -37,8 +37,6 @@ export default class NvRenderer extends Renderer {
 
     detectSubRenderer() {
 
-        console.log("detectSubRenderer");
-
         // check for your playerId
         let station = null;
         game.world.forEachObject((objId, obj) => {
@@ -69,7 +67,6 @@ export default class NvRenderer extends Renderer {
 
         if (renderer) {
             let backToLobby = renderer.draw(t, dt);
-            console.log("backToLobby:"+backToLobby);
             if (backToLobby) {
                 this.setSubRenderer(backToLobby);
             }

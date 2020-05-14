@@ -19,23 +19,22 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("firetorp", { objId: objId });
     }
 
-    // send to game
-    joinShip(objId, station) {
-        this.sendInput("join-ship", { objId: objId, station: station });
-        // this.renderer.setSubRenderer(station);
+    loadMission(id) {
+        this.sendInput("load-mission", { missionId: id });
     }
 
-    // send to game
+    joinShip(objId, station) {
+        this.sendInput("join-ship", { objId: objId, station: station });
+    }
+
     setEngine(level) {
         this.sendInput("engine", { level: level} );
     }
 
-    // send to game
     setManeuver(direction) {
         this.sendInput("maneuver", { direction: direction} );
     }
 
-    // add waypoint
     addWaypoint(name, x, y) {
         this.sendInput("waypoint", { name: name, x: x, y: y } );
     }

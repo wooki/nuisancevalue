@@ -233,6 +233,12 @@ export default class NvGameEngine extends GameEngine {
 
         if (playerId != 0) {
 
+
+          // handle loading mission
+          if (inputData.input == 'load-mission') {
+              this.emit('load-mission', { playerId: playerId, missionId: inputData.options.missionId });
+          }
+
             // handle joining ship
             if (inputData.input == 'join-ship') {
                 let ship = this.world.objects[inputData.options.objId];

@@ -1,7 +1,9 @@
 import Ship from './../../common/Ship';
+import Hulls from './../../common/Hulls';
 import morphdom from 'morphdom';
 
 let el = null;
+let shipsEl = null;
 let game = null;
 let client = null;
 
@@ -19,8 +21,24 @@ export default class LobbyRenderer {
     	el.classList.add('lobby');
 
       let title = document.createElement('h1');
-      title.innerHTML = 'Lobby';
+      title.innerHTML = 'Nuisance Value Lobby';
       el.append(title);
+
+      let missions = ['Load Test Mission', 'Load Solar System'];
+      let missionsEl = document.createElement('div');
+      missionsEl.classList.add('missions');
+      el.append(missionsEl);
+      missions.forEach((mission, index) => {
+        let missionEl = document.createElement('div');
+        missionEl.addEventListener('click', (event) => { this.loadMission(index) } );
+        missionEl.innerHTML = mission;
+        missionEl.classList.add('load-mission');
+        missionsEl.append(missionEl);
+      });
+
+      shipsEl = document.createElement('div');
+      shipsEl.classList.add('ships');
+      el.append(shipsEl);
 
     	root.append(el);
     }
@@ -32,8 +50,14 @@ export default class LobbyRenderer {
       }
     }
 
+    loadMission(id) {
+      let result = confirm("Are you sure?");
+      if (result) {
+        client.loadMission(id);
+      }
+    }
+
     joinShip(shipId, station) {
-    	// send to server - the users choice!
     	client.joinShip(shipId, station);
     }
 
@@ -49,6 +73,13 @@ export default class LobbyRenderer {
       shipDesc.classList.add('description');
       shipEl.append(shipName);
       shipEl.append(shipDesc);
+
+      let hullData = Hulls[obj.hull];
+
+      let shipImage = document.createElement('img');
+      shipImage.classList.add('hull');
+      shipImage.setAttribute('src', hullData.image);
+      shipEl.append(shipImage);
 
       if (obj.helmPlayerId == 0) {
         let helmEl = document.createElement('div');
@@ -80,7 +111,7 @@ export default class LobbyRenderer {
     addShip(obj) {
       if (!this.shipEls[obj.id]) {
         this.shipEls[obj.id] = this.drawShipUi(obj);
-        el.append(this.shipEls[obj.id]);
+        shipsEl.append(this.shipEls[obj.id]);
       } else {
         morphdom(this.shipEls[obj.id], this.drawShipUi(obj));
       }
