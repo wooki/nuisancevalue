@@ -121,12 +121,14 @@ export default class LobbyRenderer {
     draw(t, dt) {
 
       let station = false;
+      let shipIds = {};
 
     	let ships = game.world.forEachObject((objId, obj) => {
 
     		if (obj instanceof Ship) {
           if (obj.playable === 1) {
             this.addShip(obj);
+            shipIds[objId] = true;
 
             if (obj.helmPlayerId == game.playerId) {
                 station = 'helm';
@@ -154,6 +156,14 @@ export default class LobbyRenderer {
           }
 	    	}
     	});
+
+      // remove any we didn't see
+      Object.keys(this.shipEls).forEach((key) => {
+        if (!shipIds[key]) {
+          this.shipEls[key].remove();
+          delete this.shipEls[key];
+        }
+      });
 
       return station; // stay here until ship chosen
     }

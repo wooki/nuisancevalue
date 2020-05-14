@@ -21,6 +21,13 @@ export default class NvServerEngine extends ServerEngine {
         this.missions = [TestMission, SolarSystem];
     }
 
+    // remove everything from the game
+    clearWorld() {
+      this.gameEngine.world.forEachObject((objId, obj) => {
+        this.gameEngine.removeObjectFromWorld(obj);
+      });
+    }
+
     // create/load world and scenario
     start() {
         super.start();
@@ -28,6 +35,7 @@ export default class NvServerEngine extends ServerEngine {
         this.gameEngine.on('load-mission', e => {
           let missionId = e.missionId;
           if (missionId >= 0 && missionId < this.missions.length) {
+            this.clearWorld();
             this.mission = new this.missions[missionId](this.gameEngine);
             this.mission.build();
           }
