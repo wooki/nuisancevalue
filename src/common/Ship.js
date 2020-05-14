@@ -90,7 +90,7 @@ export default class Ship extends PhysicalObject2D {
 
         if (maneuver == 'l') {
 
-            if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.2) {
+            if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.5) {
                 this.physicsObj.angularVelocity = 0;
             } else {
                 this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
@@ -99,7 +99,7 @@ export default class Ship extends PhysicalObject2D {
 
         } else if (maneuver == 'r') {
 
-            if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.2) {
+            if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.5) {
                 this.physicsObj.angularVelocity = 0;
             } else {
                 this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
@@ -171,6 +171,11 @@ export default class Ship extends PhysicalObject2D {
         game.physicsEngine.world.removeBody(this.physicsObj);
 
         if (this.damage && ((this.damage | this.damage.DESTROYED) > 0)) {
+
+          // remove players
+          this.helmPlayerId = -1;
+          this.navPlayerId = -1;
+          this.signalsPlayerId = -1;
 
           // was destroyed, so tell the UI
           gameEngine.emitonoff.emit('explosion', this);

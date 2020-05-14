@@ -340,16 +340,40 @@ label {
 
 .lobby {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 100%;
+  min-height: 100%;
+  height: 100%;
+  background: #262626;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('/assets/bg.jpg');
+  color: #eee;
+  text-shadow: 0 0 5px black;
+}
+
+.lobby h1 {
+  font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+}
+
+.lobby .ships, .lobby .missions {
+  flex: 1 1 auto;
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
 }
-
 .lobby .ship {
   flex: 0 0 auto;
   margin: 30px;
   padding: 25px;
-  border: 1px solid #777;
+  border: 1px solid #ddd;
   font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
   border-radius: 21px;
   max-width: 400px;
@@ -367,10 +391,18 @@ label {
     text-align: center;
     font-size: 22px;
     line-height: 22px;
-    margin: 20px 20px 40px 20px;
+    margin: 20px 20px 20px 20px;
 }
 
-.lobby .join {
+.lobby .hull {
+    text-align: center;
+    margin: 0 auto 20px auto;
+    height: 64px;
+    width: auto;
+    display: block;
+}
+
+.lobby .join, .lobby .load-mission {
     margin: 20px;
     padding: 10px 30px;
     text-align: center;
@@ -380,4 +412,5 @@ label {
     color: white;
     border-radius: 21px;
     cursor: pointer;
+    text-shadow: none;
 }

@@ -69,6 +69,11 @@ export default class NvGameEngine extends GameEngine {
 
             if (obj.damage && ((obj.damage | this.damage.DESTROYED) > 0)) {
 
+              // remove players
+              this.helmPlayerId = -1;
+              this.navPlayerId = -1;
+              this.signalsPlayerId = -1;
+
               // remove the object
               this.removeObjectFromWorld(obj);
               this.emitonoff.emit('explosion', obj);  // object itself does this - but do here (in case we skip on client)
@@ -228,33 +233,16 @@ export default class NvGameEngine extends GameEngine {
 
         if (playerId != 0) {
 
+
+          // handle loading mission
+          if (inputData.input == 'load-mission') {
+              this.emit('load-mission', { playerId: playerId, missionId: inputData.options.missionId });
+          }
+
             // handle joining ship
             if (inputData.input == 'join-ship') {
                 let ship = this.world.objects[inputData.options.objId];
-
-                // might be docked
-                if (!ship) {
-                  this.world.forEachObject((objId, obj) => {
-                    if (obj instanceof Ship && !ship) {
-                      ship = obj.docked.find(function(dockedShip) {
-                        return (objId == obj.id);
-                      });
-                    }
-                  });
-                } else {
-
-                  // try and add them
-                  if (inputData.options.station == "helm" && ship.helmPlayerId == 0) {
-                      ship.helmPlayerId = playerId;
-                      ship.playerId = playerId; // set the ownership to last player to join
-                  } else if (inputData.options.station == "nav" && ship.navPlayerId == 0) {
-                      ship.navPlayerId = playerId;
-                      ship.playerId = playerId; // set the ownership to last player to join
-                  } else if (inputData.options.station == "signals" && ship.signalsPlayerId == 0) {
-                      ship.signalsPlayerId = playerId;
-                      ship.playerId = playerId; // set the ownership to last player to join
-                  }
-                }
+                this.emit('join-ship', { playerId: playerId, ship: ship, station: inputData.options.station });
             }
 
             // handle engine - helm only (no options, so we can bind to keys)
