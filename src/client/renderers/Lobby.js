@@ -14,11 +14,22 @@ export default class LobbyRenderer {
       this.shipEls = {};
 
     	let root = document.getElementById('game');
-    	root.innerHTML = '';
+      root.innerHTML = '';
     	el = document.createElement('div');
     	el.classList.add('lobby');
 
+      let title = document.createElement('h1');
+      title.innerHTML = 'Lobby';
+      el.append(title);
+
     	root.append(el);
+    }
+
+    remove() {
+      if (el) {
+        el.remove();
+        el = null;
+      }
     }
 
     joinShip(shipId, station) {
@@ -78,24 +89,42 @@ export default class LobbyRenderer {
     // just draw rooms (ships) to join
     draw(t, dt) {
 
+      let station = false;
+
     	let ships = game.world.forEachObject((objId, obj) => {
 
     		if (obj instanceof Ship) {
           if (obj.playable === 1) {
             this.addShip(obj);
+
+            if (obj.helmPlayerId == game.playerId) {
+                station = 'helm';
+            } else if (obj.navPlayerId == game.playerId) {
+                station = 'nav';
+            } else if (obj.signalsPlayerId == game.playerId) {
+                station = 'signals';
+            }
           }
 
           if (obj.docked && obj.docked.length > 0) {
             obj.docked.forEach((dockedObj) => {
               if (dockedObj instanceof Ship && dockedObj.playable === 1) {
                 this.addShip(dockedObj);
+
+                if (dockedObj.helmPlayerId == game.playerId) {
+                    station = 'helm';
+                } else if (dockedObj.navPlayerId == game.playerId) {
+                    station = 'nav';
+                } else if (dockedObj.signalsPlayerId == game.playerId) {
+                    station = 'signals';
+                }
               }
             });
           }
 	    	}
     	});
 
-      return false; // stay here until ship chosen
+      return station; // stay here until ship chosen
     }
 
 }

@@ -22,6 +22,7 @@ export default class NvRenderer extends Renderer {
     }
 
     setSubRenderer(station) {
+        this.removeRenderer();
         if (station == 'helm') {
             renderer = new HelmRenderer(game, client);
         } else if (station == 'nav') {
@@ -53,16 +54,13 @@ export default class NvRenderer extends Renderer {
         });
 
         // renderer depends on which station you are using
-        if (station == 'helm') {
-            renderer = new HelmRenderer(game, client);
-        } else if (station == 'nav') {
-            renderer = new NavRenderer(game, client);
-        } else if (station == 'signals') {
-            renderer = new SignalsRenderer(game, client);
-        } else {
-            // default to lobby
-            renderer = new LobbyRenderer(game, client);
-        }
+        this.setSubRenderer(station);
+    }
+
+    removeRenderer() {
+      if (renderer) {
+        renderer.remove();
+      }
     }
 
     // defer draw to specific renderer
@@ -71,12 +69,13 @@ export default class NvRenderer extends Renderer {
 
         if (renderer) {
             let backToLobby = renderer.draw(t, dt);
+            console.log("backToLobby:"+backToLobby);
             if (backToLobby) {
-                renderer = new LobbyRenderer(game, client);
+                this.setSubRenderer(backToLobby);
             }
         } else {
-            // on first draw, feels like there should be a place for this but constructor
-            // doesn't have the world and playerId initialised yet
+            // on first draw, feels like there should be a place for this but
+            // constructor doesn't have the world and playerId initialised yet
             this.detectSubRenderer();
         }
 

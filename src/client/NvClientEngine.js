@@ -22,7 +22,7 @@ export default class NvClientEngine extends ClientEngine {
     // send to game
     joinShip(objId, station) {
         this.sendInput("join-ship", { objId: objId, station: station });
-        this.renderer.setSubRenderer(station);
+        // this.renderer.setSubRenderer(station);
     }
 
     // send to game

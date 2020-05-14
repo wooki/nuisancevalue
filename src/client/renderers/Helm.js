@@ -21,6 +21,7 @@ import UiUtils from './Utils/UiUtils';
 import morphdom from 'morphdom';
 import Damage from './../../common/Damage';
 
+const GridDefault = 1000;
 let destroyed = false;
 let backToLobby = false;
 let damage = new Damage();
@@ -29,67 +30,15 @@ let uiEls = {};
 let game = null;
 let client = null;
 let leaveTimer = false;
-const GridDefault = 1000;
-let settings = {
-    baseUrl: '/',
-    mapSize: 10000,
-    loadedSprites: false,
-    gridSize: 1000, // set in setSizes
-    waypointTexture: null,
-    zIndex: {
-        background: 1,
-        grid: 2,
-        paths: 2,
-        asteroid: 10,
-        planet: 11,
-        torpedo: 49,
-        ship: 50,
-        waypoints: 60,
-        explosion: 70,
-        dashboard: 100,
-        ui: 101
-    },
-    predictTime: 120
-};
+let settings = {};
 let lastPlayerShip = null;
 let pixiApp = null;
 let pixiContainer = null;
 let mapContainer = null;
 let sprites = {};
 let mapObjects = {}; // keep track of what we have added
-let effects = {
-    hudGlow: new GlowFilter({
-      distance: 3,
-      outerStrength: 5,
-      innerStrength: 0,
-      color: 0x000000,
-      quality: 0.5
-    }),
-    waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
-    targetColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
-    bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9}),
-    crt: new CRTFilter({
-      curvature: 8,
-      lineWidth: 10,
-      lineContrast: 0.8, // 0.4,
-      noise: 0.4, // 0.2,
-      noiseSize: 1.6, // 1.2,
-      vignetting: 0,
-      vignettingAlpha: 0,
-      seed: 0,
-      time: 0
-    }),
-    // crt: new OldFilmFilter({
-    //
-    // })
-};
-let docking = {
-    dockable: null, // closest id < 1000 - allows us to start dock
-    distance: null, // distance to closest id, so we can start dock to closest
-    target: null, // id we are trying to dock with
-    id: null, // id docked with
-    progress: 0 // percent progress
-}
+let effects = {};
+let docking = {};
 
 export default class HelmRenderer {
 
@@ -97,6 +46,75 @@ export default class HelmRenderer {
     constructor(gameEngine, clientEngine) {
     	game = gameEngine;
       client = clientEngine;
+
+      // set defaults
+      destroyed = false;
+      backToLobby = false;
+      damage = new Damage();
+      el = null;
+      uiEls = {};
+      leaveTimer = false;
+      settings = {
+          baseUrl: '/',
+          mapSize: 10000,
+          loadedSprites: false,
+          gridSize: 1000, // set in setSizes
+          waypointTexture: null,
+          zIndex: {
+              background: 1,
+              grid: 2,
+              paths: 2,
+              asteroid: 10,
+              planet: 11,
+              torpedo: 49,
+              ship: 50,
+              waypoints: 60,
+              explosion: 70,
+              dashboard: 100,
+              ui: 101
+          },
+          predictTime: 120
+      };
+      lastPlayerShip = null;
+      pixiApp = null;
+      pixiContainer = null;
+      mapContainer = null;
+      sprites = {};
+      mapObjects = {}; // keep track of what we have added
+      effects = {
+          hudGlow: new GlowFilter({
+            distance: 3,
+            outerStrength: 5,
+            innerStrength: 0,
+            color: 0x000000,
+            quality: 0.5
+          }),
+          waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
+          targetColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
+          bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9}),
+          crt: new CRTFilter({
+            curvature: 8,
+            lineWidth: 10,
+            lineContrast: 0.8, // 0.4,
+            noise: 0.4, // 0.2,
+            noiseSize: 1.6, // 1.2,
+            vignetting: 0,
+            vignettingAlpha: 0,
+            seed: 0,
+            time: 0
+          }),
+          // crt: new OldFilmFilter({
+          //
+          // })
+      };
+      docking = {
+          dockable: null, // closest id < 1000 - allows us to start dock
+          distance: null, // distance to closest id, so we can start dock to closest
+          target: null, // id we are trying to dock with
+          id: null, // id docked with
+          progress: 0 // percent progress
+      }
+
 
       let root = document.getElementById('game');
     	root.innerHTML = '';
@@ -143,7 +161,7 @@ export default class HelmRenderer {
         pixiApp.loader.load(this.loadResources.bind(this));
 
         // add ui might as well use html for the stuff it's good at
-        this.drawUi(root);
+        this.drawUi(el);
 
         this.controls = new KeyboardControls(client);
         this.controls.bindKey('0', 'engine', { }, { level: 0 });
@@ -159,6 +177,13 @@ export default class HelmRenderer {
 
         // listen for explosion events
         gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
+    }
+
+    remove() {
+      if (el) {
+        el.remove();
+        el = null;
+      }
     }
 
     setEngine(level) {

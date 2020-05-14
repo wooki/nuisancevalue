@@ -134,10 +134,17 @@ export default class SignalsRenderer {
         pixiApp.loader.load(this.loadResources.bind(this));
 
         // add ui might as well use html for the stuff it's good at
-        this.drawUi(root);
+        this.drawUi(el);
 
         // listen for explosion events
         gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
+    }
+
+    remove() {
+      if (el) {
+        el.remove();
+        el = null;
+      }
     }
 
     addExplosion(obj) {

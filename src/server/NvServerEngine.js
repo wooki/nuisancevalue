@@ -204,9 +204,9 @@ export default class NvServerEngine extends ServerEngine {
       let hullData = Hulls[hullName];
       let nv = this.gameEngine.addShip({
           name: "Nuisance Value",
-          x: -4000,
+          x: -2000,
           y: 1000,
-          dX: -200,
+          dX: -60,
           dY: 0,
           hull: hullName,
           mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
@@ -219,9 +219,9 @@ export default class NvServerEngine extends ServerEngine {
       let hullData2 = Hulls[hullName2];
       let tug = this.gameEngine.addShip({
           name: "Target Practice",
-          x: 1000,
-          y: 1000,
-          dX: 0-50,
+          x: 500,
+          y: 800,
+          dX: 0-40,
           dY: 0-5,
           hull: hullName2,
           mass: hullData2.mass,
@@ -231,54 +231,32 @@ export default class NvServerEngine extends ServerEngine {
           angularVelocity: Math.random()
       });
 
-      // setTimeout(function() {
-      //
-      //   this.gameEngine.addTorpedo({
-      //       x: -4000,
-      //       y: 8000,
-      //       dX: 0,
-      //       dY: 0,
-      //       mass: 0.0005, size: 30,
-      //       angle: 0,
-      //       targetId: nv.id,
-      //       fuel: 100,
-      //       engine: 0
-      //   });
-      //   this.gameEngine.addTorpedo({
-      //       x: 12000,
-      //       y: 4000,
-      //       dX: 0,
-      //       dY: 0,
-      //       mass: 0.0005, size: 30,
-      //       angle: 0,
-      //       targetId: nv.id,
-      //       fuel: 100,
-      //       engine: 0
-      //   });
-      //   this.gameEngine.addTorpedo({
-      //       x: 10000,
-      //       y: -5000,
-      //       dX: 0,
-      //       dY: 0,
-      //       mass: 0.0005, size: 30,
-      //       angle: 0,
-      //       targetId: nv.id,
-      //       fuel: 100,
-      //       engine: 0
-      //   });
-      // }.bind(this), 30000);
+      setTimeout(function() {
 
-      // this.gameEngine.addTorpedo({
-      //     x: -6000,
-      //     y: -3000,
-      //     dX: 0,
-      //     dY: 0,
-      //     mass: 0.0005, size: 30,
-      //     angle: Math.PI,
-      //     targetId: tug.id,
-      //     fuel: 100,
-      //     engine: 0
-      // });
+        this.gameEngine.addTorpedo({
+            x: -4000,
+            y: 8000,
+            dX: 0,
+            dY: 0,
+            mass: 0.0005, size: 30,
+            angle: 0,
+            targetId: nv.id,
+            fuel: 100,
+            engine: 0
+        });
+      }.bind(this), 30000);
+
+      this.gameEngine.addTorpedo({
+          x: -3000,
+          y: -3000,
+          dX: 0,
+          dY: 0,
+          mass: 0.0005, size: 30,
+          angle: Math.PI,
+          targetId: tug.id,
+          fuel: 100,
+          engine: 0
+      });
 
       // random asteroids
       let asteroidDistance = 4000;
@@ -321,6 +299,38 @@ export default class NvServerEngine extends ServerEngine {
 
         // this.addMap();
         this.addTestMap1();
+
+        this.gameEngine.on('join-ship', e => {
+          //  playerId: playerId, ship: ship
+          let playerId = e.playerId;
+          let ship = e.ship;
+          let station = e.station;
+          // let ship = this.world.objects[inputData.options.objId];
+
+          // might be docked
+          if (!ship) {
+            this.gameEngine.world.forEachObject((objId, obj) => {
+              if (obj instanceof Ship && !ship) {
+                ship = obj.docked.find(function(dockedShip) {
+                  return (objId == obj.id);
+                });
+              }
+            });
+          } else {
+
+            // try and add them
+            if (station == "helm" && ship.helmPlayerId == 0) {
+                ship.helmPlayerId = playerId;
+                ship.playerId = playerId; // set the ownership to last player to join
+            } else if (station == "nav" && ship.navPlayerId == 0) {
+                ship.navPlayerId = playerId;
+                ship.playerId = playerId; // set the ownership to last player to join
+            } else if (station == "signals" && ship.signalsPlayerId == 0) {
+                ship.signalsPlayerId = playerId;
+                ship.playerId = playerId; // set the ownership to last player to join
+            }
+          }
+        });
 
         this.gameEngine.on('damage', e => {
 
@@ -438,32 +448,13 @@ export default class NvServerEngine extends ServerEngine {
         this.gameEngine.on('removewaypoint', e => {
             e.ship.removeWaypoint(e.name);
         });
-
-        // also needs a room?
-        // this.createRoom("Nuisance Value");
     }
-
-    // handle a collision on server only
-    // handleCollision(e) {
-
-    //   // identify the two objects which collided
-    //   // NOT NEEDED AT PRESENT (just used in damage)
-    //   // let [A, B] = this.collisionUtils.getObjects(e);
-    //   // if (!A || !B) return;
-
-    //   // do stuff depending on types
-    //   this.collisionUtils.assignDamage(e);
-
-  //} // handleCollision
 
     onPlayerConnected(socket) {
         super.onPlayerConnected(socket);
-        // this.gameEngine.addShip(socket.playerId);
     }
 
     onPlayerDisconnected(socketId, playerId) {
         super.onPlayerDisconnected(socketId, playerId);
-        // for (let o of this.gameEngine.world.queryObjects({ playerId }))
-        //     this.gameEngine.removeObjectFromWorld(o.id);
     }
 }
