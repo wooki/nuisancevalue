@@ -91,7 +91,7 @@ export default class TorpedoAi {
 		} else {
 			// no target - self destruct
 			game.removeObjectFromWorld(torpedo);
-	        game.emitonoff.emit('explosion', torpedo);
+	    game.emitonoff.emit('explosion', torpedo);
 		}
 	}
 

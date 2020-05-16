@@ -67,7 +67,7 @@ export default class NvGameEngine extends GameEngine {
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
 
-            if (obj.damage && ((obj.damage | this.damage.DESTROYED) > 0)) {
+            if (obj.damage && ((obj.damage & this.damage.DESTROYED) > 0)) {
 
               // remove players
               this.helmPlayerId = -1;
