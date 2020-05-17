@@ -35,8 +35,8 @@ export default class Damage {
 								let status = 'OK';
 								if (d & gd.SEVERE_DAMAGE[i]) { // could have it
 									status = 'FAIL';
+									log.innerHTML = log.innerHTML + "\n"+gd.DAMAGE_NAMES[gd.SEVERE_DAMAGE[i]]+": "+status;
 								}
-								log.innerHTML = log.innerHTML + "\n"+gd.DAMAGE_NAMES[gd.SEVERE_DAMAGE[i]]+": "+status;
 						}
 				}
 				for(let i = 0; i < gd.LIGHT_DAMAGE.length; i++) {
@@ -44,8 +44,8 @@ export default class Damage {
 							let status = 'OK';
 							if (d & gd.LIGHT_DAMAGE[i]) { // could have it
 								status = 'FAIL';
+								log.innerHTML = log.innerHTML + "\n"+gd.DAMAGE_NAMES[gd.LIGHT_DAMAGE[i]]+": "+status;
 							}
-							log.innerHTML = log.innerHTML + "\n"+gd.DAMAGE_NAMES[gd.LIGHT_DAMAGE[i]]+": "+status;
 					}
 				}
 

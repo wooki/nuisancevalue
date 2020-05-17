@@ -80,8 +80,8 @@ export default class NvServerEngine extends ServerEngine {
             let A = e.ship;
             let acceleration = e.payload;
 
-            // 1 major damage for every 200, 1 minor damage for every 40 (left over)
-            const severeDamageThreshold = 200;
+            // 1 major damage for every 300, 1 minor damage for every 40 (left over)
+            const severeDamageThreshold = 300;
             const lightDamageThreshold = 40;
 
             // only ships take damage at the moment

@@ -2,11 +2,7 @@ import {default as GameDamage} from './Damage';
 
 // bitwise stuff
 const gd = new GameDamage();
-const STANDARD_SYSTEMS = gd.HELM_CONSOLE_INTERFERENCE |
-													gd.NAV_CONSOLE_INTERFERENCE |
-													gd.SIGNALS_CONSOLE_INTERFERENCE |
-													gd.ENGINE_OFFLINE |
-													gd.MANEUVER_OFFLINE;
+const STANDARD_SYSTEMS = gd.STANDARD_SYSTEMS;
 
 // some reference data for ships we can use in game
 export default {
