@@ -359,6 +359,10 @@ label {
   font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
 }
 
+.lobby .gm-join {
+  margin: 30px;
+}
+
 .lobby .ships, .lobby .missions {
   flex: 1 1 auto;
   max-width: 100%;

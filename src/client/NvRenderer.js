@@ -4,6 +4,7 @@ import Ship from './../common/Ship';
 import LobbyRenderer from './renderers/Lobby';
 import HelmRenderer from './renderers/Helm';
 import NavRenderer from './renderers/Nav';
+import GamesMasterRenderer from './renderers/GamesMaster';
 import SignalsRenderer from './renderers/Signals';
 import EmitOnOff from 'emitonoff';
 
@@ -29,6 +30,8 @@ export default class NvRenderer extends Renderer {
             renderer = new NavRenderer(game, client);
         } else if (station == 'signals') {
             renderer = new SignalsRenderer(game, client);
+        } else if (station == 'gm') {
+            renderer = new GamesMasterRenderer(game, client);
         } else {
             // default to lobby
             renderer = new LobbyRenderer(game, client);

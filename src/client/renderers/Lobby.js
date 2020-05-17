@@ -6,6 +6,7 @@ let el = null;
 let shipsEl = null;
 let game = null;
 let client = null;
+let gm = false;
 
 export default class LobbyRenderer {
 
@@ -40,6 +41,13 @@ export default class LobbyRenderer {
       shipsEl.classList.add('ships');
       el.append(shipsEl);
 
+      let gmEl = document.createElement('button');
+      gmEl.classList.add('gm-join');
+      gmEl.innerHTML = "Join as GM";
+      gmEl.addEventListener('click', (event) => { this.gamesMasterJoin() } );
+      el.append(gmEl);
+
+
     	root.append(el);
     }
 
@@ -59,6 +67,10 @@ export default class LobbyRenderer {
 
     joinShip(shipId, station) {
     	client.joinShip(shipId, station);
+    }
+
+    gamesMasterJoin() {
+      gm = true;
     }
 
     drawShipUi(obj) {
@@ -119,6 +131,10 @@ export default class LobbyRenderer {
 
     // just draw rooms (ships) to join
     draw(t, dt) {
+
+      if (gm) {
+        return "gm";
+      }
 
       let station = false;
       let shipIds = {};
