@@ -693,6 +693,8 @@ export default class SignalsRenderer {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                 alias = 'asteroid';
             } else if (obj instanceof PDC) {
+              console.log(" draw PDC");
+              console.dir(obj);
                 texture = settings.resources[settings.baseUrl+Assets.Images.sol].texture;
             } else if (obj instanceof Planet) {
                 texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;

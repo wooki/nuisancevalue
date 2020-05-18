@@ -1,6 +1,7 @@
 import { ServerEngine, TwoVector } from 'lance-gg';
 import Asteroid from '../common/Asteroid';
 import Torpedo from '../common/Torpedo';
+import PDC from '../common/PDC';
 import Ship from '../common/Ship';
 import Planet from '../common/Planet';
 import Hulls from '../common/Hulls';
@@ -145,6 +146,50 @@ export default class NvServerEngine extends ServerEngine {
 
         this.gameEngine.on('settarget', e => {
             e.ship.targetId = e.targetId;
+        });
+
+        this.gameEngine.on('pdc', e => {
+
+          let ship = e.ship;
+          let hullData = Hulls[ship.hull];
+          if (hullData.pdc) {
+            let angle = e.angle;
+            let state = e.state;
+
+            console.log("current="+ship.pdcState+", new state="+state)
+
+            // if we are starting or stopping fire then change to world
+            if (state == 2 && ship.pdcState != 2) {
+              // add PDC to the world and link to this ship
+              let size = hullData.pdc.distribution * 2;
+              let range = hullData.pdc.range;
+
+              // position range away at angle from ships bearing
+              let p = Victor.fromArray(ship.physicsObj.position);
+              let v = Victor.fromArray(ship.physicsObj.velocity);
+              p.x = p.x + range;
+
+              let pdc = new PDC(this.gameEngine, {}, {
+                  position: new TwoVector(p.x, p.y),
+                  velocity: new TwoVector(v.x, v.y)
+              });
+              pdc.size = size;
+
+              // store locally only on ship
+              ship.pdc = this.gameEngine.addObjectToWorld(pdc);
+            }
+
+            if (state != 2 && ship.pdcState == 2) {
+              // remove linked PDC from the world
+              if (ship.pdc) {
+                this.gameEngine.removeObjectFromWorld(ship.pdc);
+              }
+            }
+
+            // update the ship
+            ship.pdcAngle = angle;
+            ship.pdcState = state;
+          }
         });
 
         this.gameEngine.on('firetorp', e => {

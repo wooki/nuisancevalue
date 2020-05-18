@@ -102,6 +102,7 @@ export default class NvGameEngine extends GameEngine {
                 // if this object has a PDC then update it
                 if (obj instanceof Ship && obj.pdc) {
 
+                    // this is server only as the pdc is local
                   let hullData = Hulls[obj.hull];
                   if (hullData.pdc) {
                     let angle = obj.pdcAngle;
@@ -111,8 +112,8 @@ export default class NvGameEngine extends GameEngine {
                     let v = Victor.fromArray(obj.physicsObj.velocity);
                     p.x = p.x + range;
 
-                    obj.pdc.physicsObj.position = p;
-                    obj.pdc.physicsObj.velocity = v;
+                    obj.pdc.physicsObj.position = [p.x, p.y];
+                    obj.pdc.physicsObj.velocity = [v.x, v.y];
                   }
                 }
 
@@ -339,40 +340,7 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 let hullData = Hulls[ship.hull];
                 if (hullData.pdc) {
-                  let angle = inputData.options.angle;
-                  let state = inputData.options.state;
-
-                  // if we are starting or stopping fire then change to world
-                  if (state == 2 && ship.pdcState != 2) {
-                    // add PDC to the world and link to this ship
-                    let size = hullData.pdc.distribution * 2;
-                    let range = hullData.pdc.range;
-
-                    // position range away at angle from ships bearing
-                    let p = Victor.fromArray(ship.physicsObj.position);
-                    let v = Victor.fromArray(ship.physicsObj.velocity);
-                    p.x = p.x + range;
-
-                    let pdc = new PDC(this, {}, {
-                        position: new TwoVector(p.x, p.y),
-                        velocity: new TwoVector(v.x, v.y)
-                    });
-                    pdc.size = size;
-
-                    // store locally only on ship
-                    ship.pdc = this.addObjectToWorld(pdc);
-                  }
-
-                  if (state != 2 && ship.pdcState == 2) {
-                    // remove linked PDC from the world
-                    if (ship.pdc) {
-                      this.removeObjectFromWorld(ship.pdc);
-                    }
-                  }
-
-                  // update the ship
-                  ship.pdcAngle = angle;
-                  ship.pdcState = state;
+                    this.emit('pdc', { ship: ship, angle: inputData.options.angle, state: inputData.options.state });
                 }
             }
 
