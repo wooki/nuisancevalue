@@ -8,6 +8,7 @@ import {BevelFilter} from '@pixi/filter-bevel';
 import {CRTFilter} from '@pixi/filter-crt';
 
 import Torpedo from './../../common/Torpedo';
+import PDC from './../../common/PDC';
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
@@ -230,8 +231,11 @@ export default class SignalsRenderer {
 
         uiEls.uiFireTorp = this.createButton(document, uiEls.uiWeapons, "fireTorp", "Fire Torp", this.fireTorp.bind(this));
 
-        // counter-measures / decoys
-
+        // PDCs
+        uiEls.uiPDCs = document.createElement("div");
+        uiEls.uiPDCs.classList.add('ui-pdcs');
+        uiEls.uiFirePDC = this.createButton(document, uiEls.uiPDCs, "firePDC", "Fire PDC", this.firePDC.bind(this));
+        uiEls.uiWeapons.appendChild(uiEls.uiPDCs);
     }
 
     createButton(document, container, id, innerHTML, onClick) {
@@ -373,6 +377,10 @@ export default class SignalsRenderer {
       if (objects) {
         client.fireTorp(objects.selectedObj.id);
       }
+    }
+
+    firePDC() {
+      client.firePDC(0, 2);
     }
 
     openComms() {
@@ -684,6 +692,8 @@ export default class SignalsRenderer {
             if (obj instanceof Asteroid) {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                 alias = 'asteroid';
+            } else if (obj instanceof PDC) {
+                texture = settings.resources[settings.baseUrl+Assets.Images.sol].texture;
             } else if (obj instanceof Planet) {
                 texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                 zIndex = settings.zIndex.planet;

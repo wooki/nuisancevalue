@@ -30,7 +30,9 @@ export default class Ship extends PhysicalObject2D {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
             },
-            damage: { type: BaseTypes.TYPES.INT32 }
+            damage: { type: BaseTypes.TYPES.INT32 },
+            pdcAngle: { type: BaseTypes.TYPES.FLOAT32 },
+            pdcState: { type: BaseTypes.TYPES.UINT8 } //0=off,1=active,2=firing
         }, super.netScheme);
     }
 
@@ -145,7 +147,7 @@ export default class Ship extends PhysicalObject2D {
         this.shape = new p2.Circle({
             radius: Math.floor(this.size / 2),
             collisionGroup: game.SHIP,
-            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO
+            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO | game.PDC
         });
         // let shape = this.shape = new p2.Box({
         //     width: this.size,

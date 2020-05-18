@@ -12,7 +12,7 @@ export default class Torpedo extends PhysicalObject2D {
       this.size = Hulls['torpedo'].size;
       this.payload = Hulls['torpedo'].payload;
       this.aiScript = 0; // torpedo ai script
-      this.thrust = Hulls['torpedo'].thrust;      
+      this.thrust = Hulls['torpedo'].thrust;
   }
 
   static get netScheme() {
@@ -62,7 +62,7 @@ export default class Torpedo extends PhysicalObject2D {
         let shape = new p2.Circle({
             radius: (this.size/2),
             collisionGroup: game.TORPEDO,
-            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO
+            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO | game.PDC
         });
         this.physicsObj.addShape(shape);
         game.physicsEngine.world.addBody(this.physicsObj);

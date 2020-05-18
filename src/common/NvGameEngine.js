@@ -3,8 +3,10 @@ import Ship from './Ship';
 import Asteroid from './Asteroid';
 import Planet from './Planet';
 import Torpedo from './Torpedo';
+import PDC from './PDC';
 import Victor from 'victor';
 import SolarObjects from './SolarObjects';
+import Hulls from './Hulls';
 import Comms from './Comms';
 import Damage from '../common/Damage';
 import EmitOnOff from 'emitonoff';
@@ -31,7 +33,8 @@ export default class NvGameEngine extends GameEngine {
             SHIP: Math.pow(2, 0),
             PLANET: Math.pow(2, 1),
             ASTEROID: Math.pow(2, 2),
-            TORPEDO: Math.pow(2, 3)
+            TORPEDO: Math.pow(2, 3),
+            PDC: Math.pow(2, 4)
         });
 
         this.on('preStep', this.preStep.bind(this));
@@ -94,6 +97,23 @@ export default class NvGameEngine extends GameEngine {
                 // if this has gravity then add to gravity objects
                 if (obj instanceof Planet) { // only planets for now!
                     gravityObjects[objId] = obj.id;
+                }
+
+                // if this object has a PDC then update it
+                if (obj instanceof Ship && obj.pdc) {
+
+                  let hullData = Hulls[obj.hull];
+                  if (hullData.pdc) {
+                    let angle = obj.pdcAngle;
+                    let range = hullData.pdc.range;
+
+                    let p = Victor.fromArray(obj.physicsObj.position);
+                    let v = Victor.fromArray(obj.physicsObj.velocity);
+                    p.x = p.x + range;
+
+                    obj.pdc.physicsObj.position = p;
+                    obj.pdc.physicsObj.velocity = v;
+                  }
                 }
 
                 // apply gravity
@@ -182,6 +202,7 @@ export default class NvGameEngine extends GameEngine {
         serializer.registerClass(Asteroid);
         serializer.registerClass(Planet);
         serializer.registerClass(Torpedo);
+        serializer.registerClass(PDC);
     }
 
     // finds the player (optionally in a specific role)
@@ -311,6 +332,48 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 let targetId = inputData.options.objId;
                 this.emit('firetorp', { ship: ship, targetId: targetId });
+            }
+
+            if (inputData.input == 'pdc') {
+
+                let ship = this.getPlayerShip(playerId);
+                let hullData = Hulls[ship.hull];
+                if (hullData.pdc) {
+                  let angle = inputData.options.angle;
+                  let state = inputData.options.state;
+
+                  // if we are starting or stopping fire then change to world
+                  if (state == 2 && ship.pdcState != 2) {
+                    // add PDC to the world and link to this ship
+                    let size = hullData.pdc.distribution * 2;
+                    let range = hullData.pdc.range;
+
+                    // position range away at angle from ships bearing
+                    let p = Victor.fromArray(ship.physicsObj.position);
+                    let v = Victor.fromArray(ship.physicsObj.velocity);
+                    p.x = p.x + range;
+
+                    let pdc = new PDC(this, {}, {
+                        position: new TwoVector(p.x, p.y),
+                        velocity: new TwoVector(v.x, v.y)
+                    });
+                    pdc.size = size;
+
+                    // store locally only on ship
+                    ship.pdc = this.addObjectToWorld(pdc);
+                  }
+
+                  if (state != 2 && ship.pdcState == 2) {
+                    // remove linked PDC from the world
+                    if (ship.pdc) {
+                      this.removeObjectFromWorld(ship.pdc);
+                    }
+                  }
+
+                  // update the ship
+                  ship.pdcAngle = angle;
+                  ship.pdcState = state;
+                }
             }
 
             // handle target - signals only

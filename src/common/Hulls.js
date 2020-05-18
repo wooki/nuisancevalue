@@ -44,6 +44,12 @@ export default {
 		maneuver: 1.2,
 		enginePositions: [[0.4, 0.5, 0.8]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
+		pdc: {
+			range: 4000,
+			distribution: 1000,
+			rotation: 3, // radians per second rotation speed
+			hitChance: 0.8
+		},
 		damage: STANDARD_SYSTEMS // this is a bit encoded set of valid systems that CAN BE damaged
 	},
 

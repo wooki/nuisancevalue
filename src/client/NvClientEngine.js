@@ -19,6 +19,10 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("firetorp", { objId: objId });
     }
 
+    firePDC(angle, state) {
+        this.sendInput("pdc", { angle: angle, state: state });
+    }
+
     loadMission(id) {
         this.sendInput("load-mission", { missionId: id });
     }
