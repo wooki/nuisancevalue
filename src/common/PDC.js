@@ -70,7 +70,7 @@ export default class PDC extends PhysicalObject2D {
             if (A instanceof Torpedo) {
 
               // destruction chance (high because only on-enter)
-              if (Math.random() < 0.2) {
+              if (Math.random() < 0.03) {
                 console.log("*HIT TORP");
                 try {
                   delete this.contacts[key];
