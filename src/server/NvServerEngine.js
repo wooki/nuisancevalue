@@ -12,6 +12,10 @@ import CollisionUtils from '../common/CollisionUtils';
 import SolarSystem from './Missions/SolarSystem';
 import TestMission from './Missions/TestMission';
 
+// 1 major damage for every 300, 1 minor damage for every 40 (left over)
+const severeDamageThreshold = 300;
+const lightDamageThreshold = 40;
+
 export default class NvServerEngine extends ServerEngine {
 
     constructor(io, gameEngine, inputOptions) {
@@ -24,9 +28,12 @@ export default class NvServerEngine extends ServerEngine {
 
     // remove everything from the game
     clearWorld() {
-      this.gameEngine.world.forEachObject((objId, obj) => {
-        this.gameEngine.removeObjectFromWorld(obj);
-      });
+      try {
+        this.gameEngine.world.forEachObject((objId, obj) => {
+          this.gameEngine.removeObjectFromWorld(obj);
+        });
+      } catch (error) {
+      }
     }
 
     // create/load world and scenario
@@ -75,15 +82,20 @@ export default class NvServerEngine extends ServerEngine {
           }
         });
 
+        this.gameEngine.on('endpdchit', e => {
+          console.dir(e.obj);
+          e.pdc.removeContact(e.obj);
+        });
+
+        this.gameEngine.on('pdchit', e => {
+          e.pdc.addContact(e.obj);
+        });
+
         this.gameEngine.on('damage', e => {
 
             // this.gameEngine.emit('damage', { ship: A, payload: acceleration, collision: e });
             let A = e.ship;
             let acceleration = e.payload;
-
-            // 1 major damage for every 300, 1 minor damage for every 40 (left over)
-            const severeDamageThreshold = 300;
-            const lightDamageThreshold = 40;
 
             // only ships take damage at the moment
             if (A instanceof Ship) {
@@ -111,6 +123,10 @@ export default class NvServerEngine extends ServerEngine {
               if (randomDestruction < destructionChance) {
                 A.damage = A.damage | this.damage.DESTROYED;
               }
+            } else if (A instanceof Asteroid) {
+
+              console.log("damage asteroid");
+
             }
         });
 
@@ -156,18 +172,21 @@ export default class NvServerEngine extends ServerEngine {
             let angle = e.angle;
             let state = e.state;
 
-            console.log("current="+ship.pdcState+", new state="+state)
-
             // if we are starting or stopping fire then change to world
             if (state == 2 && ship.pdcState != 2) {
               // add PDC to the world and link to this ship
-              let size = hullData.pdc.distribution * 2;
+              let size = hullData.pdc.size;
               let range = hullData.pdc.range;
 
               // position range away at angle from ships bearing
-              let p = Victor.fromArray(ship.physicsObj.position);
+              let p = new Victor(0, range);
+
+              // rotate
+              p.rotate(ship.pdcAngle);
+
+              // add the current ship position
+              p = p.add(Victor.fromArray(ship.physicsObj.position));
               let v = Victor.fromArray(ship.physicsObj.velocity);
-              p.x = p.x + range;
 
               let pdc = new PDC(this.gameEngine, {}, {
                   position: new TwoVector(p.x, p.y),
@@ -183,6 +202,7 @@ export default class NvServerEngine extends ServerEngine {
               // remove linked PDC from the world
               if (ship.pdc) {
                 this.gameEngine.removeObjectFromWorld(ship.pdc);
+                ship.pdc = null;
               }
             }
 

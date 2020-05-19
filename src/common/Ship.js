@@ -123,7 +123,7 @@ export default class Ship extends PhysicalObject2D {
 
         // update our data
         this.dockedId = dockWith;
-
+        if (this.pdcState > 0) this.pdcState = 0;
     }
 
     undock(undockFrom) {
@@ -171,6 +171,10 @@ export default class Ship extends PhysicalObject2D {
 
     onRemoveFromWorld(gameEngine) {
         game.physicsEngine.world.removeBody(this.physicsObj);
+
+        if (this.pdc) {
+          game.removeObjectFromWorld(this.pdc);
+        }
 
         if (this.damage && ((this.damage | this.damage.DESTROYED) > 0)) {
 

@@ -1,10 +1,6 @@
 import { ClientEngine, KeyboardControls } from 'lance-gg';
 import NvRenderer from '../client/NvRenderer';
 
-const betaTiltThreshold = 40;
-const gammaTiltThreshold = 40;
-const steerThreshold = 0.4;
-
 export default class NvClientEngine extends ClientEngine {
 
     constructor(gameEngine, options) {
@@ -19,8 +15,12 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("firetorp", { objId: objId });
     }
 
-    firePDC(angle, state) {
-        this.sendInput("pdc", { angle: angle, state: state });
+    pdcAngle(direction) {
+        this.sendInput("pdcangle", { direction: direction });
+    }
+
+    pdcState(direction) {
+        this.sendInput("pdcstate", { direction: direction });
     }
 
     loadMission(id) {

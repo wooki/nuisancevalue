@@ -46,9 +46,7 @@ export default {
 		exhaustImage: 'exhaust',
 		pdc: {
 			range: 4000,
-			distribution: 1000,
-			rotation: 3, // radians per second rotation speed
-			hitChance: 0.8
+			size: 1000
 		},
 		damage: STANDARD_SYSTEMS // this is a bit encoded set of valid systems that CAN BE damaged
 	},

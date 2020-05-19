@@ -65,6 +65,7 @@ let effects = {
     }),
     waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
     selectionColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
+    pdcHudColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 1], 0.1),
     bevel: new BevelFilter({lightAlpha: 0.1, shadowAlpha: 0.9}),
     crt: new CRTFilter({
       curvature: 8,
@@ -136,6 +137,13 @@ export default class SignalsRenderer {
 
         // add ui might as well use html for the stuff it's good at
         this.drawUi(el);
+
+        // custom keys
+        this.controls = new KeyboardControls(client);
+        this.controls.bindKey('left', 'pdcangle', { repeat: true }, { direction: '-' });
+        this.controls.bindKey('right', 'pdcangle', { repeat: true }, { direction: '+' });
+        this.controls.bindKey('up', 'pdcstate', { }, { direction: '+' });
+        this.controls.bindKey('down', 'pdcstate', { }, { direction: '-' });
 
         // listen for explosion events
         gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
@@ -229,12 +237,18 @@ export default class SignalsRenderer {
         uiEls.uiWeapons.classList.add('ui-comms');
         uiEls.uiRightContainer.appendChild(uiEls.uiWeapons);
 
-        uiEls.uiFireTorp = this.createButton(document, uiEls.uiWeapons, "fireTorp", "Fire Torp", this.fireTorp.bind(this));
+        // torps
+        uiEls.uiTorps = document.createElement("div");
+        uiEls.uiTorps.classList.add('ui-torps');
+        uiEls.uiFireTorp = this.createButton(document, uiEls.uiTorps, "fireTorp", "Fire Torp", this.fireTorp.bind(this));
+        uiEls.uiWeapons.appendChild(uiEls.uiTorps);
 
         // PDCs
         uiEls.uiPDCs = document.createElement("div");
         uiEls.uiPDCs.classList.add('ui-pdcs');
-        uiEls.uiFirePDC = this.createButton(document, uiEls.uiPDCs, "firePDC", "Fire PDC", this.firePDC.bind(this));
+        uiEls.uiStopPDC = this.createButton(document, uiEls.uiPDCs, "uiStopPDC", "Stop PDC", this.stopPDC.bind(this));
+        uiEls.uiActivatePDC = this.createButton(document, uiEls.uiPDCs, "uiActivatePDC", "Activate PDC", this.activatePDC.bind(this));
+        uiEls.uiFirePDC = this.createButton(document, uiEls.uiPDCs, "uiFirePDC", "Fire PDC", this.firePDC.bind(this));
         uiEls.uiWeapons.appendChild(uiEls.uiPDCs);
     }
 
@@ -379,8 +393,75 @@ export default class SignalsRenderer {
       }
     }
 
+    stopPDC() {
+      if (lastPlayerShip.pdcState > 2) {
+        client.pdcState('-');
+        client.pdcState('-');
+      } else if (lastPlayerShip.pdcState > 1) {
+        client.pdcState('-');
+      }
+    }
+
+    activatePDC() {
+      if (lastPlayerShip.pdcState < 1) {
+        client.pdcState('+');
+      } else if (lastPlayerShip.pdcState > 1) {
+        client.pdcState('-');
+      }
+    }
+
     firePDC() {
-      client.firePDC(0, 2);
+      if (lastPlayerShip.pdcState < 1) {
+        client.pdcState('+');
+        client.pdcState('+');
+      } else if (lastPlayerShip.pdcState < 2) {
+        client.pdcState('+');
+      }
+    }
+
+    drawPDCHud(playerShip, hullData) {
+      // set-up the PDC ui
+      if (uiEls.uiStopPDC && hullData.pdc) {
+
+        // set-up ui buttons
+        if (playerShip.pdcState == 0) {
+          uiEls.uiStopPDC.classList.add('active');
+          uiEls.uiActivatePDC.classList.remove('active');
+          uiEls.uiFirePDC.classList.remove('active');
+        } else if (playerShip.pdcState == 1) {
+          uiEls.uiStopPDC.classList.remove('active');
+          uiEls.uiActivatePDC.classList.add('active');
+          uiEls.uiFirePDC.classList.remove('active');
+        } else if (playerShip.pdcState == 2) {
+          uiEls.uiStopPDC.classList.remove('active');
+          uiEls.uiActivatePDC.classList.remove('active');
+          uiEls.uiFirePDC.classList.add('active');
+        }
+
+        // add or update the hud ui
+        if (playerShip.pdcState > 0) {
+          let rotation = UiUtils.adjustAngle(playerShip.pdcAngle);
+
+          // draw/add the helm sprite and set rotation
+          if (!sprites.pdcHud) {
+            sprites.pdcHud = new PIXI.Sprite(settings.resources[settings.baseUrl+Assets.Images.pdchud].texture);
+            sprites.pdcHud.filters = [ effects.pdcHudColor ];
+            sprites.pdcHud.width = hullData.pdc.range * 2 * settings.scale;
+            sprites.pdcHud.height = hullData.pdc.range * 2 * settings.scale;
+            sprites.pdcHud.anchor.set(0.5);
+            sprites.pdcHud.x = Math.floor(pixiApp.screen.width / 2);
+            sprites.pdcHud.y = Math.floor(pixiApp.screen.height / 2);
+            sprites.pdcHud.zIndex = settings.zIndex.dashboard;
+            sprites.pdcHud.rotation = rotation;
+            mapContainer.addChild(sprites.pdcHud);
+          } else {
+            sprites.pdcHud.rotation = rotation;
+            sprites.pdcHud.visible = true;
+          }
+        } else if (sprites.pdcHud) {
+          sprites.pdcHud.visible = false;
+        }
+      }
     }
 
     openComms() {
@@ -693,8 +774,6 @@ export default class SignalsRenderer {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                 alias = 'asteroid';
             } else if (obj instanceof PDC) {
-              console.log(" draw PDC");
-              console.dir(obj);
                 texture = settings.resources[settings.baseUrl+Assets.Images.sol].texture;
             } else if (obj instanceof Planet) {
                 texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
@@ -884,9 +963,9 @@ export default class SignalsRenderer {
                         sprites.selection = null;
                         this.unsetTarget();
                     }
-                    uiEls.uiWeapons.classList.add('inactive');
+                    uiEls.uiTorps.classList.add('inactive');
                 } else {
-                  uiEls.uiWeapons.classList.remove('inactive');
+                  uiEls.uiTorps.classList.remove('inactive');
                 }
 
                 if (!destroyed) {
@@ -918,6 +997,8 @@ export default class SignalsRenderer {
                   if (playerShip.targetId == settings.playerShipId) {
                     this.drawSelection(new PIXI.Point(Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2)));
                   }
+
+                  this.drawPDCHud(playerShip, hullData);
 
                   // draw waypoints (remember distance and direction)
                   if (playerShip.waypoints) {

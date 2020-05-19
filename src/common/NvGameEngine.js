@@ -23,6 +23,8 @@ export default class NvGameEngine extends GameEngine {
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
         this.physicsEngine.world.defaultContactMaterial.friction = 100;
         this.physicsEngine.world.on('impact', this.handleCollision.bind(this));
+        this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));
+        this.physicsEngine.world.on('endContact', this.endContact.bind(this));
         this.collisionUtils = new CollisionUtils(this);
 
         this.damage = new Damage();
@@ -70,7 +72,11 @@ export default class NvGameEngine extends GameEngine {
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
 
-            if (obj.damage && ((obj.damage & this.damage.DESTROYED) > 0)) {
+            if (obj === undefined) {
+
+              console.info("UNDEFINED OBJ FOUND IN WORLD");
+
+            } else if (obj.damage && ((obj.damage & this.damage.DESTROYED) > 0)) {
 
               // remove players
               this.helmPlayerId = -1;
@@ -99,6 +105,10 @@ export default class NvGameEngine extends GameEngine {
                     gravityObjects[objId] = obj.id;
                 }
 
+                if (obj instanceof PDC) {
+                  obj.processContact();
+                }
+
                 // if this object has a PDC then update it
                 if (obj instanceof Ship && obj.pdc) {
 
@@ -108,9 +118,15 @@ export default class NvGameEngine extends GameEngine {
                     let angle = obj.pdcAngle;
                     let range = hullData.pdc.range;
 
-                    let p = Victor.fromArray(obj.physicsObj.position);
+                    // position range away at angle from ships bearing
+                    let p = new Victor(0, range);
+
+                    // rotate
+                    p.rotate(angle);
+
+                    // add the current ship position
+                    p = p.add(Victor.fromArray(obj.physicsObj.position));
                     let v = Victor.fromArray(obj.physicsObj.velocity);
-                    p.x = p.x + range;
 
                     obj.pdc.physicsObj.position = [p.x, p.y];
                     obj.pdc.physicsObj.velocity = [v.x, v.y];
@@ -241,11 +257,40 @@ export default class NvGameEngine extends GameEngine {
     }
 
     handleCollision(e) {
-
-        // handle collission
         this.collisionUtils.assignDamage(e);
     }
 
+    // PDCs managed with contact not impact as they are sensors and we want
+    // to check damage each tick
+    beginContact(e) {
+
+        let [A, B] = this.collisionUtils.getObjects(e);
+        if (!A || !B) return;
+
+        if (A instanceof PDC && !(B instanceof PDC)) {
+          // PDC hit must be managed by the server because there is a % changce
+          this.emit('pdchit', { obj: B, pdc: A, collision: e });
+
+        } else if (B instanceof PDC && !(A instanceof PDC)) {
+          // PDC hit must be managed by the server because there is a % changce
+          this.emit('pdchit', { obj: A, pdc: B, collision: e });
+        }
+    }
+
+    endContact(e) {
+
+        let [A, B] = this.collisionUtils.getObjects(e);
+        if (!A || !B) return;
+
+        if (A instanceof PDC && !(B instanceof PDC)) {
+          // PDC hit must be managed by the server because there is a % changce
+          this.emit('endpdchit', { obj: B, pdc: A, collision: e });
+
+        } else if (B instanceof PDC && !(A instanceof PDC)) {
+          // PDC hit must be managed by the server because there is a % changce
+          this.emit('endpdchit', { obj: A, pdc: B, collision: e });
+        }
+    }
 
     processInput(inputData, playerId) {
 
@@ -335,13 +380,36 @@ export default class NvGameEngine extends GameEngine {
                 this.emit('firetorp', { ship: ship, targetId: targetId });
             }
 
-            if (inputData.input == 'pdc') {
 
-                let ship = this.getPlayerShip(playerId);
-                let hullData = Hulls[ship.hull];
-                if (hullData.pdc) {
-                    this.emit('pdc', { ship: ship, angle: inputData.options.angle, state: inputData.options.state });
+
+            if (inputData.input == 'pdcangle') {
+              let ship = this.getPlayerShip(playerId);
+              let hullData = Hulls[ship.hull];
+              if (hullData.pdc) {
+                let newAngle = ship.pdcAngle;
+                if (inputData.options.direction == '+') {
+                  newAngle = (newAngle + 0.02) % (Math.PI*2);
+                } else if (inputData.options.direction == '-') {
+                  newAngle = (newAngle - 0.02) % (Math.PI*2);
                 }
+                ship.pdcAngle = newAngle;
+              }
+            }
+
+            if (inputData.input == 'pdcstate') {
+              let ship = this.getPlayerShip(playerId);
+              let hullData = Hulls[ship.hull];
+              if (hullData.pdc) {
+                let newState = ship.pdcState;
+                if (inputData.options.direction == '+') {
+                  newState = newState + 1;
+                } else {
+                  newState = newState - 1;
+                }
+                if (newState < 0) newState = 0;
+                if (newState > 2) newState = 2;
+                this.emit('pdc', { ship: ship, angle: ship.pdcAngle, state: newState });
+              }
             }
 
             // handle target - signals only
@@ -383,16 +451,18 @@ export default class NvGameEngine extends GameEngine {
     // create ship
     addShip(params) {
 
+        let hullData = Hulls[params['hull']];
+
         // name, x, y, dX, dY, mass, hull, size, angle
         let s = new Ship(this, {}, {
-            mass: params['mass'], angularVelocity: 0,
+            mass: params['mass'] || hullData.mass, angularVelocity: 0,
             position: new TwoVector(params['x'], params['y']),
             velocity: new TwoVector(params['dX'], params['dY']),
             angle: params['angle']
         });
         s.name = params['name'];
         s.hull = params['hull'];
-        s.size = params['size'];
+        s.size = params['size'] || hullData.size;
         s.helmPlayerId = 0;
         s.navPlayerId = 0;
         s.signalsPlayerId = 0;
@@ -406,6 +476,11 @@ export default class NvGameEngine extends GameEngine {
         s.dockedId = params['dockedId'] || -1;
         s.docked = [];
         s.damage = params['damage'] || 0;
+
+        if (hullData.pdc) {
+          s.pdcState = 0;
+          s.pdcAngle = params['angle'];
+        }
 
         return this.addObjectToWorld(s);
     }

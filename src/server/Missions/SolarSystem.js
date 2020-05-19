@@ -54,7 +54,6 @@ export default class SolarSystem {
           dX: velocity.x,
           dY: velocity.y,
           hull: hullName,
-          mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
           angle: Math.PI,
           playable: 1
       });
@@ -77,7 +76,6 @@ export default class SolarSystem {
           dX: velocity.x,
           dY: velocity.y,
           hull: hullName2,
-          mass: hullData2.mass, size: hullData2.size, // need to read mass and size from hull
           angle: Math.PI,
           playable: 1
       });

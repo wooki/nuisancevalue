@@ -54,7 +54,6 @@ export default class TestMission {
         dX: -60,
         dY: 0,
         hull: hullName,
-        mass: hullData.mass, size: hullData.size, // need to read mass and size from hull
         angle: Math.PI,
         playable: 1
         // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
@@ -69,8 +68,6 @@ export default class TestMission {
         dX: 0-40,
         dY: 0-5,
         hull: hullName2,
-        mass: hullData2.mass,
-        size: hullData2.size, // need to read mass and size from hull
         angle: Math.PI*1.3,
         playable: 1,
         angularVelocity: Math.random()
@@ -104,7 +101,7 @@ export default class TestMission {
     });
 
     // random asteroids
-    let asteroidDistance = 4000;
+    let asteroidDistance = 6000;
     let asteroidDistanceVariance = 2000;
 
     for (let asteroidIndex = 0; asteroidIndex < 20; asteroidIndex++) {
