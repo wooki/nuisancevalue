@@ -81,6 +81,31 @@ export default {
 		return explosion;
 	},
 
+	addPDC(explosionSheet, pixiContainer, x, y, area, explosionSize, numberPerSecond, scale, minSize, zIndex) {
+
+		let useSize = this.getUseSize(scale, explosionSize, explosionSize, 0.01, minSize);
+
+		// recuce below 1 per frame by statisticallyadjusting
+		const frameRate = 1/60;
+		const number = 1/numberPerSecond;
+		const chance = frameRate / number;
+
+		// create a position a random distance from the x,y and a random rotation
+		for (let i = 0; i < number; i++) {
+
+			if (Math.random() < chance) {
+				let explosionCoord = new Victor(0, (Math.random()*area*scale));
+				explosionCoord = explosionCoord.rotateDeg(Math.random()*360);
+				explosionCoord = explosionCoord.add(new Victor(x, y));
+
+				this.addExplosion(explosionSheet,
+					pixiContainer,
+					useSize.useWidth, useSize.useHeight,
+					explosionCoord.x, explosionCoord.y, zIndex);
+			}
+		}
+	},
+
 	leaveTimer(message, rootEl) {
 		let p = new Promise(function(resolve, reject) {
 

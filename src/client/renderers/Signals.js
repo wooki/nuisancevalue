@@ -177,28 +177,7 @@ export default class SignalsRenderer {
     }
 
     addPDC(x, y, area, explosionSize, numberPerSecond) {
-
-      let useSize = UiUtils.getUseSize(settings.scale, explosionSize, explosionSize, 0.01, 16);
-
-      // recuce below 1 per frame by statisticallyadjusting
-      const frameRate = 1/60;
-      const number = 1/numberPerSecond;
-      const chance = frameRate / number;
-
-      // create a position a random distance from the x,y and a random rotation
-      for (let i = 0; i < number; i++) {
-
-        if (Math.random() < chance) {
-          let explosionCoord = new Victor(0, (Math.random()*area*settings.scale));
-          explosionCoord = explosionCoord.rotateDeg(Math.random()*360);
-          explosionCoord = explosionCoord.add(new Victor(x, y));
-
-          UiUtils.addExplosion(settings.resources[settings.baseUrl+Assets.Images.explosion].spritesheet,
-            mapContainer,
-            useSize.useWidth, useSize.useHeight,
-            explosionCoord.x, explosionCoord.y, settings.zIndex.explosion);
-        }
-      }
+      UiUtils.addPDC(settings.resources[settings.baseUrl+Assets.Images.explosion].spritesheet, mapContainer, x, y, area, explosionSize, numberPerSecond, settings.scale, 16, settings.zIndex.explosion);
     }
 
     destroyed(playerShip) {
@@ -800,7 +779,6 @@ export default class SignalsRenderer {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                 alias = 'asteroid';
             } else if (obj instanceof PDC) {
-                // texture = settings.resources[settings.baseUrl+Assets.Images.sol].texture;
                 // instead of drawing - always create a load of random small explosions
                 isPDC = true;
             } else if (obj instanceof Planet) {

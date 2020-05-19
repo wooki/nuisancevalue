@@ -83,7 +83,6 @@ export default class NvServerEngine extends ServerEngine {
         });
 
         this.gameEngine.on('endpdchit', e => {
-          console.dir(e.obj);
           e.pdc.removeContact(e.obj);
         });
 

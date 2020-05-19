@@ -5,6 +5,8 @@ import Assets from './Utils/images.js';
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {CRTFilter} from '@pixi/filter-crt';
+import PDC from './../../common/PDC';
+import Torpedo from './../../common/Torpedo';
 import Ship from './../../common/Ship';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
@@ -305,9 +307,6 @@ export default class GamesMasterRenderer {
         var input = document.getElementById("consoleInput");
         let obj = game.world.queryObject({ id: parseInt(guid) });
 
-        console.log("obj:");
-        console.dir(obj);
-
         let currentVal = input.value;
         if (!currentVal.endsWith(' ')) {
             currentVal = currentVal + ' ';
@@ -501,6 +500,7 @@ export default class GamesMasterRenderer {
                 gameObjects[objId] = true;
                 gameObjects[objId+'-label'] = true;
 
+                let ignore = false;
                 let texture = null;
                 let zIndex = settings.zIndex.asteroid;
                 let widthRatio = 1;
@@ -512,7 +512,9 @@ export default class GamesMasterRenderer {
                     zIndex = settings.zIndex.ship;
                     alias = obj.hull;
                     widthRatio = hullData.width;
-                } if (obj instanceof Asteroid) {
+                } else if (obj instanceof Torpedo || obj instanceof PDC) {
+                    ignore = true;
+                } else if (obj instanceof Asteroid) {
                     texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                     zIndex = settings.zIndex.asteroid;
                     alias = 'asteroid';
@@ -527,43 +529,45 @@ export default class GamesMasterRenderer {
                   predictColor = Assets.Colors.GridSmall;
                 }
 
-                let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                                     obj.physicsObj.position[1],
-                                                     settings.focus[0],
-                                                     settings.focus[1],
-                                                     pixiApp.screen.width,
-                                                     pixiApp.screen.height,
-                                                     0, // obj.physicsObj.angle, // might need to add Math.PI
-                                                     settings.scale);
+                if (!ignore) {
+                  let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
+                                                       obj.physicsObj.position[1],
+                                                       settings.focus[0],
+                                                       settings.focus[1],
+                                                       pixiApp.screen.width,
+                                                       pixiApp.screen.height,
+                                                       0, // obj.physicsObj.angle, // might need to add Math.PI
+                                                       settings.scale);
 
-                let angle = UiUtils.adjustAngle(obj.physicsObj.angle);
+                  let angle = UiUtils.adjustAngle(obj.physicsObj.angle);
 
-                if (!mapObjects[obj.id]) {
-                    this.addToMap(alias,
-                                  obj.id,
-                                  texture,
-                                  obj.size * widthRatio, obj.size,
-                                  coord.x, coord.y,
-                                  angle,
-                                  zIndex, settings.minimumScale, settings.minimumSpriteSize)
-                } else {
-                    // update position & scale
-                    mapObjects[obj.id].x = coord.x;
-                    mapObjects[obj.id].y = coord.y;
-                    let angle = UiUtils.adjustAngle(obj.physicsObj.angle);
-                    mapObjects[obj.id].rotation = angle;
-                    if (scaleChange) {
-                        let useSize = UiUtils.getUseSize(settings.scale, obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
-                        mapObjects[obj.id].width = useSize.useWidth;
-                        mapObjects[obj.id].height = useSize.useHeight;
-                    }
+                  if (!mapObjects[obj.id]) {
+                      this.addToMap(alias,
+                                    obj.id,
+                                    texture,
+                                    obj.size * widthRatio, obj.size,
+                                    coord.x, coord.y,
+                                    angle,
+                                    zIndex, settings.minimumScale, settings.minimumSpriteSize)
+                  } else {
+                      // update position & scale
+                      mapObjects[obj.id].x = coord.x;
+                      mapObjects[obj.id].y = coord.y;
+                      let angle = UiUtils.adjustAngle(obj.physicsObj.angle);
+                      mapObjects[obj.id].rotation = angle;
+                      if (scaleChange) {
+                          let useSize = UiUtils.getUseSize(settings.scale, obj.size, obj.size, settings.minimumScale, settings.minimumSpriteSize);
+                          mapObjects[obj.id].width = useSize.useWidth;
+                          mapObjects[obj.id].height = useSize.useHeight;
+                      }
 
-                    if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
-                        gameObjects[obj.id + '-label'] = true;
+                      if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
+                          gameObjects[obj.id + '-label'] = true;
 
-                        mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
-                        mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
-                    }
+                          mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
+                          mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
+                      }
+                  }
                 }
 
                 // predict the path for this object

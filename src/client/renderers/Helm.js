@@ -9,6 +9,7 @@ import {CRTFilter} from '@pixi/filter-crt';
 // import {OldFilmFilter} from '@pixi/filter-old-film';
 
 import Ship from './../../common/Ship';
+import PDC from './../../common/PDC';
 import Torpedo from './../../common/Torpedo';
 import Asteroid from './../../common/Asteroid';
 import Planet from './../../common/Planet';
@@ -213,6 +214,10 @@ export default class HelmRenderer {
           useSize.useWidth, useSize.useHeight,
           coord.x, coord.y, settings.zIndex.explosion);
       }
+    }
+
+    addPDC(x, y, area, explosionSize, numberPerSecond) {
+      UiUtils.addPDC(settings.resources[settings.baseUrl+Assets.Images.explosion].spritesheet, mapContainer, x, y, area, explosionSize, numberPerSecond, settings.scale, 32, settings.zIndex.explosion);
     }
 
     destroyed(playerShip) {
@@ -503,6 +508,7 @@ export default class HelmRenderer {
             drawnObjects[obj.id] = true;
             drawnObjects[obj.id + '-label'] = true;
 
+            let isPDC = false;
             let alias = obj.id;
             let texture = null;
             let zIndex = settings.zIndex.asteroid;
@@ -510,7 +516,10 @@ export default class HelmRenderer {
             if (obj instanceof Asteroid) {
                 texture = settings.resources[settings.baseUrl+Assets.Images.asteroid].texture;
                 alias = 'asteroid';
-            } else if (obj instanceof Planet) {
+              } else if (obj instanceof PDC) {
+                  // instead of drawing - always create a load of random small explosions
+                  isPDC = true;
+              } else if (obj instanceof Planet) {
                 texture = settings.resources[settings.baseUrl+Assets.Images[obj.texture]].texture;
                 zIndex = settings.zIndex.planet;
                 alias = obj.texture;
@@ -537,36 +546,40 @@ export default class HelmRenderer {
                                                  playerShip.physicsObj.angle,
                                                  settings.scale);
 
-            if (!mapObjects[obj.id]) {
-                if (obj instanceof Ship || obj instanceof Torpedo) {
-                      let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.05, 12);
-                      let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
-                      this.addSpriteToMap(shipSprite, alias, obj.id, false, useSize);
-                    } else {
-                      this.addToMap(alias,
-                              obj.id,
-                              texture,
-                              obj.size * widthRatio, obj.size,
-                              coord.x, coord.y,
-                              zIndex, 0.05, 12, false);
-                    }
+            if (isPDC) {
+              this.addPDC(coord.x, coord.y, obj.size, 200, 6);
             } else {
-                // update position
-                mapObjects[obj.id].x = coord.x;
-                mapObjects[obj.id].y = coord.y;
-                mapObjects[obj.id].rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
+                if (!mapObjects[obj.id]) {
+                  if (obj instanceof Ship || obj instanceof Torpedo) {
+                        let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.05, 12);
+                        let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                        this.addSpriteToMap(shipSprite, alias, obj.id, false, useSize);
+                      } else {
+                        this.addToMap(alias,
+                                obj.id,
+                                texture,
+                                obj.size * widthRatio, obj.size,
+                                coord.x, coord.y,
+                                zIndex, 0.05, 12, false);
+                      }
+              } else {
+                  // update position
+                  mapObjects[obj.id].x = coord.x;
+                  mapObjects[obj.id].y = coord.y;
+                  mapObjects[obj.id].rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
 
-                if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
-                    mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
-                    mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
-                }
-
-                if (obj instanceof Ship || obj instanceof Torpedo) {
-                  if (obj.engine || obj.engine == 0) {
-                    let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
-                    this.updateShipEngine(obj, obj.id, useSize);
+                  if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
+                      mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
+                      mapObjects[obj.id + '-label'].y = coord.y - (3 + Math.floor(mapObjects[obj.id].height/2));
                   }
-                }
+
+                  if (obj instanceof Ship || obj instanceof Torpedo) {
+                    if (obj.engine || obj.engine == 0) {
+                      let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                      this.updateShipEngine(obj, obj.id, useSize);
+                    }
+                  }
+              }
             }
 
             // if selected then highlight somehow
