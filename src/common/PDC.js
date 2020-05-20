@@ -59,35 +59,39 @@ export default class PDC extends PhysicalObject2D {
       }
     }
 
+    processSingleContact(obj) {
+
+      if (obj) {
+        // handle depending on type
+        if (obj instanceof Torpedo) {
+
+          // destruction chance (high because only on-enter)
+          if (Math.random() < 0.03) {
+            console.log("*HIT TORP");
+            try {
+              delete this.contacts[key];
+              game.removeObjectFromWorld(obj);
+            } catch (error) {
+            }
+          } else {
+            console.log("- MISS TORP");
+          }
+
+        } else if (obj instanceof Ship || obj instanceof Asteroid) {
+          game.emit('damage', { ship: obj, payload: Math.random()*50});
+        }
+      }
+
+    }
+
     processContact() {
 
       if (this.contacts) {
         Object.keys(this.contacts).forEach(function(key) {
 
           let A = this.contacts[key];
-          if (A) {
-            // handle depending on type
-            if (A instanceof Torpedo) {
+          this.processSingleContact(A);
 
-              // destruction chance (high because only on-enter)
-              if (Math.random() < 0.03) {
-                console.log("*HIT TORP");
-                try {
-                  delete this.contacts[key];
-                  game.removeObjectFromWorld(A);
-                } catch (error) {
-                }
-              } else {
-                console.log("- MISS TORP");
-              }
-
-            } else if (A instanceof Ship) {
-              game.emit('damage', { ship: A, payload: Math.random()*50});
-
-            } else if (A instanceof Asteroid) {
-              console.log("damage asteroid (from pdc)");
-            }
-          }
         }.bind(this));
       }
     }

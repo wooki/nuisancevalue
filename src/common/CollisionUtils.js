@@ -84,7 +84,6 @@ export default class CollisionUtils {
 
 
       } else { // anything else
-        console.log("OTHER COLLISION");
         // damage done is dependent on the change in velocity
         const acceleration_a = Victor.fromArray(e.bodyA.vlambda).magnitude();
         const acceleration_b = Victor.fromArray(e.bodyB.vlambda).magnitude();

@@ -12,8 +12,8 @@ import CollisionUtils from '../common/CollisionUtils';
 import SolarSystem from './Missions/SolarSystem';
 import TestMission from './Missions/TestMission';
 
-// 1 major damage for every 300, 1 minor damage for every 40 (left over)
-const severeDamageThreshold = 300;
+// 1 major damage for every 200, 1 minor damage for every 40 (left over)
+const severeDamageThreshold = 200;
 const lightDamageThreshold = 40;
 
 export default class NvServerEngine extends ServerEngine {
@@ -124,8 +124,8 @@ export default class NvServerEngine extends ServerEngine {
               }
             } else if (A instanceof Asteroid) {
 
-              console.log("damage asteroid");
-
+              console.log("damage asteroid:"+acceleration);
+              // TODO: damage asteroids
             }
         });
 

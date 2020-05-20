@@ -1,4 +1,5 @@
 import { GameEngine, P2PhysicsEngine, TwoVector } from 'lance-gg';
+import { Ray, RaycastResult } from 'p2';
 import Ship from './Ship';
 import Asteroid from './Asteroid';
 import Planet from './Planet';
@@ -130,6 +131,34 @@ export default class NvGameEngine extends GameEngine {
 
                     obj.pdc.physicsObj.position = [p.x, p.y];
                     obj.pdc.physicsObj.velocity = [v.x, v.y];
+
+                    // also fire a single ray from one ship to the other to hit anything directy between
+                    let ray = new Ray({
+                      mode: Ray.ALL,
+                      from: obj.physicsObj.position,
+                      to: obj.pdc.physicsObj.position,
+                      callback: function(result){                        
+                        // find the hit
+                        let hitObj = null;
+                        this.world.forEachObject((id, o) => {
+                          if (o.physicsObj === result.body) {
+                            hitObj = o;
+                          }
+                          if (hitObj) {
+                            if (hitObj === obj) {
+                              // hit firing ship (ignore)
+                            } else if (hitObj === obj.pdc) {
+                              // hit PDC (ignore)
+                            } else {
+                              // do damage
+                              obj.pdc.processSingleContact(hitObj);
+                            }
+                          }
+                        });
+                      }.bind(this)
+                    });
+                    let result = new RaycastResult();
+                    this.physicsEngine.world.raycast(result, ray);
                   }
                 }
 
