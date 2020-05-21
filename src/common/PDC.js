@@ -77,7 +77,9 @@ export default class PDC extends PhysicalObject2D {
           }
 
         } else if (obj instanceof Ship || obj instanceof Asteroid) {
-          game.emit('damage', { ship: obj, payload: Math.random()*50});
+          if (Math.random() < 0.2) {
+            game.emit('damage', { ship: obj, payload: Math.random()*50});
+          }
         }
       }
 
