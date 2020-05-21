@@ -65,16 +65,15 @@ export default class PDC extends PhysicalObject2D {
         // handle depending on type
         if (obj instanceof Torpedo) {
 
-          // destruction chance (high because only on-enter)
           if (Math.random() < 0.03) {
-            console.log("*HIT TORP");
+            console.log(" + TORP");
             try {
               delete this.contacts[key];
               game.removeObjectFromWorld(obj);
             } catch (error) {
             }
           } else {
-            console.log("- MISS TORP");
+            console.log(" - TORP");
           }
 
         } else if (obj instanceof Ship || obj instanceof Asteroid) {

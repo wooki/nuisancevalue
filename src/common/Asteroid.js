@@ -42,6 +42,8 @@ export default class Asteroid extends PhysicalObject2D {
 
     onRemoveFromWorld(gameEngine) {
         game.physicsEngine.world.removeBody(this.physicsObj);
+
+        gameEngine.emitonoff.emit('explosion', this);
     }
 
     toString() {
