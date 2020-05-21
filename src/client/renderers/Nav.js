@@ -346,11 +346,10 @@ export default class NavRenderer {
         let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
         sprites[guid] = new PIXI.Sprite(texture);
-        sprites[guid].filters = [ effects.hudGlow ];
+        // sprites[guid].filters = [ effects.hudGlow ];
         if (guid.toString().startsWith('waypoint-')) {
-            sprites[guid].filters = [ effects.waypointColor, effects.hudGlow ];
-        } else {
-            sprites[guid].filters = [ effects.hudGlow ];
+            // sprites[guid].filters = [ effects.waypointColor, effects.hudGlow ];
+            sprites[guid].filters = [ effects.waypointColor ];
         }
         sprites[guid].width = useSize.useWidth;
         sprites[guid].height = useSize.useHeight;

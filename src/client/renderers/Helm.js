@@ -318,7 +318,7 @@ export default class HelmRenderer {
 
       if (addLabel) {
           sprites[guid+'-label'] = new PIXI.Text(alias, {fontFamily : 'Arial', fontSize: 12, fill : 0xFFFFFF, align : 'center'});
-          sprites[guid+'-label'].filters = [ effects.hudGlow ];
+          // sprites[guid+'-label'].filters = [ effects.hudGlow ];
           sprites[guid+'-label'].anchor.set(0, 0.5);
           sprites[guid+'-label'].x = sprite.x + (3 + Math.floor(useSize.useWidth));
           sprites[guid+'-label'].y = sprite.y - (3 + Math.floor(useSize.useHeight));
@@ -418,9 +418,10 @@ export default class HelmRenderer {
         sprites[guid].y = y;
         sprites[guid].zIndex = zIndex;
         if (guid.toString().startsWith('waypoint-')) {
-            sprites[guid].filters = [ effects.waypointColor, effects.hudGlow ];
-        } else {
-            sprites[guid].filters = [ effects.hudGlow ];
+            // sprites[guid].filters = [ effects.waypointColor, effects.hudGlow ];
+            sprites[guid].filters = [ effects.waypointColor ];
+        // } else {
+        //     sprites[guid].filters = [ effects.hudGlow ];
         }
         // sprites[guid].tint = tint; // tint is rubbish - ships need color switch filters for palette
 
@@ -715,7 +716,8 @@ export default class HelmRenderer {
           sprites.target.x = coord.x;
           sprites.target.y = coord.y;
           sprites.target.zIndex = settings.zIndex.waypoints;
-          sprites.target.filters = [ effects.targetColor, effects.hudGlow ];
+          // sprites.target.filters = [ effects.targetColor, effects.hudGlow ];
+          sprites.target.filters = [ effects.targetColor ];
           mapContainer.addChild(sprites.target);
       }
     }
@@ -1040,7 +1042,7 @@ export default class HelmRenderer {
                               fill : 0xFFFFFF,
                               align : 'center'
                           });
-                          sprites.waypoints[waypoint.name].filters = [ effects.hudGlow ];
+                          // sprites.waypoints[waypoint.name].filters = [ effects.hudGlow ];
                           sprites.waypoints[waypoint.name].anchor.set(0.5);
                           sprites.waypoints[waypoint.name].x = Math.floor(settings.UiWidth / 2);
                           sprites.waypoints[waypoint.name].y = Math.floor(settings.UiHeight / 2);
@@ -1084,7 +1086,7 @@ export default class HelmRenderer {
                   // draw speed and gravity text
                   if (!sprites.speedText) {
                       sprites.speedText = new PIXI.Text(speed + SolarObjects.units.speed, {fontFamily : 'Arial', fontSize: 9, fill : 0xFFFFFF, align : 'center'});
-                      sprites.speedText.filters = [ effects.hudGlow ];
+                      // sprites.speedText.filters = [ effects.hudGlow ];
                       sprites.speedText.anchor.set(0.5);
                       sprites.speedText.x = Math.floor(settings.UiWidth / 2);
                       sprites.speedText.y = Math.floor(settings.UiHeight / 2);
@@ -1126,7 +1128,7 @@ export default class HelmRenderer {
                               fill : 0xFFFFFF,
                               align : 'center'
                           });
-                          sprites.gravityText.filters = [ effects.hudGlow ];
+                          // sprites.gravityText.filters = [ effects.hudGlow ];
                           sprites.gravityText.anchor.set(0.5);
                           sprites.gravityText.x = Math.floor(settings.UiWidth / 2);
                           sprites.gravityText.y = Math.floor(settings.UiHeight / 2);
