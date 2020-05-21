@@ -126,72 +126,60 @@ export default class NvServerEngine extends ServerEngine {
 
               console.log("damage asteroid:"+acceleration+" vs "+A.size);
 
-              // if larger than asteroid size then split the asteroid in two
+              let splitChance = 0.1;
               if (acceleration >= A.size) {
-                // remove asteroid, replace with two smaller
-                try{
-                  this.gameEngine.removeObjectFromWorld(A);
-                } catch (e) {}
+                splitChance = 0.8;
+              }
 
+              // remove asteroid, replace with two smaller
+              try{
+                this.gameEngine.removeObjectFromWorld(A);
+              } catch (e) {}
+
+              if (A.size > 50) {
                 // position 1/2 size away in random direction
                 // ( we dont know where the damage cafe from)
                 // add velocity in that same direction
                 let randomVector = new Victor(0, A.size/2);
-                console.log("-)"+A.size);
-                console.log("*)"+randomVector);
                 let r = Math.random() * 359;
-                console.log("r)"+r);
                 randomVector.rotateDeg(r);
-                console.log("*)"+randomVector);
-                let asteroid1Pos = Victor.fromArray(A.position);
+                let asteroid1Pos = Victor.fromObject(A.position);
                 asteroid1Pos.add(randomVector);
-                let asteroid1Vel = Victor.fromArray(A.velocity);
+                let asteroid1Vel = Victor.fromObject(A.velocity);
                 asteroid1Vel.add(randomVector.clone().normalize());
-                console.log("1)"+A.position);
-                console.log("2)"+asteroid1Pos);
-                console.log("3)"+randomVector);
-
-                randomVector.invert();
-                let asteroid2Pos = Victor.fromArray(A.position).add(randomVector);
-                let asteroid2Vel = Victor.fromArray(A.velocity).add(randomVector.clone().normalize());
 
                 let asteroid1 = this.gameEngine.addAsteroid({
-                  mass: A.mass * 0.49,
+                  mass: A.mass * 0.5,
                   angularVelocity: A.angularVelocity,
                   x: asteroid1Pos.x,
                   y: asteroid1Pos.y,
                   dX: asteroid1Vel.x,
                   dY: asteroid1Vel.y,
                   angle: Math.random() * 2 * Math.PI,
-                  size: A.size * 0.49
+                  size: A.size * 0.5
                 });
-                let asteroid2 = this.gameEngine.addAsteroid({
-                  mass: A.mass * 0.49,
-                  angularVelocity: 0 - A.angularVelocity,
-                  x: asteroid2Pos.x,
-                  y: asteroid2Pos.y,
-                  dX: asteroid2Vel.x,
-                  dY: asteroid2Vel.y,
-                  angle: Math.random() * 2 * Math.PI,
-                  size: A.size * 0.49
-                });
-                console.log("added.");
 
-              } else {
-                // remove asteroid, replace with one/two smaller
-                // console.log("B");
-                // try {
-                //   this.gameEngine.removeObjectFromWorld(A);
-                // } catch (e) {}
-
-
-                // if the damage size chunk is less than 50 then just remove it
+                randomVector.invert();
+                let asteroid2Pos = Victor.fromObject(A.position).add(randomVector);
+                let asteroid2Vel = Victor.fromObject(A.velocity).add(randomVector.clone().normalize());
+                let asteroid2sizeRatio = 0.4;
+                if (Math.random() < 0.5) {
+                  asteroid2sizeRatio = 0.2;
+                }
+                let asteroid2size = A.size * asteroid2sizeRatio;
+                if (asteroid2size > 25) {
+                  let asteroid2 = this.gameEngine.addAsteroid({
+                    mass: A.mass * asteroid2sizeRatio,
+                    angularVelocity: 0 - A.angularVelocity,
+                    x: asteroid2Pos.x,
+                    y: asteroid2Pos.y,
+                    dX: asteroid2Vel.x,
+                    dY: asteroid2Vel.y,
+                    angle: Math.random() * 2 * Math.PI,
+                    size: asteroid2size
+                  });
+                }
               }
-
-
-
-
-
 
             }
         });
