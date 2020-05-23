@@ -136,7 +136,7 @@ export default class NvServerEngine extends ServerEngine {
                 this.gameEngine.removeObjectFromWorld(A);
               } catch (e) {}
 
-              if (A.size > 80) {
+              if (A.size > 100) {
                 // position 1/2 size away in random direction
                 // ( we dont know where the damage cafe from)
                 // add velocity in that same direction
@@ -167,7 +167,7 @@ export default class NvServerEngine extends ServerEngine {
                   asteroid2sizeRatio = 0.15;
                 }
                 let asteroid2size = A.size * asteroid2sizeRatio;
-                if (asteroid2size > 25) {
+                if (asteroid2size > 50) {
                   let asteroid2 = this.gameEngine.addAsteroid({
                     mass: A.mass * asteroid2sizeRatio,
                     angularVelocity: 0 - A.angularVelocity,
