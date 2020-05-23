@@ -146,7 +146,7 @@ export default class NvServerEngine extends ServerEngine {
                 let asteroid1Pos = Victor.fromObject(A.position);
                 asteroid1Pos.add(randomVector);
                 let asteroid1Vel = Victor.fromObject(A.velocity);
-                asteroid1Vel.add(randomVector.clone().normalize());
+                asteroid1Vel.add(randomVector.clone().normalize().multiply(new Victor(acceleration, acceleration)));
 
                 let asteroid1 = this.gameEngine.addAsteroid({
                   mass: A.mass * 0.4,
