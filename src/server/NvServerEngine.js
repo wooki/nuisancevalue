@@ -136,7 +136,7 @@ export default class NvServerEngine extends ServerEngine {
                 this.gameEngine.removeObjectFromWorld(A);
               } catch (e) {}
 
-              if (A.size > 100 & splitChance < Math.random()) {
+              if (A.size > 100 && Math.random() < splitChance) {
                 // position 1/2 size away in random direction
                 // ( we dont know where the damage cafe from)
                 // add velocity in that same direction
