@@ -31,7 +31,7 @@ export default class TestMission {
         y: 100,
         dX: 7,
         dY: 0,
-        mass: 1, size: 300,
+        mass: 1, size: 1200,
         angle: Math.random() * 2 * Math.PI,
         angularVelocity: Math.random()
     });
@@ -82,7 +82,7 @@ export default class TestMission {
           dY: 0,
           mass: 0.0005, size: 30,
           angle: 0,
-          targetId: nv.id,
+          targetId: tug.id,
           fuel: 100,
           engine: 0
       });
@@ -119,7 +119,7 @@ export default class TestMission {
         v = v.rotateDeg(r);
 
         // mass
-        let asteroidSize = Math.random() * 600;
+        let asteroidSize = 200 + (Math.random() * 500);
 
         // add an actual asteroid
         game.addAsteroid({

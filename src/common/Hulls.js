@@ -10,7 +10,7 @@ export default {
 	"tug": {
 		name: 'Tug',
 		image: 'assets/ship.png',
-		size: 100, // used for height
+		size: 200, // used for height
 		width: 1, // ratio to height
 		mass: 0.055,
 		thrust: 0.04,
@@ -37,7 +37,7 @@ export default {
 	"bushido": {
 		name: 'Bushido',
 		image: 'assets/bushido.png',
-		size: 120, // used for height
+		size: 240, // used for height
 		width: 0.93, // ratio to height
 		mass: 0.012,
 		thrust: 0.05,
@@ -54,7 +54,7 @@ export default {
 	"blockade-runner": {
 		name: 'Blockade Runner',
 		image: 'assets/blockade-runner.png',
-		size: 200, // used for height
+		size: 400, // used for height
 		width: 0.53, // ratio to height
 		mass: 0.008,
 		thrust: 0.07,
@@ -67,7 +67,7 @@ export default {
 	"station": {
 		name: 'Station',
 		image: 'assets/station.png',
-		size: 280, // used for height
+		size: 560, // used for height
 		width: 1.07, // ratio to height
 		thrust: 0,
 		maneuver: 0,

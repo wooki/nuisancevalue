@@ -31,7 +31,7 @@ export default class SolarSystem {
           y: position.y,
           dX: velocity.x,
           dY: velocity.y,
-          mass: 0.1, size: 280, // need to read mass and size from hull
+          size: 560, // need to read mass and size from hull
           hull: 'station',
           commsScript: 0,
           dockedCommsScript: 1,
@@ -94,7 +94,7 @@ export default class SolarSystem {
           y: position.y,
           dX: velocity.x,
           dY: velocity.y,
-          mass: 0.03, size: 90, // need to read mass and size from hull
+          mass: 0.03, size: 180, // need to read mass and size from hull
           hull: 'station',
           commsScript: 0,
           dockedCommsScript: 1,
@@ -116,7 +116,7 @@ export default class SolarSystem {
           y: position.y,
           dX: velocity.x,
           dY: velocity.y,
-          mass: 0.07, size: 160, // need to read mass and size from hull
+          mass: 0.07, size: 320, // need to read mass and size from hull
           hull: 'station',
           commsScript: 0,
           dockedCommsScript: 1,
@@ -128,7 +128,7 @@ export default class SolarSystem {
       let asteroidDistance = SolarObjects.Mars.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mars.orbit) / 2);
       let asteroidDistanceVariance = SolarObjects.Jupiter.diameter * 15;
 
-      for (let asteroidIndex = 0; asteroidIndex < 12; asteroidIndex++) {
+      for (let asteroidIndex = 0; asteroidIndex < 20; asteroidIndex++) {
 
           // create a point and vector then rotate to a random position
           let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
@@ -147,7 +147,7 @@ export default class SolarSystem {
               y: position.y,
               dX: v.x,
               dY: v.y,
-              mass: Math.random() * 100, size: 40 + Math.random() * 250,
+              mass: Math.random() * 100, size: 200 + (Math.random() * 400),
               angle: Math.random() * 2 * Math.PI,
               angularVelocity: Math.random(),
               // fixedgravity: sol.id.toString()
