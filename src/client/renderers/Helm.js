@@ -56,6 +56,7 @@ export default class HelmRenderer {
       uiEls = {};
       leaveTimer = false;
       settings = {
+          zoom: 1,
           baseUrl: '/',
           mapSize: 10000,
           loadedSprites: false,
@@ -179,6 +180,7 @@ export default class HelmRenderer {
         // watch for zoom
         this.controls.bindKey('+', 'zoom', { }, { repeat: true, callback: (action, params) => {
           console.log('z');
+          // setZoom(settings, gridSize, zoom) {
         });
 
         // listen for explosion events
@@ -759,7 +761,9 @@ export default class HelmRenderer {
     }
 
     // update grid to reflect current position and
-    // create/update/delete PIXI objects to match the world
+    // create/upda// reset
+
+            te/delete PIXI objects to match the world
     draw(t, dt) {
 
         if (settings.loadedSprites) {

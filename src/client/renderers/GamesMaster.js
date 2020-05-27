@@ -1,6 +1,6 @@
 const PIXI = require('pixi.js');
 
-import KeyboardControls from '../NvKeyboardControls.js';
+import KeyboardControls from './Utils/KeyboardControls.js';
 import Assets from './Utils/images.js';
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';

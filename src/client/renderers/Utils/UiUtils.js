@@ -209,6 +209,14 @@ export default {
       settings.gridSize = Math.floor(gridSize * settings.scale);
   },
 
+	// update settings with recalcuated scale
+	setZoom(settings, gridSize, zoom) {
+
+		settings.scale = (settings.narrowUi / settings.mapSize) * zoom;
+		settings.gridSize = Math.floor(gridSize * settings.scale);
+	}
+
+
 	removeFromMap(mapObjects, sprites, guid) {
 			if (mapObjects[guid]) {
 					mapObjects[guid].destroy();
