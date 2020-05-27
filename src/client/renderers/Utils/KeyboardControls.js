@@ -210,7 +210,14 @@ class KeyboardControls {
                         let inputOptions = Object.assign({
                             movement: true
                         }, parameters || {});
-                        this.clientEngine.sendInput(this.boundKeys[keyName].actionName, inputOptions);
+
+                        // allow for a callback instead of sending straight to client
+                        if (inputOptions.callback) {
+                            inputOptions.callback(this.boundKeys[keyName].actionName, inputOptions);
+                        } else {
+                            this.clientEngine.sendInput(this.boundKeys[keyName].actionName, inputOptions);
+                        }
+
                         this.keyState[keyName].count++;
                     }
                 }

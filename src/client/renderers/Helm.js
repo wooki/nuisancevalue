@@ -1,6 +1,6 @@
 const PIXI = require('pixi.js');
 
-import KeyboardControls from '../NvKeyboardControls.js';
+import KeyboardControls from './Utils/KeyboardControls.js';
 import Assets from './Utils/images.js';
 import {GlowFilter} from '@pixi/filter-glow';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
@@ -175,6 +175,11 @@ export default class HelmRenderer {
         this.controls.bindKey('right', 'maneuver', { }, { direction: 'r' });
         this.controls.bindKey('up', 'engine', { }, { level: '+' });
         this.controls.bindKey('down', 'engine', { }, { level: '-' });
+
+        // watch for zoom
+        this.controls.bindKey('+', 'zoom', { }, { repeat: true, callback: (action, params) => {
+          console.log('z');
+        });
 
         // listen for explosion events
         gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
