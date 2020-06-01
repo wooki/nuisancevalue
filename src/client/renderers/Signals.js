@@ -28,6 +28,7 @@ let game = null;
 let client = null;
 const GridDefault = 10000;
 let settings = {
+    zoom: 1,
     baseUrl: '/',
     mapSize: 36000, // this is set in setSizes
     loadedSprites: false,
@@ -144,6 +145,22 @@ export default class SignalsRenderer {
         this.controls.bindKey('right', 'pdcangle', { repeat: true }, { direction: '+' });
         this.controls.bindKey('up', 'pdcstate', { }, { direction: '+' });
         this.controls.bindKey('down', 'pdcstate', { }, { direction: '-' });
+
+        // watch for zoom
+        this.controls.bindKey('add', 'zoom', { repeat: true }, { callback: (action, params) => {
+          let zoom = settings.zoom + 0.02;
+          if (zoom > 2) zoom = 2;
+          UiUtils.setZoom(settings, GridDefault, zoom);
+          this.createGrid();
+          UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
+        }});
+        this.controls.bindKey('subtract', 'zoom', { repeat: true }, { callback: (action, params) => {
+          let zoom = settings.zoom - 0.02;
+          if (zoom < 0.1) zoom = 0.1;
+          UiUtils.setZoom(settings, GridDefault, zoom);
+          this.createGrid();
+          UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
+        }});
 
         // listen for explosion events
         gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
@@ -459,6 +476,8 @@ export default class SignalsRenderer {
             sprites.pdcHud.rotation = rotation;
             mapContainer.addChild(sprites.pdcHud);
           } else {
+            sprites.pdcHud.width = hullData.pdc.range * 2 * settings.scale;
+            sprites.pdcHud.height = hullData.pdc.range * 2 * settings.scale;
             sprites.pdcHud.rotation = rotation;
             sprites.pdcHud.visible = true;
           }
@@ -548,14 +567,20 @@ export default class SignalsRenderer {
       return sprite;
     }
 
-    updateShipEngine(ship, guid, useSize) {
+    updateShipScale(ship, guid, useSize) {
 
-      let hullData = Hulls[ship.hull];
-      if (hullData.enginePositions) {
+      let sprite = mapObjects[guid];
+      if (sprite) {
 
-        let sprite = mapObjects[guid];
+        let hullSprite = sprite.getChildByName('hull');
+        if (hullSprite) {
+          hullSprite.width = useSize.useWidth;
+          hullSprite.height = useSize.useHeight;
+        }
 
-        if (sprite) {
+        let hullData = Hulls[ship.hull];
+        if (hullData && hullData.enginePositions) {
+
           hullData.enginePositions.forEach(function(e, i) {
             let size = (ship.engine || 0) * useSize.useWidth * e[0];
 
@@ -569,6 +594,7 @@ export default class SignalsRenderer {
           });
         }
       }
+
     }
 
     createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
@@ -660,38 +686,28 @@ export default class SignalsRenderer {
             sprites.gridSprite = null;
         }
 
-        // add a background image
-        let backgroundTexture = settings.resources[settings.baseUrl+Assets.Images.space].texture;
-        sprites.backgroundSprite = new PIXI.TilingSprite(backgroundTexture, 1024, 1024);
-        sprites.backgroundSprite.anchor.set(0.5);
-        sprites.backgroundSprite.x = Math.floor(settings.UiWidth / 2);
-        sprites.backgroundSprite.y = Math.floor(settings.UiHeight / 2);
-        sprites.backgroundSprite.width = settings.UiWidth;
-        sprites.backgroundSprite.height = settings.UiHeight;
-        sprites.backgroundSprite.zIndex = settings.zIndex.background;
-        mapContainer.addChild(sprites.backgroundSprite);
-
         // create a texture for the grid background
         let gridGraphics = new PIXI.Graphics();
         // once the grid is large draw extra lines
         let smallGridDivisions = 10;
         settings.smallGridDimenion = settings.GridDefault / 10;
+        let lineWidth = 1;
 
         // draw grid depending on sizes
-        let smallGridSize = Math.round(settings.gridSize/smallGridDivisions);
-        gridGraphics.lineStyle(1, Assets.Colors.GridSmall);
-        for (let iX = 0; iX < (smallGridDivisions-1); iX++) {
-          gridGraphics.moveTo(smallGridSize*iX, 1); gridGraphics.lineTo(smallGridSize*iX, settings.gridSize - 1);
+        if (settings.zoom > 0.25 && settings.zoom < 1.25) {
+          let smallGridSize = Math.round(settings.gridSize/smallGridDivisions);
+          gridGraphics.lineStyle(lineWidth, Assets.Colors.GridSmall);
+          for (let iX = 0; iX < (smallGridDivisions-lineWidth); iX++) {
+            gridGraphics.moveTo(smallGridSize*iX, lineWidth); gridGraphics.lineTo(smallGridSize*iX, settings.gridSize - lineWidth);
+          }
+          gridGraphics.moveTo(settings.gridSize - smallGridSize, lineWidth); gridGraphics.lineTo(settings.gridSize - smallGridSize, settings.gridSize - lineWidth);
+
+          for (let iY = 0; iY < (smallGridDivisions-1); iY++) {
+            gridGraphics.moveTo(lineWidth, smallGridSize*iY); gridGraphics.lineTo(settings.gridSize - lineWidth, smallGridSize*iY);
+          }
+          gridGraphics.moveTo(lineWidth, settings.gridSize - smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, settings.gridSize - smallGridSize);
         }
-        gridGraphics.moveTo(settings.gridSize - smallGridSize, 1); gridGraphics.lineTo(settings.gridSize - smallGridSize, settings.gridSize - 1);
-
-        for (let iY = 0; iY < (smallGridDivisions-1); iY++) {
-          gridGraphics.moveTo(1, smallGridSize*iY); gridGraphics.lineTo(settings.gridSize - 1, smallGridSize*iY);
-        }
-        gridGraphics.moveTo(1, settings.gridSize - smallGridSize); gridGraphics.lineTo(settings.gridSize - 1, settings.gridSize - smallGridSize);
-
-
-        gridGraphics.lineStyle(1, Assets.Colors.Grid);
+        gridGraphics.lineStyle(lineWidth, Assets.Colors.Grid);
         gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
 
         let gridTexture = pixiApp.renderer.generateTexture(gridGraphics);
@@ -710,6 +726,17 @@ export default class SignalsRenderer {
 
         settings.loadedSprites = true;
         settings.resources = resources;
+
+        // add a background image
+        let backgroundTexture = settings.resources[settings.baseUrl+Assets.Images.space].texture;
+        sprites.backgroundSprite = new PIXI.TilingSprite(backgroundTexture, 1024, 1024);
+        sprites.backgroundSprite.anchor.set(0.5);
+        sprites.backgroundSprite.x = Math.floor(settings.UiWidth / 2);
+        sprites.backgroundSprite.y = Math.floor(settings.UiHeight / 2);
+        sprites.backgroundSprite.width = settings.UiWidth;
+        sprites.backgroundSprite.height = settings.UiHeight;
+        sprites.backgroundSprite.zIndex = settings.zIndex.background;
+        mapContainer.addChild(sprites.backgroundSprite);
 
         this.createGrid();
 
@@ -814,10 +841,10 @@ export default class SignalsRenderer {
             if (isPDC) {
               this.addPDC(coord.x, coord.y, obj.size, 200, 6);
             } else {
+              let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.01, 12);
               if (!mapObjects[obj.id]) {
                   if (obj instanceof Ship || obj instanceof Torpedo) {
-                    let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.05, 12);
-                    let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                    let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.01, 12);
                     this.addInteractiveSpriteToMap(shipSprite, alias, obj.id, false, useSize);
                   } else {
                     this.addInteractiveToMap(alias,
@@ -825,13 +852,15 @@ export default class SignalsRenderer {
                             texture,
                             obj.size * widthRatio, obj.size,
                             coord.x, coord.y,
-                            zIndex, 0.05, 12, labelObj)
+                            zIndex, 0.01, 12, labelObj)
                   }
               } else {
                   // update position
                   mapObjects[obj.id].x = coord.x;
                   mapObjects[obj.id].y = coord.y;
                   mapObjects[obj.id].rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
+                  mapObjects[obj.id].width = useSize.useWidth;
+                  mapObjects[obj.id].height = useSize.useHeight;
 
                   if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
                       mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
@@ -840,8 +869,8 @@ export default class SignalsRenderer {
 
                   if (obj instanceof Ship || obj instanceof Torpedo) {
                     if (obj.engine || obj.engine == 0) {
-                      let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
-                      this.updateShipEngine(obj, obj.id, useSize);
+                      let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.01, 12);
+                      this.updateShipScale(obj, obj.id, useSize);
                     }
                   }
               }
@@ -1003,7 +1032,7 @@ export default class SignalsRenderer {
                       playershipSprite.on('mousedown', (e) => { this.objectClick(playerShip.id, e) });
                       playershipSprite.on('touchstart', (e) => { this.objectClick(playerShip.id, e) });
                   } else {
-                    this.updateShipEngine(playerShip, playerShip.id, useSize);
+                    this.updateShipScale(playerShip, playerShip.id, useSize);
                   }
 
                   if (playerShip.targetId == settings.playerShipId) {

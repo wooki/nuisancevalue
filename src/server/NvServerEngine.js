@@ -11,6 +11,7 @@ import Damage from '../common/Damage';
 import CollisionUtils from '../common/CollisionUtils';
 import SolarSystem from './Missions/SolarSystem';
 import TestMission from './Missions/TestMission';
+import SimpleTestMission from './Missions/SimpleTestMission';
 
 // 1 major damage for every 200, 1 minor damage for every 40 (left over)
 const severeDamageThreshold = 200;
@@ -23,7 +24,7 @@ export default class NvServerEngine extends ServerEngine {
         this.collisionUtils = new CollisionUtils(gameEngine);
         this.damage = new Damage();
         this.mission = null;
-        this.missions = [TestMission, SolarSystem];
+        this.missions = [TestMission, SimpleTestMission, SolarSystem];
     }
 
     // remove everything from the game
@@ -124,8 +125,6 @@ export default class NvServerEngine extends ServerEngine {
               }
             } else if (A instanceof Asteroid) {
 
-              console.log("damage asteroid:"+acceleration+" vs "+A.size);
-
               let splitChance = 0.1;
               if (acceleration >= A.size) {
                 splitChance = 0.8;
@@ -136,7 +135,7 @@ export default class NvServerEngine extends ServerEngine {
                 this.gameEngine.removeObjectFromWorld(A);
               } catch (e) {}
 
-              if (A.size > 200 && Math.random() < splitChance) {
+              if (A.size > 200 || Math.random() < splitChance) {
                 // position 1/2 size away in random direction
                 // ( we dont know where the damage cafe from)
                 // add velocity in that same direction

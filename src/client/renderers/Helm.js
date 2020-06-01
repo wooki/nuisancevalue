@@ -178,10 +178,20 @@ export default class HelmRenderer {
         this.controls.bindKey('down', 'engine', { }, { level: '-' });
 
         // watch for zoom
-        this.controls.bindKey('+', 'zoom', { }, { repeat: true, callback: (action, params) => {
-          console.log('z');
-          // setZoom(settings, gridSize, zoom) {
-        });
+        this.controls.bindKey('add', 'zoom', { repeat: true }, { callback: (action, params) => {
+          let zoom = settings.zoom + 0.02;
+          if (zoom > 2) zoom = 2;
+          UiUtils.setZoom(settings, GridDefault, zoom);
+          this.createGrid();
+          UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
+        }});
+        this.controls.bindKey('subtract', 'zoom', { repeat: true }, { callback: (action, params) => {
+          let zoom = settings.zoom - 0.02;
+          if (zoom < 0.1) zoom = 0.1;
+          UiUtils.setZoom(settings, GridDefault, zoom);
+          this.createGrid();
+          UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
+        }});
 
         // listen for explosion events
         gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
@@ -195,7 +205,6 @@ export default class HelmRenderer {
     }
 
     setEngine(level) {
-        settings.engineLevel = level;
         client.setEngine(level);
     }
 
@@ -340,14 +349,20 @@ export default class HelmRenderer {
       return sprite;
     }
 
-    updateShipEngine(ship, guid, useSize) {
+    updateShipScale(ship, guid, useSize) {
 
-      let hullData = Hulls[ship.hull];
-      if (hullData.enginePositions) {
+      let sprite = mapObjects[guid];
+      if (sprite) {
 
-        let sprite = mapObjects[guid];
+        let hullSprite = sprite.getChildByName('hull');
+        if (hullSprite) {
+          hullSprite.width = useSize.useWidth;
+          hullSprite.height = useSize.useHeight;
+        }
 
-        if (sprite) {
+        let hullData = Hulls[ship.hull];
+        if (hullData && hullData.enginePositions) {
+
           hullData.enginePositions.forEach(function(e, i) {
             let size = (ship.engine || 0) * useSize.useWidth * e[0];
 
@@ -361,6 +376,7 @@ export default class HelmRenderer {
           });
         }
       }
+
     }
 
     createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
@@ -387,6 +403,7 @@ export default class HelmRenderer {
       body.x = useSize.useWidth;
       body.y = useSize.useHeight;
       body.zIndex = 10;
+      body.name = 'hull';
       container.addChild(body);
 
       // create the engine sprite
@@ -435,6 +452,31 @@ export default class HelmRenderer {
         return this.addSpriteToMap(sprites[guid], alias, guid, addLabel, useSize);
     }
 
+    createGrid() {
+
+        // remove old one
+        if (sprites.gridSprite) {
+            mapContainer.removeChild(sprites.gridSprite);
+            sprites.gridSprite.destroy(true);
+            sprites.gridSprite = null;
+        }
+
+        // create a texture for the grid background
+        let gridGraphics = new PIXI.Graphics();
+        gridGraphics.lineStyle(1, Assets.Colors.Grid);
+        gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
+        let gridTexture = pixiApp.renderer.generateTexture(gridGraphics);
+        gridGraphics.destroy();
+        sprites.gridSprite = new PIXI.TilingSprite(gridTexture, settings.gridSize, settings.gridSize);
+        sprites.gridSprite.anchor.set(0.5);
+        sprites.gridSprite.x = Math.floor(settings.UiWidth / 2);
+        sprites.gridSprite.y = Math.floor(settings.UiHeight / 2);
+        sprites.gridSprite.width = settings.UiWidth;
+        sprites.gridSprite.height = settings.UiHeight;
+        sprites.gridSprite.zIndex = settings.zIndex.grid;
+        mapContainer.addChild(sprites.gridSprite);
+    }
+
     loadResources(loader, resources) {
 
         settings.loadedSprites = true;
@@ -451,21 +493,7 @@ export default class HelmRenderer {
         sprites.backgroundSprite.zIndex = settings.zIndex.background;
         mapContainer.addChild(sprites.backgroundSprite);
 
-        // create a texture for the grid background
-        let gridGraphics = new PIXI.Graphics();
-        gridGraphics.lineStyle(1, Assets.Colors.Grid);
-        gridGraphics.drawRect(0, 0, settings.gridSize, settings.gridSize);
-        let gridTexture = pixiApp.renderer.generateTexture(gridGraphics);
-        gridGraphics.destroy();
-        sprites.gridSprite = new PIXI.TilingSprite(gridTexture, settings.gridSize, settings.gridSize);
-        sprites.gridSprite.anchor.set(0.5);
-        sprites.gridSprite.x = Math.floor(settings.UiWidth / 2);
-        sprites.gridSprite.y = Math.floor(settings.UiHeight / 2);
-        sprites.gridSprite.width = settings.UiWidth;
-        sprites.gridSprite.height = settings.UiHeight;
-        sprites.gridSprite.zIndex = settings.zIndex.grid;
-        mapContainer.addChild(sprites.gridSprite);
-
+        this.createGrid();
 
         // UI create a texture to overlay on top of the background
         let dashboardGraphics = new PIXI.Graphics();
@@ -557,10 +585,10 @@ export default class HelmRenderer {
             if (isPDC) {
               this.addPDC(coord.x, coord.y, obj.size, 200, 6);
             } else {
+              let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.01, 12);
                 if (!mapObjects[obj.id]) {
                   if (obj instanceof Ship || obj instanceof Torpedo) {
-                        let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.05, 12);
-                        let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
+                        let shipSprite = this.createShipSprite(obj, obj.size * widthRatio, obj.size, coord.x, coord.y, zIndex, 0.01, 12);
                         this.addSpriteToMap(shipSprite, alias, obj.id, false, useSize);
                       } else {
                         this.addToMap(alias,
@@ -568,13 +596,15 @@ export default class HelmRenderer {
                                 texture,
                                 obj.size * widthRatio, obj.size,
                                 coord.x, coord.y,
-                                zIndex, 0.05, 12, false);
+                                zIndex, 0.01, 12, false);
                       }
               } else {
-                  // update position
+                  // update position (AND SIZE)
                   mapObjects[obj.id].x = coord.x;
                   mapObjects[obj.id].y = coord.y;
                   mapObjects[obj.id].rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
+                  mapObjects[obj.id].width = useSize.useWidth;
+                  mapObjects[obj.id].height = useSize.useHeight;
 
                   if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
                       mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
@@ -583,8 +613,8 @@ export default class HelmRenderer {
 
                   if (obj instanceof Ship || obj instanceof Torpedo) {
                     if (obj.engine || obj.engine == 0) {
-                      let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.05, 12);
-                      this.updateShipEngine(obj, obj.id, useSize);
+                      let useSize = UiUtils.getUseSize(settings.scale, obj.size * widthRatio, obj.size, 0.01, 12);
+                      this.updateShipScale(obj, obj.id, useSize);
                     }
                   }
               }
@@ -761,9 +791,7 @@ export default class HelmRenderer {
     }
 
     // update grid to reflect current position and
-    // create/upda// reset
-
-            te/delete PIXI objects to match the world
+    // create/update/delete PIXI objects to match the world
     draw(t, dt) {
 
         if (settings.loadedSprites) {
@@ -846,7 +874,18 @@ export default class HelmRenderer {
                       let playershipSprite = this.createShipSprite(playerShip, playerShip.size * hullData.width, playerShip.size, Math.floor(pixiApp.screen.width / 2), Math.floor(pixiApp.screen.height / 2), settings.zIndex.ship, 0.01, 16);
                       this.addSpriteToMap(playershipSprite, playerShip.name, playerShip.id, true, useSize);
                   } else {
-                    this.updateShipEngine(playerShip, playerShip.id, useSize);
+
+                    // set size
+                    // mapObjects[playerShip.id].pivot.x = useSize.useWidth;
+                    // mapObjects[playerShip.id].pivot.y = useSize.useHeight;
+                    // let hullSprite = sprite.getChildByName('exhaust-'+i);
+                    // if (mapObjects[playerShip.id].width != useSize.useWidth * 2) {
+                    //   mapObjects[playerShip.id].width = useSize.useWidth * 2;
+                    //   mapObjects[playerShip.id].height = useSize.useHeight * 2;
+                    // } else {
+                      this.updateShipScale(playerShip, playerShip.id, useSize);
+                    // }
+
                   }
 
                   // set the player ship rotation
@@ -893,9 +932,6 @@ export default class HelmRenderer {
 
                   // update the grid
                   UiUtils.updateGrid(settings, sprites, playerShip.physicsObj.position[0], playerShip.physicsObj.position[1]);
-
-                  // update engine
-                  settings.engineLevel = playerShip.engine;
 
                   // set the engine buttons
                   if (playerShip.engine !== undefined) {

@@ -25,7 +25,7 @@ export default class LobbyRenderer {
       title.innerHTML = 'Nuisance Value Lobby';
       el.append(title);
 
-      let missions = ['Load Test Mission', 'Load Solar System'];
+      let missions = ['Load Test Mission', 'Simple Test Mission', 'Load Solar System'];
       let missionsEl = document.createElement('div');
       missionsEl.classList.add('missions');
       el.append(missionsEl);
