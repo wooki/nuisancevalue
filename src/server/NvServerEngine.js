@@ -161,9 +161,9 @@ export default class NvServerEngine extends ServerEngine {
                 randomVector.invert();
                 let asteroid2Pos = Victor.fromObject(A.position).add(randomVector);
                 let asteroid2Vel = Victor.fromObject(A.velocity).add(randomVector.clone().normalize());
-                let asteroid2sizeRatio = 0.3;
+                let asteroid2sizeRatio = 0.5;
                 if (Math.random() < 0.5) {
-                  asteroid2sizeRatio = 0.15;
+                  asteroid2sizeRatio = 0.2;
                 }
                 let asteroid2size = A.size * asteroid2sizeRatio;
                 if (asteroid2size > 50) {

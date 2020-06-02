@@ -24,26 +24,25 @@ export default class TorpedoAi {
 			direction = new Victor(0 - direction.x, direction.y);
 
 			// estimate time to arrive - this isn't very accurarte but good enough
-			let time = direction / ourVelocity.magnitude();
-			if (time < 0 || isNaN(time)) time = 1;
-			if (time > 30) time = 1;
+			const maxPredictionTime = 30;
 
-			// given estimate to arrive at target, re-do with a new updated position
-			if (time > 5) {
+			let closing = -1 * ((ourVelocity.clone().subtract(theirVelocity)).dot(direction) / direction.length());
+			let time = direction.length() / closing;
+			if (closing < 0) closing = 1;
+
+			if (time < 0 || isNaN(time)) time = 1;
+			if (time > maxPredictionTime) time = 1;
+
+			if (time > 10) {
+				// for long distance try and predict
 				let predictedPath = Utils.predictPath(target, time);
 				theirPos = predictedPath[predictedPath.length - 1];
 
-				// re-do direction and time estimates based on predicted position
-				direction = theirPos.clone().subtract(ourPos);
-				direction = new Victor(0 - direction.x, direction.y);
-				time = direction / ourVelocity.magnitude();
-				if (time < 0 || isNaN(time)) time = 1;
-				if (time > 30) time = 1;
+			} else if (time > 1) {
+				// set the target position to their current position plus our relative velocity over the time
+				let theirPredictedVelocity = theirVelocity.multiply(new Victor(time, time));
+				theirPos = theirPos.add(theirPredictedVelocity);
 			}
-
-			// set the target position to their current position plus our relative velocity over the time
-			let predictedPos = relativeVelocity.multiply(new Victor(time, time));
-			theirPos = theirPos.add(predictedPos);
 
 			// recalculate
 			direction = theirPos.clone().subtract(ourPos);
