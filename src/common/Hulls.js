@@ -26,7 +26,7 @@ export default {
 		size: 30, // used for height
 		width: 0.1875, // ratio to height
 		mass: 0.0001,
-		thrust: 0.3,
+		thrust: 2,
 		maneuver: 0.0005,
 		enginePositions: [[5, 0.5, 1.0]],// [scale, %x, %y]
 		exhaustImage: 'exhaustflame', // or exhaust
