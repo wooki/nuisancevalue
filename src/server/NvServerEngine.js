@@ -135,18 +135,19 @@ export default class NvServerEngine extends ServerEngine {
                 this.gameEngine.removeObjectFromWorld(A);
               } catch (e) {}
 
-              if (A.size > 200 && Math.random() < splitChance) {
-                // position 1/2 size away in random direction
-                // ( we dont know where the damage cafe from)
-                // add velocity in that same direction
-                let randomVector = new Victor(0, A.size/2);
-                let r = Math.random() * 359;
-                randomVector.rotateDeg(r);
-                let asteroid1Pos = Victor.fromObject(A.position);
-                asteroid1Pos.add(randomVector);
-                let asteroid1Vel = Victor.fromObject(A.velocity);
-                asteroid1Vel.add(randomVector.clone().normalize().multiply(new Victor(acceleration, acceleration)));
+              // position 1/2 size away in random direction
+              // ( we dont know where the damage cafe from)
+              // add velocity in that same direction
+              let randomVector = new Victor(0, A.size/2);
+              let r = Math.random() * 359;
+              randomVector.rotateDeg(r);
+              let asteroid1Pos = Victor.fromObject(A.position);
+              asteroid1Pos.add(randomVector);
+              let asteroid1Vel = Victor.fromObject(A.velocity);
+              asteroid1Vel.add(randomVector.clone().normalize().multiply(new Victor(acceleration, acceleration)));
+              let asteroid1size = A.size * 0.4;
 
+              if (asteroid1size > 100) {
                 let asteroid1 = this.gameEngine.addAsteroid({
                   mass: A.mass * 0.4,
                   angularVelocity: A.angularVelocity,
@@ -155,29 +156,29 @@ export default class NvServerEngine extends ServerEngine {
                   dX: asteroid1Vel.x,
                   dY: asteroid1Vel.y,
                   angle: Math.random() * 2 * Math.PI,
-                  size: A.size * 0.4
+                  size: asteroid1size
                 });
+              }
 
-                randomVector.invert();
-                let asteroid2Pos = Victor.fromObject(A.position).add(randomVector);
-                let asteroid2Vel = Victor.fromObject(A.velocity).add(randomVector.clone().normalize());
-                let asteroid2sizeRatio = 0.5;
-                if (Math.random() < 0.5) {
-                  asteroid2sizeRatio = 0.2;
-                }
-                let asteroid2size = A.size * asteroid2sizeRatio;
-                if (asteroid2size > 50) {
-                  let asteroid2 = this.gameEngine.addAsteroid({
-                    mass: A.mass * asteroid2sizeRatio,
-                    angularVelocity: 0 - A.angularVelocity,
-                    x: asteroid2Pos.x,
-                    y: asteroid2Pos.y,
-                    dX: asteroid2Vel.x,
-                    dY: asteroid2Vel.y,
-                    angle: Math.random() * 2 * Math.PI,
-                    size: asteroid2size
-                  });
-                }
+              randomVector.invert();
+              let asteroid2Pos = Victor.fromObject(A.position).add(randomVector);
+              let asteroid2Vel = Victor.fromObject(A.velocity).add(randomVector.clone().normalize());
+              let asteroid2sizeRatio = 0.5;
+              if (Math.random() < 0.5) {
+                asteroid2sizeRatio = 0.2;
+              }
+              let asteroid2size = A.size * asteroid2sizeRatio;
+              if (asteroid2size > 100 && Math.random() < splitChance) {
+                let asteroid2 = this.gameEngine.addAsteroid({
+                  mass: A.mass * asteroid2sizeRatio,
+                  angularVelocity: 0 - A.angularVelocity,
+                  x: asteroid2Pos.x,
+                  y: asteroid2Pos.y,
+                  dX: asteroid2Vel.x,
+                  dY: asteroid2Vel.y,
+                  angle: Math.random() * 2 * Math.PI,
+                  size: asteroid2size
+                });
               }
 
             }

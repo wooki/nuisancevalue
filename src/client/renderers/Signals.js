@@ -148,15 +148,15 @@ export default class SignalsRenderer {
 
         // watch for zoom
         this.controls.bindKey('add', 'zoom', { repeat: true }, { callback: (action, params) => {
-          let zoom = settings.zoom + 0.02;
+          let zoom = settings.zoom * 1.02;
           if (zoom > 2) zoom = 2;
           UiUtils.setZoom(settings, GridDefault, zoom);
           this.createGrid();
           UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
         }});
         this.controls.bindKey('subtract', 'zoom', { repeat: true }, { callback: (action, params) => {
-          let zoom = settings.zoom - 0.02;
-          if (zoom < 0.1) zoom = 0.1;
+          let zoom = settings.zoom * 0.98;
+          if (zoom < 0.2) zoom = 0.2;
           UiUtils.setZoom(settings, GridDefault, zoom);
           this.createGrid();
           UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
@@ -569,46 +569,56 @@ export default class SignalsRenderer {
 
     updateShipScale(ship, guid, useSize) {
 
+      let zoom = settings.zoom;
+      if (zoom < 0.5) zoom = 0.5; // hard-coded min here (needs to work with useSize stuff somehow)
+
       let sprite = mapObjects[guid];
       if (sprite) {
+        sprite.scale.set(zoom, zoom);
 
-        let hullSprite = sprite.getChildByName('hull');
-        if (hullSprite) {
-          hullSprite.width = useSize.useWidth;
-          hullSprite.height = useSize.useHeight;
-        }
+      //   let hullSprite = sprite.getChildByName('hull');
+      //   if (hullSprite) {
+      //     hullSprite.width = useSize.useWidth;
+      //     hullSprite.height = useSize.useHeight;
+      //   }
+      //
+      let hullData = Hulls[ship.hull];
+      if (hullData && hullData.enginePositions) {
 
-        let hullData = Hulls[ship.hull];
-        if (hullData && hullData.enginePositions) {
+        hullData.enginePositions.forEach(function(e, i) {
+          let scale = e[0] * (ship.engine || 0) / 5;
 
-          hullData.enginePositions.forEach(function(e, i) {
-            let size = (ship.engine || 0) * useSize.useWidth * e[0];
+          // scale based on ship engine level
+          let exhaustSprite = sprite.getChildByName('exhaust-'+i);
+          if (exhaustSprite) {
+            exhaustSprite.scale.set(scale, scale);
+          }
 
-            // scale based on ship engine level
-            let exhaustSprite = sprite.getChildByName('exhaust-'+i);
-            if (exhaustSprite) {
-              exhaustSprite.width = size;
-              exhaustSprite.height = size; // sprite needs to be square
-            }
-
-          });
-        }
+        });
+      }
       }
 
     }
 
     createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
 
-      let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
+      let zoom = settings.zoom || 1;
+      if (zoom < 0.5) zoom = 0.5; //
+
+      // use scale as if zoom was 1
+      let scale = settings.scale / zoom;
+      let useSize = UiUtils.getUseSize(scale, width, height, minimumScale, minimumSize);
+
       let hullData = Hulls[ship.hull];
       let texture = settings.resources[settings.baseUrl+hullData.image].texture;
 
       // container is actually twice the size (for effects etc)
       let container = new PIXI.Container();
-      container.width = useSize.useWidth * 2;
-      container.height = useSize.useHeight * 2;
-      container.pivot.x = useSize.useWidth;
-      container.pivot.y = useSize.useHeight;
+      // container.scale.set(zoom, zoom);
+      // container.width = useSize.useWidth * 2;
+      // container.height = useSize.useHeight * 2;
+      // container.pivot.x = useSize.useWidth;
+      // container.pivot.y = useSize.useHeight;
       container.x = x;
       container.y = y;
       container.zIndex = zIndex;
@@ -617,24 +627,28 @@ export default class SignalsRenderer {
       let body = new PIXI.Sprite(texture);
       body.width = useSize.useWidth;
       body.height = useSize.useHeight;
+      // body.scale.set(0, 0);
       body.anchor.set(0.5);
-      body.x = useSize.useWidth;
-      body.y = useSize.useHeight;
+      body.x = 0;
+      body.y = 0;
       body.zIndex = 10;
+      body.name = 'hull';
       container.addChild(body);
 
-      // create the engine sprite but make it invisible
+      // create the engine sprite
       if (hullData.enginePositions) {
         let exhaustSheet = settings.resources[settings.baseUrl+Assets.Images[hullData.exhaustImage]].spritesheet;
 
         hullData.enginePositions.forEach(function(e, i) {
-          let size = (ship.engine || 0) * useSize.useWidth * e[0];
+          // let size = (ship.engine || 0) * useSize.useWidth * e[0];
+          let size = (5) * useSize.useWidth * e[0];
           let exhaust = new PIXI.AnimatedSprite(exhaustSheet.animations[hullData.exhaustImage]);
           exhaust.width = size;
           exhaust.height = size; // sprite needs to be square
           exhaust.anchor.set(0.5, 0);
-          exhaust.x = (useSize.useWidth*0.5) + (useSize.useWidth * e[1]);
-          exhaust.y = (useSize.useHeight*0.5) + (useSize.useHeight * e[2]);
+          exhaust.x = ((0 - useSize.useWidth) / 2) + (useSize.useWidth * e[1]);
+          exhaust.y = ((0 - useSize.useHeight) / 2) + (useSize.useHeight * e[2]);
+          exhaust.scale.set(0, 0);
           exhaust.loop = true;
           exhaust.play();
           exhaust.zIndex = 5;

@@ -73,28 +73,18 @@ export default class TorpedoAi {
 			// should we turn?
 			if (Math.abs(bearingDiffDeg) > 0.01) {
 
-				// only apply turn if we're not already turning that way
-				if (bearingDiffDeg < 0) {
-					// RIGHT - apply enough turn to turn us to our desired bearing in 1/60th of a second
-					let bearingChange = -60 * bearingDiff;
+				// apply enough turn to turn us to our desired bearing in 1/60th of a second
+				let bearingChange = -60 * bearingDiff;
 
-					// remove our current angular velocity
-					bearingChange = bearingChange - torpedo.physicsObj.angularVelocity;
-					torpedo.physicsObj.angularVelocity = torpedo.physicsObj.angularVelocity + (bearingChange/2);
+				// remove our current angular velocity
+				bearingChange = bearingChange - torpedo.physicsObj.angularVelocity;
+				torpedo.physicsObj.angularVelocity = torpedo.physicsObj.angularVelocity + (bearingChange);
 
-				} else if (bearingDiffDeg > 0) {
-					// LEFT - apply enough turn to turn us to our desired bearing in 1/60th of a second
-					let bearingChange = -60 * bearingDiff;
-
-					// remove our current angular velocity
-					bearingChange = bearingChange - torpedo.physicsObj.angularVelocity;
-					torpedo.physicsObj.angularVelocity = torpedo.physicsObj.angularVelocity + (bearingChange/2);
-				}
 				// continue to fire engine if angle not too great
 				if (Math.abs(bearingDiffDeg) < 1) {
-					if (closing < 1000 || Math.abs(currentBearingDiffDeg) > 30) torpedo.engine = 0.7;
-				} else if (Math.abs(bearingDiffDeg) < 3) {
 					if (closing < 1000 || Math.abs(currentBearingDiffDeg) > 30) torpedo.engine = 0.5;
+				} else if (Math.abs(bearingDiffDeg) < 3) {
+					if (closing < 1000 || Math.abs(currentBearingDiffDeg) > 30) torpedo.engine = 0.3;
 				} else if (closing < 1000 || Math.abs(currentBearingDiffDeg) < 1) {
 					torpedo.engine = 0.5;
 				} else {

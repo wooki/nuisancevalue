@@ -28,7 +28,7 @@ export default {
 		mass: 0.0001,
 		thrust: 2,
 		maneuver: 0.0005,
-		enginePositions: [[5, 0.5, 1.0]],// [scale, %x, %y]
+		enginePositions: [[1, 0.5, 1.0]],// [scale, %x, %y]
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
 		payload: 300 // equivalent acceleration for damage

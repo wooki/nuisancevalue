@@ -179,15 +179,15 @@ export default class HelmRenderer {
 
         // watch for zoom
         this.controls.bindKey('add', 'zoom', { repeat: true }, { callback: (action, params) => {
-          let zoom = settings.zoom + 0.02;
+          let zoom = settings.zoom * 1.02;
           if (zoom > 2) zoom = 2;
           UiUtils.setZoom(settings, GridDefault, zoom);
           this.createGrid();
           UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
         }});
         this.controls.bindKey('subtract', 'zoom', { repeat: true }, { callback: (action, params) => {
-          let zoom = settings.zoom - 0.02;
-          if (zoom < 0.1) zoom = 0.1;
+          let zoom = settings.zoom * 0.98;
+          if (zoom < 0.2) zoom = 0.2;
           UiUtils.setZoom(settings, GridDefault, zoom);
           this.createGrid();
           UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
@@ -352,8 +352,7 @@ export default class HelmRenderer {
     updateShipScale(ship, guid, useSize) {
 
       let zoom = settings.zoom;
-      console.log("zoom:"+zoom);
-      if (zoom < 0.5) settings.zoom = 0.5; // hard-coded min here (needs to work with useSize stuff somehow)
+      if (zoom < 0.5) zoom = 0.5; // hard-coded min here (needs to work with useSize stuff somehow)
 
       let sprite = mapObjects[guid];
       if (sprite) {
@@ -385,12 +384,19 @@ export default class HelmRenderer {
 
     createShipSprite(ship, width, height, x, y, zIndex, minimumScale, minimumSize) {
 
-      let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
+      let zoom = settings.zoom || 1;
+      if (zoom < 0.5) zoom = 0.5; //
+
+      // use scale as if zoom was 1
+      let scale = settings.scale / zoom;
+      let useSize = UiUtils.getUseSize(scale, width, height, minimumScale, minimumSize);
+
       let hullData = Hulls[ship.hull];
       let texture = settings.resources[settings.baseUrl+hullData.image].texture;
 
       // container is actually twice the size (for effects etc)
       let container = new PIXI.Container();
+      // container.scale.set(zoom, zoom);
       // container.width = useSize.useWidth * 2;
       // container.height = useSize.useHeight * 2;
       // container.pivot.x = useSize.useWidth;
@@ -403,6 +409,7 @@ export default class HelmRenderer {
       let body = new PIXI.Sprite(texture);
       body.width = useSize.useWidth;
       body.height = useSize.useHeight;
+      // body.scale.set(0, 0);
       body.anchor.set(0.5);
       body.x = 0;
       body.y = 0;
