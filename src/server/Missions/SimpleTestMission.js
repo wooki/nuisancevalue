@@ -12,7 +12,6 @@ export default class SimpleTestMission {
 
   build() {
 
-    // add an actual asteroid
     game.addAsteroid({
         x: 0-3000,
         y: 0,
@@ -32,8 +31,8 @@ export default class SimpleTestMission {
     game.addAsteroid({
         x: 0,
         y: 0-3000,
-        dX: 0,
-        dY: 0,
+        dX: 0-250,
+        dY: 0-400,
         mass: 1, size: 2000
     });
 

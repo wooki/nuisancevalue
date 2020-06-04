@@ -23,19 +23,14 @@ export default class Torpedo extends PhysicalObject2D {
       }, super.netScheme);
   }
 
-  // applyManeuver(maneuver) {
-  //       let hullData = Hulls[this.hull];
-  //
-  //       if (maneuver == 'l') {
-  //
-  //         this.physicsObj.angularVelocity = this.physicsObj.angularVelocity - 0.1;
-  //
-  //       } else if (maneuver == 'r') {
-  //
-  //         this.physicsObj.angularVelocity = this.physicsObj.angularVelocity + 0.1;
-  //       }
-  //
-  //   }
+  get bending() {
+    return {
+      position: { percent: 0.9, min: 0.0 },
+      velocity: { percent: 0.9, min: 0.0 },
+      angularVelocity: { percent: 0.3 },
+      angleLocal: { percent: 0.3 }
+    }
+  };
 
   // if the ship has active engines then apply force
   applyEngine() {

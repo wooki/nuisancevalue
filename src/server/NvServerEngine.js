@@ -296,7 +296,7 @@ export default class NvServerEngine extends ServerEngine {
                   angularVelocity: 0,
                   targetId: e.targetId,
                   fuel: 100,
-                  engine: 0
+                  engine: 1
               });
             }
 

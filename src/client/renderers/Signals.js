@@ -575,6 +575,7 @@ export default class SignalsRenderer {
       let sprite = mapObjects[guid];
       if (sprite) {
         sprite.scale.set(zoom, zoom);
+        // sprite.hitArea = new PIXI.Circle(0, 0, 32);
 
       //   let hullSprite = sprite.getChildByName('hull');
       //   if (hullSprite) {
@@ -622,6 +623,7 @@ export default class SignalsRenderer {
       container.x = x;
       container.y = y;
       container.zIndex = zIndex;
+      container.hitArea = new PIXI.Circle(0, 0, 32);
 
       // ships are containers for a main sprite plus engines and possibly other sprites
       let body = new PIXI.Sprite(texture);
@@ -673,21 +675,31 @@ export default class SignalsRenderer {
 
         let useSize = UiUtils.getUseSize(settings.scale, width, height, minimumScale, minimumSize);
 
-        sprites[guid] = new PIXI.Sprite(texture);
-        sprites[guid].width = useSize.useWidth;
-        sprites[guid].height = useSize.useHeight;
-        sprites[guid].anchor.set(0.5);
-        sprites[guid].x = x;
-        sprites[guid].y = y;
-        sprites[guid].zIndex = zIndex;
+        // wrap with container so scaling can work
+        let container = new PIXI.Container();
+        container.x = x;
+        container.y = y;
+        container.zIndex = zIndex;
+        container.hitArea = new PIXI.Circle(0, 0, 32);
+
+        let sprite = new PIXI.Sprite(texture);
+        sprite.width = useSize.useWidth;
+        sprite.height = useSize.useHeight;
+        sprite.anchor.set(0.5);
+        sprite.x = 0;
+        sprite.y = 0;
+        sprite.hitArea = new PIXI.Circle(0, 0, Math.max(16, useSize.useWidth/2, useSize.useHeight/2));
+        sprite.zIndex = zIndex;
         if (guid.toString().startsWith('waypoint-')) {
-            sprites[guid].filters = [ effects.waypointColor ];
+            sprite[guid].filters = [ effects.waypointColor ];
             // sprites[guid].filters = [ effects.waypointColor, effects.hudGlow ];
         // } else {
         //     sprites[guid].filters = [ effects.hudGlow ];
         }
         // sprites[guid].tint = tint; // tint is rubbish - ships need color switch filters for palette
+        container.addChild(sprite);
 
+        sprites[guid] = container;
         return this.addSpriteToMap(sprites[guid], alias, guid, addLabel, useSize);
     }
 
@@ -793,17 +805,24 @@ export default class SignalsRenderer {
         pixiApp.stage.sortChildren();
     }
 
+    removeSelection() {
+      if (sprites.selection) {
+          sprites.selection.destroy();
+          sprites.selection = null;
+      }
+    }
+
     drawObjects(gameObjects, playerShip, t, dt) {
+
+        let zoom = settings.zoom;
+        if (zoom < 0.5) zoom = 0.5; // hard-coded min here (needs to work with useSize stuff somehow)
 
         // keep track of and return ids of stuff we have
         let drawnObjects = {};
 
         // if we have no selection - remove the selection sprite
         if (playerShip.targetId == null) {
-            if (sprites.selection) {
-                sprites.selection.destroy();
-                sprites.selection = null;
-            }
+            this.removeSelection();
         }
 
         gameObjects.forEach((obj) => {
@@ -873,8 +892,9 @@ export default class SignalsRenderer {
                   mapObjects[obj.id].x = coord.x;
                   mapObjects[obj.id].y = coord.y;
                   mapObjects[obj.id].rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
-                  mapObjects[obj.id].width = useSize.useWidth;
-                  mapObjects[obj.id].height = useSize.useHeight;
+                  mapObjects[obj.id].scale.set(zoom, zoom); // scale instead of resize
+                  // mapObjects[obj.id].width = useSize.useWidth;
+                  // mapObjects[obj.id].height = useSize.useHeight;
 
                   if (mapObjects[obj.id + '-label'] && mapObjects[obj.id]) {
                       mapObjects[obj.id + '-label'].x = coord.x + (3 + Math.floor(mapObjects[obj.id].width/2));
@@ -967,6 +987,8 @@ export default class SignalsRenderer {
             let playerShip = null;
             let isDocked = false;
             let gameObjects = [];
+            let selectedObj = null;
+
             game.world.forEachObject((objId, obj) => {
                 if (obj instanceof Ship) {
                     if (obj.signalsPlayerId == game.playerId) {
@@ -1322,6 +1344,9 @@ export default class SignalsRenderer {
                 Object.keys(mapObjects).forEach((key) => {
                     if (!serverObjects[key]) {
                         UiUtils.removeFromMap(mapObjects, sprites, key);
+                        if (playerShip.targetId == key) {
+                          this.removeSelection();
+                        }
                     }
                 });
 

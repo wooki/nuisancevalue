@@ -96,6 +96,10 @@ export default class NvGameEngine extends GameEngine {
                 // docked objects not on the map so ignore (although this should never happen)
 
             } else {
+
+                // apply AI
+                this.ai.execute(obj, dt);
+                
                 // only certain types have engines
                 if (obj.applyEngine) {
                     obj.applyEngine();
@@ -137,7 +141,7 @@ export default class NvGameEngine extends GameEngine {
                       mode: Ray.ALL,
                       from: obj.physicsObj.position,
                       to: obj.pdc.physicsObj.position,
-                      callback: function(result){                        
+                      callback: function(result){
                         // find the hit
                         let hitObj = null;
                         this.world.forEachObject((id, o) => {
@@ -233,9 +237,6 @@ export default class NvGameEngine extends GameEngine {
 
                     }
                 } // if (obj.physicsObj)
-
-                // apply AI
-                this.ai.execute(obj, dt);
 
             } // not docked or destroyed
 
