@@ -12,8 +12,8 @@ export default {
 		image: 'assets/ship.png',
 		size: 200, // used for height
 		width: 1, // ratio to height
-		mass: 0.055,
-		thrust: 0.04,
+		mass: 0.014,
+		thrust: 0.045,
 		maneuver: 1.4,
 		enginePositions: [[0.2, 0.4, 0.9], [0.2, 0.6, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame

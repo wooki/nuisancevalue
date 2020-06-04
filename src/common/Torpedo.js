@@ -37,7 +37,10 @@ export default class Torpedo extends PhysicalObject2D {
       let hullData = Hulls[this.hull];
 
       if (this.engine && this.engine > 0) {
-        this.physicsObj.applyForceLocal([0, hullData.thrust]); // engine only fires 1
+        if (this.fuel > 0) {
+          this.physicsObj.applyForceLocal([0, hullData.thrust]); // engine only fires 1
+        }
+        this.fuel = this.fuel - this.engine;
       }
   }
 

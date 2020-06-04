@@ -95,11 +95,17 @@ export default class NvGameEngine extends GameEngine {
 
                 // docked objects not on the map so ignore (although this should never happen)
 
+            } else if (obj instanceof Torpedo && obj.fuel <= -20) {
+
+              // torps with no fuel just explode
+              this.removeObjectFromWorld(obj);
+              this.emitonoff.emit('explosion', obj);  // object itself does this - but do here (in case we skip on client)
+
             } else {
 
                 // apply AI
                 this.ai.execute(obj, dt);
-                
+
                 // only certain types have engines
                 if (obj.applyEngine) {
                     obj.applyEngine();
@@ -490,6 +496,7 @@ export default class NvGameEngine extends GameEngine {
             velocity: new TwoVector(params['dX'], params['dY']),
             angle: params['angle']
         });
+        s.engine = params['engine'];
         s.name = params['name'];
         s.hull = params['hull'];
         s.size = params['size'] || hullData.size;
