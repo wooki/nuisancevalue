@@ -147,14 +147,14 @@ export default class SignalsRenderer {
         this.controls.bindKey('down', 'pdcstate', { }, { direction: '-' });
 
         // watch for zoom
-        this.controls.bindKey('add', 'zoom', { repeat: true }, { callback: (action, params) => {
+        this.controls.bindKey(['equal sign', 'add'], 'zoom', { repeat: true }, { callback: (action, params) => {
           let zoom = settings.zoom * 1.02;
           if (zoom > 2) zoom = 2;
           UiUtils.setZoom(settings, GridDefault, zoom);
           this.createGrid();
           UiUtils.updateGrid(settings, sprites, lastPlayerShip.physicsObj.position[0], lastPlayerShip.physicsObj.position[1]);
         }});
-        this.controls.bindKey('subtract', 'zoom', { repeat: true }, { callback: (action, params) => {
+        this.controls.bindKey(['dash', 'subtract'], 'zoom', { repeat: true }, { callback: (action, params) => {
           let zoom = settings.zoom * 0.98;
           if (zoom < 0.2) zoom = 0.2;
           UiUtils.setZoom(settings, GridDefault, zoom);
