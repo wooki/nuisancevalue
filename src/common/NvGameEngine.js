@@ -60,6 +60,12 @@ export default class NvGameEngine extends GameEngine {
             if (ship.signalsPlayerId == playerId) {
                 ship.signalsPlayerId = 0;
             }
+            if (ship.captainPlayerId == playerId) {
+                ship.captainPlayerId = 0;
+            }
+            if (ship.engineerPlayerId == playerId) {
+                ship.engineerPlayerId = 0;
+            }
         }
     }
 
@@ -269,8 +275,16 @@ export default class NvGameEngine extends GameEngine {
                 } else if (obj.navPlayerId == playerId && role == 'nav') {
                     ship = obj;
                 } else if (obj.signalsPlayerId == playerId && role == 'signals') {
+                      ship = obj;
+                } else if (obj.captainPlayerId == playerId && role == 'captain') {
                     ship = obj;
-                } else if ((obj.helmPlayerId == playerId || obj.navPlayerId == playerId || obj.signalsPlayerId == playerId) && role === undefined) {
+                } else if (obj.engineerPlayerId == playerId && role == 'engineer') {
+                      ship = obj;
+                } else if ((obj.helmPlayerId == playerId ||
+                  obj.navPlayerId == playerId ||
+                  obj.captainPlayerId == playerId ||
+                  obj.engineerPlayerId == playerId ||
+                  obj.signalsPlayerId == playerId) && role === undefined) {
                     ship = obj;
                 }
             }
@@ -282,7 +296,7 @@ export default class NvGameEngine extends GameEngine {
             if (obj instanceof Ship) {
               if (!ship) {
                 ship = obj.docked.find(function(dockedShip) {
-                  return (dockedShip.helmPlayerId == playerId || dockedShip.navPlayerId == playerId || dockedShip.signalsPlayerId == playerId);
+                  return (dockedShip.helmPlayerId == playerId || dockedShip.navPlayerId == playerId || dockedShip.captainPlayerId == playerId || dockedShip.engineerPlayerId == playerId || dockedShip.signalsPlayerId == playerId);
                 });
               }
             }
@@ -502,6 +516,8 @@ export default class NvGameEngine extends GameEngine {
         s.size = params['size'] || hullData.size;
         s.helmPlayerId = 0;
         s.navPlayerId = 0;
+        s.captainPlayerId = 0;
+        s.engineerPlayerId = 0;
         s.signalsPlayerId = 0;
         s.waypoints = [];
         s.playable = params['playable'] || 0;

@@ -96,7 +96,7 @@ export default class LobbyRenderer {
       if (obj.helmPlayerId == 0) {
         let helmEl = document.createElement('div');
         helmEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'helm') } );
-        helmEl.innerHTML = "Join as helm";
+        helmEl.innerHTML = "Helm";
         helmEl.classList.add('join');
         shipEl.append(helmEl);
       }
@@ -104,7 +104,7 @@ export default class LobbyRenderer {
       if (obj.navPlayerId == 0) {
         let navEl = document.createElement('div');
         navEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'nav') } );
-        navEl.innerHTML = "Join as navigator";
+        navEl.innerHTML = "Navigator";
         navEl.classList.add('join');
         shipEl.append(navEl);
       }
@@ -112,7 +112,23 @@ export default class LobbyRenderer {
       if (obj.signalsPlayerId == 0) {
         let signalsEl = document.createElement('div');
         signalsEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'signals') } );
-        signalsEl.innerHTML = "Join as signals";
+        signalsEl.innerHTML = "Signals";
+        signalsEl.classList.add('join');
+        shipEl.append(signalsEl);
+      }
+
+      if (obj.engineerPlayerId == 0) {
+        let signalsEl = document.createElement('div');
+        signalsEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'engineer') } );
+        signalsEl.innerHTML = "Engineer";
+        signalsEl.classList.add('join');
+        shipEl.append(signalsEl);
+      }
+
+      if (obj.captainPlayerId == 0) {
+        let signalsEl = document.createElement('div');
+        signalsEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'captain') } );
+        signalsEl.innerHTML = "Captain";
         signalsEl.classList.add('join');
         shipEl.append(signalsEl);
       }
@@ -152,6 +168,10 @@ export default class LobbyRenderer {
                 station = 'nav';
             } else if (obj.signalsPlayerId == game.playerId) {
                 station = 'signals';
+            } else if (obj.engineerPlayerId == game.playerId) {
+                station = 'engineer';
+            } else if (obj.captainPlayerId == game.playerId) {
+                station = 'captain';
             }
           }
 
@@ -166,6 +186,10 @@ export default class LobbyRenderer {
                     station = 'nav';
                 } else if (dockedObj.signalsPlayerId == game.playerId) {
                     station = 'signals';
+                } else if (dockedObj.engineerPlayerId == game.playerId) {
+                    station = 'engineer';
+                } else if (dockedObj.captainPlayerId == game.playerId) {
+                    station = 'captain';
                 }
               }
             });

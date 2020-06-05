@@ -5,6 +5,7 @@ import LobbyRenderer from './renderers/Lobby';
 import HelmRenderer from './renderers/Helm';
 import NavRenderer from './renderers/Nav';
 import GamesMasterRenderer from './renderers/GamesMaster';
+import CompositeRenderer from './renderers/Composite';
 import SignalsRenderer from './renderers/Signals';
 import EmitOnOff from 'emitonoff';
 
@@ -30,8 +31,15 @@ export default class NvRenderer extends Renderer {
             renderer = new NavRenderer(game, client);
         } else if (station == 'signals') {
             renderer = new SignalsRenderer(game, client);
+        } else if (station == 'captain') {
+            renderer = new CompositeRenderer(game, client, {
+              station: 'captain'
+            });
+        } else if (station == 'engineer') {
+            // renderer = new SignalsRenderer(game, client);
+            throw "Engineer Not Implemented";
         } else if (station == 'gm') {
-            renderer = new GamesMasterRenderer(game, client);
+          renderer = new GamesMasterRenderer(game, client);
         } else {
             // default to lobby
             renderer = new LobbyRenderer(game, client);
@@ -50,6 +58,10 @@ export default class NvRenderer extends Renderer {
                     station = 'nav';
                 } else if (obj.signalsPlayerId == game.playerId) {
                     station = 'signals';
+                } else if (obj.captainPlayerId == game.playerId) {
+                    station = 'captain';
+                } else if (obj.engineerPlayerId == game.playerId) {
+                    station = 'engineer';
                 }
             }
         });

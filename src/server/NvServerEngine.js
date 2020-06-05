@@ -79,6 +79,12 @@ export default class NvServerEngine extends ServerEngine {
             } else if (station == "signals" && ship.signalsPlayerId == 0) {
                 ship.signalsPlayerId = playerId;
                 ship.playerId = playerId; // set the ownership to last player to join
+            } else if (station == "engineer" && ship.engineerPlayerId == 0) {
+                ship.engineerPlayerId = playerId;
+                ship.playerId = playerId; // set the ownership to last player to join
+            } else if (station == "captain" && ship.captainPlayerId == 0) {
+                ship.captainPlayerId = playerId;
+                ship.playerId = playerId; // set the ownership to last player to join
             }
           }
         });

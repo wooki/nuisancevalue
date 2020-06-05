@@ -16,6 +16,8 @@ export default class Ship extends PhysicalObject2D {
             helmPlayerId: { type: BaseTypes.TYPES.UINT8 },
             navPlayerId: { type: BaseTypes.TYPES.UINT8 },
             signalsPlayerId: { type: BaseTypes.TYPES.UINT8 },
+            captainPlayerId: { type: BaseTypes.TYPES.UINT8 },
+            engineerPlayerId: { type: BaseTypes.TYPES.UINT8 },
             commsScript: { type: BaseTypes.TYPES.UINT8 },
             dockedCommsScript: { type: BaseTypes.TYPES.UINT8 },
             commsState: { type: BaseTypes.TYPES.UINT8 },
@@ -182,6 +184,8 @@ export default class Ship extends PhysicalObject2D {
           this.helmPlayerId = -1;
           this.navPlayerId = -1;
           this.signalsPlayerId = -1;
+          this.captainPlayerId = -1;
+          this.engineerPlayerId = -1;
 
           // was destroyed, so tell the UI
           gameEngine.emitonoff.emit('explosion', this);
@@ -202,6 +206,8 @@ export default class Ship extends PhysicalObject2D {
         this.helmPlayerId = other.helmPlayerId;
         this.navPlayerId = other.navPlayerId;
         this.signalsPlayerId = other.signalsPlayerId;
+        this.captainPlayerId = other.captainPlayerId;
+        this.engineerPlayerId = other.engineerPlayerId;
         this.waypoints = other.waypoints;
         this.commsScript = other.commsScript;
         this.dockedCommsScript = other.dockedCommsScript;
