@@ -22,7 +22,7 @@ export default class NvRenderer extends Renderer {
         client = clientEngine;
     }
 
-    setSubRenderer(station) {
+    setRenderer(station) {
         this.removeRenderer();
         if (station == 'helm') {
             renderer = new HelmRenderer(game, client);
@@ -38,7 +38,7 @@ export default class NvRenderer extends Renderer {
         }
     }
 
-    detectSubRenderer() {
+    detectRenderer() {
 
         // check for your playerId
         let station = null;
@@ -55,7 +55,7 @@ export default class NvRenderer extends Renderer {
         });
 
         // renderer depends on which station you are using
-        this.setSubRenderer(station);
+        this.setRenderer(station);
     }
 
     removeRenderer() {
@@ -71,12 +71,12 @@ export default class NvRenderer extends Renderer {
         if (renderer) {
             let backToLobby = renderer.draw(t, dt);
             if (backToLobby) {
-                this.setSubRenderer(backToLobby);
+                this.setRenderer(backToLobby);
             }
         } else {
             // on first draw, feels like there should be a place for this but
             // constructor doesn't have the world and playerId initialised yet
-            this.detectSubRenderer();
+            this.detectRenderer();
         }
 
     }
