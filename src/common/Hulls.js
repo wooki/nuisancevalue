@@ -10,12 +10,12 @@ export default {
 	"tug": {
 		name: 'Tug',
 		image: 'assets/ship.png',
-		size: 200, // used for height
+		size: 280, // used for height
 		width: 1, // ratio to height
 		mass: 0.014,
 		thrust: 0.045,
 		maneuver: 1.4,
-		enginePositions: [[0.2, 0.4, 0.9], [0.2, 0.6, 0.9]],// [scale, %x, %y]
+		enginePositions: [[0.2, 0.3, 0.9], [0.2, 0.7, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		damage: STANDARD_SYSTEMS
 	},
@@ -23,11 +23,10 @@ export default {
 	"torpedo": {
 		name: 'Torpedo',
 		image: 'assets/torpedo.png',
-		size: 30, // used for height
+		size: 100, // used for height (artificially big so they show up!!)
 		width: 0.1875, // ratio to height
 		mass: 0.0001,
 		thrust: 2,
-		maneuver: 0.0005,
 		enginePositions: [[1, 0.5, 1.0]],// [scale, %x, %y]
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
@@ -37,12 +36,12 @@ export default {
 	"bushido": {
 		name: 'Bushido',
 		image: 'assets/bushido.png',
-		size: 240, // used for height
+		size: 300, // used for height
 		width: 0.93, // ratio to height
 		mass: 0.012,
 		thrust: 0.05,
 		maneuver: 1.2,
-		enginePositions: [[0.4, 0.5, 0.8]],// [scale, %x, %y]
+		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
 		pdc: {
 			range: 4000,
@@ -54,7 +53,7 @@ export default {
 	"blockade-runner": {
 		name: 'Blockade Runner',
 		image: 'assets/blockade-runner.png',
-		size: 400, // used for height
+		size: 440, // used for height
 		width: 0.53, // ratio to height
 		mass: 0.008,
 		thrust: 0.07,

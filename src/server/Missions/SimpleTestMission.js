@@ -12,29 +12,29 @@ export default class SimpleTestMission {
 
   build() {
 
-    // game.addAsteroid({
-    //     x: 0-3000,
-    //     y: 0,
-    //     dX: 0,
-    //     dY: 0,
-    //     mass: 1, size: 500
-    // });
-    //
-    // game.addAsteroid({
-    //     x: 0,
-    //     y: 3000,
-    //     dX: 0,
-    //     dY: 0,
-    //     mass: 1, size: 1000
-    // });
-    //
-    // game.addAsteroid({
-    //     x: 0,
-    //     y: 0-3000,
-    //     dX: 0-250,
-    //     dY: 0-400,
-    //     mass: 1, size: 2000
-    // });
+    game.addAsteroid({
+        x: 0-3000,
+        y: 0,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 500
+    });
+
+    game.addAsteroid({
+        x: 0,
+        y: 3000,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 1000
+    });
+
+    game.addAsteroid({
+        x: 0,
+        y: 0-3000,
+        dX: 0-250,
+        dY: 0-400,
+        mass: 1, size: 2000
+    });
 
     let hullName = 'bushido';
     let hullData = Hulls[hullName];
@@ -54,18 +54,7 @@ export default class SimpleTestMission {
     game.addShip({
         name: "Target 1",
         x: 1000,
-        y: -1000,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI,
-        engine: 2
-    });
-
-    game.addShip({
-        name: "Target 2",
-        x: 0-1000,
-        y: -1000,
+        y: 2000,
         dX: 0,
         dY: 0,
         hull: hullName,
@@ -74,14 +63,25 @@ export default class SimpleTestMission {
     });
 
     game.addShip({
-        name: "Target 3",
-        x: 0,
-        y: -1000,
+        name: "Target 2",
+        x: 0-1000,
+        y: 2000,
         dX: 0,
         dY: 0,
         hull: hullName,
         angle: Math.PI,
         engine: 5
+    });
+
+    game.addShip({
+        name: "Target 3",
+        x: 0,
+        y: -500,
+        dX: 0,
+        dY: 0,
+        hull: hullName,
+        angle: Math.PI,
+        engine: 2
     });
 
     game.addShip({

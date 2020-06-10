@@ -5,175 +5,209 @@ const PIXI = require('pixi.js');
 import KeyboardControls from './Utils/KeyboardControls.js';
 import Assets from './Utils/images.js';
 import UiUtils from './Utils/UiUtils';
-
 import Ship from './../../common/Ship';
-
-// TODO: move some of this to class below
-let destroyed = false;
-let backToLobby = false;
-let leaveTimer = false;
-let lastPlayerShip = null;
-let el = null;
-let game = null;
-let client = null;
-let pixiApp = null;
-let pixiContainer = null;
-let loadedSprites = false;
-let resources = null;
-let uiWidth = window.innerWidth;
-let uiHeight = window.innerHeight;
-let serverObjects = {}; // list of in-game object keys that we keep track of
-let stationConfig = null;
-let sprites = {};  // keep track of any sprites we add
 
 export default class CompositeRenderer {
 
     // create a PIXI app and add to the #game element, start load of resources
     constructor(gameEngine, clientEngine, config) {
-    	game = gameEngine;
-      client = clientEngine;
-      stationConfig = Object.assign({
+
+      // remember params
+      this.game = gameEngine;
+      this.client = clientEngine;
+
+      this.stationConfig = Object.assign({
         station: 'captain',
         stationProperty: 'captainPlayerId',
         baseUrl: '/',
-        dashboardColor: 0xCC0000,
+        dashboardColor: 0xCCCCCC,
         subRenderers: []
       }, config);
+      this.subRenderers = this.stationConfig.subRenderers;
 
-      this.subRenderers = [];
+      this.loadedSprites = false;
+      this.resources = null;
+      this.uiWidth = window.innerWidth;
+      this.uiHeight = window.innerHeight;
+      this.serverObjects = {}; // list of in-game object keys that we keep track of
+      this.sprites = {};  // keep track of any sprites we add
+      this.sharedState = {}; // state that can be shared between subRenderers so one renderer can effect another
 
       // handle being destroyed at this level
-      destroyed = false;
-      backToLobby = false;
-      leaveTimer = false;
-      lastPlayerShip = null;
+      this.destroyed = false;
+      this.backToLobby = false;
+      this.leaveTimer = false;
+      this.lastPlayerShip = null;
 
       // container div and app refs
-      el = null;
-      pixiApp = null;
-      pixiContainer = null;
+      this.el = null;
+      this.pixiApp = null;
+      this.pixiContainer = null;
 
+      // create element to hold pixi app
       let root = document.getElementById('game');
     	root.innerHTML = '';
-    	el = document.createElement('div');
-      root.append(el);
+    	this.el = document.createElement('div');
+      root.append(this.el);
 
       // create pixie app and container
-      pixiApp = new PIXI.Application({
-          width: uiWidth,
-          height: uiHeight,
+      this.pixiApp = new PIXI.Application({
+          width: this.uiWidth,
+          height: this.uiHeight,
           backgroundColor: Assets.Colors.Black,
-          resolution: window.devicePixelRatio || 1
+          resolution: window.devicePixelRatio || 1,
+          autoDensity: true
       });
-
-      pixiApp.stage.sortableChildren = true;
-      pixiContainer = new PIXI.Container();
-      pixiContainer.sortableChildren = true;
-      pixiContainer.zIndex = 1;
-      pixiApp.stage.addChild(pixiContainer);
-      el.append(pixiApp.view); // add to the page
+      this.pixiApp.stage.sortableChildren = true;
+      this.pixiContainer = new PIXI.Container();
+      this.pixiContainer.sortableChildren = true;
+      this.pixiContainer.zIndex = 1;
+      this.pixiApp.stage.addChild(this.pixiContainer);
+      this.el.append(this.pixiApp.view); // add to the page
 
       // prepare to load resources
-      const loader = PIXI.Loader.shared;
+      const loader = this.pixiApp.loader;
+      this.assetCount = 0;
+      this.assetLoadedCount = 0;
+      loader.onProgress.add(() => {
+        this.assetLoadedCount = this.assetLoadedCount + 1;
+        // let percent = (100 / this.assetCount) * this.assetLoadedCount;
+        this.loadingEl.innerHTML = "<div>Loading Assets "+this.assetLoadedCount+"/"+this.assetCount+"</div>";
+      });
+      loader.onComplete.add(() => {
+        this.assetCount = 0;
+        this.assetLoadedCount = 0;
+        this.loadingEl.remove();
+      });
 
       // load sprites
-      UiUtils.loadAllAssets(pixiApp.loader, stationConfig.baseUrl);
+      this.assetCount = UiUtils.loadAllAssets(loader, this.stationConfig.baseUrl);
+
+      this.loadingEl = document.createElement("div");
+  		this.loadingEl.classList.add('ui-loading');
+  		this.loadingEl.innerHTML = "<div>Loading Assets "+this.assetLoadedCount+"/"+this.assetCount+"</div>";
+      this.el.append(this.loadingEl);
 
       // manage loading of resources
-      pixiApp.loader.load(this.loadResources.bind(this));
+      loader.load(this.loadResources.bind(this));
+
+      // listen for explosion events
+      gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
     }
 
     remove() {
-      if (el) {
-        el.remove();
-        el = null;
+      if (this.el) {
+        this.el.remove();
+        this.el = null;
       }
     }
 
-    destroyed(playerShip) {
-      if (dspritesestroyed) return;
-      destroyed = true;
-      this.updatePlayerShip(playerShip, false, destroyed);
+    destroyPlayership(playerShip) {
+      if (this.destroyed) return;
+      this.destroyed = true;
+      this.updatePlayerShip(playerShip, false, this.destroyed);
 
       let root = document.getElementById('game');
       UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function() {
-        backToLobby = true;
+        this.backToLobby = true;
       });
     }
 
     loadResources(loader, resources) {
 
-        loadedSprites = true;
-        resources = resources;
+        this.loadedSprites = true;
+        this.resources = resources;
 
         // UI create a texture to overlay on top of the background
         let dashboardGraphics = new PIXI.Graphics();
-        // dashboardGraphics.beginFill(Assets.Colors.Dashboard, 1);
         dashboardGraphics.beginTextureFill({
-            texture: resources[stationConfig.baseUrl+Assets.Images.dashboard].texture,
-            color: stationConfig.dashboardColor,
+            texture: resources[this.stationConfig.baseUrl+Assets.Images.dashboard].texture,
+            color: this.stationConfig.dashboardColor,
             alpha: 1
         });
-        dashboardGraphics.drawRect(0, 0, uiWidth, uiHeight);
+        dashboardGraphics.drawRect(0, 0, this.uiWidth, this.uiHeight);
         dashboardGraphics.endFill();
-        let dashboardTexture = pixiApp.renderer.generateTexture(dashboardGraphics);
+        let dashboardTexture = this.pixiApp.renderer.generateTexture(dashboardGraphics);
         dashboardGraphics.destroy();
-        sprites.dashboardSprite = new PIXI.Sprite(dashboardTexture);
-        sprites.dashboardSprite.anchor.set(0.5);
-        sprites.dashboardSprite.x = Math.floor(uiWidth / 2);
-        sprites.dashboardSprite.y = Math.floor(uiHeight / 2);
-        sprites.dashboardSprite.width = uiWidth;
-        sprites.dashboardSprite.height = uiHeight;
-        pixiContainer.addChild(sprites.dashboardSprite);
+        this.sprites.dashboardSprite = new PIXI.Sprite(dashboardTexture);
+        this.sprites.dashboardSprite.anchor.set(0.5);
+        this.sprites.dashboardSprite.x = Math.floor(this.uiWidth / 2);
+        this.sprites.dashboardSprite.y = Math.floor(this.uiHeight / 2);
+        this.sprites.dashboardSprite.width = this.uiWidth;
+        this.sprites.dashboardSprite.height = this.uiHeight;
+        this.pixiContainer.addChild(this.sprites.dashboardSprite);
 
         // initialise sub-renderers
         for (let i = 0; i < this.subRenderers.length; i++) {
-          this.subRenderers[i].init(el, pixiContainer, resources, this);
+          this.subRenderers[i].init(this.el, this.pixiApp, this.pixiContainer, this.resources, this);
         }
+    }
+
+    addExplosion(obj) {
+      // notify subrenderers
+      for (let i = 0; i < this.subRenderers.length; i++) {
+        if (this.subRenderers[i].addExplosion) {
+          this.subRenderers[i].addExplosion(obj, this);
+        }
+      }
     }
 
     addObject(obj) {
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
-        this.subRenderers[i].addObject(obj, this);
+        if (this.subRenderers[i].addObject) {
+          this.subRenderers[i].addObject(obj, this);
+        }
       }
     }
     updateObject(obj) {
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
-        this.subRenderers[i].updateObject(obj, this);
+        if (this.subRenderers[i].updateObject) {
+          this.subRenderers[i].updateObject(obj, this);
+        }
       }
     }
     removeObject(key) {
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
-        this.subRenderers[i].removeObject(key, this);
+        if (this.subRenderers[i].removeObject) {
+          this.subRenderers[i].removeObject(key, this);
+        }
       }
     }
     updatePlayerShip(playerShip, isDocked, isDestroyed) {
 
-      lastPlayerShip = playerShip; // remember, so we still have the data when it is removed from game
+      this.lastPlayerShip = playerShip; // remember, so we still have the data when it is removed from game
 
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
-        this.subRenderers[i].updatePlayerShip(playerShip, isDocked, isDestroyed);
+        if (this.subRenderers[i].updatePlayerShip) {
+          this.subRenderers[i].updatePlayerShip(playerShip, this.isDocked, this.isDestroyed, this);
+        }
+      }
+    }
+
+    updateSharedState(newState) {
+      this.sharedState = Object.assign(this.sharedState, newState);
+      for (let i = 0; i < this.subRenderers.length; i++) {
+        if (this.subRenderers[i].updateSharedState) {
+          this.subRenderers[i].updateSharedState(this.sharedState, this);
+        }
       }
     }
 
     draw(t, dt) {
 
-        if (loadedSprites) {
-
-          // keep track of all objects we have - so we can remove missing ones later
-          let serverObjects = {};
+        if (this.loadedSprites) {
 
           // find the player ship first, so we can set objects positions relative to it
           let playerShip = null;
           let isDocked = false;
           let gameObjects = [];
-          game.world.forEachObject((objId, obj) => {
+          this.game.world.forEachObject((objId, obj) => {
               if (obj instanceof Ship) {
-                  if (obj[stationConfig.stationProperty] == game.playerId) {
+                  if (obj[this.stationConfig.stationProperty] == this.game.playerId) {
                       playerShip = obj;
                   } else {
 
@@ -186,11 +220,11 @@ export default class CompositeRenderer {
 
           // check docked if we haven't found yet
           if (!playerShip) {
-            game.world.forEachObject((objId, obj) => {
+            this.game.world.forEachObject((objId, obj) => {
               if (obj instanceof Ship) {
                 if (obj.docked && obj.docked.length > 0) {
                   let dockedMatch = obj.docked.find(function(dockedShip) {
-                    return (dockedShip[stationConfig.stationProperty] == game.playerId);
+                    return (dockedShip[this.stationConfig.stationProperty] == this.game.playerId);
                   });
                   if (dockedMatch) {
                     isDocked = true;
@@ -215,9 +249,10 @@ export default class CompositeRenderer {
             // player has been excluded from this list already
             gameObjects.forEach((obj) => {
               // is this a new, or existing object?
-              if (serverObjects[obj.id]) {
+              if (this.serverObjects[obj.id]) {
                 this.updateObject(obj);
               } else {
+                this.serverObjects[obj.id] = true;
                 this.addObject(obj);
               }
 
@@ -227,20 +262,23 @@ export default class CompositeRenderer {
 
 
             // remove any objects that we no-longer have
-            Object.keys(serverObjects).forEach((key) => {
+            Object.keys(this.serverObjects).forEach((key) => {
                 if (!foundObjects[key]) {
+                    delete this.serverObjects[key];
                     this.removeObject(key);
                 }
             });
 
           } else {
             // must have been destroyed, keep original ship but flag as such
-            playerShip = lastPlayerShip;
-            this.destroyed(playerShip);
+            if (this.lastPlayerShip) {
+              playerShip = this.lastPlayerShip;
+              this.destroyPlayership(playerShip);
+            }
           } // playerShip
 
         }
-        return backToLobby;
+        return this.backToLobby;
     }
 
 }

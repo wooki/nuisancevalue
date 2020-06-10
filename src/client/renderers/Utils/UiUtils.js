@@ -9,18 +9,26 @@ import Utils from '../../../common/Utils/Utils';
 // common functions used across multiple stations
 export default {
 
-  // iterate all our assets in the images
+  // iterate all our assets in the images, returns count of assets
 	loadAllAssets(loader, baseUrl) {
+
+		let count = 0;
 
     // load from assets
     Object.keys(Assets.Images).forEach(function(key) {
+				count = count + 1;
+				if (Assets.Images[key].endsWith('.json')) count = count + 1;
         loader.add(baseUrl+Assets.Images[key]);
     });
 
     // load for all Hulls
     for (let [hullKey, hullData] of Object.entries(Hulls)) {
-        loader.add(baseUrl+hullData.image);
+			count = count + 1;
+			if (hullData.image.endsWith('.json')) count = count + 1;
+			loader.add(baseUrl+hullData.image);
     }
+
+		return count;
   },
 
 	// // build some caches of sprites

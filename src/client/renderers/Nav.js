@@ -103,7 +103,8 @@ export default class NavRenderer {
             width: settings.UiWidth,
             height: settings.UiHeight,
             backgroundColor: Assets.Colors.Black,
-            resolution: window.devicePixelRatio || 1
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true
         });
         // animate the mapContainers filter once it exists
         PIXI.Ticker.shared.add(function (time) {

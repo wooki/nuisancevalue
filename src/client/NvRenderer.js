@@ -7,6 +7,7 @@ import NavRenderer from './renderers/Nav';
 import GamesMasterRenderer from './renderers/GamesMaster';
 import CompositeRenderer from './renderers/Composite';
 import SignalsRenderer from './renderers/Signals';
+import LocalMap from './renderers/SubRenderers/LocalMap';
 import EmitOnOff from 'emitonoff';
 
 let ctx = null;
@@ -24,6 +25,16 @@ export default class NvRenderer extends Renderer {
     }
 
     setRenderer(station) {
+
+        // set some useful vars for positioning subRenderers
+        let fullWidth = window.innerWidth;
+        let fullHeight = window.innerHeight;
+        let halfWidth = (fullWidth/2);
+        let halfHeight = (fullHeight/2);
+        let spaceWidth = fullWidth - fullHeight;
+        if (spaceWidth < 0) spaceWidth = 0;
+
+        // actually configure and set the renderer
         this.removeRenderer();
         if (station == 'helm') {
             renderer = new HelmRenderer(game, client);
@@ -33,7 +44,20 @@ export default class NvRenderer extends Renderer {
             renderer = new SignalsRenderer(game, client);
         } else if (station == 'captain') {
             renderer = new CompositeRenderer(game, client, {
-              station: 'captain'
+              station: 'captain',
+              stationProperty: 'captainPlayerId',
+              baseUrl: '/',
+              dashboardColor: 0xCC0000,
+              subRenderers: [
+                new LocalMap({
+                  x: halfWidth - halfHeight,
+                  y: 0,
+                  width: fullHeight,
+                  height: fullHeight,
+                  zIndex: 1,
+                  baseUrl: '/'
+                })
+              ]
             });
         } else if (station == 'engineer') {
             // renderer = new SignalsRenderer(game, client);
