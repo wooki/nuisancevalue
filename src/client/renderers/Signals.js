@@ -34,6 +34,7 @@ let settings = {
     loadedSprites: false,
     gridSize: 10000, // this is set in setSizes
     waypointTexture: null,
+    selectionTexture: null,
     minimumScale: 0.001,
     minimumSpriteSize: 8,
     zIndex: {
@@ -692,7 +693,7 @@ export default class SignalsRenderer {
         sprite.hitArea = new PIXI.Circle(0, 0, Math.max(16, useSize.useWidth/2, useSize.useHeight/2));
         sprite.zIndex = zIndex;
         if (guid.toString().startsWith('waypoint-')) {
-            sprite[guid].filters = [ effects.waypointColor ];
+            sprite.filters = [ effects.waypointColor ];
             // sprites[guid].filters = [ effects.waypointColor, effects.hudGlow ];
         // } else {
         //     sprites[guid].filters = [ effects.hudGlow ];
@@ -800,6 +801,7 @@ export default class SignalsRenderer {
         pixiContainer.addChild(sprites.dashboardSprite);
 
         settings.waypointTexture = settings.resources[settings.baseUrl+Assets.Images.waypoint].texture;
+        settings.selectionTexture = settings.resources[settings.baseUrl+Assets.Images.target].texture;
 
         // sort the z-index
         pixiContainer.sortChildren();
@@ -929,9 +931,9 @@ export default class SignalsRenderer {
           // sprites.selection.width = useSize.useWidth;
           // sprites.selection.height = useSize.useHeight;
       } else {
-          sprites.selection = new PIXI.Sprite(settings.waypointTexture);
-          sprites.selection.width = 16;
-          sprites.selection.height = 16;
+          sprites.selection = new PIXI.Sprite(settings.selectionTexture);
+          sprites.selection.width = 32;
+          sprites.selection.height = 32;
           // sprites.selection.width = useSize.useWidth;
           // sprites.selection.height = useSize.useHeight;
           sprites.selection.anchor.set(0.5);
@@ -960,7 +962,7 @@ export default class SignalsRenderer {
             this.addInteractiveToMap(waypoint.name,
                           "waypoint-"+waypoint.name,
                           settings.waypointTexture,
-                          16, 16,
+                          32, 32,
                           coord.x, coord.y,
                           settings.zIndex.waypoints, 1, 16, true)
         } else {

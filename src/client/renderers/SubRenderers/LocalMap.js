@@ -46,6 +46,7 @@ export default class LocalMap {
       gridSize: 10000,
       subdivisions: 10,
       mimimumSpriteSize: 10,
+      borderWidth: 4,
       internalZIndex: {
         background: 1,
         grid :2,
@@ -85,11 +86,24 @@ export default class LocalMap {
     this.centerX = this.parameters.x + (this.parameters.width/2);
     this.centerY = this.parameters.y + (this.parameters.height/2);
 
-    let dashboardMaskGraphics = new PIXI.Graphics();
-    dashboardMaskGraphics.beginFill(Assets.Colors.Black, 1);
-    dashboardMaskGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
-    dashboardMaskGraphics.endFill();
-    this.mapContainer.mask = dashboardMaskGraphics;
+    let borderGraphics = new PIXI.Graphics();
+    borderGraphics.lineStyle(this.parameters.borderWidth, Assets.Colors.Dial, 1, 0.5);
+    borderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    let borderTexture = pixiApp.renderer.generateTexture(borderGraphics);
+    borderGraphics.destroy();
+    borderTexture = new PIXI.Sprite(borderTexture);
+    borderTexture.anchor.set(0.5);
+    borderTexture.x = this.centerX;
+    borderTexture.y = this.centerY;
+    borderTexture.zIndex = this.parameters.internalZIndex.ui;
+    pixiContainer.addChild(borderTexture);
+
+    // draw a border around the mask
+    let dashboardMaskBorderGraphics = new PIXI.Graphics();
+    dashboardMaskBorderGraphics.beginFill(Assets.Colors.Black, 1);
+    dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    dashboardMaskBorderGraphics.endFill();
+    this.mapContainer.mask = dashboardMaskBorderGraphics;
 
     // draw background
     let backgroundTexture = resources[this.parameters.baseUrl+Assets.Images.space].texture;
@@ -105,15 +119,15 @@ export default class LocalMap {
     // add the grid
     this.createGrid();
 
-    setTimeout(() => {
-      this.updateSharedState({zoom: 0.5});
-    }, 3000);
-    setTimeout(() => {
-      this.updateSharedState({zoom: 2});
-    }, 6000);
-    setTimeout(() => {
-      this.updateSharedState({zoom: 1});
-    }, 9000);
+    // setTimeout(() => {
+    //   this.updateSharedState({zoom: 0.5});
+    // }, 3000);
+    // setTimeout(() => {
+    //   this.updateSharedState({zoom: 2});
+    // }, 6000);
+    // setTimeout(() => {
+    //   this.updateSharedState({zoom: 1});
+    // }, 9000);
 
   }
 
@@ -382,9 +396,6 @@ export default class LocalMap {
 
   createShipSprite(ship, coord, zIndex) {
 
-    if (ship instanceof Torpedo) {
-      console.log("createShipSprite Torpedo");
-    }
     let hullData = Hulls[ship.hull];
     let texture = this.resources[this.parameters.baseUrl+hullData.image].texture;
     let height = hullData.size * this.parameters.scale;

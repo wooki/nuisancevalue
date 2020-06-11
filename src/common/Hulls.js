@@ -15,7 +15,7 @@ export default {
 		mass: 0.014,
 		thrust: 0.045,
 		maneuver: 1.4,
-		enginePositions: [[0.2, 0.3, 0.9], [0.2, 0.7, 0.9]],// [scale, %x, %y]
+		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		damage: STANDARD_SYSTEMS
 	},

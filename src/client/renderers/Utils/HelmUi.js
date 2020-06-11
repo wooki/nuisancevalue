@@ -7,9 +7,19 @@ export default class HelmUi extends PIXI.Graphics {
     constructor(params) {
         super();
 
-        this.params = Object.assign({ uiSize: 1000, uiWidth: 1000, uiHeight:
-        1000, scale: 1, bearing: null, course: null, angularVelocity: null,
-        gravity: null, alpha: 1, zIndex: 1, waypoints: [], path: [] }, params);
+        this.params = Object.assign({
+          uiSize: 1000,
+          uiWidth: 1000,
+          uiHeight: 1000,
+          scale: 1,
+          bearing: null,
+          course: null,
+          angularVelocity: null,
+          gravity: null,
+          alpha: 1,
+          zIndex: 1,
+          waypoints: []
+        }, params);
 
         this.draw();
     }
@@ -71,14 +81,6 @@ export default class HelmUi extends PIXI.Graphics {
                          waypoint.bearing - 0.02, waypoint.bearing + 0.02);
             });
         }
-
-        // if (this.path) {
-        //   this.moveTo();
-        //   this.lineStyle(1, 0x00FF00, 1);
-        //   this.path.forEach((p) => {
-        //       this.lineTo(p.x - this.x, p.y - this.y); // adjust for anchor of HelmUi
-        //   });
-        // }
 
     }
 

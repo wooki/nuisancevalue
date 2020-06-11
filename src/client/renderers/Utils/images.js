@@ -13,6 +13,8 @@ module.exports = {
 		pluto: 'assets/pluto.png',
 		explosion: 'assets/explosion.json',
 		dashboard: 'assets/dashboard.jpg',
+		arrow: 'assets/arrow.png',
+		target: 'assets/target.png',
 		waypoint: 'assets/waypoint.png',
 		pdchud: 'assets/pdchud.png',
 		space: 'assets/space.png',
@@ -23,6 +25,7 @@ module.exports = {
 		Black: 0x000000,
 		Grid: 0x163516,
 		GridSmall: 0x2c332c,
+		Dial: 0x666666,
 		White: 0xFFFFFF,
 		Red: 0xFF0000,
 		Dashboard: 0x2c332c,
@@ -39,5 +42,8 @@ module.exports = {
 			neptune: 0x3e59d8,
 			pluto: 0xdbcebb
 		}
+	},
+	Fonts: {
+		Mono: "\"Lucida Console\",\"Lucida Sans Typewriter\",\"Bitstream Vera Sans Mono\",monospace"
 	}
 }

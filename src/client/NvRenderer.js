@@ -8,6 +8,7 @@ import GamesMasterRenderer from './renderers/GamesMaster';
 import CompositeRenderer from './renderers/Composite';
 import SignalsRenderer from './renderers/Signals';
 import LocalMap from './renderers/SubRenderers/LocalMap';
+import LocalMapHud from './renderers/SubRenderers/LocalMapHud';
 import EmitOnOff from 'emitonoff';
 
 let ctx = null;
@@ -27,12 +28,14 @@ export default class NvRenderer extends Renderer {
     setRenderer(station) {
 
         // set some useful vars for positioning subRenderers
-        let fullWidth = window.innerWidth;
-        let fullHeight = window.innerHeight;
-        let halfWidth = (fullWidth/2);
-        let halfHeight = (fullHeight/2);
+        const fullWidth = window.innerWidth;
+        const fullHeight = window.innerHeight;
+        const halfWidth = (fullWidth/2);
+        const halfHeight = (fullHeight/2);
         let spaceWidth = fullWidth - fullHeight;
         if (spaceWidth < 0) spaceWidth = 0;
+        const mapMargin = 30;
+        const mapMarginFull = mapMargin * 2;
 
         // actually configure and set the renderer
         this.removeRenderer();
@@ -50,11 +53,19 @@ export default class NvRenderer extends Renderer {
               dashboardColor: 0xCC0000,
               subRenderers: [
                 new LocalMap({
-                  x: halfWidth - halfHeight,
-                  y: 0,
-                  width: fullHeight,
-                  height: fullHeight,
+                  x: halfWidth - (halfHeight - mapMargin),
+                  y: mapMargin,
+                  width: fullHeight - mapMarginFull,
+                  height: fullHeight - mapMarginFull,
                   zIndex: 1,
+                  baseUrl: '/'
+                }),
+                new LocalMapHud({
+                  x: halfWidth - (halfHeight - mapMargin),
+                  y: mapMargin,
+                  width: fullHeight - mapMarginFull,
+                  height: fullHeight - mapMarginFull,
+                  zIndex: 2,
                   baseUrl: '/'
                 })
               ]
