@@ -387,8 +387,8 @@ export default class LocalMapHud {
         sprite.height = this.parameters.arrowSize * 2;
       } else if (styleName == 'target') {
         sprite = this.createArrow(this.parameters.filters[styleName], this.parameters.internalZIndex[name], this.parameters.baseUrl+Assets.Images.target);
-        sprite.width = this.parameters.arrowSize * 2;
-        sprite.height = this.parameters.arrowSize * 2;
+        sprite.width = this.parameters.arrowSize * 1.5;
+        sprite.height = this.parameters.arrowSize * 1.5;
       } else {
         sprite = this.createArrow(this.parameters.filters[styleName], this.parameters.internalZIndex[name]);
       }
