@@ -159,8 +159,7 @@ export default class LocalMap {
       let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
                                            obj.physicsObj.position[1],
                                            this.playerShip.physicsObj.position[0],
-                                           this.playerShip.physicsObj.position[1],
-                                           this.parameters.scale);
+                                           this.playerShip.physicsObj.position[1]);
 
 
       UiUtils.addExplosion(this.resources[this.parameters.baseUrl+Assets.Images.explosion].spritesheet,
@@ -206,12 +205,12 @@ export default class LocalMap {
     let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
                                          obj.physicsObj.position[1],
                                          this.playerShip.physicsObj.position[0],
-                                         this.playerShip.physicsObj.position[1],
-                                         this.parameters.scale);
+                                         this.playerShip.physicsObj.position[1]);
 
     if (isPDC) {
-      // this.addPDC(coord.x, coord.y, obj.size, 200, 6);
-      console.info("implement: addPDC");
+      const explosionSize = 200;
+      const numberPerSecond = 6;
+      UiUtils.addPDC(this.resources[this.parameters.baseUrl+Assets.Images.explosion].spritesheet, this.mapContainer, coord.x, coord.y, obj.size, explosionSize, numberPerSecond, this.parameters.scale, 10, this.parameters.internalZIndex.explosion);
     } else if (obj instanceof Ship || obj instanceof Torpedo) {
         let shipSprite = this.createShipSprite(obj, coord, this.parameters.internalZIndex.ship);
         this.addSpriteToMap(shipSprite, obj.id);
@@ -222,20 +221,20 @@ export default class LocalMap {
               obj.size * widthRatio, obj.size,
               coord.x, coord.y,
               zIndex, false);
-    }    
+    }
   }
 
   updateObject(obj, renderer) {
 
+    // update position
+    let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
+                                         obj.physicsObj.position[1],
+                                         this.playerShip.physicsObj.position[0],
+                                         this.playerShip.physicsObj.position[1]);
+
     let sprite = this.sprites[obj.id];
     if (sprite) {
 
-      // update position
-      let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                           obj.physicsObj.position[1],
-                                           this.playerShip.physicsObj.position[0],
-                                           this.playerShip.physicsObj.position[1],
-                                           this.parameters.scale);
       sprite.x = coord.x;
       sprite.y = coord.y;
       sprite.rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
@@ -250,6 +249,11 @@ export default class LocalMap {
           this.updateObjectScale(obj, obj.id);
         }
       }
+    } else if (obj instanceof PDC) {
+        // instead of drawing - always create a load of random small explosions
+        const explosionSize = 200;
+        const numberPerSecond = 6;
+        UiUtils.addPDC(this.resources[this.parameters.baseUrl+Assets.Images.explosion].spritesheet, this.mapContainer, coord.x, coord.y, obj.size, explosionSize, numberPerSecond, this.parameters.scale, 10, this.parameters.internalZIndex.explosion);
     }
   }
 
@@ -278,8 +282,7 @@ export default class LocalMap {
         let coord = this.relativeScreenCoord(playerShip.physicsObj.position[0],
                                              playerShip.physicsObj.position[1],
                                              playerShip.physicsObj.position[0],
-                                             playerShip.physicsObj.position[1],
-                                             this.parameters.scale);
+                                             playerShip.physicsObj.position[1]);
 
         // add the player ship sprite if we haven't got it
         if (!this.playerSprite) {

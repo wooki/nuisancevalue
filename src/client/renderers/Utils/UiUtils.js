@@ -102,9 +102,11 @@ export default {
 		for (let i = 0; i < number; i++) {
 
 			if (Math.random() < chance) {
-				let explosionCoord = new Victor(0, (Math.random()*area*scale));
+				let offset = (Math.random()*area*scale);
+				let explosionCoord = new Victor(0, offset);
 				explosionCoord = explosionCoord.rotateDeg(Math.random()*360);
 				explosionCoord = explosionCoord.add(new Victor(x, y));
+
 
 				this.addExplosion(explosionSheet,
 					pixiContainer,
