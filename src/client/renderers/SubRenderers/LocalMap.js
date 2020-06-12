@@ -102,7 +102,7 @@ export default class LocalMap {
     let dashboardMaskBorderGraphics = new PIXI.Graphics();
     dashboardMaskBorderGraphics.beginFill(Assets.Colors.Black, 1);
     dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
-    dashboardMaskBorderGraphics.endFill();
+    // dashboardMaskBorderGraphics.endFill();
     this.mapContainer.mask = dashboardMaskBorderGraphics;
 
     // draw background
@@ -222,13 +222,7 @@ export default class LocalMap {
               obj.size * widthRatio, obj.size,
               coord.x, coord.y,
               zIndex, false);
-    }
-
-    // if selected then highlight somehow
-    if (this.playerShip.targetId === obj.id) {
-        // this.drawTarget(coord);
-        console.info("implement: drawTarget")
-    }
+    }    
   }
 
   updateObject(obj, renderer) {
@@ -246,10 +240,10 @@ export default class LocalMap {
       sprite.y = coord.y;
       sprite.rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
 
-      if (this.sprites[obj.id + '-label'] && this.sprites[obj.id]) {
-          this.sprites[obj.id + '-label'].x = coord.x + (3 + Math.floor(this.sprites[obj.id].width/2));
-          this.sprites[obj.id + '-label'].y = coord.y - (3 + Math.floor(this.sprites[obj.id].height/2));
-      }
+      // if (this.sprites[obj.id + '-label'] && this.sprites[obj.id]) {
+      //     this.sprites[obj.id + '-label'].x = coord.x + (3 + Math.floor(this.sprites[obj.id].width/2));
+      //     this.sprites[obj.id + '-label'].y = coord.y - (3 + Math.floor(this.sprites[obj.id].height/2));
+      // }
 
       if (obj instanceof Ship || obj instanceof Torpedo) {
         if (obj.engine || obj.engine == 0) {

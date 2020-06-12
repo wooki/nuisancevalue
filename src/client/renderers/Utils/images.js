@@ -45,5 +45,12 @@ module.exports = {
 	},
 	Fonts: {
 		Mono: "\"Lucida Console\",\"Lucida Sans Typewriter\",\"Bitstream Vera Sans Mono\",monospace"
-	}
+	},
+	Units: {
+		speed: ' Mm/s',
+		distance: ' Mm',
+		force: ' N',
+		mass: ' kg',
+		time: ' s'
+	},
 }

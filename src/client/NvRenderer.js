@@ -71,8 +71,39 @@ export default class NvRenderer extends Renderer {
               ]
             });
         } else if (station == 'engineer') {
-            // renderer = new SignalsRenderer(game, client);
-            throw "Engineer Not Implemented";
+          renderer = new CompositeRenderer(game, client, {
+            station: 'engineer',
+            stationProperty: 'engineerPlayerId',
+            baseUrl: '/',
+            dashboardColor: 0xCC00CC,
+            subRenderers: [
+              new LocalMap({
+                x: fullWidth - (400 + mapMargin),
+                y: mapMargin,
+                width: 400,
+                height: 400,
+                zIndex: 1,
+                baseUrl: '/',
+                mapSize: 10000,
+                zoom: 1
+              }),
+              new LocalMapHud({
+                x: fullWidth - (400 + mapMargin),
+                y: mapMargin,
+                width: 400,
+                height: 400,
+                zIndex: 2,
+                baseUrl: '/',
+                mapSize: 10000,
+                zoom: 1,
+                arrowSize: 10,
+                arrowMargin: 6,
+                dialSmallDividerSize: 2,
+                dialLargeDividerSize: 5,
+                dialFontSize: 7
+              })
+            ]
+          });
         } else if (station == 'gm') {
           renderer = new GamesMasterRenderer(game, client);
         } else {
