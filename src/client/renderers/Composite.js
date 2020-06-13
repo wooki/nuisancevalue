@@ -25,6 +25,7 @@ export default class CompositeRenderer {
       }, config);
       this.subRenderers = this.stationConfig.subRenderers;
 
+      this.keyboardControls = new KeyboardControls(clientEngine);
       this.loadedSprites = false;
       this.resources = null;
       this.uiWidth = window.innerWidth;

@@ -95,7 +95,7 @@ export default class LocalMap {
     borderTexture.anchor.set(0.5);
     borderTexture.x = this.centerX;
     borderTexture.y = this.centerY;
-    borderTexture.zIndex = this.parameters.internalZIndex.ui;
+    borderTexture.zIndex = this.parameters.zIndex+1;
     pixiContainer.addChild(borderTexture);
 
     // draw a border around the mask

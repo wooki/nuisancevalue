@@ -34,8 +34,9 @@ export default class NvRenderer extends Renderer {
         const halfHeight = (fullHeight/2);
         let spaceWidth = fullWidth - fullHeight;
         if (spaceWidth < 0) spaceWidth = 0;
-        const mapMargin = 30;
-        const mapMarginFull = mapMargin * 2;
+        const margin = 30;
+        const marginFull = margin * 2;
+        const sideControlsMin = 100;
 
         // actually configure and set the renderer
         this.removeRenderer();
@@ -53,20 +54,26 @@ export default class NvRenderer extends Renderer {
               dashboardColor: 0xCC0000,
               subRenderers: [
                 new LocalMap({
-                  x: halfWidth - (halfHeight - mapMargin),
-                  y: mapMargin,
-                  width: fullHeight - mapMarginFull,
-                  height: fullHeight - mapMarginFull,
-                  zIndex: 1,
-                  baseUrl: '/'
+                  x: halfWidth - (halfHeight - margin),
+                  y: margin,
+                  width: fullHeight - marginFull,
+                  height: fullHeight - marginFull,
+                  zIndex: 10
                 }),
                 new LocalMapHud({
-                  x: halfWidth - (halfHeight - mapMargin),
-                  y: mapMargin,
-                  width: fullHeight - mapMarginFull,
-                  height: fullHeight - mapMarginFull,
-                  zIndex: 2,
-                  baseUrl: '/'
+                  x: halfWidth - (halfHeight - margin),
+                  y: margin,
+                  width: fullHeight - marginFull,
+                  height: fullHeight - marginFull,
+                  zIndex: 20
+                }),
+                new EngineControl({
+                  x: margin,
+                  y: margin,
+                  width: Math.max(spaceWidth, sideControlsMin),
+                  height: Math.min(spaceWidth, sideControlsMin),
+                  zIndex: 30,
+                  themeColor: 'red'
                 })
               ]
             });
@@ -78,23 +85,23 @@ export default class NvRenderer extends Renderer {
             dashboardColor: 0xCC00CC,
             subRenderers: [
               new LocalMap({
-                x: fullWidth - (400 + mapMargin),
-                y: mapMargin,
+                x: fullWidth - (400 + margin),
+                y: margin,
                 width: 400,
                 height: 400,
                 zIndex: 1,
                 baseUrl: '/',
-                mapSize: 10000,
+                mapSize: 6000,
                 zoom: 1
               }),
               new LocalMapHud({
-                x: fullWidth - (400 + mapMargin),
-                y: mapMargin,
+                x: fullWidth - (400 + margin),
+                y: margin,
                 width: 400,
                 height: 400,
                 zIndex: 2,
                 baseUrl: '/',
-                mapSize: 10000,
+                mapSize: 6000,
                 zoom: 1,
                 arrowSize: 10,
                 arrowMargin: 6,
