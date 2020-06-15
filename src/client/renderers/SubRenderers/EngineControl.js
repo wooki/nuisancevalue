@@ -8,11 +8,10 @@ export default class EngineControl {
     this.parameters = Object.assign({
       x: 0,
       y: 0,
-      width: 100,
-      height: 400,
+      width: 60,
+      height: 372,
       zIndex: 1,
       baseUrl: '/',
-      themeColor: '#cccccc',
       keyboardControls: true
     }, params);
   }

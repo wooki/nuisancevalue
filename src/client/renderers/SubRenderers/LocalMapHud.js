@@ -149,7 +149,7 @@ export default class LocalMapHud {
     }
   }
 
-  // watch for ship updates so we can display the target
+  // watch for object updates so we can display the target
   updateObject(obj, renderer) {
     // if this matches our current target set marker
     if (this.currentTargetId === obj.id) {

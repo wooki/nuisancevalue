@@ -10,6 +10,8 @@ import SignalsRenderer from './renderers/Signals';
 import LocalMap from './renderers/SubRenderers/LocalMap';
 import LocalMapHud from './renderers/SubRenderers/LocalMapHud';
 import EngineControl from './renderers/SubRenderers/EngineControl';
+import ManeuverControl from './renderers/SubRenderers/ManeuverControl';
+import HudData from './renderers/SubRenderers/HudData';
 import EmitOnOff from 'emitonoff';
 
 let ctx = null;
@@ -34,11 +36,14 @@ export default class NvRenderer extends Renderer {
         const halfWidth = Math.round(fullWidth/2);
         const halfHeight = Math.round(fullHeight/2);
         let spaceWidth = fullWidth - fullHeight;
-        if (spaceWidth < 0) spaceWidth = 0;
-        const sideWidth = Math.round(spaceWidth / 2);
-        const margin = 30;
+        let margin = 30;
+        if (spaceWidth < 0) {
+          spaceWidth = 0;
+          margin = 15;
+        }
+        const sideWidth = Math.round((spaceWidth/2) - margin);
         const marginFull = margin * 2;
-        const sideControlsMin = 100;
+        const sideControlsMin = 200;
 
         // actually configure and set the renderer
         this.removeRenderer();
@@ -72,10 +77,21 @@ export default class NvRenderer extends Renderer {
                 new EngineControl({
                   x: margin,
                   y: fullHeight - (margin + 372),
-                  width: 60,
-                  height: 372,
                   zIndex: 30,
                   keyboardControls: true
+                }),
+                new ManeuverControl({
+                  x: margin + margin + 60, // engine control + 2 margins
+                  y: fullHeight - (margin + 63),
+                  zIndex: 30,
+                  keyboardControls: true
+                }),
+                new HudData({
+                  x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
+                  y: margin,
+                  width: Math.max(sideWidth, sideControlsMin),
+                  height: fullHeight - marginFull,
+                  zIndex: 30
                 })
               ]
             });
