@@ -24,7 +24,7 @@ export default class TorpedoAi {
 			let theirVelocity = new Victor(target.physicsObj.velocity[0], target.physicsObj.velocity[1]);
 
 			// get relative velocity
-			let relativeVelocity = theirVelocity.clone().subtract(ourVelocity);
+			// let relativeVelocity = theirVelocity.clone().subtract(ourVelocity);
 
 			// direction to target
 			let direction = theirPos.clone().subtract(ourPos);
@@ -53,7 +53,7 @@ export default class TorpedoAi {
 			//
 			// } else if (time > 1) {
 			// console.log("TIME-----------------------:>"+time);
-			if (time > 0) {
+			if (time > 0 && theirVelocity.magnitude() != 0) {
 
 				// set the target position to their current position plus our relative velocity over the time
 				let theirPredictedVelocity = theirVelocity.clone().multiply(new Victor(time, time));
