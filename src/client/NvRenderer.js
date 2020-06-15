@@ -11,6 +11,7 @@ import LocalMap from './renderers/SubRenderers/LocalMap';
 import LocalMapHud from './renderers/SubRenderers/LocalMapHud';
 import EngineControl from './renderers/SubRenderers/EngineControl';
 import ManeuverControl from './renderers/SubRenderers/ManeuverControl';
+import DockingControl from './renderers/SubRenderers/DockingControl';
 import HudData from './renderers/SubRenderers/HudData';
 import EmitOnOff from 'emitonoff';
 
@@ -83,6 +84,12 @@ export default class NvRenderer extends Renderer {
                 new ManeuverControl({
                   x: margin + margin + 60, // engine control + 2 margins
                   y: fullHeight - (margin + 63),
+                  zIndex: 30,
+                  keyboardControls: true
+                }),
+                new DockingControl({
+                  x: margin,
+                  y: margin,
                   zIndex: 30,
                   keyboardControls: true
                 }),

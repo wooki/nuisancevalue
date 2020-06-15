@@ -71,6 +71,7 @@ export default {
 		thrust: 0,
 		maneuver: 0,
 		mass: 0.1,
-		damage: STANDARD_SYSTEMS
+		damage: STANDARD_SYSTEMS,
+		dockable: true
 	}
 }
