@@ -51,8 +51,6 @@ export default class HudData {
           key: 'item'+index
         },
         Object.keys(item).map(function(key) {
-          console.log(">>>"+item[key]);
-          console.dir(this);
           if (key == 'type') {
             return h('div.line.LED.'+item[key], {
               styles: {
@@ -91,26 +89,29 @@ export default class HudData {
     // if this matches our current target set marker
     if (this.currentTargetId === obj.id) {
 
-      // // check if the target will be on screen, or to be drawn on dial
-      // let ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
-      // let targetPos = Victor.fromArray(obj.physicsObj.position);
-      // let targetDirection = targetPos.clone().subtract(ourPos);
-      // let distanceToTarget = targetDirection.magnitude();
-      // let bearingToTarget = 0 - targetDirection.verticalAngle() % (2 * Math.PI);
-      //
-      // let roundedDistance = Math.round(distanceToTarget);
-      // let mapShown = (this.parameters.height/2) / this.parameters.scale;
-      // let targetText = roundedDistance + Assets.Units.distance;
-      //
-      // if (distanceToTarget < mapShown) {
-      //     // draw to map
-      //     this.unsetDialMarker('dialTarget');
-      //     this.setMarker('markTarget', targetPos.x, targetPos.y, 'target', null);
-      // } else {
-      //     // draw on the dial
-      //     this.unsetMarker('markTarget');
-      //     this.setDialMarker('dialTarget', bearingToTarget, 'target', targetText);
-      // }
+      // check if the waypoint will be on screen, or to be drawn on dial
+      let ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
+      let objPos = Victor.fromArray(obj.physicsObj.position);
+      let objDirection = objPos.clone().subtract(ourPos);
+      let bearing = (Math.PI - objDirection.verticalAngle()) % (2 * Math.PI);
+      let degrees = this.radiansToDegrees(bearing);
+      let distanceToObj = objDirection.magnitude();
+      let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
+      let closing = 0;
+      if (distanceToObj != 0) {
+          closing = (ourSpeed.dot(objDirection) / distanceToObj);
+      }
+      let roundedDistance = Math.round(distanceToObj);
+      let timeToTarget = Math.round(distanceToObj/closing);
+
+      this.dataItems[this.parameters.itemOrder.target] = {
+        type: 'target',
+        label: obj.name || obj.hull || obj.texture,
+        bearing: Math.round(degrees) + "°",
+        distance: roundedDistance + Assets.Units.distance,
+        closing: closing.toPrecision(3) + Assets.Units.speed,
+        time: timeToTarget + "s"
+      };
     }
 
   }
@@ -120,8 +121,8 @@ export default class HudData {
     if (this.currentTargdataItemsetId || this.currentTargetId === 0) {
        if (this.currentTargetId == key) {
          // remove marker
-         // this.unsetMarker('markTarget');
-         // this.unsetDialMarker('dialTarget');
+         this.dataItems[this.parameters.itemOrder.target] = null;
+         this.projector.scheduleRender();
        }
     }
   }
@@ -146,8 +147,7 @@ export default class HudData {
       this.dataItems[this.parameters.itemOrder.gravity] = this.getGravityData(playerShip);
 
       // target
-      this.dataItems[this.parameters.itemOrder.target] = this.setTargetData(playerShip);
-
+      this.dataItems[this.parameters.itemOrder.target] = this.getTargetData(playerShip);
 
       // waypoint (last because they repeat - so ignore the sorting)
       let waypointDataItems = this.getWaypointData(playerShip);
@@ -229,15 +229,14 @@ export default class HudData {
     }
   }
 
-  // set/unset target
+  // unset target when it has changed - it gets set by the object update
   getTargetData(playerShip) {
 
-    // if we have a target already that isn't this one then remove marker
+    // if we have a target already that isn't this one then remove that item
     if (this.currentTargetId || this.currentTargetId === 0) {
        if (this.currentTargetId != playerShip.targetId) {
-         // remove marker
-         this.unsetMarker('markTarget');
-         this.unsetDialMarker('dialTarget');
+          this.currentTargetId = playerShip.targetId;
+          return null;
        }
     }
 
