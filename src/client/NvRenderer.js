@@ -9,6 +9,7 @@ import CompositeRenderer from './renderers/Composite';
 import SignalsRenderer from './renderers/Signals';
 import LocalMap from './renderers/SubRenderers/LocalMap';
 import LocalMapHud from './renderers/SubRenderers/LocalMapHud';
+import EngineControl from './renderers/SubRenderers/EngineControl';
 import EmitOnOff from 'emitonoff';
 
 let ctx = null;
@@ -30,10 +31,11 @@ export default class NvRenderer extends Renderer {
         // set some useful vars for positioning subRenderers
         const fullWidth = window.innerWidth;
         const fullHeight = window.innerHeight;
-        const halfWidth = (fullWidth/2);
-        const halfHeight = (fullHeight/2);
+        const halfWidth = Math.round(fullWidth/2);
+        const halfHeight = Math.round(fullHeight/2);
         let spaceWidth = fullWidth - fullHeight;
         if (spaceWidth < 0) spaceWidth = 0;
+        const sideWidth = Math.round(spaceWidth / 2);
         const margin = 30;
         const marginFull = margin * 2;
         const sideControlsMin = 100;
@@ -69,11 +71,11 @@ export default class NvRenderer extends Renderer {
                 }),
                 new EngineControl({
                   x: margin,
-                  y: margin,
-                  width: Math.max(spaceWidth, sideControlsMin),
-                  height: Math.min(spaceWidth, sideControlsMin),
+                  y: fullHeight - (margin + 372),
+                  width: 60,
+                  height: 372,
                   zIndex: 30,
-                  themeColor: 'red'
+                  keyboardControls: true
                 })
               ]
             });

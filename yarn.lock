@@ -4716,6 +4716,11 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+maquette@^3.3.7:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/maquette/-/maquette-3.3.7.tgz#7d4f4ec65b2688beefbed74efd2d064165f16dd1"
+  integrity sha512-yB10T1PjjsojFJMz5PP+HfIYQBKZD06Y9rWTUqPRMJMYGCELlWCebY4LrtWhF2x32eZZ263WJUu4sms/rh1sKQ==
+
 markdown-it-anchor@^5.2.7:
   version "5.2.7"
   resolved "https://registry.yarnpkg.com/markdown-it-anchor/-/markdown-it-anchor-5.2.7.tgz#ec740f6bd03258a582cd0c65b9644b9f9852e5a3"

@@ -1,5 +1,4 @@
-import morphdom from 'morphdom';
-
+import {h, createProjector} from 'maquette';
 
 // Buttons for setting the engine level of ship
 // HTML for now
@@ -20,12 +19,16 @@ export default class EngineControl {
 
   // keep references and add to the html
   init(el, pixiApp, pixiContainer, resources, renderer) {
-    this.pixiApp = pixiApp;
-    this.pixiContainer = pixiContainer;
-    this.resources = resources;
+    this.el = el;
+    // this.pixiApp = pixiApp;
+    // this.pixiContainer = pixiContainer;
+    // this.resources = resources;
+    this.renderer = renderer;
 
     // draw first assuming engine 0
-    this.draw(0, true);
+    this.engine = 0;
+    this.projector = createProjector();
+    this.projector.append(this.el, this.render.bind(this));
 
     // attach shortcut keys
     if (this.parameters.keyboardControls && renderer.keyboardControls) {
@@ -35,26 +38,56 @@ export default class EngineControl {
       renderer.keyboardControls.bindKey('3', 'engine', { }, { level: 3 });
       renderer.keyboardControls.bindKey('4', 'engine', { }, { level: 4 });
       renderer.keyboardControls.bindKey('5', 'engine', { }, { level: 5 });
+      renderer.keyboardControls.bindKey('up', 'engine', { }, { level: '+' });
+      renderer.keyboardControls.bindKey('down', 'engine', { }, { level: '-' });
     }
   }
 
   // watch player ship for the engine
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
-    this.draw(playerShip.engine);
+    this.engine = playerShip.engine;
+    this.projector.scheduleRender();
   }
 
-  // uses morphdom to reduce changes
-  draw(engine, addHandlers) {
-    if (addHandlers === undefined) addHandlers = false;
+  setEngine(engineLevel) {
+    if (this.renderer.client) {
+      this.renderer.client.setEngine(engineLevel);
+    }
+  }
 
-    // create gui and add to el
+  createButton(engineLevel) {
+      return h('button.key', {
+        classes: {
+          active: (this.engine == engineLevel)
+        },
+        key: 'btn'+engineLevel,
+        onclick: (event) => {
+          event.preventDefault();
+          this.setEngine(engineLevel);
+        }
+        },
+        [engineLevel.toString()]
+      );
+  }
 
-    // add to the el
-    // morphdom(target, source);
-
-    // if we want handlers then add to the elements in the page
-
-
+  render() {
+    return h('div.nv.ui.col.justify-end', {
+      styles: {
+        position: 'absolute',
+        left: this.parameters.x + 'px',
+        top: this.parameters.y + 'px',
+        width: this.parameters.width + 'px',
+        height: this.parameters.height + 'px'
+      }
+    },
+    [
+      this.createButton(5),
+      this.createButton(4),
+      this.createButton(3),
+      this.createButton(2),
+      this.createButton(1),
+      this.createButton(0)
+    ]);
   }
 
 }

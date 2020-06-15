@@ -3,6 +3,16 @@ body, html {
     margin: 0;
 }
 
+#game {
+  position: relative;
+  & > * {
+    z-index: 200;
+  }
+}
+canvas {
+  z-index: 100;
+}
+
 .ui-leaving, .ui-loading {
   position: fixed;
   top: 0;
@@ -88,26 +98,6 @@ body, html {
         }
       }
     }
-}
-@media only screen and (orientation : portrait) {
-  .ui-container {
-    min-width: inherit;
-    min-height: 140px;
-    right: 0;
-    width: auto;
-    bottom: auto;
-    height: calc(calc(100vh - 100vw) / 2);
-    flex-direction: row;
-    & > * {
-      margin: 0 30px;
-    }
-    &.right {
-      top: auto;
-      left: auto;
-      right: 0;
-      bottom: 0;
-    }
-  }
 }
 
 .helm.ui-container {
@@ -206,17 +196,6 @@ body, html {
         padding: 0 5px;
       }
     }
-}
-@media only screen and (orientation : portrait) {
-  .helm.ui-container {
-      .engine {
-        flex-direction: row-reverse;
-      }
-      .ui-docking, .ui-undock {
-        margin-top: 0;
-        margin-left: auto;
-      }
-  }
 }
 
 .signals.ui-container {
@@ -417,4 +396,110 @@ label {
     border-radius: 21px;
     cursor: pointer;
     text-shadow: none;
+}
+
+/* NEW STYLES FOR COMPOSITE UI */
+.nv {
+  z-index: 200;
+
+  border: 1px dotted #bada55;
+
+  // ui styles
+  &.ui {
+
+    // some theming
+    color: #00ff00;
+    font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+    line-height: 30px;
+    font-size: 18px;
+
+    // set-up to be a column or row flexbox (column default)
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+
+    // column
+    &.col {
+    }
+
+    // row
+    &.row {
+      flex-direction: row;
+    }
+
+    &.justify-end {
+      justify-content: flex-end;
+    }
+
+    // button and key styles
+    button {
+      background-color: #163516;
+      color: black;
+      padding: 5px 15px;
+      font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+      line-height: 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 3px;
+      margin: 3px;
+
+      &.active, &.active.key {
+          opacity: 1;
+          color: rgba(0, 0, 0, 0.4);
+          text-decoration: underline;
+      }
+
+      &.key {
+        position: relative;
+        background: #163516;
+        background: radial-gradient(circle, #163516 0%, #203F20 75%, #355435 100%);
+        text-align: center;
+        color: black;
+        text-shadow: -1px -1px 2px #265026;
+        box-sizing: border-box;
+        padding: 6px 15px 5px 16px;
+        box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
+        border: 8px solid #113011;
+        border-bottom-color: #265026;
+        border-left-color: #0c2b0c;
+        border-right-color: #072607;
+        user-select: none;
+        outline: none;
+        &:focus {
+          outline: none;
+        }
+        &::-moz-focus-inner {
+          border: 0;
+        }
+        &:active {
+          outline: none;
+          transform: translate(2px, 2px);
+          box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2);
+        }
+      }
+    } // .button
+
+    &.col button {
+      &:first-child {
+          margin-top: 0;
+      }
+      &:last-child {
+          margin-bottom: 0;
+      }
+    }
+
+    &.row button {
+      &:first-child {
+          margin-left: 0;
+      }
+      &:last-child {
+          margin-right: 0;
+      }
+    }
+
+
+
+  }
 }
