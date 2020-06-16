@@ -111,7 +111,7 @@ export default class CompositeRenderer {
       let root = document.getElementById('game');
       UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function() {
         this.backToLobby = true;
-      });
+      }.bind(this));
     }
 
     loadResources(loader, resources) {
