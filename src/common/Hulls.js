@@ -7,6 +7,23 @@ const STANDARD_SYSTEMS = gd.STANDARD_SYSTEMS;
 // some reference data for ships we can use in game
 export default {
 
+	"spacebug": {
+		name: 'Spacebug',
+		image: 'assets/spacebug.png',
+		size: 300, // used for height
+		width: 0.78313253, // ratio to height
+		mass: 0.012,
+		thrust: 0.05,
+		maneuver: 1.2,
+		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
+		exhaustImage: 'exhaust',
+		pdc: {
+			range: 4000,
+			size: 1000
+		},
+		damage: STANDARD_SYSTEMS // this is a bit encoded set of valid systems that CAN BE damaged
+	},
+
 	"tug": {
 		name: 'Tug',
 		image: 'assets/ship.png',

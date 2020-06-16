@@ -45,10 +45,10 @@ export default class TestMission {
         angularVelocity: Math.random()
     });
 
-    let hullName = 'bushido';
+    let hullName = 'spacebug';
     let hullData = Hulls[hullName];
     let nv = game.addShip({
-        name: "Nuisance Value",
+        name: "Spacebug 1",
         x: -2000,
         y: 1000,
         dX: -60,
