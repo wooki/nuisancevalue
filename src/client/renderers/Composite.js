@@ -49,6 +49,8 @@ export default class CompositeRenderer {
       let root = document.getElementById('game');
     	root.innerHTML = '';
     	this.el = document.createElement('div');
+      this.el.classList.add('renderer');
+      this.el.classList.add('composite')
       root.append(this.el);
 
       // create pixie app and container

@@ -90,6 +90,8 @@ export default class NvRenderer extends Renderer {
                 new DockingControl({
                   x: margin,
                   y: margin,
+                  width: Math.max(sideWidth, sideControlsMin),
+                  height: (halfHeight - (margin * 2)),
                   zIndex: 30,
                   keyboardControls: true
                 }),
