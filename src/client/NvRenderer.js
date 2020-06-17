@@ -7,6 +7,7 @@ import NavRenderer from './renderers/Nav';
 import GamesMasterRenderer from './renderers/GamesMaster';
 import CompositeRenderer from './renderers/Composite';
 import SignalsRenderer from './renderers/Signals';
+import LocalMapBackground from './renderers/SubRenderers/LocalMapBackground';
 import LocalMap from './renderers/SubRenderers/LocalMap';
 import LocalMapHud from './renderers/SubRenderers/LocalMapHud';
 import EngineControl from './renderers/SubRenderers/EngineControl';
@@ -61,12 +62,20 @@ export default class NvRenderer extends Renderer {
               baseUrl: '/',
               dashboardColor: 0xCC0000,
               subRenderers: [
+                new LocalMapBackground({
+                  x: halfWidth - (halfHeight - margin),
+                  y: margin,
+                  width: fullHeight - marginFull,
+                  height: fullHeight - marginFull,
+                  zIndex: 5,
+                  // backgroundAsset: 'black'
+                }),
                 new LocalMap({
                   x: halfWidth - (halfHeight - margin),
                   y: margin,
                   width: fullHeight - marginFull,
                   height: fullHeight - marginFull,
-                  zIndex: 10
+                  zIndex: 15
                 }),
                 new LocalMapHud({
                   x: halfWidth - (halfHeight - margin),

@@ -18,6 +18,7 @@ module.exports = {
 		waypoint: 'assets/waypoint.png',
 		pdchud: 'assets/pdchud.png',
 		space: 'assets/space.png',
+		black: 'assets/black.png',
 		exhaust: 'assets/exhaust.json',
 		exhaustflame: 'assets/exhaustflame.json'
 	},
