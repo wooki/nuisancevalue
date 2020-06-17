@@ -33,9 +33,9 @@ export default class HelmPathUi extends PIXI.Graphics {
             if (path) {
               this.moveTo();
               path.points.forEach((p, i) => {
-                  let color = path.color1;
+                  let color = path.color1 || path.color;
                   if (Math.floor((i-2)/10) % 2 > 0) { // adjust back two for the colour so last one is 59th
-                    color = path.color2;
+                    color = path.color2 || path.color;
                   }
                   this.lineStyle(1, color, 0.5);
                   this.lineTo(p.x - this.x, p.y - this.y); // adjust for anchor of HelmPathUi
@@ -49,7 +49,6 @@ export default class HelmPathUi extends PIXI.Graphics {
     update(paths) {
 
         this.paths = paths;
-
         this.draw();
     }
 }

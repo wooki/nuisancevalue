@@ -143,7 +143,7 @@ export default class CompositeRenderer {
         // initialise sub-renderers
         for (let i = 0; i < this.subRenderers.length; i++) {
           this.subRenderers[i].init(this.el, this.pixiApp, this.pixiContainer, this.resources, this);
-        }
+        }        
     }
 
     addExplosion(obj) {

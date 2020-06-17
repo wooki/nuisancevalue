@@ -14,6 +14,7 @@ import EngineControl from './renderers/SubRenderers/EngineControl';
 import ManeuverControl from './renderers/SubRenderers/ManeuverControl';
 import DockingControl from './renderers/SubRenderers/DockingControl';
 import HudData from './renderers/SubRenderers/HudData';
+import LocalMapPaths from './renderers/SubRenderers/LocalMapPaths';
 import EmitOnOff from 'emitonoff';
 
 let ctx = null;
@@ -69,6 +70,13 @@ export default class NvRenderer extends Renderer {
                   height: fullHeight - marginFull,
                   zIndex: 5,
                   // backgroundAsset: 'black'
+                }),
+                new LocalMapPaths({
+                  x: halfWidth - (halfHeight - margin),
+                  y: margin,
+                  width: fullHeight - marginFull,
+                  height: fullHeight - marginFull,
+                  zIndex: 12
                 }),
                 new LocalMap({
                   x: halfWidth - (halfHeight - margin),
