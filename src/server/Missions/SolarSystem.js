@@ -43,8 +43,8 @@ export default class SolarSystem {
       let hullData = Hulls[hullName];
       position = new Victor(stationOrbitDistance, 0);
       velocity = new Victor(0, 0 - stationOrbitSpeed);
-      position = position.rotateDeg(60);
-      velocity = velocity.rotateDeg(60);
+      position = position.rotateDeg(55);
+      velocity = velocity.rotateDeg(55);
       position = position.add(new Victor(planets.Earth.position.x, planets.Earth.position.y));
       velocity = velocity.add(new Victor(planets.Earth.velocity.x, planets.Earth.velocity.y));
       let nv = game.addShip({

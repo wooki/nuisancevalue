@@ -226,15 +226,15 @@ export default class CompositeRenderer {
             this.game.world.forEachObject((objId, obj) => {
               if (obj instanceof Ship) {
                 if (obj.docked && obj.docked.length > 0) {
-                  let dockedMatch = obj.docked.find(function(dockedShip) {
+                  let dockedMatch = obj.docked.find((dockedShip) => {
                     return (dockedShip[this.stationConfig.stationProperty] == this.game.playerId);
                   });
                   if (dockedMatch) {
                     isDocked = true;
                     playerShip = obj;
-                    gameObjects = gameObjects.filter(function(mothership) {
-                      return (mothership.id != obj.id);
-                    });
+                    // gameObjects = gameObjects.filter((mothership) => {
+                    //   return (mothership.id != obj.id);
+                    // });
                   }
                 }
               }

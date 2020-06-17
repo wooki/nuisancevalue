@@ -16,7 +16,10 @@ export default class DockingControl {
       height: 126,
       zIndex: 1,
       baseUrl: '/',
-      keyboardControls: true
+      keyboardControls: true,
+      dockInitDistance: 1000,
+      dockMaxDistance: 200,
+      dockMaxClosing: 200
     }, params);
   }
 
@@ -43,10 +46,17 @@ export default class DockingControl {
   // just store out current ship
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
     this.playerShip = playerShip;
+    if (isDocked) {
+      this.dockTarget = {
+        state: 2
+      };
+    }
   }
 
   // keep track of closest object and show UI if it is in range of docking
   updateObject(obj, renderer) {
+
+    if (this.dockTarget && this.dockTarget.state == 2) return;
 
     // is this elligable for docking (must be a ship - then check hull)
     if (obj instanceof Ship) {
@@ -63,7 +73,7 @@ export default class DockingControl {
         if (distance < 0) {
             distance = 0;
         }
-        if (distance < 1000) {
+        if (distance < this.parameters.dockInitDistance) {
 
           // check if this is the current dock target OR it is closer OR we don't have one
           if (this.dockTarget == null || this.dockTarget.obj.id == obj.id || this.dockTarget.distance > distance) {
@@ -72,10 +82,10 @@ export default class DockingControl {
             let theirVelocity = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
             let closing = 0;
             if (distance != 0) {
-                closing = Math.abs((ourVelocity.clone().subtract(theirVelocity)).dot(direction) / distance);
+                closing = (ourVelocity.clone().subtract(theirVelocity)).dot(direction) / distance;
             }
             let closingDesc = Math.round(closing);
-            if (closing == Infinity) {
+            if (Math.abs(closing) == Infinity) {
                 closingDesc = "∞";
             }
 
@@ -101,14 +111,13 @@ export default class DockingControl {
             if (this.dockTarget.state == 1) {
 
               // advance progress if we're close enough and slow enough
-              if (distance < 200 && closing < 200) {
+              if (distance <= this.parameters.dockMaxDistance && closing <= this.parameters.dockMaxClosing) {
                 this.dockTarget.progress = this.dockTarget.progress + 0.2;
               }
 
               // if we're done
               if (this.dockTarget.progress >= 100) {
-                // do the dock!
-                console.log("DOCK, TODO: implement dock action");
+                this.dock();
               }
             }
 
@@ -128,6 +137,25 @@ export default class DockingControl {
     } // (obj instanceof Ship)
 
   } // updateObject
+
+  dock() {
+    if (this.renderer.client) {
+      // do the dock!
+      this.dockTarget.progress = 0;
+      this.dockTarget.state = 2; // docked!
+
+      this.renderer.client.setEngine(0);
+      this.renderer.client.dock(this.dockTarget.obj.id);
+    }
+  }
+
+  undock() {
+    if (this.renderer.client && this.dockTarget.state == 2) {
+      this.dockTarget = null;
+      this.renderer.client.undock();
+      this.projector.scheduleRender();
+    }
+  }
 
   // if current dockable ship is removed then remove UI
   removeObject(key, renderer) {
@@ -171,12 +199,15 @@ export default class DockingControl {
       );
     }
 
-    let startDock = null;
-    let cancelDock = null;
+    let dockButton = null;
     let progress = null;
+    let info1 = this.createLine('Range', this.dockTarget.distance + Assets.Units.distance)
+    let info2 = null;
+    let info3 = this.createLine('Closing', this.dockTarget.closingDesc + Assets.Units.speed);
+    let info4 = null;
 
     if (this.dockTarget.state == 0) {
-      startDock = h('button.key.dock', {
+      dockButton = h('button.key.dock', {
         key: 'start-dock',
         onclick: (event) => {
           event.preventDefault();
@@ -185,8 +216,8 @@ export default class DockingControl {
         }
       }, ['Initiate Dock']);
     } else if (this.dockTarget.state == 1) {
-      progress = this.createLine('Progress', Math.round(this.dockTarget.state) + '%');
-      cancelDock = h('button.key.dock', {
+      progress = this.createLine('Progress', Math.round(this.dockTarget.progress) + '%');
+      dockButton = h('button.key.dock', {
         key: 'cancel-dock',
         onclick: (event) => {
           event.preventDefault();
@@ -194,6 +225,18 @@ export default class DockingControl {
           this.dockTarget.state = 0;
         }
       }, ['Abort Dock']);
+      info2 = this.createLine('Max Range',  this.parameters.dockMaxDistance + Assets.Units.distance);
+      info4 = this.createLine('Max Closing',  '±' + this.parameters.dockMaxClosing + Assets.Units.speed);
+    } else if (this.dockTarget.state == 2) {
+      dockButton = h('button.key.dock', {
+        key: 'undock',
+        onclick: (event) => {
+          event.preventDefault();
+          this.undock();
+        }
+      }, ['Launch']);
+      info1 = null;
+      info3 = null;
     }
 
     return h('div.nv.ui', {
@@ -208,12 +251,13 @@ export default class DockingControl {
       },
       [this.createDataBlock([
           this.createLine('Dock', (this.dockTarget.obj.name || this.dockTarget.obj.hull)),
-          this.createLine('Range', this.dockTarget.distance + Assets.Units.distance),
-          this.createLine('Closing', this.dockTarget.closingDesc + Assets.Units.speed),
+          info1,
+          info2,
+          info3,
+          info4,
           progress
         ]),
-        startDock,
-        cancelDock
+        dockButton
       ]
     );
   }

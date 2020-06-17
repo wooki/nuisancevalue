@@ -294,6 +294,7 @@ export default class LocalMap {
 
         // set the player ship rotation
         this.playerSprite.rotation = UiUtils.adjustAngle(playerShip.physicsObj.angle);
+
       } else {
         // remove player sprite and add explosion
         this.addExplosion(playerShip);
