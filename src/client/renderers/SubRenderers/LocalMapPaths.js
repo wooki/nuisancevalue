@@ -28,7 +28,8 @@ export default class LocalMapPaths {
         gravity: 0x3333FF,
         heading: 0x00FF00,
         // waypoint: 0xFFFF00,
-        target: 0x00FFFF
+        target: 0x00FFFF,
+        other: 0x222222
       }
     }, params);
 
@@ -108,27 +109,44 @@ export default class LocalMapPaths {
 
   updateObject(obj, renderer) {
 
-    // update position
-    // let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-    //                                      obj.physicsObj.position[1],
-    //                                      this.playerShip.physicsObj.position[0],
-    //                                      this.playerShip.physicsObj.position[1]);
-    //
-    //
-    //   // decide if we want to plot it's path
-    //   if (obj instanceof Ship ||
-    //       obj instanceof Planet ||
-    //       obj instanceof Asteroid ||
-    //         obj instanceof Torpedo) {
-    //
-    //   }
+    // decide if we want to plot it's path
+    if (obj instanceof Ship ||
+        obj instanceof Planet ||
+        obj instanceof Asteroid ||
+        obj instanceof Torpedo) {
 
+      // get position
+      let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
+                                           obj.physicsObj.position[1],
+                                           this.playerShip.physicsObj.position[0],
+                                           this.playerShip.physicsObj.position[1]);
+
+      // check if object is on the map
+      let distance = Math.abs(Victor.fromArray(this.playerShip.physicsObj.position).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
+      if (distance < this.parameters.mapSize) {
+
+        // always plot your own ships path and adjust to gravity path
+        let predictedPath = UiUtils.predictPath(obj, this.parameters.predictTime);
+
+        // adjust our path to be relative to our gravity
+        if (this.predictedPaths.gravity && this.predictedPaths.gravity.path) {
+            predictedPath = this.makeRelativePath(predictedPath, this.predictedPaths.gravity.path);
+        }
+
+        this.predictedPaths['object'+obj.id] = {
+          color: this.parameters.colors.other,
+          points: this.relativeScreenCoords(predictedPath, this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1])
+        };
+      }
+    }
   }
 
   removeObject(key, renderer) {
 
     // if we're tracking that object remove it's path
-
+    if (this.predictedPaths['object'+key]) {
+      delete this.predictedPaths['object'+key];
+    }
   }
 
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
@@ -155,8 +173,11 @@ export default class LocalMapPaths {
 
       this.predictedPaths.gravity = {
         color: this.parameters.colors.gravity,
-        points: this.relativeScreenCoords(predictedGravityPath, focusX, focusY)
+        points: this.relativeScreenCoords(predictedGravityPath, focusX, focusY),
+        path: predictedGravityPath // used for adjusting other paths
       };
+    } else {
+      delete this.predictedPaths.gravity;
     }
 
     // always plot your own ships path and adjust to gravity path
