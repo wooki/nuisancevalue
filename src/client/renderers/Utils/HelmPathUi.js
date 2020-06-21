@@ -34,10 +34,17 @@ export default class HelmPathUi extends PIXI.Graphics {
               this.moveTo();
               path.points.forEach((p, i) => {
                   let color = path.color1 || path.color;
+                  let alpha = 0.4;
                   if (Math.floor((i-2)/10) % 2 > 0) { // adjust back two for the colour so last one is 59th
                     color = path.color2 || path.color;
+                    alpha = 0.2;
                   }
-                  this.lineStyle(1, color, 0.5);
+                  this.lineStyle({
+                    width: 1,
+                    color: color,
+                    alpha: alpha,
+                    alignment: 0.5
+                  });
                   this.lineTo(p.x - this.x, p.y - this.y); // adjust for anchor of HelmPathUi
               });
             }

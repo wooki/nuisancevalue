@@ -29,7 +29,7 @@ export default class LocalMapPaths {
         heading: 0x00FF00,
         // waypoint: 0xFFFF00,
         target: 0x00FFFF,
-        other: 0x222222
+        other: 0xCCCCCC
       }
     }, params);
 
