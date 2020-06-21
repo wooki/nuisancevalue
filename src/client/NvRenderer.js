@@ -15,6 +15,7 @@ import ManeuverControl from './renderers/SubRenderers/ManeuverControl';
 import DockingControl from './renderers/SubRenderers/DockingControl';
 import HudData from './renderers/SubRenderers/HudData';
 import LocalMapPaths from './renderers/SubRenderers/LocalMapPaths';
+import ZoomControl from './renderers/SubRenderers/ZoomControl';
 import EmitOnOff from 'emitonoff';
 
 let ctx = null;
@@ -103,6 +104,13 @@ export default class NvRenderer extends Renderer {
                   y: fullHeight - (margin + 63),
                   zIndex: 30,
                   keyboardControls: true
+                }),
+                new ZoomControl({
+                  // x: (margin * 3) + 60 + 126, // maneuver control + engine control + 3 margins
+                  // y: fullHeight - (margin + 63),
+                  // zIndex: 30,
+                  keyboardControls: true,
+                  onScreenControls: false
                 }),
                 new DockingControl({
                   x: margin,

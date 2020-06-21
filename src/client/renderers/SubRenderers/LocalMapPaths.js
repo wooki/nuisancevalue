@@ -67,7 +67,7 @@ export default class LocalMapPaths {
   createHelmPathUi() {
 
     if (this.helmPathUi) {
-      this.mapContainer.removeChild(sprites.helmPathUi);
+      this.mapContainer.removeChild(this.helmPathUi);
       this.helmPathUi.destroy();
       this.helmPathUi = null;
     }
