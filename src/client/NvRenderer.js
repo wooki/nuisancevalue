@@ -4,6 +4,7 @@ import Ship from './../common/Ship';
 import LobbyRenderer from './renderers/Lobby';
 import HelmRenderer from './renderers/Helm';
 import CaptainRenderer from './renderers/Captain';
+import EngineerRenderer from './renderers/Engineer';
 import NavRenderer from './renderers/Nav';
 import GamesMasterRenderer from './renderers/GamesMaster';
 import SignalsRenderer from './renderers/Signals';
@@ -51,39 +52,7 @@ export default class NvRenderer extends Renderer {
         } else if (station == 'captain') {
             renderer = new CaptainRenderer(game, client);
         } else if (station == 'engineer') {
-          renderer = new CompositeRenderer(game, client, {
-            station: 'engineer',
-            stationProperty: 'engineerPlayerId',
-            baseUrl: '/',
-            dashboardColor: 0xCC00CC,
-            subRenderers: [
-              new LocalMap({
-                x: fullWidth - (400 + margin),
-                y: margin,
-                width: 400,
-                height: 400,
-                zIndex: 1,
-                baseUrl: '/',
-                mapSize: 6000,
-                zoom: 1
-              }),
-              new LocalMapHud({
-                x: fullWidth - (400 + margin),
-                y: margin,
-                width: 400,
-                height: 400,
-                zIndex: 2,
-                baseUrl: '/',
-                mapSize: 6000,
-                zoom: 1,
-                arrowSize: 10,
-                arrowMargin: 6,
-                dialSmallDividerSize: 2,
-                dialLargeDividerSize: 5,
-                dialFontSize: 7
-              })
-            ]
-          });
+            renderer = new EngineerRenderer(game, client);            
         } else if (station == 'gm') {
           renderer = new GamesMasterRenderer(game, client);
         } else {
