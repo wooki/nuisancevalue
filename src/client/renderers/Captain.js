@@ -8,9 +8,10 @@ import DockingControl from './SubRenderers/DockingControl';
 import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
+import TargetSelection from './SubRenderers/TargetSelection';
 
 // extend compsite with pre-set subrenderers
-export default class HelmRenderer extends CompositeRenderer {
+export default class CaptainRenderer extends CompositeRenderer {
 
     constructor(gameEngine, clientEngine) {
 
@@ -30,10 +31,10 @@ export default class HelmRenderer extends CompositeRenderer {
       const sideControlsMin = 200;
 
       let config = {
-        station: 'helm',
-        stationProperty: 'helmPlayerId',
+        station: 'captain',
+        stationProperty: 'captainPlayerId',
         baseUrl: '/',
-        dashboardColor: 0x2c332c,
+        dashboardColor: 0x990000,
         subRenderers: [
           new LocalMapBackground({
             x: halfWidth - (halfHeight - margin),
@@ -41,59 +42,66 @@ export default class HelmRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 5,
+            mapSize: 30000
           }),
           new LocalMapPaths({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 12
+            zIndex: 12,
+            predictTime: 36,
+            trackObjects: false,
+            mapSize: 30000
           }),
           new LocalMap({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 15
+            zIndex: 15,
+            mapSize: 30000
           }),
           new LocalMapHud({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 20
+            zIndex: 20,
+            mapSize: 30000
           }),
-          new EngineControl({
-            x: margin,
-            y: fullHeight - (margin + 372),
-            zIndex: 30,
-            keyboardControls: true
-          }),
-          new ManeuverControl({
-            x: margin + margin + 60, // engine control + 2 margins
-            y: fullHeight - (margin + 63),
-            zIndex: 30,
-            keyboardControls: true
-          }),
+          // new EngineControl({
+          //   x: margin,
+          //   y: fullHeight - (margin + 372),
+          //   zIndex: 30,
+          //   keyboardControls: true
+          // }),
+          // new ManeuverControl({
+          //   x: margin + margin + 60, // engine control + 2 margins
+          //   y: fullHeight - (margin + 63),
+          //   zIndex: 30,
+          //   keyboardControls: true
+          // }),
           new ZoomControl({
             keyboardControls: true,
             onScreenControls: false
           }),
-          new DockingControl({
-            x: margin,
-            y: margin,
-            width: Math.max(sideWidth, sideControlsMin),
-            height: (halfHeight - (margin * 2)),
-            zIndex: 30,
-            keyboardControls: true
-          }),
+          // new DockingControl({
+          //   x: margin,
+          //   y: margin,
+          //   width: Math.max(sideWidth, sideControlsMin),
+          //   height: (halfHeight - (margin * 2)),
+          //   zIndex: 30,
+          //   keyboardControls: true
+          // }),
           new HudData({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
             y: margin,
             width: Math.max(sideWidth, sideControlsMin),
             height: fullHeight - marginFull,
             zIndex: 30
-          })
+          }),
+          new TargetSelection({}) // watch for selection and set as target
         ]
       };
 

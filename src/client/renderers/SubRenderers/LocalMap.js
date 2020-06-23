@@ -72,6 +72,7 @@ export default class LocalMap {
     this.pixiApp = pixiApp;
     this.pixiContainer = pixiContainer;
     this.resources = resources;
+    this.renderer = renderer;
 
     this.sprites = []; // keep track of sprites on the map
     this.mapObjects = []; // keep track of actual objects
@@ -270,6 +271,7 @@ export default class LocalMap {
       sprite.x = x;
       sprite.y = y;
       sprite.zIndex = zIndex;
+      sprite.hitArea = new PIXI.Circle(0, 0, Math.max(16/sprite.scale.x, sprite.texture.width/2, sprite.texture.height/2));
       if (guid.toString().startsWith('waypoint-')) {
         sprite.filters = [ effects.waypointColor ];
       }
@@ -299,6 +301,7 @@ export default class LocalMap {
 
         let bodySprite = sprite.getChildByName('hull');
         bodySprite.scale.set(width / bodySprite.texture.width, height / bodySprite.texture.height);
+        bodySprite.hitArea = new PIXI.Circle(0, 0, Math.max(16/bodySprite.scale.x, bodySprite.texture.width/2, bodySprite.texture.height/2));
 
         if (hullData.enginePositions) {
 
@@ -322,6 +325,8 @@ export default class LocalMap {
           sprite.width = this.parameters.mimimumSpriteSize;
           sprite.height = this.parameters.mimimumSpriteSize;
         }
+
+        sprite.hitArea = new PIXI.Circle(0, 0, Math.max(16/sprite.scale.x, sprite.texture.width/2, sprite.texture.height/2));
       }
     }
 
@@ -340,7 +345,26 @@ export default class LocalMap {
 			return p;
 	}
 
+  // clicked an object, do some stuff...
+  objectClick(guid, eventData) {
+
+      eventData.stopPropagation();
+
+      // let selectedGuid = parseInt(guid);
+      let obj = this.mapObjects[guid];
+      if (obj) {
+        this.renderer.updateSharedState({
+      		selection: obj
+      	});
+      }
+  }
+
   addSpriteToMap(sprite, guid) {
+
+    // watch for clicks and set selected object
+    sprite.interactive = true;
+    sprite.on('mousedown', (e) => { this.objectClick(guid, e) });
+    sprite.on('touchstart', (e) => { this.objectClick(guid, e) });
 
     this.sprites[guid] = sprite;
     this.mapContainer.addChild(sprite);
@@ -373,12 +397,12 @@ export default class LocalMap {
     // add hull
     let body = new PIXI.Sprite(texture);
     body.scale.set(width / body.texture.width, height / body.texture.height);
-
     body.anchor.set(0.5);
     body.x = 0;
     body.y = 0;
     body.zIndex = zIndex + 2;
     body.name = 'hull';
+    body.hitArea = new PIXI.Circle(0, 0, Math.max(16/body.scale.x, body.texture.width/2, body.texture.height/2));
     container.addChild(body);
 
     // create the engine sprite

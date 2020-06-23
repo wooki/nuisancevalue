@@ -46,11 +46,15 @@ export default class LocalMapBackground {
     this.pixiApp = pixiApp;
     this.pixiContainer = pixiContainer;
     this.resources = resources;
+    this.renderer = renderer;
 
     // put everything in a container
     this.mapContainer = new PIXI.Container();
     this.mapContainer.sortableChildren = true;
     this.mapContainer.zIndex = this.parameters.zIndex;
+    this.mapContainer.interactive = true;
+    this.mapContainer.on('mousedown', this.canvasClick.bind(this));
+    this.mapContainer.on('touchstart', this.canvasClick.bind(this));
     pixiContainer.addChild(this.mapContainer);
 
     this.centerX = this.parameters.x + (this.parameters.width/2);
@@ -88,6 +92,13 @@ export default class LocalMapBackground {
 
     // add the grid
     this.createGrid();
+  }
+
+  canvasClick(event) {
+      event.stopPropagation();
+      this.renderer.updateSharedState({
+    		selection: null
+    	});
   }
 
   // needed to listen for zoom

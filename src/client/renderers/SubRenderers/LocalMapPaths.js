@@ -24,6 +24,7 @@ export default class LocalMapPaths {
       mapSize: 10000, // how much to display across the width of the map
       zoom: 1,
       predictTime: 60,
+      trackObjects: true,
       colors: {
         gravity: 0x3333FF,
         heading: 0x00FF00,
@@ -109,34 +110,36 @@ export default class LocalMapPaths {
 
   updateObject(obj, renderer) {
 
-    // decide if we want to plot it's path
-    if (obj instanceof Ship ||
-        obj instanceof Planet ||
-        obj instanceof Asteroid ||
-        obj instanceof Torpedo) {
+    if (this.parameters.trackObjects) {
+      // decide if we want to plot it's path
+      if (obj instanceof Ship ||
+          obj instanceof Planet ||
+          obj instanceof Asteroid ||
+          obj instanceof Torpedo) {
 
-      // get position
-      let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                           obj.physicsObj.position[1],
-                                           this.playerShip.physicsObj.position[0],
-                                           this.playerShip.physicsObj.position[1]);
+        // get position
+        let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
+                                             obj.physicsObj.position[1],
+                                             this.playerShip.physicsObj.position[0],
+                                             this.playerShip.physicsObj.position[1]);
 
-      // check if object is on the map
-      let distance = Math.abs(Victor.fromArray(this.playerShip.physicsObj.position).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
-      if (distance < this.parameters.mapSize) {
+        // check if object is on the map
+        let distance = Math.abs(Victor.fromArray(this.playerShip.physicsObj.position).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
+        if (distance < this.parameters.mapSize) {
 
-        // always plot your own ships path and adjust to gravity path
-        let predictedPath = UiUtils.predictPath(obj, this.parameters.predictTime);
+          // always plot your own ships path and adjust to gravity path
+          let predictedPath = UiUtils.predictPath(obj, this.parameters.predictTime);
 
-        // adjust our path to be relative to our gravity
-        if (this.predictedPaths.gravity && this.predictedPaths.gravity.path) {
-            predictedPath = this.makeRelativePath(predictedPath, this.predictedPaths.gravity.path);
+          // adjust our path to be relative to our gravity
+          if (this.predictedPaths.gravity && this.predictedPaths.gravity.path) {
+              predictedPath = this.makeRelativePath(predictedPath, this.predictedPaths.gravity.path);
+          }
+
+          this.predictedPaths['object'+obj.id] = {
+            color: this.parameters.colors.other,
+            points: this.relativeScreenCoords(predictedPath, this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1])
+          };
         }
-
-        this.predictedPaths['object'+obj.id] = {
-          color: this.parameters.colors.other,
-          points: this.relativeScreenCoords(predictedPath, this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1])
-        };
       }
     }
   }

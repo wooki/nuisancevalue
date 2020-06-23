@@ -3,19 +3,10 @@ import Ship from './../common/Ship';
 // import Asteroid from './../common/Asteroid';
 import LobbyRenderer from './renderers/Lobby';
 import HelmRenderer from './renderers/Helm';
+import CaptainRenderer from './renderers/Captain';
 import NavRenderer from './renderers/Nav';
 import GamesMasterRenderer from './renderers/GamesMaster';
-import CompositeRenderer from './renderers/Composite';
 import SignalsRenderer from './renderers/Signals';
-import LocalMapBackground from './renderers/SubRenderers/LocalMapBackground';
-import LocalMap from './renderers/SubRenderers/LocalMap';
-import LocalMapHud from './renderers/SubRenderers/LocalMapHud';
-import EngineControl from './renderers/SubRenderers/EngineControl';
-import ManeuverControl from './renderers/SubRenderers/ManeuverControl';
-import DockingControl from './renderers/SubRenderers/DockingControl';
-import HudData from './renderers/SubRenderers/HudData';
-import LocalMapPaths from './renderers/SubRenderers/LocalMapPaths';
-import ZoomControl from './renderers/SubRenderers/ZoomControl';
 import EmitOnOff from 'emitonoff';
 
 let ctx = null;
@@ -58,77 +49,7 @@ export default class NvRenderer extends Renderer {
         } else if (station == 'signals') {
             renderer = new SignalsRenderer(game, client);
         } else if (station == 'captain') {
-            renderer = new CompositeRenderer(game, client, {
-              station: 'captain',
-              stationProperty: 'captainPlayerId',
-              baseUrl: '/',
-              dashboardColor: 0xCC0000,
-              subRenderers: [
-                new LocalMapBackground({
-                  x: halfWidth - (halfHeight - margin),
-                  y: margin,
-                  width: fullHeight - marginFull,
-                  height: fullHeight - marginFull,
-                  zIndex: 5,
-                  // backgroundAsset: 'black'
-                }),
-                new LocalMapPaths({
-                  x: halfWidth - (halfHeight - margin),
-                  y: margin,
-                  width: fullHeight - marginFull,
-                  height: fullHeight - marginFull,
-                  zIndex: 12
-                }),
-                new LocalMap({
-                  x: halfWidth - (halfHeight - margin),
-                  y: margin,
-                  width: fullHeight - marginFull,
-                  height: fullHeight - marginFull,
-                  zIndex: 15
-                }),
-                new LocalMapHud({
-                  x: halfWidth - (halfHeight - margin),
-                  y: margin,
-                  width: fullHeight - marginFull,
-                  height: fullHeight - marginFull,
-                  zIndex: 20
-                }),
-                new EngineControl({
-                  x: margin,
-                  y: fullHeight - (margin + 372),
-                  zIndex: 30,
-                  keyboardControls: true
-                }),
-                new ManeuverControl({
-                  x: margin + margin + 60, // engine control + 2 margins
-                  y: fullHeight - (margin + 63),
-                  zIndex: 30,
-                  keyboardControls: true
-                }),
-                new ZoomControl({
-                  // x: (margin * 3) + 60 + 126, // maneuver control + engine control + 3 margins
-                  // y: fullHeight - (margin + 63),
-                  // zIndex: 30,
-                  keyboardControls: true,
-                  onScreenControls: false
-                }),
-                new DockingControl({
-                  x: margin,
-                  y: margin,
-                  width: Math.max(sideWidth, sideControlsMin),
-                  height: (halfHeight - (margin * 2)),
-                  zIndex: 30,
-                  keyboardControls: true
-                }),
-                new HudData({
-                  x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
-                  y: margin,
-                  width: Math.max(sideWidth, sideControlsMin),
-                  height: fullHeight - marginFull,
-                  zIndex: 30
-                })
-              ]
-            });
+            renderer = new CaptainRenderer(game, client);
         } else if (station == 'engineer') {
           renderer = new CompositeRenderer(game, client, {
             station: 'engineer',
