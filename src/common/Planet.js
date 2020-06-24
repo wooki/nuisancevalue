@@ -10,7 +10,10 @@ export default class Planet extends PhysicalObject2D {
             size: { type: BaseTypes.TYPES.INT32 },
             texture: { type: BaseTypes.TYPES.STRING },
             fixedgravity: { type: BaseTypes.TYPES.STRING },
-            ignoregravity: { type: BaseTypes.TYPES.UINT8 }
+            ignoregravity: { type: BaseTypes.TYPES.UINT8 },
+            commsScript: { type: BaseTypes.TYPES.UINT8 },
+            commsState: { type: BaseTypes.TYPES.UINT8 },
+            commsTargetId: { type: BaseTypes.TYPES.INT16 } // currently talking to
         }, super.netScheme);
     }
 
@@ -56,5 +59,8 @@ export default class Planet extends PhysicalObject2D {
         this.texture = other.texture;
         this.fixedgravity = other.fixedgravity;
         this.ignoregravity = other.ignoregravity;
+        this.commsScript = other.commsScript;
+        this.commsState = other.commsState;
+        this.commsTargetId = other.commsTargetId;
     }
 }

@@ -1,5 +1,5 @@
 import {h, createProjector} from 'maquette';
-import Comms from './../../common/Comms';
+import Comms from '../../../common/Comms';
 
 // Buttons for opening comms to current target OR incoming call
 // actual comms handled in another renderer
@@ -27,6 +27,7 @@ export default class CommsOpenControl {
     // this.pixiContainer = pixiContainer;
     // this.resources = resources;
     this.renderer = renderer;
+    this.comms = new Comms(renderer.game, renderer.client);
 
     // draw first
     this.playerShip = null;
@@ -34,17 +35,30 @@ export default class CommsOpenControl {
     this.projector.append(this.el, this.render.bind(this));
   }
 
-  // sendManeuver(direction) {
-  //   if (this.renderer.client) {
-  //     this.renderer.client.setManeuver(direction);
-  //   }
-  // }
-
   // watch player ship for comms state and target
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
     this.playerShip = playerShip;
+    if (this.targetObj && playerShip.targetId != this.targetObj.id) {
+      this.targetObj = null;
+    }
     this.projector.scheduleRender();
   }
+
+    // watch for object updates so we can remember the target
+    updateObject(obj, renderer) {
+      if (this.playerShip && this.playerShip.targetId === obj.id) {
+        this.targetObj = obj;
+        this.projector.scheduleRender();
+      }
+    }
+
+    // if current target is removed
+    removeObject(key, renderer) {
+      if (this.targetObj && this.targetObj.id == key) {
+         this.targetObj = null;
+         this.projector.scheduleRender();
+      }
+    }
 
   createButton(label, active, onClick) {
 
@@ -77,13 +91,14 @@ export default class CommsOpenControl {
         buttons = [
           this.createButton('open', (this.playerShip.targetId >= 0), (event) => {
             event.preventDefault();
-            if (this.playerShip.targetId >= 0) {
+            if (this.playerShip.targetId >= 0 && this.targetObj) {
 
-              let c = new Comms(this.renderer.game, this.renderer.client);
-              
+              // this will update the ships via gameEngine and handled by CommsControl
+              let x = this.comms.openComms(this.playerShip, this.targetObj);              
+
             }
           }),
-          this.createButton('incoming', (this.playerShip.commsTargetId >= 0), (event) => {
+          this.createButton('incoming', (this.playerShip.commsState <= 0 && this.playerShip.commsTargetId >= 0), (event) => {
             event.preventDefault();
             if (this.playerShip.commsTargetId >= 0) {
               console.log("click: incoming");

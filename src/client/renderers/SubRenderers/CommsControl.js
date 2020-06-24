@@ -1,4 +1,5 @@
 import {h, createProjector} from 'maquette';
+import Comms from '../../../common/Comms';
 
 // actual comms when they are in action
 export default class CommsControl {
@@ -17,57 +18,78 @@ export default class CommsControl {
     // this.pixiContainer = pixiContainer;
     // this.resources = resources;
     this.renderer = renderer;
+    this.comms = new Comms(renderer.game, renderer.client);
 
     // draw first
     this.playerShip = null;
+    this.commsTarget = null;
     this.projector = createProjector();
     this.projector.append(this.el, this.render.bind(this));
   }
 
-  // sendManeuver(direction) {
-  //   if (this.renderer.client) {
-  //     this.renderer.client.setManeuver(direction);
-  //   }
-  // }
-
   // watch player ship for comms state and target
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
     this.playerShip = playerShip;
-    console.log(this.playerShip.commsTargetId);
+    if (this.commsTarget && playerShip.commsTargetId != this.commsTarget.id) {
+      this.commsTarget = null;
+    }
     this.projector.scheduleRender();
   }
 
-  createButton(label, active, onClick) {
-
-      let alert = null;
-      if (active && label == 'incoming') {
-        alert = h('div.LED.alert',[]);
+    // watch for object updates so we can remember the target
+    updateObject(obj, renderer) {
+      if (this.playerShip && this.playerShip.commsTargetId === obj.id) {
+        this.commsTarget = obj;
+        this.projector.scheduleRender();
       }
+    }
 
-      return h('button.key', {
-        classes: {
-          disabled: !active
-        },
-        key: 'btn'+label,
+    // if current target is removed
+    removeObject(key, renderer) {
+      if (this.commsTarget && this.commsTarget.id == key) {
+         this.commsTarget = null;
+         this.projector.scheduleRender();
+      }
+    }
+
+  createButton(key, label, onClick) {
+
+      return h('button', {
+        key: key,
         onclick: onClick
         },
-        [alert, this.parameters.labels[label]]
+        [label]
       );
   }
 
   render() {
 
-    // show nothing of the comms are closed
-    if (this.playerShip == null || this.playerShip.commsTargetId < 0) {
-        return h('div', {
-          key: 'comms'
-        });
-    }
 
-    let buttons = [];
+    let open = true;
+    let content = [];
+
+    if (this.playerShip == null || this.playerShip.commsTargetId < 0) {
+        open = false; // show nothing of the comms are closed
+    } else if (this.playerShip && this.commsTarget) {
+
+      // get current options and state (always open comms)
+      let commsState = this.comms.openComms(this.playerShip, this.commsTarget);
+
+      content.push(h('div.text', {}, [commsState.text]));
+      for (let i = 0; i < commsState.responses.length; i++) {
+        let key = "state-"+this.commsTarget.commsState+"-response-"+i;
+        content.push(this.createButton(key, commsState.responses[i], (event) => {
+          event.preventDefault()
+          console.log("cliced option: "+i);
+        }));
+      }
+    }
 
     return h('div.nv.ui.col.stretch.comms', {
       key: 'comms',
+      classes: {
+        open: open
+      },
       styles: {
         position: 'absolute',
         left: this.parameters.x + 'px',
@@ -76,7 +98,7 @@ export default class CommsControl {
         height: this.parameters.height + 'px'
       }
     },
-    buttons);
+    content);
   }
 
 }

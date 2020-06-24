@@ -104,10 +104,10 @@ export default class CaptainRenderer extends CompositeRenderer {
             keyboardControls: true
           }),
           new CommsControl({
-            x: marginFull,
-            y: marginFull,
-            width: fullWidth - (marginFull * 2),
-            height: fullHeight - (marginFull * 2),
+            x: margin,
+            y: margin,
+            width: fullWidth - marginFull,
+            height: fullHeight - marginFull,
             zIndex: 100
           })
         ]

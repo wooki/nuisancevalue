@@ -347,6 +347,41 @@ label {
       justify-content: flex-end;
     }
 
+    .LED {
+      z-index: 98;
+      position: absolute;
+      top: 8px;
+      left: 14px;
+      height: 10px;
+      width: 10px;
+      box-sizing: border-box;
+      background-color: #cccc00;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
+      box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
+      &.heading {
+        background-color: #00cc00;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #00cc00;
+      }
+      &.bearing {
+        background-color: #cc0000;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cc0000;
+      }
+      &.gravity {
+        background-color: #0000cc;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #0000cc;
+      }
+      &.waypoint {
+        background-color: #cccc00;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
+      }
+      &.alert {
+        animation: pulse 1s infinite ease-in-out;
+        background-color: #cc0000;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cc0000;
+      }
+    }
+
+
     // button and key styles
     button {
       background-color: #163516;
@@ -394,6 +429,11 @@ label {
           color: rgba(0, 0, 0, 0.4);
           text-decoration: underline;
         }
+      } // .key
+
+      .LED {
+        top: 4px;
+        left: 4px;
       }
     } // .button
 
@@ -465,45 +505,14 @@ label {
       }
     } // .data
 
-    .LED {
-      z-index: 98;
-      position: absolute;
-      top: 8px;
-      left: 14px;
-      height: 10px;
-      width: 10px;
-      box-sizing: border-box;
-      background-color: #cccc00;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
-      box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
-      &.heading {
-        background-color: #00cc00;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #00cc00;
-      }
-      &.bearing {
-        background-color: #cc0000;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cc0000;
-      }
-      &.gravity {
-        background-color: #0000cc;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #0000cc;
-      }
-      &.waypoint {
-        background-color: #cccc00;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
-      }
-      &.alert {
-        animation: pulse 1s infinite ease-in-out;
-        background-color: #cc0000;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cc0000;
-      }
-    }
-
     // specialised comms ui
-    .comms {
+    &.comms {
+      display: none;
       border: 4px solid #666;
-      background-color: rgba(0, 0, 0, 0.6);
-
+      background-color: rgba(0, 0, 0, 0.85);
+      &.open {
+        display: flex;
+      }
     } // .comms
 
   } // .ui

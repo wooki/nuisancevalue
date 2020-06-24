@@ -583,6 +583,9 @@ export default class NvGameEngine extends GameEngine {
         p.texture = params['texture'];
         p.fixedgravity = params['fixedgravity'] || '';
         p.ignoregravity = params['ignoregravity'] || 0;
+        p.commsScript = params['commsScript'] || 0;
+        p.commsState = params['commsState'] || 0;
+        p.commsTargetId = params['commsTargetId'] || -1;
         return this.addObjectToWorld(p);
     }
 

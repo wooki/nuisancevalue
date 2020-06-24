@@ -33,9 +33,9 @@ export default class SolarSystem {
           dY: velocity.y,
           size: 560, // need to read mass and size from hull
           hull: 'station',
-          commsScript: 0,
-          dockedCommsScript: 1,
-          angle: 0,
+          commsScript: 1,
+          dockedCommsScript: 2,
+          angle: 2,
           fixedgravity: planets.Earth.id.toString()
       });
 
@@ -96,8 +96,8 @@ export default class SolarSystem {
           dY: velocity.y,
           mass: 0.03, size: 180, // need to read mass and size from hull
           hull: 'station',
-          commsScript: 0,
-          dockedCommsScript: 1,
+          commsScript: 1,
+          dockedCommsScript: 2,
           angle: 0,
           fixedgravity: planets.Jupiter.id.toString()
       });
@@ -118,8 +118,8 @@ export default class SolarSystem {
           dY: velocity.y,
           mass: 0.07, size: 320, // need to read mass and size from hull
           hull: 'station',
-          commsScript: 0,
-          dockedCommsScript: 1,
+          commsScript: 1,
+          dockedCommsScript: 2,
           angle: 30,
           fixedgravity: planets.Saturn.id.toString()
       });

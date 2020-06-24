@@ -4,7 +4,7 @@ const DockedStation = require('./CommScripts/DockedStation');
 
 // comms scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [Station, DockedStation, Ship];
+const scripts = [null, Station, DockedStation, Ship];
 
 let game = null;
 let client = null;
@@ -29,9 +29,24 @@ export default class Comms {
 	// try and start or contiue a comms session
 	openComms(playerShip, selectedObj) {
 
+		// update ship with commsTargetId
+		if (selectedObj.commsTargetId != playerShip.id) {
+			client.updateShipComms({
+				id: selectedObj.id,
+				target: playerShip.id
+			});
+
+			// also update playerShip
+			client.updateShipComms({
+				id: playerShip.id,
+				target: selectedObj.id,
+				state: 1 // set player as "connected"
+			});
+		}
+		
 		// check the selectedObj is either not in comms or is already in comms with this player ship
 		// also don't allow calling players
-		if (selectedObj.playable != 1 && (selectedObj.commsTargetId < 0 || selectedObj.commsTargetId == playerShip.id)) {
+		if (selectedObj.playable != 1 && selectedObj.commsScript > 0 && (selectedObj.commsTargetId < 0 || selectedObj.commsTargetId == playerShip.id)) {
 
 			let script = scripts[selectedObj.commsScript];
 			if (playerShip.dockedId == selectedObj.id) {
@@ -40,20 +55,6 @@ export default class Comms {
 
 			// get the current state
 			let state = script[selectedObj.commsState];
-
-			// update ship with commsTargetId
-			if (selectedObj.commsTargetId != playerShip.id) {
-				client.updateShipComms({
-					id: selectedObj.id,
-					target: playerShip.id
-				});
-
-				// also update playerShip
-				client.updateShipComms({
-					id: playerShip.id,
-					target: selectedObj.id
-				});
-			}
 
 			// return to Signals station
 			return {
@@ -72,7 +73,7 @@ export default class Comms {
 	// once a comms session has been started respond with one of the choices
 	respond(playerShip, selectedObj, response) {
 
-		if (selectedObj.playable != 1 && selectedObj.commsTargetId == playerShip.id) {
+		if (selectedObj.playable != 1 && selectedObj.commsScript > 0 && selectedObj.commsTargetId == playerShip.id) {
 
 			let script = scripts[selectedObj.commsScript];
 			if (playerShip.dockedId == selectedObj.id) {
@@ -119,6 +120,8 @@ export default class Comms {
 
 	executeOnEnter(selectedObj, playerShip) {
 
+		if (selectedObj.playable == 1) return;
+
 		// chance for script to send commands to ship
 		let state = this.getState(selectedObj, playerShip);
 		if (state.onEnter) {
@@ -128,6 +131,8 @@ export default class Comms {
 	}
 
 	executeOnCloseComms(selectedObj, playerShip) {
+
+		if (selectedObj.playable == 1) return;
 
 		// chance for script to send commands to ship
 		let state = this.getState(selectedObj, playerShip);
