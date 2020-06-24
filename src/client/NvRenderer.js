@@ -1,6 +1,5 @@
 import { Renderer } from 'lance-gg';
 import Ship from './../common/Ship';
-// import Asteroid from './../common/Asteroid';
 import LobbyRenderer from './renderers/Lobby';
 import HelmRenderer from './renderers/Helm';
 import CaptainRenderer from './renderers/Captain';
@@ -52,7 +51,7 @@ export default class NvRenderer extends Renderer {
         } else if (station == 'captain') {
             renderer = new CaptainRenderer(game, client);
         } else if (station == 'engineer') {
-            renderer = new EngineerRenderer(game, client);            
+            renderer = new EngineerRenderer(game, client);
         } else if (station == 'gm') {
           renderer = new GamesMasterRenderer(game, client);
         } else {

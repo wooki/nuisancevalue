@@ -47,6 +47,12 @@ export default class Comms {
 					id: selectedObj.id,
 					target: playerShip.id
 				});
+
+				// also update playerShip
+				client.updateShipComms({
+					id: playerShip.id,
+					target: selectedObj.id
+				});
 			}
 
 			// return to Signals station

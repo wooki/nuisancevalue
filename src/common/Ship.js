@@ -21,7 +21,7 @@ export default class Ship extends PhysicalObject2D {
             commsScript: { type: BaseTypes.TYPES.UINT8 },
             dockedCommsScript: { type: BaseTypes.TYPES.UINT8 },
             commsState: { type: BaseTypes.TYPES.UINT8 },
-            commsTargetId: { type: BaseTypes.TYPES.INT16 },
+            commsTargetId: { type: BaseTypes.TYPES.INT16 }, // currently talking to
             targetId: { type: BaseTypes.TYPES.INT16 },
             dockedId: { type: BaseTypes.TYPES.INT16 },
             docked: {

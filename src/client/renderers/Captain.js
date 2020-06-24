@@ -9,6 +9,8 @@ import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import TargetSelection from './SubRenderers/TargetSelection';
+import OpenCommsControl from './SubRenderers/OpenCommsControl';
+import CommsControl from './SubRenderers/CommsControl';
 
 // extend compsite with pre-set subrenderers
 export default class CaptainRenderer extends CompositeRenderer {
@@ -86,14 +88,6 @@ export default class CaptainRenderer extends CompositeRenderer {
             keyboardControls: true,
             onScreenControls: false
           }),
-          // new DockingControl({
-          //   x: margin,
-          //   y: margin,
-          //   width: Math.max(sideWidth, sideControlsMin),
-          //   height: (halfHeight - (margin * 2)),
-          //   zIndex: 30,
-          //   keyboardControls: true
-          // }),
           new HudData({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
             y: margin,
@@ -101,7 +95,21 @@ export default class CaptainRenderer extends CompositeRenderer {
             height: fullHeight - marginFull,
             zIndex: 30
           }),
-          new TargetSelection({}) // watch for selection and set as target
+          new TargetSelection({}), // watch for selection and set as target
+          new OpenCommsControl({
+            x: margin,
+            y: margin,
+            width: Math.max(sideWidth, sideControlsMin),
+            zIndex: 40,
+            keyboardControls: true
+          }),
+          new CommsControl({
+            x: marginFull,
+            y: marginFull,
+            width: fullWidth - (marginFull * 2),
+            height: fullHeight - (marginFull * 2),
+            zIndex: 100
+          })
         ]
       };
 
