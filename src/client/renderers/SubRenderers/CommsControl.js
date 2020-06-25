@@ -79,11 +79,17 @@ export default class CommsControl {
       for (let i = 0; i < commsState.responses.length; i++) {
         let key = "state-"+this.commsTarget.commsState+"-response-"+i;
         content.push(this.createButton(key, commsState.responses[i], (event) => {
-          event.preventDefault()
-          console.log("cliced option: "+i);
+          event.preventDefault();
+          this.comms.respond(this.playerShip, this.commsTarget, i);
         }));
       }
     }
+
+    // always add a close comms button
+    content.push(this.createButton("closecomms", "Close Comms", (event) => {
+      event.preventDefault();
+      this.comms.closeComms(this.playerShip, this.commsTarget);
+    }));
 
     return h('div.nv.ui.col.stretch.comms', {
       key: 'comms',

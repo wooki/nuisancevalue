@@ -385,7 +385,6 @@ label {
     // button and key styles
     button {
       background-color: #163516;
-      color: black;
       padding: 5px 15px;
       font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
       line-height: 30px;
@@ -393,6 +392,21 @@ label {
       border: none;
       border-radius: 3px;
       margin: 3px;
+      color: white;
+      text-shadow: -1px -1px 2px #265026;
+
+      &:active {
+        outline: none;
+        box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2);
+        transform: translate(1px, 1px);
+      }
+
+      &:focus {
+        outline: none;
+      }
+      &::-moz-focus-inner {
+        border: 0;
+      }
 
       &.disabled, &.key.disabled {
           opacity: 1;
@@ -415,12 +429,7 @@ label {
         border-right-color: #072607;
         user-select: none;
         outline: none;
-        &:focus {
-          outline: none;
-        }
-        &::-moz-focus-inner {
-          border: 0;
-        }
+
         &:active {
           outline: none;
           transform: translate(2px, 2px);
@@ -429,6 +438,7 @@ label {
           color: rgba(0, 0, 0, 0.4);
           text-decoration: underline;
         }
+
       } // .key
 
       .LED {
@@ -510,8 +520,18 @@ label {
       display: none;
       border: 4px solid #666;
       background-color: rgba(0, 0, 0, 0.85);
+      box-sizing: border-box;
+      padding: 30px;
       &.open {
         display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      .text {
+        display: block;
+        text-align: center;
+        margin-bottom: auto;
       }
     } // .comms
 

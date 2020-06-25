@@ -6,23 +6,28 @@ const DockedStation = require('./CommScripts/DockedStation');
 // which are named here
 const scripts = [null, Station, DockedStation, Ship];
 
-let game = null;
-let client = null;
-
 export default class Comms {
 
 	constructor(gameEngine, clientEngine) {
-        game = gameEngine;
-        client = clientEngine;
+        this.game = gameEngine;
+        this.client = clientEngine;
     }
 
     closeComms(playerShip, selectedObj) {
 
     	if (selectedObj.playable != 1 && selectedObj.commsTargetId == playerShip.id) {
-    		client.updateShipComms({
-				id: selectedObj.id,
-				target: -1
-			});
+
+				this.client.updateShipComms({
+					id: selectedObj.id,
+					target: -1
+				});
+
+				// also update playerShip
+				this.client.updateShipComms({
+					id: playerShip.id,
+					target: -1,
+					state: 0
+				});
     	}
     }
 
@@ -31,19 +36,19 @@ export default class Comms {
 
 		// update ship with commsTargetId
 		if (selectedObj.commsTargetId != playerShip.id) {
-			client.updateShipComms({
+			this.client.updateShipComms({
 				id: selectedObj.id,
 				target: playerShip.id
 			});
 
 			// also update playerShip
-			client.updateShipComms({
+			this.client.updateShipComms({
 				id: playerShip.id,
 				target: selectedObj.id,
 				state: 1 // set player as "connected"
 			});
 		}
-		
+
 		// check the selectedObj is either not in comms or is already in comms with this player ship
 		// also don't allow calling players
 		if (selectedObj.playable != 1 && selectedObj.commsScript > 0 && (selectedObj.commsTargetId < 0 || selectedObj.commsTargetId == playerShip.id)) {
@@ -89,7 +94,7 @@ export default class Comms {
 			// update the ship with new state
 			let newState = script[stateResponse.nextState];
 			if (stateResponse.nextState != selectedObj.commsState) {
-				client.updateShipComms({
+				this.client.updateShipComms({
 					id: selectedObj.id,
 					state: stateResponse.nextState
 				});
@@ -114,6 +119,7 @@ export default class Comms {
 		if (selectedObj.dockedId == selectedObj.id) {
 			script = scripts[selectedObj.dockedCommsScript];
 		}
+		if (script === null) return 0;
 		let state = script[selectedObj.commsState];
 		return state;
 	}
@@ -125,7 +131,7 @@ export default class Comms {
 		// chance for script to send commands to ship
 		let state = this.getState(selectedObj, playerShip);
 		if (state.onEnter) {
-			state.onEnter(selectedObj, playerShip, game);
+			state.onEnter(selectedObj, playerShip, this.game);
 		}
 
 	}
@@ -137,7 +143,7 @@ export default class Comms {
 		// chance for script to send commands to ship
 		let state = this.getState(selectedObj, playerShip);
 		if (state.OnCloseComms) {
-			state.OnCloseComms(selectedObj, playerShip, game);
+			state.OnCloseComms(selectedObj, playerShip, this.game);
 		}
 
 	}
