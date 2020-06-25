@@ -29,8 +29,14 @@ export default class CommsControl {
 
   // watch player ship for comms state and target
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
-    this.playerShip = playerShip;
-    if (this.commsTarget && playerShip.commsTargetId != this.commsTarget.id) {
+
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
+
+    if (this.commsTarget && this.playerShip.commsTargetId != this.commsTarget.id) {
       this.commsTarget = null;
     }
     this.projector.scheduleRender();

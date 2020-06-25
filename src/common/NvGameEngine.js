@@ -473,7 +473,26 @@ export default class NvGameEngine extends GameEngine {
             if (inputData.input == 'comms') {
 
                 let ship = this.world.objects[inputData.options.id];
-                if (inputData.options.target != undefined) {
+
+                // if ship not found - may be destroyed or docked
+                if (!ship) {
+
+                    // find if docked
+                    this.world.forEachObject((objId, obj) => {
+                      if (obj instanceof Ship) {
+                        if (obj.docked && obj.docked.length > 0) {
+                          let dockedMatch = obj.docked.find((dockedShip) => {
+                            return (dockedShip.id == inputData.options.id);
+                          });
+                          if (dockedMatch) {
+                            ship = dockedMatch;
+                          }
+                        }
+                      }
+                    });
+                }
+
+                if (ship && inputData.options.target != undefined) {
 
                     let originalShip = this.getPlayerShip(ship.commsTargetId);
                     ship.commsTargetId = inputData.options.target;
@@ -484,7 +503,7 @@ export default class NvGameEngine extends GameEngine {
                       c.executeOnCloseComms(ship, originalShip);
                     }
                 }
-                if (inputData.options.state != undefined){
+                if (ship && inputData.options.state != undefined){
                     // let previousState = ship.commsState;
                     ship.commsState = inputData.options.state;
 

@@ -37,8 +37,14 @@ export default class CommsOpenControl {
 
   // watch player ship for comms state and target
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
-    this.playerShip = playerShip;
-    if (this.targetObj && playerShip.targetId != this.targetObj.id) {
+
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
+
+    if (this.targetObj && this.playerShip.targetId != this.targetObj.id) {
       this.targetObj = null;
     }
     this.projector.scheduleRender();
@@ -94,7 +100,7 @@ export default class CommsOpenControl {
             if (this.playerShip.targetId >= 0 && this.targetObj) {
 
               // this will update the ships via gameEngine and handled by CommsControl
-              let x = this.comms.openComms(this.playerShip, this.targetObj);              
+              let x = this.comms.openComms(this.playerShip, this.targetObj);
 
             }
           }),

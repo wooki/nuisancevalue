@@ -39,6 +39,7 @@ export default class CompositeRenderer {
       this.backToLobby = false;
       this.leaveTimer = false;
       this.lastPlayerShip = null;
+      this.isDocked = false;
 
       // container div and app refs
       this.el = null;
@@ -143,7 +144,7 @@ export default class CompositeRenderer {
         // initialise sub-renderers
         for (let i = 0; i < this.subRenderers.length; i++) {
           this.subRenderers[i].init(this.el, this.pixiApp, this.pixiContainer, this.resources, this);
-        }        
+        }
     }
 
     addExplosion(obj) {
@@ -186,7 +187,7 @@ export default class CompositeRenderer {
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
         if (this.subRenderers[i].updatePlayerShip) {
-          this.subRenderers[i].updatePlayerShip(playerShip, this.isDocked, this.isDestroyed, this);
+          this.subRenderers[i].updatePlayerShip(playerShip, isDocked, this.isDestroyed, this);
         }
       }
     }
@@ -206,12 +207,12 @@ export default class CompositeRenderer {
 
           // find the player ship first, so we can set objects positions relative to it
           let playerShip = null;
-          let isDocked = false;
           let gameObjects = [];
           this.game.world.forEachObject((objId, obj) => {
               if (obj instanceof Ship) {
                   if (obj[this.stationConfig.stationProperty] == this.game.playerId) {
                       playerShip = obj;
+                      this.isDocked = false;
                   } else {
 
                       gameObjects.push(obj);
@@ -230,11 +231,8 @@ export default class CompositeRenderer {
                     return (dockedShip[this.stationConfig.stationProperty] == this.game.playerId);
                   });
                   if (dockedMatch) {
-                    isDocked = true;
+                    this.isDocked = dockedMatch; // keep actual player ship available
                     playerShip = obj;
-                    // gameObjects = gameObjects.filter((mothership) => {
-                    //   return (mothership.id != obj.id);
-                    // });
                   }
                 }
               }
@@ -244,7 +242,7 @@ export default class CompositeRenderer {
           if (playerShip) {
 
             // keep track of our ship
-            this.updatePlayerShip(playerShip, isDocked, false);
+            this.updatePlayerShip(playerShip, this.isDocked, false);
 
             // keep track so we know when something is gone
             let foundObjects = {};
