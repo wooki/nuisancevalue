@@ -1,19 +1,18 @@
 import Hulls from '../../common/Hulls';
 import SolarObjects from '../../common/SolarObjects';
 import Victor from 'victor';
+import Mission from './Mission';
 
-// clear the game world and build map and objects
-let game = null;
-
-export default class SolarSystem {
+export default class SolarSystem extends Mission {
 
   constructor(gameEngine) {
-    game = gameEngine;
+    super(gameEngine);
   }
 
   build() {
+    super.build();
 
-    let planets = SolarObjects.addSolarSystem(game, {});
+    let planets = SolarObjects.addSolarSystem(this.game, {});
 
       // create a station around earth
       let stationOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
@@ -25,7 +24,7 @@ export default class SolarSystem {
       position = position.add(new Victor(planets.Earth.position.x, planets.Earth.position.y));
       velocity = velocity.add(new Victor(planets.Earth.velocity.x, planets.Earth.velocity.y));
 
-      game.addShip({
+      let earthStation1 = this.game.addShip({
           name: "Earth Station 1",
           x: position.x,
           y: position.y,
@@ -47,7 +46,7 @@ export default class SolarSystem {
       velocity = velocity.rotateDeg(55);
       position = position.add(new Victor(planets.Earth.position.x, planets.Earth.position.y));
       velocity = velocity.add(new Victor(planets.Earth.velocity.x, planets.Earth.velocity.y));
-      let nv = game.addShip({
+      let nv = this.game.addShip({
           name: "Nuisance Value",
           x: position.x,
           y: position.y,
@@ -69,7 +68,7 @@ export default class SolarSystem {
       velocity = velocity.rotateDeg(200);
       position = position.add(new Victor(planets.Mars.position.x, planets.Mars.position.y));
       velocity = velocity.add(new Victor(planets.Mars.velocity.x, planets.Mars.velocity.y));
-      game.addShip({
+      this.game.addShip({
           name: "Profit Margin",
           x: position.x,
           y: position.y,
@@ -88,7 +87,7 @@ export default class SolarSystem {
       velocity = velocity.rotateDeg(320);
       position = position.add(new Victor(planets.Jupiter.position.x, planets.Jupiter.position.y));
       velocity = velocity.add(new Victor(planets.Jupiter.velocity.x, planets.Jupiter.velocity.y));
-      game.addShip({
+      this.game.addShip({
           name: "Jupiter Station",
           x: position.x,
           y: position.y,
@@ -110,7 +109,7 @@ export default class SolarSystem {
       velocity = velocity.rotateDeg(30);
       position = position.add(new Victor(planets.Saturn.position.x, planets.Saturn.position.y));
       velocity = velocity.add(new Victor(planets.Saturn.velocity.x, planets.Saturn.velocity.y));
-      game.addShip({
+      this.game.addShip({
           name: "Saturn Station",
           x: position.x,
           y: position.y,
@@ -142,7 +141,7 @@ export default class SolarSystem {
           v = v.rotateDeg(r);
 
           // add an actual asteroid
-          game.addAsteroid({
+          this.game.addAsteroid({
               x: position.x,
               y: position.y,
               dX: v.x,
@@ -153,8 +152,34 @@ export default class SolarSystem {
               // fixedgravity: sol.id.toString()
           });
       }
+
+      // set-up some events
+
+      // if NV comms closed then call from Earth Station 1
+      let callNuisanceValue = function(game, seconds) {
+
+        // both still in game
+        if (earthStation1 && nv) {
+
+          if (nv.commsState == 0 && earthStation1.commsTargetId < 0) {
+
+            // suggest call
+            nv.commsTargetId = earthStation1.id;
+
+          } else {
+            // try again later
+            this.addTimedEvent(seconds+10, callNuisanceValue);
+          }
+        }
+
+      }.bind(this);
+
+      this.addTimedEvent(15, callNuisanceValue);
   }
 
-
+  step(seconds) {
+    super.step(seconds);
+    
+  }
 
 }

@@ -76,6 +76,11 @@ export default class NvGameEngine extends GameEngine {
         let isReenact = params.isReenact;
         let dt = params.dt;
 
+        // every 60 steps (every second)
+        if ((step % 60) == 0) {
+          this.emit('mission-step', { seconds: step/60, step: step });
+        }
+
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
 
@@ -89,6 +94,8 @@ export default class NvGameEngine extends GameEngine {
               this.helmPlayerId = -1;
               this.navPlayerId = -1;
               this.signalsPlayerId = -1;
+              this.engineerPlayerId = -1;
+              this.captainPlayerId = -1;
 
               // remove the object
               this.removeObjectFromWorld(obj);
@@ -109,7 +116,16 @@ export default class NvGameEngine extends GameEngine {
 
             } else {
 
-                // apply AI
+                // for every hundred steps (offset by id so we only process 1 obj per step until > 100 objects)
+                // server only event to re-evaluate the AI
+                if (obj.aiScript) {
+                  let aiStep = step + obj.id;
+                  if ((aiStep % 100) == 0) {
+                    this.emit('ai-plan', { obj: obj });
+                  }
+                }
+
+                // apply current AI
                 this.ai.execute(obj, dt);
 
                 // only certain types have engines
@@ -545,6 +561,7 @@ export default class NvGameEngine extends GameEngine {
         s.commsState = params['commsState'] || 0;
         s.commsTargetId = params['commsTargetId'] || -1;
         s.targetId = params['targetId'] || -1;
+        s.aiScript = params['aiScript'] || 0;
         s.dockedId = params['dockedId'] || -1;
         s.docked = [];
         s.damage = params['damage'] || 0;

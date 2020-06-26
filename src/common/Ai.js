@@ -2,7 +2,7 @@ import TorpedoAi from './AiScripts/Torpedo';
 
 // ai scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [new TorpedoAi()];
+const scripts = [null, new TorpedoAi()];
 
 let game = null;
 
@@ -12,13 +12,26 @@ export default class Ai {
         game = gameEngine;
     }
 
-    execute(ship) {
+		execute(ship) {
 
     	// load the AI script for that ship
-    	if (ship.aiScript || ship.aiScript === 0) {
+    	if (ship.aiScript) {
     		let script = scripts[ship.aiScript];
-    		script.execute(ship, game);
+				if (script && script.execute) {
+    			script.execute(ship, game);
+				}
     	}
     }
+
+		plan(ship) {
+
+			// load the AI script for that ship
+			if (ship.aiScript) {
+				let script = scripts[ship.aiScript];
+				if (script && script.plan) {
+					script.plan(ship, game);
+				}
+			}
+		}
 
 }

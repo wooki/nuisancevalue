@@ -24,6 +24,8 @@ export default class NvServerEngine extends ServerEngine {
         this.collisionUtils = new CollisionUtils(gameEngine);
         this.damage = new Damage();
         this.mission = null;
+        this.lastMissionSeconds = 0;
+        this.missionSecondsOffset = 0;
         this.missions = [TestMission, SimpleTestMission, SolarSystem];
     }
 
@@ -41,15 +43,32 @@ export default class NvServerEngine extends ServerEngine {
     start() {
         super.start();
 
+        this.gameEngine.on('ai-plan', e => {
+          let obj = e.obj;
+          let ai = gameEngine.ai;
+          if (ai) {
+            ai.plan(obj, dt);
+          }
+        });
+
+        this.gameEngine.on('mission-step', e => {
+          let seconds = e.seconds;
+          if (this.mission && this.mission.step) {
+            this.mission.step(seconds - this.lastMissionSeconds);
+          } else {
+            this.lastMissionSeconds = seconds;
+          }
+        });
+
         this.gameEngine.on('load-mission', e => {
           let missionId = e.missionId;
           if (missionId >= 0 && missionId < this.missions.length) {
             this.clearWorld();
             this.mission = new this.missions[missionId](this.gameEngine);
             this.mission.build();
+            this.missionStepOffset = this.lastMissionSeconds;
           }
         });
-
 
         this.gameEngine.on('join-ship', e => {
           //  playerId: playerId, ship: ship

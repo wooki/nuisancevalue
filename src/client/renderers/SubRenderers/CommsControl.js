@@ -74,7 +74,7 @@ export default class CommsControl {
     let open = true;
     let content = [];
 
-    if (this.playerShip == null || this.playerShip.commsTargetId < 0) {
+    if (this.playerShip == null || this.playerShip.commsTargetId < 0 || this.playerShip.commsState === 0) {
         open = false; // show nothing of the comms are closed
     } else if (this.playerShip && this.commsTarget) {
 

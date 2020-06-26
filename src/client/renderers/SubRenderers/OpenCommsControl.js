@@ -100,14 +100,17 @@ export default class CommsOpenControl {
             if (this.playerShip.targetId >= 0 && this.targetObj) {
 
               // this will update the ships via gameEngine and handled by CommsControl
-              let x = this.comms.openComms(this.playerShip, this.targetObj);
+              let responses = this.comms.openComms(this.playerShip, this.targetObj);
 
             }
           }),
           this.createButton('incoming', (this.playerShip.commsState <= 0 && this.playerShip.commsTargetId >= 0), (event) => {
             event.preventDefault();
             if (this.playerShip.commsTargetId >= 0) {
-              console.log("click: incoming");
+              let responses = this.comms.openComms(this.playerShip, {
+                id: this.playerShip.commsTargetId,
+                commsTargetId: null
+              });
             }
           })
         ];

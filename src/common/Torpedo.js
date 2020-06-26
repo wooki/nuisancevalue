@@ -11,7 +11,7 @@ export default class Torpedo extends PhysicalObject2D {
       this.hull = "torpedo";
       this.size = Hulls['torpedo'].size;
       this.payload = Hulls['torpedo'].payload;
-      this.aiScript = 0; // torpedo ai script
+      this.aiScript = 1; // torpedo ai script
       this.thrust = Hulls['torpedo'].thrust;
   }
 
