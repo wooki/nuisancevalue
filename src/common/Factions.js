@@ -14,17 +14,17 @@ export default class Factions {
 
 		this.factions = [];
 
-		this.factions[independentIndex] = {
+		this.factions[this.independentIndex] = {
 			name: 'Independent',
 			relations: [1, 1, 2]
 		}
 
-		this.factions[spaceForceIndex] = {
+		this.factions[this.spaceForceIndex] = {
 			name: 'Space Force',
 			relations: [1, 0, 2]
 		}
 
-		this.factions[piratesIndex] = {
+		this.factions[this.piratesIndex] = {
 			name: 'Pirates',
 			relations: [1, 2, 2]
 		}

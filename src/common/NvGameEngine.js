@@ -510,22 +510,25 @@ export default class NvGameEngine extends GameEngine {
 
                 if (ship && inputData.options.target != undefined) {
 
-                    let originalShip = this.getPlayerShip(ship.commsTargetId);
+                    let playerShip = this.getPlayerShip(playerId);
+                    // let playerShip = this.world.objects[ship.commsTargetId];
                     ship.commsTargetId = inputData.options.target;
 
                     // chance to change/update script/state when ending call
                     if (ship.commsTargetId == -1) {
                       let c = new Comms(this, null);
-                      c.executeOnCloseComms(ship, originalShip);
+                      c.executeOnCloseComms(ship, playerShip);
                     }
                 }
                 if (ship && inputData.options.state != undefined){
                     // let previousState = ship.commsState;
+                    let playerShip = this.getPlayerShip(playerId);
+                    // let playerShip = this.world.objects[ship.commsTargetId];
                     ship.commsState = inputData.options.state;
 
                     // chance for script to send commands to ship or game
                     let c = new Comms(this, null);
-                    c.executeOnEnter(ship);
+                    c.executeOnEnter(ship, playerShip);
                 }
             }
 

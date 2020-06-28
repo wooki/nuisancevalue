@@ -1,16 +1,18 @@
-const Ship = require('./CommScripts/Ship');
-const Station = require('./CommScripts/Station');
-const DockedStation = require('./CommScripts/DockedStation');
+// const Ship = require('./CommScripts/Ship');
+// const DockedStation = require('./CommScripts/DockedStation');
+import Factions from './Factions';
+import Station from './CommScripts/Station';
 
 // comms scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [null, Station, DockedStation, Ship];
+const scripts = [null, Station];
 
 export default class Comms {
 
 	constructor(gameEngine, clientEngine) {
         this.game = gameEngine;
         this.client = clientEngine;
+        this.factions = new Factions();
     }
 
     closeComms(playerShip, selectedObj) {
@@ -53,13 +55,13 @@ export default class Comms {
 		// also don't allow calling players
 		if (selectedObj.playable != 1 && selectedObj.commsScript > 0 && (selectedObj.commsTargetId < 0 || selectedObj.commsTargetId == playerShip.id)) {
 
-			let script = scripts[selectedObj.commsScript];
-			if (playerShip.dockedId == selectedObj.id) {
-				script = scripts[selectedObj.dockedCommsScript];
-			}
+			let script = new scripts[selectedObj.commsScript](selectedObj, this.game);
 
 			// get the current state
-			let state = script[selectedObj.commsState];
+			let isDocked = (playerShip.dockedId == selectedObj.id);
+			let isFriendly = this.factions.isFriendly(0, 0);
+			let isHostile = this.factions.isHostile(0, 0);
+			let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
 
 			// return to Signals station
 			return {
@@ -80,19 +82,19 @@ export default class Comms {
 
 		if (selectedObj.playable != 1 && selectedObj.commsScript > 0 && selectedObj.commsTargetId == playerShip.id) {
 
-			let script = scripts[selectedObj.commsScript];
-			if (playerShip.dockedId == selectedObj.id) {
-				script = scripts[selectedObj.dockedCommsScript];
-			}
+			let script = new scripts[selectedObj.commsScript](selectedObj, this.game);
 
-			// get current state
-			let state = script[selectedObj.commsState];
+			// get the current state
+			let isDocked = (playerShip.dockedId == selectedObj.id);
+			let isFriendly = this.factions.isFriendly(0, 0);
+			let isHostile = this.factions.isHostile(0, 0);
+			let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
 
 			// get the response for the users choice
 			let stateResponse = state.responses[response];
 
 			// update the ship with new state
-			let newState = script[stateResponse.nextState];
+			let newState = script.getState(stateResponse.nextState, isDocked, isFriendly, isHostile);
 			if (stateResponse.nextState != selectedObj.commsState) {
 				this.client.updateShipComms({
 					id: selectedObj.id,
@@ -115,12 +117,16 @@ export default class Comms {
 	}
 
 	getState(selectedObj, playerShip) {
-		let script = scripts[selectedObj.commsScript];
-		if (selectedObj.dockedId == selectedObj.id) {
-			script = scripts[selectedObj.dockedCommsScript];
-		}
+		let script = new scripts[selectedObj.commsScript](selectedObj, this.game);
+
 		if (script === null) return 0;
-		let state = script[selectedObj.commsState];
+
+		// get the current state
+		let isDocked = (playerShip.dockedId == selectedObj.id);
+		let isFriendly = this.factions.isFriendly(0, 0);
+		let isHostile = this.factions.isHostile(0, 0);
+		let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
+
 		return state;
 	}
 
