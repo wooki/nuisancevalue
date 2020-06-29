@@ -79,7 +79,7 @@ export default class CommsControl {
     } else if (this.playerShip && this.commsTarget) {
 
       // get current options and state (always open comms)
-      let commsState = this.comms.openComms(this.playerShip, this.commsTarget);
+      let commsState = this.comms.getComms(this.playerShip, this.commsTarget);
 
       content.push(h('div.text', {}, [commsState.text]));
       for (let i = 0; i < commsState.responses.length; i++) {

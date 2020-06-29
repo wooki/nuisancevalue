@@ -51,6 +51,12 @@ export default class Comms {
 			});
 		}
 
+		return this.getComms(playerShip, selectedObj);
+	}
+
+	// get current comm state
+	getComms(playerShip, selectedObj) {
+
 		// check the selectedObj is either not in comms or is already in comms with this player ship
 		// also don't allow calling players
 		if (selectedObj.playable != 1 && selectedObj.commsScript > 0 && (selectedObj.commsTargetId < 0 || selectedObj.commsTargetId == playerShip.id)) {
