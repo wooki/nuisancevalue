@@ -139,6 +139,9 @@ export default class LocalMapPaths {
             color: this.parameters.colors.other,
             points: this.relativeScreenCoords(predictedPath, this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1])
           };
+        } else {
+          // remove it
+          delete this.predictedPaths['object'+obj.id];
         }
       }
     }
