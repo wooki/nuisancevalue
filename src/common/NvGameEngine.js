@@ -388,7 +388,7 @@ export default class NvGameEngine extends GameEngine {
                 if (ship) {
                     ship.engine = level || 0;
                     if (ship.engine < 0) { ship.engine = 0; }
-                    if (ship.engine > 5) { ship.engine = 5; }
+                    if (ship.engine > 5) { ship.engine = 5; }                    
                 }
             }
 
@@ -575,6 +575,7 @@ export default class NvGameEngine extends GameEngine {
         s.dockedId = params['dockedId'] || -1;
         s.docked = [];
         s.damage = params['damage'] || 0;
+        s.fuel = params['fuel'] || hullData.fuel;
 
         if (hullData.pdc) {
           s.pdcState = 0;

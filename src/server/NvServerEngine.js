@@ -45,7 +45,7 @@ export default class NvServerEngine extends ServerEngine {
 
         this.gameEngine.on('ai-plan', e => {
           let obj = e.obj;
-          let ai = gameEngine.ai;
+          let ai = this.gameEngine.ai;
           if (ai) {
             ai.plan(obj, dt);
           }

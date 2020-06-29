@@ -33,6 +33,7 @@ export default class Ship extends PhysicalObject2D {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
             },
+            fuel: { type: BaseTypes.TYPES.INT16 },
             damage: { type: BaseTypes.TYPES.INT32 },
             pdcAngle: { type: BaseTypes.TYPES.FLOAT32 },
             pdcState: { type: BaseTypes.TYPES.UINT8 } //0=off,1=active,2=firing
@@ -57,7 +58,12 @@ export default class Ship extends PhysicalObject2D {
         }
 
         if (this.engine && this.engine > 0) {
-            this.physicsObj.applyForceLocal([0, this.engine * hullData.thrust]);
+          if (this.fuel <= 0) {
+            this.engine = 0;
+            return;
+          }
+          this.fuel = this.fuel - (this.engine/5);
+          this.physicsObj.applyForceLocal([0, this.engine * hullData.thrust]);
         }
     }
 
@@ -92,6 +98,9 @@ export default class Ship extends PhysicalObject2D {
         if (this.dockedId !== null && this.dockedId >= 0) {
             return; // can't do this while docked
         }
+
+        if (this.fuel <= 0) return;
+        this.fuel = this.fuel - 0.2;
 
         if (maneuver == 'l') {
 
@@ -218,5 +227,6 @@ export default class Ship extends PhysicalObject2D {
         this.targetId = other.targetId;
         this.aiScript = other.aiScript;
         this.docked = other.docked;
+        this.fuel = other.fuel;
     }
 }

@@ -8,6 +8,7 @@ import DockingControl from './SubRenderers/DockingControl';
 import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
+import FuelGauge from './SubRenderers/FuelGauge';
 
 // extend compsite with pre-set subrenderers
 export default class HelmRenderer extends CompositeRenderer {
@@ -86,6 +87,13 @@ export default class HelmRenderer extends CompositeRenderer {
             height: (halfHeight - (margin * 2)),
             zIndex: 30,
             keyboardControls: true
+          }),
+          new FuelGauge({
+            x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
+            y: fullHeight - (margin + 63), // maneuver plus this control plus two margins
+            width: Math.max(sideWidth, sideControlsMin),
+            height: fullHeight - marginFull,
+            zIndex: 25
           }),
           new HudData({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),

@@ -21,6 +21,7 @@ export default {
 			range: 4000,
 			size: 1000
 		},
+		fuel: 10000,
 		damage: STANDARD_SYSTEMS // this is a bit encoded set of valid systems that CAN BE damaged
 	},
 
@@ -34,6 +35,7 @@ export default {
 		maneuver: 1.4,
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
+		fuel: 10000,
 		damage: STANDARD_SYSTEMS
 	},
 
@@ -47,6 +49,7 @@ export default {
 		enginePositions: [[1, 0.5, 1.0]],// [scale, %x, %y]
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
+		fuel: 100,
 		payload: 300 // equivalent acceleration for damage
 	},
 
@@ -64,6 +67,7 @@ export default {
 			range: 4000,
 			size: 1000
 		},
+		fuel: 10000,
 		damage: STANDARD_SYSTEMS // this is a bit encoded set of valid systems that CAN BE damaged
 	},
 
@@ -89,6 +93,7 @@ export default {
 		maneuver: 0,
 		mass: 0.1,
 		damage: STANDARD_SYSTEMS,
+		fuel: 10000,
 		dockable: true
 	}
 }
