@@ -160,7 +160,7 @@ export default class DockingControl {
   // if current dockable ship is removed then remove UI
   removeObject(key, renderer) {
 
-    if (this.dockTarget && this.dockTarget.obj.id == key) {
+    if (this.dockTarget && this.dockTarget.obj && this.dockTarget.obj.id == key) {
       this.dockTarget = null;
       this.projector.scheduleRender();
     }
