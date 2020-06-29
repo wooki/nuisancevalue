@@ -510,9 +510,10 @@ export default class NvGameEngine extends GameEngine {
 
                 if (ship && inputData.options.target != undefined) {
 
-                    let playerShip = this.getPlayerShip(playerId);
-                    // let playerShip = this.world.objects[ship.commsTargetId];
                     ship.commsTargetId = inputData.options.target;
+
+                    let playerShip = this.world.objects[ship.commsTargetId];
+                    // TODO: not found on client ???
 
                     // chance to change/update script/state when ending call
                     if (ship.commsTargetId == -1) {
@@ -523,7 +524,7 @@ export default class NvGameEngine extends GameEngine {
                 if (ship && inputData.options.state != undefined){
                     // let previousState = ship.commsState;
                     let playerShip = this.getPlayerShip(playerId);
-                    // let playerShip = this.world.objects[ship.commsTargetId];
+                    // TODO: playerId ???  not on server
                     ship.commsState = inputData.options.state;
 
                     // chance for script to send commands to ship or game
