@@ -1,5 +1,6 @@
 const PIXI = require('pixi.js');
 
+import Victor from 'victor';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
 import {CRTFilter} from '@pixi/filter-crt';
@@ -194,7 +195,20 @@ export default class LocalMap {
 
       sprite.x = coord.x;
       sprite.y = coord.y;
-      sprite.rotation = UiUtils.adjustAngle(obj.physicsObj.angle);
+
+      let spriteAngle = UiUtils.adjustAngle(obj.physicsObj.angle);
+
+      // cheat with the torp sprite - looks better if they simply always face their target
+      if (obj instanceof Torpedo) {
+        if (this.mapObjects[obj.targetId]) {
+          let torpPos = Victor.fromArray(obj.physicsObj.position);
+    			let targetPos = Victor.fromArray(this.mapObjects[obj.targetId].physicsObj.position);
+    			let direction = torpPos.clone().subtract(targetPos);
+    			direction = new Victor(0 - direction.x, direction.y);
+          spriteAngle = direction.verticalAngle();
+        }
+      }
+      sprite.rotation = spriteAngle;
 
       // if (this.sprites[obj.id + '-label'] && this.sprites[obj.id]) {
       //     this.sprites[obj.id + '-label'].x = coord.x + (3 + Math.floor(this.sprites[obj.id].width/2));
