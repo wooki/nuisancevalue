@@ -81,6 +81,8 @@ export default class CommsControl {
       // get current options and state (always open comms)
       let commsState = this.comms.getComms(this.playerShip, this.commsTarget);
 
+      content.push(h('div.title', {}, [this.commsTarget.name || this.commsTarget.hull || this.commsTarget.texture]));
+
       content.push(h('div.text', {}, [commsState.text]));
       for (let i = 0; i < commsState.responses.length; i++) {
         let key = "state-"+this.commsTarget.commsState+"-response-"+i;

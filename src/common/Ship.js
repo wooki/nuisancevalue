@@ -49,6 +49,10 @@ export default class Ship extends PhysicalObject2D {
     //     }
     // }
 
+    getHullData() {
+      return Hulls[this.hull];
+    }
+
     // if the ship has active engines then apply force
     applyEngine() {
         let hullData = Hulls[this.hull];

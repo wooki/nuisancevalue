@@ -528,6 +528,18 @@ label {
         justify-content: flex-start;
         align-items: center;
       }
+      .title {
+        display: block;
+        text-align: center;
+        text-align: center;
+        text-transform: uppercase;
+        &:before {
+          content: "### "
+        }
+        &:after {
+          content: " ###"
+        }
+      }
       .text {
         display: block;
         text-align: center;

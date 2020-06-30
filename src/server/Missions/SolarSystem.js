@@ -54,7 +54,8 @@ export default class SolarSystem extends Mission {
           dY: velocity.y,
           hull: hullName,
           angle: Math.PI,
-          playable: 1
+          playable: 1,
+          fuel: 2500
       });
 
 
@@ -179,7 +180,7 @@ export default class SolarSystem extends Mission {
 
   step(seconds) {
     super.step(seconds);
-    
+
   }
 
 }

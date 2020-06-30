@@ -71,8 +71,10 @@ export default class Comms {
 
 			// return to Signals station
 			return {
-				text: state.text,
-				responses: state.responses.map(function(r) { return r.text; })
+				text: this.replaceKeywords(state.text, playerShip, selectedObj),
+				responses: state.responses.map(function(r) {
+					return this.replaceKeywords(r.text, playerShip, selectedObj);
+				}.bind(this))
 			};
 
 		} else {
@@ -81,6 +83,13 @@ export default class Comms {
 				responses: []
 			};
 		}
+	}
+
+	// replace names and factions of ships in the text
+	replaceKeywords(text, playerShip, selectedObj) {
+		text = text.replace('[player]', playerShip.name);
+		text = text.replace('[obj]', selectedObj.name || selectedObj.hull || selectedObj.texture);
+		return text;
 	}
 
 	// once a comms session has been started respond with one of the choices
@@ -110,8 +119,10 @@ export default class Comms {
 
 			// return new state to Signals station
 			return {
-				text: newState.text,
-				responses: newState.responses.map(function(r) { return r.text; })
+				text: this.replaceKeywords(newState.text, playerShip, selectedObj),
+				responses: newState.responses.map(function(r) {
+					return this.replaceKeywords(r.text, playerShip, selectedObj);
+				}.bind(this))
 			};
 
 		} else {
@@ -123,17 +134,20 @@ export default class Comms {
 	}
 
 	getState(selectedObj, playerShip) {
-		let script = new scripts[selectedObj.commsScript](selectedObj, this.game);
+		if (scripts[selectedObj.commsScript]) {
+			let script = new scripts[selectedObj.commsScript](selectedObj, this.game);
 
-		if (script === null) return 0;
+			if (script === null) return 0;
 
-		// get the current state
-		let isDocked = (playerShip.dockedId == selectedObj.id);
-		let isFriendly = this.factions.isFriendly(0, 0);
-		let isHostile = this.factions.isHostile(0, 0);
-		let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
+			// get the current state
+			let isDocked = (playerShip.dockedId == selectedObj.id);
+			let isFriendly = this.factions.isFriendly(0, 0);
+			let isHostile = this.factions.isHostile(0, 0);
+			let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
 
-		return state;
+			return state;
+		}
+		return null;
 	}
 
 	executeOnEnter(selectedObj, playerShip) {
@@ -142,7 +156,7 @@ export default class Comms {
 
 		// chance for script to send commands to ship
 		let state = this.getState(selectedObj, playerShip);
-		if (state.onEnter) {
+		if (state && state.onEnter) {
 			state.onEnter(selectedObj, playerShip, this.game);
 		}
 
@@ -154,7 +168,7 @@ export default class Comms {
 
 		// chance for script to send commands to ship
 		let state = this.getState(selectedObj, playerShip);
-		if (state.OnCloseComms) {
+		if (state && state.OnCloseComms) {
 			state.OnCloseComms(selectedObj, playerShip, this.game);
 		}
 
