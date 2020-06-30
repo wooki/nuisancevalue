@@ -388,7 +388,7 @@ export default class NvGameEngine extends GameEngine {
                 if (ship) {
                     ship.engine = level || 0;
                     if (ship.engine < 0) { ship.engine = 0; }
-                    if (ship.engine > 5) { ship.engine = 5; }                    
+                    if (ship.engine > 5) { ship.engine = 5; }
                 }
             }
 
@@ -524,13 +524,6 @@ export default class NvGameEngine extends GameEngine {
                     // let previousState = ship.commsState;
 
                     let playerShip = this.getPlayerShip(playerId);
-
-                    if (!playerShip) {
-                      console.log("CLOSE");
-                      console.log("ship.commsTargetId="+ship.commsTargetId);
-                      console.log("playerId="+playerId);
-                    }
-
                     ship.commsState = inputData.options.state;
 
                     // chance for script to send commands to ship or game

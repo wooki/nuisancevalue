@@ -42,10 +42,10 @@ export default class Ship extends PhysicalObject2D {
 
     // get bending() {
     //     return {
-    //         position: { percent: 1.0 },
-    //         velocity: { percent: 1.0 },
-    //         angularVelocity: { percent: 1.0 },
-    //         angle: { percent: 1.0 },
+    //         position: { percent: 0.6 },
+    //         velocity: { percent: 0.6 },
+    //         angularVelocity: { percent: 0.6 },
+    //         angle: { percent: 0.6 }
     //     }
     // }
 

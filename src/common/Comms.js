@@ -65,12 +65,7 @@ export default class Comms {
 
 			// get the current state
 			let isDocked = (playerShip.dockedId == selectedObj.id);
-			// console.log("isDocked="+isDocked);
-			// console.log("playerShip.dockedId="+playerShip.dockedId);
-			// console.log("selectedObj.id="+selectedObj.id);
-			// console.trace();
-
-			let isFriendly = this.factions.isFriendly(0, 0);
+			let isFriendly = this.factions.isFriendly(0, 0); // TODO: get ship faction
 			let isHostile = this.factions.isHostile(0, 0);
 			let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
 
