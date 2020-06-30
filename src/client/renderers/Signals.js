@@ -16,7 +16,6 @@ import Hulls from './../../common/Hulls';
 import Victor from 'victor';
 import HelmUi from './Utils/HelmUi';
 import HelmPathUi from './Utils/HelmPathUi';
-import Comms from './../../common/Comms';
 import SolarObjects from './../../common/SolarObjects';
 import UiUtils from './Utils/UiUtils';
 
@@ -218,19 +217,10 @@ export default class SignalsRenderer {
 
     setTarget(objId) {
       client.setTarget(objId);
-      this.removeCommsUi();
-
-      let objects = this.getPlayerAndSelected(objId);
-      if (objects) {
-        if (objects.selectedObj.signalsPlayerId != game.playerId) {
-            this.createInitialCommsUi(objects.selectedObj);
-        }
-      }
     }
 
     unsetTarget() {
-      client.setTarget(-1);
-      this.removeCommsUi();
+      client.setTarget(-1);      
     }
 
     canvasClick(event) {
@@ -257,7 +247,6 @@ export default class SignalsRenderer {
 
         uiEls.uiWeapons = document.createElement("div");
         uiEls.uiWeapons.classList.add('ui-weapons');
-        uiEls.uiWeapons.classList.add('ui-comms');
         uiEls.uiRightContainer.appendChild(uiEls.uiWeapons);
 
         // torps
@@ -293,70 +282,6 @@ export default class SignalsRenderer {
         if (obj && obj.signalsPlayerId != game.playerId) {
 
           this.setTarget(selectedGuid);
-        }
-    }
-
-    removeCommsUi() {
-        if (uiEls.closeCommsButton) {
-            uiEls.closeCommsButton.removeEventListener('click', this.closeComms.bind(this));
-            uiEls.closeCommsButton.remove();
-            uiEls.closeCommsButton = null;
-        }
-        if (uiEls.uiCommsOpen) {
-            uiEls.uiCommsOpen.removeEventListener('click', this.openComms.bind(this));
-            uiEls.uiCommsOpen.remove();
-            uiEls.uiCommsOpen = null;
-        }
-        if (uiEls.uiCommsText) {
-            uiEls.uiCommsText.remove();
-            uiEls.uiCommsText = null;
-        }
-        if (uiEls.uiComms) {
-            uiEls.uiComms.remove();
-            uiEls.uiComms = null;;
-        }
-    }
-
-    createInitialCommsUi() {
-
-        // container
-        uiEls.uiComms = document.createElement("div");
-        uiEls.uiComms.classList.add('ui-comms');
-        uiEls.uiContainer.appendChild(uiEls.uiComms);
-
-        // let objects = this.getPlayerAndSelected();
-        // if (objects) {
-
-            // open comms button
-            uiEls.uiCommsOpen = this.createButton(document, uiEls.uiComms, "openComms", "Open Comms", this.openComms.bind(this));
-        // }
-
-    }
-
-    createResponseCommsUi(state) {
-
-        uiEls.uiCommsText = this.createLabel(document, uiEls.uiComms, "commsText", state.text);
-
-        state.responses.forEach((response, responseIndex) => {
-            let responseButton = this.createButton(document, uiEls.uiComms, "response-"+response, response, this.sendCommsResponse.bind(this));
-            responseButton.setAttribute('data-response', responseIndex);
-            uiEls['uiCommsTextResponse'+responseIndex] = responseButton;
-        });
-
-        uiEls.closeCommsButton = this.createButton(document, uiEls.uiComms, "response-close", "Close Comms", this.closeComms.bind(this));
-    }
-
-    closeComms() {
-        this.removeCommsUi();
-
-        let objects = this.getPlayerAndSelected();
-        if (objects) {
-            let c = new Comms(game, client);
-            c.closeComms(objects.playerShip, objects.selectedObj);
-
-            if (objects.selectedObj.signalsPlayerId != game.playerId) {
-                this.createInitialCommsUi(objects.selectedObj);
-            }
         }
     }
 
@@ -487,56 +412,6 @@ export default class SignalsRenderer {
           sprites.pdcHud.visible = false;
         }
       }
-    }
-
-    openComms() {
-        this.removeCommsUi();
-
-        // container
-        uiEls.uiComms = document.createElement("div");
-        uiEls.uiComms.classList.add('ui-comms');
-        uiEls.uiComms.classList.add('open');
-        uiEls.uiContainer.appendChild(uiEls.uiComms);
-
-        let objects = this.getPlayerAndSelected();
-        if (objects) {
-
-            let c = new Comms(game, client);
-
-            let conversation = c.openComms(objects.playerShip, objects.selectedObj); // returns text and possible responses
-            uiEls.uiCommsText = this.createLabel(document, uiEls.uiComms, "commsText", conversation.text);
-
-            conversation.responses.forEach((response, responseIndex) => {
-                let responseButton = this.createButton(document, uiEls.uiComms, "response-"+response, response, this.sendCommsResponse.bind(this));
-                responseButton.setAttribute('data-response', responseIndex);
-                uiEls['uiCommsTextResponse'+responseIndex] = responseButton;
-            });
-
-            uiEls.closeCommsButton = this.createButton(document, uiEls.uiComms, "response-close", "Close Comms", this.closeComms.bind(this));
-
-        }
-    }
-
-    sendCommsResponse(event) {
-
-        this.removeCommsUi();
-
-        // container
-        uiEls.uiComms = document.createElement("div");
-        uiEls.uiComms.classList.add('ui-comms');
-        uiEls.uiComms.classList.add('open');
-        uiEls.uiContainer.appendChild(uiEls.uiComms);
-
-        let objects = this.getPlayerAndSelected();
-        if (objects) {
-
-            let response = event.currentTarget.getAttribute('data-response');
-            response = parseInt(response);
-
-            let c = new Comms(game, client);
-            let state = c.respond(objects.playerShip, objects.selectedObj, response);
-            this.createResponseCommsUi(state);
-        }
     }
 
     // wrap default addToMap
