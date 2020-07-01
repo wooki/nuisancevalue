@@ -300,6 +300,7 @@ export default class LocalMap {
     if (sprite) {
       if (obj.hull) {
 
+if (obj.hull == "torpedo") console.log("torp:");
         let hullData = Hulls[obj.hull];
         let height = hullData.size * this.parameters.scale;
         let width = height * hullData.width;
@@ -322,11 +323,19 @@ export default class LocalMap {
           hullData.enginePositions.forEach((e, i) => {
             // scale based on ship engine level and sizes
             let exhaustSprite = sprite.getChildByName('exhaust-'+i);
-            let exhaustSize = e[0] * (obj.engine || 0) * width;
+            let engineSize = obj.engine;
+
+            // hack for torps to always show full engine when firing at all
+            if (obj.hull == "torpedo" && engineSize > 0) {
+              engineSize = engineSize * 5;
+            }
+
+            let exhaustSize = e[0] * (engineSize || 0) * width;
             let scale = exhaustSize / exhaustSprite.texture.width;
             exhaustSprite.x = (0 - (width/2)) + (width * e[1]);
             exhaustSprite.y = (0 - (width/2)) + (width * e[2]);
             exhaustSprite.scale.set(scale, scale);
+if (obj.hull == "torpedo") console.log(exhaustSprite.width+","+exhaustSprite.height);
           });
         }
 
