@@ -126,7 +126,7 @@ export default class NvGameEngine extends GameEngine {
                 }
 
                 // apply current AI
-                this.ai.execute(obj, dt);
+                this.ai.execute(obj);
 
                 // only certain types have engines
                 if (obj.applyEngine) {
@@ -565,6 +565,7 @@ export default class NvGameEngine extends GameEngine {
         s.commsTargetId = params['commsTargetId'] || -1;
         s.targetId = params['targetId'] || -1;
         s.aiScript = params['aiScript'] || 0;
+        s.aiPlan = params['aiPlan'] || 0;
         s.dockedId = params['dockedId'] || -1;
         s.docked = [];
         s.damage = params['damage'] || 0;

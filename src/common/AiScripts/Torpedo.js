@@ -3,11 +3,12 @@ import Utils from '../Utils/Utils';
 
 export default class TorpedoAi {
 	execute(torpedo, game) {
-
+		console.log("execute:"+torpedo.targetId);
 		// find the target
 		let target = game.world.objects[torpedo.targetId];
 	    if (target) {
 
+				console.log("target");
 			// get our data
 			let ourPos = Victor.fromArray(torpedo.physicsObj.position);
 			let ourVelocity = new Victor(torpedo.physicsObj.velocity[0], torpedo.physicsObj.velocity[1]);
@@ -105,6 +106,9 @@ export default class TorpedoAi {
 			// if (currentBearingDiffDeg > 180) currentBearingDiffDeg = 360 - currentBearingDiffDeg;
 
 			// turn if predicted positions are not aligned.
+			console.log("bearingDiffDeg:"+bearingDiffDeg);
+			console.log("closing:"+closing);
+			console.log("torpTopSpeed:"+torpTopSpeed);
 			if (Math.abs(bearingDiffDeg) > 0) {
 
 				// apply enough turn to turn us to our desired bearing in 1/60th of a second
@@ -129,7 +133,6 @@ export default class TorpedoAi {
 						torpedo.engine = 0.33;
 					}
 				} else if (closing < 0 && Math.abs(currentBearingDiffDeg) < 90) {
-	console.log("zzzz:"+bearingDiffDeg);
 					torpedo.engine = 1;
 				} else {
 					torpedo.engine = 0;

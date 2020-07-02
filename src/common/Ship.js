@@ -24,7 +24,8 @@ export default class Ship extends PhysicalObject2D {
             commsTargetId: { type: BaseTypes.TYPES.INT16 }, // currently talking to
             targetId: { type: BaseTypes.TYPES.INT16 },
             dockedId: { type: BaseTypes.TYPES.INT16 },
-            aiScript: { type: BaseTypes.TYPES.INT16 },
+            aiScript: { type: BaseTypes.TYPES.UINT8 },
+            aiPlan: { type: BaseTypes.TYPES.UINT8 },
             docked: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.CLASSINSTANCE
@@ -230,6 +231,7 @@ export default class Ship extends PhysicalObject2D {
         this.dockedId = other.dockedId;
         this.targetId = other.targetId;
         this.aiScript = other.aiScript;
+        this.aiPlan = other.aiPlan;
         this.docked = other.docked;
         this.fuel = other.fuel;
     }

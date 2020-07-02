@@ -81,6 +81,7 @@ export default {
 		maneuver: 0.8,
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
+		fuel: 10000,
 		damage: STANDARD_SYSTEMS
 	},
 

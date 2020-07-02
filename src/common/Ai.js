@@ -1,8 +1,9 @@
 import TorpedoAi from './AiScripts/Torpedo';
+import Traveller from './AiScripts/Traveller';
 
 // ai scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [null, new TorpedoAi()];
+const scripts = [null, new TorpedoAi(), new Traveller()];
 
 let game = null;
 

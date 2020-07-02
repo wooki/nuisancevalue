@@ -61,23 +61,31 @@ export default class SolarSystem extends Mission {
 
       let hullName2 = 'blockade-runner';
       let hullData2 = Hulls[hullName2];
-      let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 2000;
-      let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
+      // let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 2000;
+      // let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
+      let ship2OrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 5000;
+      let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / ship2OrbitDistance);
       position = new Victor(ship2OrbitDistance, 0);
       velocity = new Victor(0, 0 - ship2OrbitSpeed);
       position = position.rotateDeg(200);
       velocity = velocity.rotateDeg(200);
-      position = position.add(new Victor(planets.Mars.position.x, planets.Mars.position.y));
-      velocity = velocity.add(new Victor(planets.Mars.velocity.x, planets.Mars.velocity.y));
+      // position = position.add(new Victor(planets.Mars.position.x, planets.Mars.position.y));
+      // velocity = velocity.add(new Victor(planets.Mars.velocity.x, planets.Mars.velocity.y));
+      position = position.add(new Victor(planets.Earth.position.x, planets.Earth.position.y));
+      velocity = velocity.add(new Victor(planets.Earth.velocity.x, planets.Earth.velocity.y));
       this.game.addShip({
           name: "Profit Margin",
           x: position.x,
           y: position.y,
-          dX: velocity.x,
-          dY: velocity.y,
+          // dX: velocity.x,
+          // dY: velocity.y,
+          dX: 0,
+          dY: 0,
           hull: hullName2,
           angle: Math.PI,
-          playable: 1
+          // playable: 1
+          aiScript: 2, // Traveller
+          targetId: planets.Earth.id
       });
 
       let jupiterstationOrbitDistance = Math.floor(SolarObjects.Jupiter.diameter/2) + 5000;
