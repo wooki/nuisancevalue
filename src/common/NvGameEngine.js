@@ -257,6 +257,8 @@ export default class NvGameEngine extends GameEngine {
                             amount: gravSourceAmount,
                             vector: gravVector,
                             mass: gravSource.physicsObj.mass,
+                            size: gravSource.size,
+                            id: gravSource.id,
                             velocity: gravSource.physicsObj.velocity
                         };
 

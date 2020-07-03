@@ -106,9 +106,6 @@ export default class TorpedoAi {
 			// if (currentBearingDiffDeg > 180) currentBearingDiffDeg = 360 - currentBearingDiffDeg;
 
 			// turn if predicted positions are not aligned.
-			console.log("bearingDiffDeg:"+bearingDiffDeg);
-			console.log("closing:"+closing);
-			console.log("torpTopSpeed:"+torpTopSpeed);
 			if (Math.abs(bearingDiffDeg) > 0) {
 
 				// apply enough turn to turn us to our desired bearing in 1/60th of a second

@@ -105,7 +105,7 @@ export default class Ship extends PhysicalObject2D {
         }
 
         if (this.fuel <= 0) return;
-        this.fuel = this.fuel - 0.2;
+        this.fuel = this.fuel - 0.01;
 
         if (maneuver == 'l') {
 
