@@ -16,8 +16,8 @@ export default class TestMission {
     game.addPlanet({
       x: 0,
       y: 0,
-      dX: 0,
-      dY: 0,
+      dX: 0-100,
+      dY: 0-25,
       mass: SolarObjects.Mars.mass,
       size: SolarObjects.Mars.diameter,
       texture: 'mars',
@@ -43,12 +43,12 @@ export default class TestMission {
     let hullData2 = Hulls[hullName2];
     let tug = game.addShip({
         name: "Target Practice",
-        x: -5000,
+        x: 5000,
         y: 0,
-        dX: 0-100,
+        dX: 0,
         dY: 0,
         hull: hullName2,
-        angle: 0,
+        angle: Math.PI*0.5,
         // angle: Math.PI*0.5,
         playable: 0,
         aiScript: 2

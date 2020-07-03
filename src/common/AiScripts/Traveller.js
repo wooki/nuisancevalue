@@ -27,8 +27,7 @@ export default class Traveller {
 	stabiliseOrbit(ship, game) {
 
 		// set some criteria for orbit distance
-		const minOrbit = 3000;
-		const maxOrbit = 5000;
+		const favouredOrbit = 3500;
 
 
 		// get our current gravity source
@@ -41,16 +40,16 @@ export default class Traveller {
 			let gDistance = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 			let distance = gDistance.length();
 			let orbitSpeed = Math.sqrt((SolarObjects.constants.G * ship.gravityData.mass) / distance + 1);
-			// if (distance < minOrbit) {
-			// 	orbitSpeed = orbitSpeed * 1.5;
-			// } else if (distance > maxOrbit) {
-			// 	orbitSpeed = orbitSpeed * 0.9;
-			// }
+			if (distance < (favouredOrbit * 0.8)) {
+				orbitSpeed = orbitSpeed * 1.5;
+			} else if (distance > (favouredOrbit * 1.2)) {
+				orbitSpeed = orbitSpeed * 0.5;
+			}
 
 			// create a vector that matches that speed, perpendicular (anti-clockwise) from gravity source
 			let orbitV = new Victor(0, orbitSpeed);
 			orbitV = orbitV.rotate(0 - gDistance.verticalAngle()); // rotate to face grav source
-			orbitV = orbitV.rotateByDeg(90);
+			orbitV = orbitV.rotateDeg(90);
 
 			// add on the sources actual velocity as well
 			let sourceV = Victor.fromArray(ship.gravityData.velocity);
@@ -58,11 +57,12 @@ export default class Traveller {
 
 			let correctionV = orbitV.clone().subtract(ourVelocity);
 
-			// console.log("mag:"+correctionV.magnitude());
 			// if our bearing does not match then rotate
 			let correctionAngle = 0 - correctionV.verticalAngle() % (Math.PI*2);
 			let ourBearing = ship.physicsObj.angle % (Math.PI*2);
 			let bearingChange = correctionAngle - ourBearing;
+			if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
+			if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
 
 			if (bearingChange < 0.1) {
 					ship.engine = 0;
@@ -79,7 +79,7 @@ export default class Traveller {
 			}
 
 			// if our bearing is close to desired then fire engine
-			if (Math.abs(bearingChange) < 0.1 && correctionV.magnitude() > 50) { // only bother when drifting away from desired
+			if (Math.abs(bearingChange) < 0.1 && correctionV.magnitude() > 20) { // only bother when drifting away from desired
 				ship.engine = 5;
 			} else {
 				ship.engine = 0;
