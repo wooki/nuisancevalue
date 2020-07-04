@@ -55,8 +55,8 @@ export default class Traveller {
 				if (distance.magnitude() < 10000) {
 					ship.aiPlan = 1;
 					ship.orbitTime = 30 + (Math.random()*180);
-					ship.targetId = 9; // pluto maybe
-					this.fuel = 10000;
+					ship.targetId = Math.round(1 + (Math.random()*8)); // pluto maybe
+					ship.fuel = 10000;
 				}
 			}
 		}
@@ -200,53 +200,55 @@ export default class Traveller {
 
 			// target/destination
 			let target = game.world.queryObject({ id: parseInt(ship.targetId) });
-			let targetPos = Victor.fromArray(target.physicsObj.position);
-			let targetVelocity = new Victor(target.physicsObj.velocity[0], target.physicsObj.velocity[1]);
-			let targetV = targetPos.clone().subtract(ourPos);
+			if (target) {
+				let targetPos = Victor.fromArray(target.physicsObj.position);
+				let targetVelocity = new Victor(target.physicsObj.velocity[0], target.physicsObj.velocity[1]);
+				let targetV = targetPos.clone().subtract(ourPos);
 
-			// check distance to target and slow down when approaching
-			let distance = ourPos.clone().subtract(targetPos).magnitude();
+				// check distance to target and slow down when approaching
+				let distance = ourPos.clone().subtract(targetPos).magnitude();
 
-			// if we're in the gavity well or approaching set a speed limit
-			if ((ship.gravityData && ship.gravityData.id == ship.targetId) || (distance < travelSpeed * 15)) {
-				maxSpeed = Math.min(travelSpeed, 300);
-			} else if (distance < travelSpeed * 30) {
-				maxSpeed = Math.min(travelSpeed, 600);
-			} else if (distance < travelSpeed * 60) {
-				maxSpeed = Math.min(travelSpeed, 1200);
-			}
+				// if we're in the gavity well or approaching set a speed limit
+				if (distance < travelSpeed * 15) {
+					maxSpeed = Math.min(travelSpeed, 300);
+				} else if (distance < travelSpeed * 30) {
+					maxSpeed = Math.min(travelSpeed, 600);
+				} else if ((ship.gravityData && ship.gravityData.id == ship.targetId) || (distance < travelSpeed * 60)) {
+					maxSpeed = Math.min(travelSpeed, 1200);
+				}
 
-			// normalise then set to our desired speed
-			targetV = targetV.normalize().multiply(new Victor(maxSpeed, maxSpeed));
+				// normalise then set to our desired speed
+				targetV = targetV.normalize().multiply(new Victor(maxSpeed, maxSpeed));
 
-			// work out best vector to burn engine along
-			let correctionV = targetV.clone().subtract(ourVelocity);
+				// work out best vector to burn engine along
+				let correctionV = targetV.clone().subtract(ourVelocity);
 
-			// if our bearing does not match then rotate
-			let correctionAngle = 0 - correctionV.verticalAngle() % (Math.PI*2);
-			let ourBearing = ship.physicsObj.angle % (Math.PI*2);
-			let bearingChange = correctionAngle - ourBearing;
-			if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
-			if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
+				// if our bearing does not match then rotate
+				let correctionAngle = 0 - correctionV.verticalAngle() % (Math.PI*2);
+				let ourBearing = ship.physicsObj.angle % (Math.PI*2);
+				let bearingChange = correctionAngle - ourBearing;
+				if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
+				if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
 
-			if (bearingChange < 0.1) {
+				if (bearingChange < 0.1) {
+						ship.engine = 0;
+						if (ship.physicsObj.angularVelocity >= -0.1) {
+							ship.applyManeuver('l');
+						}
+
+				} else if (bearingChange > -0.1) {
+						ship.engine = 0;
+						if (ship.physicsObj.angularVelocity <= 0.1) {
+							ship.applyManeuver('r');
+						}
+				}
+
+				// if our bearing is close to desired then fire engine
+				if (Math.abs(bearingChange) < 0.1 && correctionV.magnitude() > 20) { // only bother when drifting away from desired
+					ship.engine = 5;
+				} else {
 					ship.engine = 0;
-					if (ship.physicsObj.angularVelocity >= -0.1) {
-						ship.applyManeuver('l');
-					}
-
-			} else if (bearingChange > -0.1) {
-					ship.engine = 0;
-					if (ship.physicsObj.angularVelocity <= 0.1) {
-						ship.applyManeuver('r');
-					}
-			}
-
-			// if our bearing is close to desired then fire engine
-			if (Math.abs(bearingChange) < 0.1 && correctionV.magnitude() > 20) { // only bother when drifting away from desired
-				ship.engine = 5;
-			} else {
-				ship.engine = 0;
+				}
 			}
 		}
 	}
