@@ -147,34 +147,38 @@ export default class Traveller {
 
 			// target/destination
 			let target = game.world.queryObject({ id: parseInt(ship.targetId) });
-			let targetV = Victor.fromArray(target.physicsObj.position).subtract(ourPos);
-			let targetAngle = 0 - targetV.verticalAngle() % (Math.PI*2);
+			if (target) {
+				let targetV = Victor.fromArray(target.physicsObj.position).subtract(ourPos);
+				let targetAngle = 0 - targetV.verticalAngle() % (Math.PI*2);
 
-			// calculate which way we should face (along orbit path - hopefully)
-			let directionAngle = 0 - ourRelativeVelocity.verticalAngle() % (Math.PI*2);
-			let ourBearing = ship.physicsObj.angle % (Math.PI*2);
-			let bearingChange = directionAngle - ourBearing;
-			if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
-			if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
+				// calculate which way we should face (along orbit path - hopefully)
+				let directionAngle = 0 - ourRelativeVelocity.verticalAngle() % (Math.PI*2);
+				let ourBearing = ship.physicsObj.angle % (Math.PI*2);
+				let bearingChange = directionAngle - ourBearing;
+				if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
+				if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
 
-			// turn to face path - prefer turning right, because of anticlockwise orbit
-			if (bearingChange > 0.1) {
-				if (ship.physicsObj.angularVelocity <= 0.1) {
-					ship.applyManeuver('r');
+				// turn to face path - prefer turning right, because of anticlockwise orbit
+				if (bearingChange > 0.1) {
+					if (ship.physicsObj.angularVelocity <= 0.1) {
+						ship.applyManeuver('r');
+					}
+				} else if (bearingChange < -0.1) {
+					if (ship.physicsObj.angularVelocity >= -0.1) {
+						ship.applyManeuver('l');
+					}
 				}
-			} else if (bearingChange < -0.1) {
-				if (ship.physicsObj.angularVelocity >= -0.1) {
-					ship.applyManeuver('l');
+
+				// if we're close to facing our destination then fire engine
+				let angleFromTarget = targetAngle - ourBearing;
+				if (angleFromTarget < -Math.PI) angleFromTarget = angleFromTarget + (Math.PI*2)
+				if (angleFromTarget > Math.PI) angleFromTarget = angleFromTarget - (Math.PI*2)
+
+				if (Math.abs(angleFromTarget) < 0.2 && Math.abs(bearingChange) < 0.2) {
+					ship.engine = 5;
+				} else {
+					ship.engine = 0;
 				}
-			}
-
-			// if we're close to facing our destination then fire engine
-			let angleFromTarget = targetAngle - ourBearing;
-			if (angleFromTarget < -Math.PI) angleFromTarget = angleFromTarget + (Math.PI*2)
-			if (angleFromTarget > Math.PI) angleFromTarget = angleFromTarget - (Math.PI*2)
-
-			if (Math.abs(angleFromTarget) < 0.2 && Math.abs(bearingChange) < 0.2) {
-				ship.engine = 5;
 			} else {
 				ship.engine = 0;
 			}
@@ -255,8 +259,8 @@ export default class Traveller {
 
 	execute(ship, game) {
 
-		const favOrbitDistance = 3000;
-		const favTravelSpeed = 2000;
+		const favOrbitDistance = 2000;
+		const favTravelSpeed = 1000;
 
 		// process depending on our plan
 		if (ship.aiPlan == 2) {
