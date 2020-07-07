@@ -11,8 +11,8 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("target", { objId: objId });
     }
 
-    fireTorp(objId) {
-        this.sendInput("firetorp", { objId: objId });
+    fireTorp(objId, tube) {
+        this.sendInput("firetorp", { objId: objId, tube: tube });
     }
 
     pdcAngle(direction) {

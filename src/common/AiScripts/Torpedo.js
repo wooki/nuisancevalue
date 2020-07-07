@@ -2,6 +2,7 @@ import Victor from 'victor';
 import Utils from '../Utils/Utils';
 
 export default class TorpedoAi {
+	
 	execute(torpedo, game) {
 		console.log("execute:"+torpedo.targetId);
 		// find the target

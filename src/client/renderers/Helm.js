@@ -90,9 +90,9 @@ export default class HelmRenderer extends CompositeRenderer {
           }),
           new FuelGauge({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
-            y: fullHeight - (margin + 63), // maneuver plus this control plus two margins
+            y: fullHeight - (margin + 63), 
             width: Math.max(sideWidth, sideControlsMin),
-            height: fullHeight - marginFull,
+            height: 63,
             zIndex: 25
           }),
           new HudData({

@@ -47,7 +47,7 @@ export default class NvServerEngine extends ServerEngine {
           let obj = e.obj;
           let ai = this.gameEngine.ai;
           if (ai) {
-            ai.plan(obj);
+            ai.plan(obj, this.mission);
           }
         });
 
@@ -297,7 +297,12 @@ export default class NvServerEngine extends ServerEngine {
             // at our velocity plus/minus low speed (so we can't hit it easily ourselves)
             let ship = e.ship;
             let target = this.gameEngine.world.objects[e.targetId];
+            let tube = e.tube;
+
             if (target) {
+
+              // check the ship has a torp loaded in the specified tube
+              // TODO:!!!
 
               // find direction to target
               let shipPos = Victor.fromArray(ship.physicsObj.position);

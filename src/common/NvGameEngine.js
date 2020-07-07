@@ -445,7 +445,8 @@ export default class NvGameEngine extends GameEngine {
 
                 let ship = this.getPlayerShip(playerId);
                 let targetId = inputData.options.objId;
-                this.emit('firetorp', { ship: ship, targetId: targetId });
+                let tube = inputData.options.tube;
+                this.emit('firetorp', { ship: ship, targetId: targetId, tube: tube });
             }
 
 
@@ -572,6 +573,12 @@ export default class NvGameEngine extends GameEngine {
         s.docked = [];
         s.damage = params['damage'] || 0;
         s.fuel = params['fuel'] || hullData.fuel;
+
+        s.tubes = [];
+        for (let tube = 0; tube < hullData.tubes; tube++) {
+          s.tubes[tube] = 0;
+        }
+        if (params['tubes']) s.tubes = params['tubes'];
 
         if (hullData.pdc) {
           s.pdcState = 0;

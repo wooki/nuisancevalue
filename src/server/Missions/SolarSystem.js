@@ -59,13 +59,13 @@ export default class SolarSystem extends Mission {
       });
 
 
-      for (let i = 0; i < 8; i++) {
-        let hullName2 = 'blockade-runner';
-        if (i % 2 == 0) hullName2 = 'bushido';
-        if (i > 5) hullName2 = 'spacebug';
-        if (i > 6 && i % 2 == 0) hullName2 = 'tug';
+      for (let i = 0; i < 9; i++) {
+        let hullName2 = 'bushido';
+        // if (i % 2 == 0) hullName2 = 'blockade-runner';
+        // if (i > 5) hullName2 = 'spacebug';
+        // if (i > 6 && i % 2 == 0) hullName2 = 'tug';
         let hullData2 = Hulls[hullName2];
-        let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 2000;
+        let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 4000;
         let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
         position = new Victor(ship2OrbitDistance, 0);
         velocity = new Victor(0, 0 - ship2OrbitSpeed);
@@ -84,7 +84,7 @@ export default class SolarSystem extends Mission {
             angle: Math.PI,
             playable: 1,
             aiScript: 2, // Traveller
-            targetId: planets.Earth.id
+            targetId: i+1//planets.Earth.id
         });
       }
 
@@ -189,6 +189,21 @@ export default class SolarSystem extends Mission {
   step(seconds) {
     super.step(seconds);
 
+  }
+
+  // a ship with  traveller ai script has arrived - we can decide what
+  // it should do next
+  aiTravellerArrival(ship) {
+
+    console.log("aiTravellerArrival "+ship.name);
+    // pick a new planet to travel to, after a delay
+    let currentPlanet = ship.targetId;
+    while (currentPlanet == ship.targetId) {
+      ship.targetId = Math.round(1 + (Math.random()*8));
+    }
+    console.log("ship.targetId="+ship.targetId);
+
+    ship.fuel = 10000; // refuel as ai is wasteful
   }
 
 }

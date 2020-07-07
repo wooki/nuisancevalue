@@ -6,20 +6,18 @@ import SolarObjects from '../SolarObjects';
 export default class Traveller {
 
 	// check what phase we want to be in
-	plan(ship, game) {
+	plan(ship, mission, game) {
 
 		// default to stabilise orbit
 		if (!ship.aiPlan) {
 			ship.aiPlan = 1;
-			// ship.orbitTime = 30 + (Math.random()*90);
-			ship.orbitTime = 8;
+			ship.orbitTime = 0 + (Math.random()*180);
 		}
-
 
 		// in stable orbit
 		if (ship.aiPlan == 1) {
 			ship.orbitTime = ship.orbitTime - 1;
-			console.log("ship.orbitTime="+ship.orbitTime);
+
 			if (ship.orbitTime <= 0 && ship.targetId > -1) {
 				ship.aiPlan = 2; // leave orbit once orbit for some time
 			}
@@ -48,15 +46,21 @@ export default class Traveller {
 
 				let ourPos = Victor.fromArray(ship.physicsObj.position);
 				let target = game.world.queryObject({ id: parseInt(ship.targetId) });
-				let targetPos = Victor.fromArray(target.physicsObj.position);
-				let distance = ourPos.clone().subtract(targetPos);
+				if (target) {
+					let targetPos = Victor.fromArray(target.physicsObj.position);
+					let distance = ourPos.clone().subtract(targetPos);
 
-				// if we're within 20,000 enter orbit
-				if (distance.magnitude() < 10000) {
-					ship.aiPlan = 1;
-					ship.orbitTime = 30 + (Math.random()*180);
-					ship.targetId = Math.round(1 + (Math.random()*8)); // pluto maybe
-					ship.fuel = 10000;
+					// if we're within 20,000 enter orbit
+					if (distance.magnitude() < (12000 + target.size)) {
+
+						ship.aiPlan = 1; // enter orbit
+						ship.orbitTime = 60 + (Math.random()*180); // count time to hang around
+
+						// upon arrival see what mission thinks we should do (if there is one)
+						if (mission && mission.aiTravellerArrival) {
+							mission.aiTravellerArrival(ship);
+						}
+					}
 				}
 			}
 		}
@@ -80,16 +84,23 @@ export default class Traveller {
 			let gDistance = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 			let distance = gDistance.length();
 			let orbitSpeed = Math.sqrt((SolarObjects.constants.G * ship.gravityData.mass) / distance + 1);
+			let angleOffset = 90;
 			if (distance < (desiredOrbitDistance * 0.8)) {
-				orbitSpeed = orbitSpeed * 1.25;
-			} else if (distance > (desiredOrbitDistance * 1.2)) {
+				orbitSpeed = orbitSpeed * 1.1;
+			} else if (distance > (desiredOrbitDistance * 2)) {
+				angleOffset = 45;
+				// orbitSpeed = orbitSpeed * 0.75;
+			} else if (distance > (desiredOrbitDistance * 1.5)) {
+				angleOffset = 60;
+				// orbitSpeed = orbitSpeed * 0.75;
+			} else if (distance > desiredOrbitDistance) {
 				orbitSpeed = orbitSpeed * 0.75;
 			}
 
 			// create a vector that matches that speed, perpendicular (anti-clockwise) from gravity source
 			let orbitV = new Victor(0, orbitSpeed);
 			orbitV = orbitV.rotate(0 - gDistance.verticalAngle()); // rotate to face grav source
-			orbitV = orbitV.rotateDeg(90);
+			orbitV = orbitV.rotateDeg(angleOffset);
 
 			// add on the sources actual velocity as well
 			let sourceV = Victor.fromArray(ship.gravityData.velocity);
@@ -174,7 +185,7 @@ export default class Traveller {
 				if (angleFromTarget < -Math.PI) angleFromTarget = angleFromTarget + (Math.PI*2)
 				if (angleFromTarget > Math.PI) angleFromTarget = angleFromTarget - (Math.PI*2)
 
-				if (Math.abs(angleFromTarget) < 0.2 && Math.abs(bearingChange) < 0.2) {
+				if (Math.abs(angleFromTarget) < 0.2 && Math.abs(bearingChange) < 0.4) {
 					ship.engine = 5;
 				} else {
 					ship.engine = 0;
@@ -201,6 +212,7 @@ export default class Traveller {
 			// our data
 			let ourPos = Victor.fromArray(ship.physicsObj.position);
 			let ourVelocity = new Victor(ship.physicsObj.velocity[0], ship.physicsObj.velocity[1]);
+			let ourSpeed = ourVelocity.magnitude();
 
 			// target/destination
 			let target = game.world.queryObject({ id: parseInt(ship.targetId) });
@@ -212,13 +224,13 @@ export default class Traveller {
 				// check distance to target and slow down when approaching
 				let distance = ourPos.clone().subtract(targetPos).magnitude();
 
-				// if we're in the gavity well or approaching set a speed limit
-				if (distance < travelSpeed * 15) {
-					maxSpeed = Math.min(travelSpeed, 300);
-				} else if (distance < travelSpeed * 30) {
-					maxSpeed = Math.min(travelSpeed, 600);
-				} else if ((ship.gravityData && ship.gravityData.id == ship.targetId) || (distance < travelSpeed * 60)) {
-					maxSpeed = Math.min(travelSpeed, 1200);
+				//  calculate linear deceleration from 2 mins
+				let hullData = ship.getHullData(); // calculate based on thrust/weight
+				const deccelrationRatio = 12 / (hullData.thrust / hullData.mass);
+				const startDeceleration = ourSpeed * 60 * deccelrationRatio; // start 2 mins out
+				if (distance < startDeceleration) {
+					let percentageThroughDecel = (distance / startDeceleration);
+					maxSpeed = 200 + (ourSpeed * percentageThroughDecel);
 				}
 
 				// normalise then set to our desired speed
@@ -259,8 +271,11 @@ export default class Traveller {
 
 	execute(ship, game) {
 
-		const favOrbitDistance = 2000;
-		const favTravelSpeed = 1000;
+		// travelSpeed depends on hull
+		let hullData = ship.getHullData();
+
+		const favOrbitDistance = 4000;
+		const favTravelSpeed = 250 * (hullData.thrust / hullData.mass);
 
 		// process depending on our plan
 		if (ship.aiPlan == 2) {

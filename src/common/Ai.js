@@ -24,13 +24,13 @@ export default class Ai {
     	}
     }
 
-		plan(ship) {
+		plan(ship, mission) {
 
 			// load the AI script for that ship
 			if (ship.aiScript) {
 				let script = scripts[ship.aiScript];
 				if (script && script.plan) {
-					script.plan(ship, game);
+					script.plan(ship, mission, game);
 				}
 			}
 		}

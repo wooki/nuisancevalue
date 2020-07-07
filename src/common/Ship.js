@@ -34,6 +34,10 @@ export default class Ship extends PhysicalObject2D {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
             },
+            tubes: {
+                type: BaseTypes.TYPES.LIST,
+                itemType: BaseTypes.TYPES.UINT8 // 0=unloaded,n=torp type
+            },
             fuel: { type: BaseTypes.TYPES.INT16 },
             damage: { type: BaseTypes.TYPES.INT32 },
             pdcAngle: { type: BaseTypes.TYPES.FLOAT32 },
@@ -234,5 +238,6 @@ export default class Ship extends PhysicalObject2D {
         this.aiPlan = other.aiPlan;
         this.docked = other.docked;
         this.fuel = other.fuel;
+        this.tubes = other.tubes;
     }
 }

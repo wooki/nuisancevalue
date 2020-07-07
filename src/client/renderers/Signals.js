@@ -220,7 +220,7 @@ export default class SignalsRenderer {
     }
 
     unsetTarget() {
-      client.setTarget(-1);      
+      client.setTarget(-1);
     }
 
     canvasClick(event) {
@@ -337,7 +337,7 @@ export default class SignalsRenderer {
     fireTorp() {
       let objects = this.getPlayerAndSelected();
       if (objects) {
-        client.fireTorp(objects.selectedObj.id);
+        client.fireTorp(objects.selectedObj.id, 0);
       }
     }
 
