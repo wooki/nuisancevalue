@@ -72,6 +72,8 @@ export default class NvGameEngine extends GameEngine {
     // update world objects for engines/gravity etc
     preStep(params) {
 
+        console.time("preStep");
+
         let step = params.step;
         let isReenact = params.isReenact;
         let dt = params.dt;
@@ -272,6 +274,7 @@ export default class NvGameEngine extends GameEngine {
 
         });
 
+        console.timeEnd("preStep");        
     }
 
     registerClasses(serializer) {

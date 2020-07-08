@@ -7,6 +7,14 @@ export default class NvClientEngine extends ClientEngine {
         super(gameEngine, options, NvRenderer);
     }
 
+    start() {
+      super.start();
+
+      this.networkMonitor.on('RTTUpdate', (e) => {
+        console.log(e);
+      });      
+    }
+
     setTarget(objId) {
         this.sendInput("target", { objId: objId });
     }
