@@ -85,7 +85,7 @@ export default class TestMission {
     let asteroidDistance = 20000;
     let asteroidDistanceVariance = 5000;
 
-    for (let asteroidIndex = 0; asteroidIndex < 50; asteroidIndex++) {
+    for (let asteroidIndex = 0; asteroidIndex < 300; asteroidIndex++) {
 
         // create a point and vector then rotate to a random position
         let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
@@ -106,11 +106,13 @@ export default class TestMission {
         game.addAsteroid({
             x: position.x,
             y: position.y,
-            dX: v.x,
-            dY: v.y,
+            // dX: v.x,
+            // dY: v.y,
+            dX: 0,
+            dY: 0,
             mass: (asteroidSize/300), size: asteroidSize,
             angle: Math.random() * 2 * Math.PI,
-            angularVelocity: Math.random() * Math.PI
+            // angularVelocity: Math.random() * Math.PI
         });
     }
   }
