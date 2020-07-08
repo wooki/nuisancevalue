@@ -40,7 +40,7 @@ export default class NvGameEngine extends GameEngine {
             PDC: Math.pow(2, 4)
         });
 
-        this.on('preStep', this.preStep.bind(this));
+        // this.on('preStep', this.preStep.bind(this));
         this.on('playerDisconnected', this.playerDisconnected.bind(this));
 
         this.emitonoff = EmitOnOff();
@@ -126,7 +126,7 @@ export default class NvGameEngine extends GameEngine {
                 }
 
                 // apply current AI
-                this.ai.execute(obj);
+                // this.ai.execute(obj);
 
                 // only certain types have engines
                 if (obj.applyEngine) {

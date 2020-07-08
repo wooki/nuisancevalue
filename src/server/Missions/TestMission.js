@@ -81,38 +81,38 @@ export default class TestMission {
     //     engine: 0
     // });
     //
-    // // random asteroids
-    // let asteroidDistance = 6000;
-    // let asteroidDistanceVariance = 2000;
-    //
-    // for (let asteroidIndex = 0; asteroidIndex < 20; asteroidIndex++) {
-    //
-    //     // create a point and vector then rotate to a random position
-    //     let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
-    //     let position = new Victor(x, 0);
-    //     let asteroidOrbitSpeed = Math.sqrt((SolarObjects.constants.G * 100) / x);
-    //     let v = new Victor(0, 0 - asteroidOrbitSpeed);
-    //
-    //     // rotate degrees
-    //     let r = Math.random() * 359;
-    //     position = position.rotateDeg(r);
-    //     r = Math.random() * 359; // random vector
-    //     v = v.rotateDeg(r);
-    //
-    //     // mass
-    //     let asteroidSize = 200 + (Math.random() * 500);
-    //
-    //     // add an actual asteroid
-    //     game.addAsteroid({
-    //         x: position.x,
-    //         y: position.y,
-    //         dX: v.x,
-    //         dY: v.y,
-    //         mass: (asteroidSize/300), size: asteroidSize,
-    //         angle: Math.random() * 2 * Math.PI,
-    //         angularVelocity: Math.random() * Math.PI
-    //     });
-    // }
+    // random asteroids
+    let asteroidDistance = 10000;
+    let asteroidDistanceVariance = 3000;
+
+    for (let asteroidIndex = 0; asteroidIndex < 100; asteroidIndex++) {
+
+        // create a point and vector then rotate to a random position
+        let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
+        let position = new Victor(x, 0);
+        let asteroidOrbitSpeed = Math.sqrt((SolarObjects.constants.G * 100) / x);
+        let v = new Victor(0, 0 - asteroidOrbitSpeed);
+
+        // rotate degrees
+        let r = Math.random() * 359;
+        position = position.rotateDeg(r);
+        r = Math.random() * 359; // random vector
+        v = v.rotateDeg(r);
+
+        // mass
+        let asteroidSize = 200 + (Math.random() * 500);
+
+        // add an actual asteroid
+        game.addAsteroid({
+            x: position.x,
+            y: position.y,
+            dX: v.x,
+            dY: v.y,
+            mass: (asteroidSize/300), size: asteroidSize,
+            angle: Math.random() * 2 * Math.PI,
+            angularVelocity: Math.random() * Math.PI
+        });
+    }
   }
 
 
