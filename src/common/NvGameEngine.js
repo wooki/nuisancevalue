@@ -78,7 +78,7 @@ export default class NvGameEngine extends GameEngine {
 
         // every 60 steps (every second)
         if ((step % 60) == 0) {
-          this.emit('mission-step', { seconds: step/60, step: step });
+          // this.emit('mission-step', { seconds: step/60, step: step });
         }
 
         // loop world objects once here instead of looping in specific functions
@@ -121,7 +121,7 @@ export default class NvGameEngine extends GameEngine {
                 if (obj.aiScript) {
                   let aiStep = step + obj.id;
                   if ((aiStep % 100) == 0) {
-                    this.emit('ai-plan', { obj: obj });
+                    // this.emit('ai-plan', { obj: obj });
                   }
                 }
 
@@ -270,7 +270,7 @@ export default class NvGameEngine extends GameEngine {
 
             } // not docked or destroyed
 
-        });        
+        });
     }
 
     registerClasses(serializer) {
