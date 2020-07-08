@@ -29,6 +29,42 @@ export default class NvServerEngine extends ServerEngine {
         this.missions = [TestMission, SimpleTestMission, SolarSystem];
     }
 
+    syncStateToClients(roomName) {
+      console.time("syncStateToClients");
+      // update clients only at the specified step interval, as defined in options
+        // or if this room needs to sync
+        const room = this.rooms[roomName];
+        if (room.requestImmediateSync ||
+            this.gameEngine.world.stepCount % this.options.updateRate === 0) {
+
+            const roomPlayers = Object.keys(this.connectedPlayers)
+                .filter(p => this.connectedPlayers[p].roomName === roomName);
+
+            // if at least one player is new, we should send a full payload
+            let diffUpdate = true;
+            for (const socketId of roomPlayers) {
+                const player = this.connectedPlayers[socketId];
+                if (player.state === 'new') {
+                    player.state = 'synced';
+                    diffUpdate = false;
+                }
+            }
+
+            // also, one in N syncs is a full update, or a special request
+            if ((room.syncCounter++ % this.options.fullSyncRate === 0) || room.requestFullSync)
+                diffUpdate = false;
+
+            const payload = this.serializeUpdate(roomName, { diffUpdate });
+            this.gameEngine.trace.info(() => `========== sending world update ${this.gameEngine.world.stepCount} to room ${roomName} is delta update: ${diffUpdate} ==========`);
+            for (const socketId of roomPlayers)
+                this.connectedPlayers[socketId].socket.emit('worldUpdate', payload);
+            this.networkTransmitter.clearPayload();
+            room.requestImmediateSync = false;
+            room.requestFullSync = false;
+        }
+        console.timeEnd("syncStateToClients");
+    }
+
     // remove everything from the game
     clearWorld() {
       try {

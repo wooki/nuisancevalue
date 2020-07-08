@@ -71,13 +71,13 @@ export default class NvGameEngine extends GameEngine {
     }
 
     postStep(params) {
-      console.timeEnd("step");
+      // console.timeEnd("step");
     }
 
     // update world objects for engines/gravity etc
     preStep(params) {
 
-        console.time("step");
+        // console.time("step");
         let step = params.step;
         let isReenact = params.isReenact;
         let dt = params.dt;
