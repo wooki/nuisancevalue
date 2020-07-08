@@ -24,8 +24,8 @@ export default class NvGameEngine extends GameEngine {
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
         this.physicsEngine.world.defaultContactMaterial.friction = 100;
         this.physicsEngine.world.on('impact', this.handleCollision.bind(this));
-        // this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));
-        // this.physicsEngine.world.on('endContact', this.endContact.bind(this));
+        this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));
+        this.physicsEngine.world.on('endContact', this.endContact.bind(this));
         this.collisionUtils = new CollisionUtils(this);
 
         this.damage = new Damage();
@@ -41,6 +41,7 @@ export default class NvGameEngine extends GameEngine {
         });
 
         this.on('preStep', this.preStep.bind(this));
+        this.on('postStep', this.postStep.bind(this));
         this.on('playerDisconnected', this.playerDisconnected.bind(this));
 
         this.emitonoff = EmitOnOff();
@@ -69,9 +70,14 @@ export default class NvGameEngine extends GameEngine {
         }
     }
 
+    postStep(params) {
+      console.timeEnd("step");
+    }
+
     // update world objects for engines/gravity etc
     preStep(params) {
 
+        console.time("step");
         let step = params.step;
         let isReenact = params.isReenact;
         let dt = params.dt;
