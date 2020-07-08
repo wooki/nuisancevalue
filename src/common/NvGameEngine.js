@@ -24,8 +24,8 @@ export default class NvGameEngine extends GameEngine {
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
         this.physicsEngine.world.defaultContactMaterial.friction = 100;
         this.physicsEngine.world.on('impact', this.handleCollision.bind(this));
-        this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));
-        this.physicsEngine.world.on('endContact', this.endContact.bind(this));
+        // this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));
+        // this.physicsEngine.world.on('endContact', this.endContact.bind(this));
         this.collisionUtils = new CollisionUtils(this);
 
         this.damage = new Damage();
@@ -40,7 +40,7 @@ export default class NvGameEngine extends GameEngine {
             PDC: Math.pow(2, 4)
         });
 
-        // this.on('preStep', this.preStep.bind(this));
+        this.on('preStep', this.preStep.bind(this));
         this.on('playerDisconnected', this.playerDisconnected.bind(this));
 
         this.emitonoff = EmitOnOff();
@@ -78,7 +78,7 @@ export default class NvGameEngine extends GameEngine {
 
         // every 60 steps (every second)
         if ((step % 60) == 0) {
-          // this.emit('mission-step', { seconds: step/60, step: step });
+          this.emit('mission-step', { seconds: step/60, step: step });
         }
 
         // loop world objects once here instead of looping in specific functions
@@ -121,12 +121,12 @@ export default class NvGameEngine extends GameEngine {
                 if (obj.aiScript) {
                   let aiStep = step + obj.id;
                   if ((aiStep % 100) == 0) {
-                    // this.emit('ai-plan', { obj: obj });
+                    this.emit('ai-plan', { obj: obj });
                   }
                 }
 
                 // apply current AI
-                // this.ai.execute(obj);
+                this.ai.execute(obj);
 
                 // only certain types have engines
                 if (obj.applyEngine) {

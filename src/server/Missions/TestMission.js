@@ -82,8 +82,8 @@ export default class TestMission {
     // });
     //
     // random asteroids
-    let asteroidDistance = 10000;
-    let asteroidDistanceVariance = 3000;
+    let asteroidDistance = 20000;
+    let asteroidDistanceVariance = 5000;
 
     for (let asteroidIndex = 0; asteroidIndex < 100; asteroidIndex++) {
 
