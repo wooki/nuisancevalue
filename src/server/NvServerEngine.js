@@ -55,7 +55,7 @@ export default class NvServerEngine extends ServerEngine {
                 diffUpdate = false;
 
             const payload = this.serializeUpdate(roomName, { diffUpdate });
-            console.dir(payload);
+            console.log("bytes:"+payload.dataBuffer.byteLength);
             this.gameEngine.trace.info(() => `========== sending world update ${this.gameEngine.world.stepCount} to room ${roomName} is delta update: ${diffUpdate} ==========`);
             for (const socketId of roomPlayers)
                 this.connectedPlayers[socketId].socket.emit('worldUpdate', payload);

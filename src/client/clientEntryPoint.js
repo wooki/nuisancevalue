@@ -9,7 +9,7 @@ import '../css/main.scss';
 // default options, overwritten by query-string options
 // is sent to both game engine and client engine
 const defaults = {
-    traceLevel: Lib.Trace.TRACE_ALL,
+    traceLevel: Lib.Trace.TRACE_WARN,
     delayInputCount: 5,
     scheduler: 'render-schedule',
     syncOptions: {

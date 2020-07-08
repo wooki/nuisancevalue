@@ -10,9 +10,9 @@ export default class NvClientEngine extends ClientEngine {
     start() {
       super.start();
 
-      // this.networkMonitor.on('RTTUpdate', (e) => {
-      //   console.log(e);
-      // });      
+      this.networkMonitor.on('RTTUpdate', (e) => {
+        console.log(e);
+      });
     }
 
     setTarget(objId) {

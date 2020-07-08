@@ -13,17 +13,17 @@ export default class TestMission {
 
   build() {
 
-    game.addPlanet({
-      x: 0,
-      y: 0,
-      dX: 0-100,
-      dY: 0-25,
-      mass: SolarObjects.Mars.mass,
-      size: SolarObjects.Mars.diameter,
-      texture: 'mars',
-      angle: Math.random() * 2 * Math.PI,
-      angularVelocity: Math.random()
-    });
+    // game.addPlanet({
+    //   x: 0,
+    //   y: 0,
+    //   dX: 0-100,
+    //   dY: 0-25,
+    //   mass: SolarObjects.Mars.mass,
+    //   size: SolarObjects.Mars.diameter,
+    //   texture: 'mars',
+    //   angle: Math.random() * 2 * Math.PI,
+    //   angularVelocity: Math.random()
+    // });
 
     let hullName = 'spacebug';
     let hullData = Hulls[hullName];
@@ -39,20 +39,20 @@ export default class TestMission {
         // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
     });
 
-    let hullName2 = 'tug';
-    let hullData2 = Hulls[hullName2];
-    let tug = game.addShip({
-        name: "Target Practice",
-        x: 5000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        hull: hullName2,
-        angle: Math.PI*0.5,
-        // angle: Math.PI*0.5,
-        playable: 0,
-        aiScript: 2
-    });
+    // let hullName2 = 'tug';
+    // let hullData2 = Hulls[hullName2];
+    // let tug = game.addShip({
+    //     name: "Target Practice",
+    //     x: 5000,
+    //     y: 0,
+    //     dX: 0,
+    //     dY: 0,
+    //     hull: hullName2,
+    //     angle: Math.PI*0.5,
+    //     // angle: Math.PI*0.5,
+    //     playable: 0,
+    //     aiScript: 2
+    // });
 
     // setTimeout(function() {
     //
@@ -85,7 +85,7 @@ export default class TestMission {
     let asteroidDistance = 20000;
     let asteroidDistanceVariance = 5000;
 
-    for (let asteroidIndex = 0; asteroidIndex < 100; asteroidIndex++) {
+    for (let asteroidIndex = 0; asteroidIndex < 50; asteroidIndex++) {
 
         // create a point and vector then rotate to a random position
         let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
