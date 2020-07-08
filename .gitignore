@@ -1,3 +1,4 @@
+tmp/
 dist/
 dist-server/
 .DS_Store
