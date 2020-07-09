@@ -28,6 +28,7 @@ export default class Asteroid extends PhysicalObject2D {
             radius: Math.floor(this.size / 2),
             collisionGroup: game.ASTEROID,
             // collisionMask: game.SHIP | game.PLANET | game.TORPEDO | game.PDC
+            // having too many things on the map that can collide massively effects the performance
             collisionMask: game.SHIP | game.PLANET | game.ASTEROID | game.TORPEDO | game.PDC
             // collisionMask: game.SHIP // don't collide with other asteroids or planets
         });

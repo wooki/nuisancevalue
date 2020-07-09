@@ -24,9 +24,12 @@ const io = socketIO(requestHandler);
 // Game Instances
 const gameEngine = new NvGameEngine({ traceLevel: Lib.Trace.TRACE_WARN });
 const serverEngine = new NvServerEngine(io, gameEngine, {
-	updateRate: 6,
+	updateRate: 12,
 	stepRate: 60,
-	fullSyncRate: 20,
+	fullSyncRate: 60,
+	// updateRate: 6,
+	// stepRate: 60,
+	// fullSyncRate: 20,
 	timeoutInterval: 1200,
 	debug: {
         serverSendLag: true
