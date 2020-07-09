@@ -13,31 +13,35 @@ export default class TestMission {
 
   build() {
 
-    // game.addPlanet({
-    //   x: 0,
-    //   y: 0,
-    //   dX: 0-100,
-    //   dY: 0-25,
-    //   mass: SolarObjects.Mars.mass,
-    //   size: SolarObjects.Mars.diameter,
-    //   texture: 'mars',
-    //   angle: Math.random() * 2 * Math.PI,
-    //   angularVelocity: Math.random()
-    // });
-
-    let hullName = 'spacebug';
-    let hullData = Hulls[hullName];
-    let nv = game.addShip({
-        name: "Spacebug 1",
-        x: 3000,
-        y: 3000,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI,
-        playable: 1
-        // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
+    let mars = game.addPlanet({
+      x: 20000,
+      y: 0,
+      dX: 0,
+      dY: 0,
+      mass: SolarObjects.Mars.mass,
+      size: SolarObjects.Mars.diameter,
+      texture: 'mars',
+      angle: Math.random() * 2 * Math.PI,
+      angularVelocity: Math.random()
     });
+
+    for (let i = 0; i < 10; i++) {
+      let hullName = 'spacebug';
+      let hullData = Hulls[hullName];
+      let nv = game.addShip({
+          name: "Spacebug "+i,
+          x: -3000 + (Math.random() * 6000),
+          y: -3000 + (Math.random() * 6000),
+          dX: 0,
+          dY: 0,
+          hull: hullName,
+          angle: Math.PI,
+          playable: (i == 0 ? 1 : 0),
+          aiScript: (i == 0 ? 0 : 2),
+          targetId: mars.id
+          // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
+      });
+    }
 
     // let hullName2 = 'tug';
     // let hullData2 = Hulls[hullName2];

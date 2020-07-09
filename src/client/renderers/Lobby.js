@@ -155,10 +155,13 @@ export default class LobbyRenderer {
       let station = false;
       let shipIds = {};
 
-    	let ships = game.world.forEachObject((objId, obj) => {
+      // let ships = game.world.forEachObject((objId, obj) => {
+      for (let objId of Object.keys(game.world.objects)) {
+        let obj = game.world.objects[objId];
 
     		if (obj instanceof Ship) {
           if (obj.playable === 1) {
+            console.info("SHIP:"+obj.name);
             this.addShip(obj);
             shipIds[objId] = true;
 
@@ -195,7 +198,8 @@ export default class LobbyRenderer {
             });
           }
 	    	}
-    	});
+      }
+    	// });
 
       // remove any we didn't see
       Object.keys(this.shipEls).forEach((key) => {
