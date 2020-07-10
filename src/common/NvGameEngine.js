@@ -1,6 +1,7 @@
 import { GameEngine, P2PhysicsEngine, TwoVector } from 'lance-gg';
 import { Ray, RaycastResult } from 'p2';
 import Ship from './Ship';
+import PlayableShip from './PlayableShip';
 import Asteroid from './Asteroid';
 import Planet from './Planet';
 import Torpedo from './Torpedo';
@@ -280,11 +281,12 @@ export default class NvGameEngine extends GameEngine {
     }
 
     registerClasses(serializer) {
-        serializer.registerClass(Ship);
-        serializer.registerClass(Asteroid);
-        serializer.registerClass(Planet);
-        serializer.registerClass(Torpedo);
-        serializer.registerClass(PDC);
+      serializer.registerClass(Ship);
+      serializer.registerClass(PlayableShip);
+      serializer.registerClass(Asteroid);
+      serializer.registerClass(Planet);
+      serializer.registerClass(Torpedo);
+      serializer.registerClass(PDC);
     }
 
     // finds the player (optionally in a specific role)
@@ -549,13 +551,24 @@ export default class NvGameEngine extends GameEngine {
 
         let hullData = Hulls[params['hull']];
 
-        // name, x, y, dX, dY, mass, hull, size, angle
-        let s = new Ship(this, {}, {
-            mass: params['mass'] || hullData.mass, angularVelocity: 0,
-            position: new TwoVector(params['x'], params['y']),
-            velocity: new TwoVector(params['dX'], params['dY']),
-            angle: params['angle']
-        });
+        let s = null;
+
+        if (params['playable']) {
+          s = new PlayableShip(this, {}, {
+              mass: params['mass'] || hullData.mass, angularVelocity: 0,
+              position: new TwoVector(params['x'], params['y']),
+              velocity: new TwoVector(params['dX'], params['dY']),
+              angle: params['angle']
+          });
+        } else {
+          s = new Ship(this, {}, {
+              mass: params['mass'] || hullData.mass, angularVelocity: 0,
+              position: new TwoVector(params['x'], params['y']),
+              velocity: new TwoVector(params['dX'], params['dY']),
+              angle: params['angle']
+          });
+        }
+
         s.engine = params['engine'];
         s.name = params['name'];
         s.hull = params['hull'];
@@ -566,7 +579,6 @@ export default class NvGameEngine extends GameEngine {
         s.engineerPlayerId = 0;
         s.signalsPlayerId = 0;
         s.waypoints = [];
-        s.playable = params['playable'] || 0;
         s.commsScript = params['commsScript'] || 0;
         s.dockedCommsScript = params['dockedCommsScript'] || 0;
         s.commsState = params['commsState'] || 0;
