@@ -24,8 +24,8 @@ export default class NvGameEngine extends GameEngine {
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
         // this.physicsEngine.world.defaultContactMaterial.friction = 100;
         this.physicsEngine.world.on('impact', this.handleCollision.bind(this));
-        // this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));
-        // this.physicsEngine.world.on('endContact', this.endContact.bind(this));
+        this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));
+        this.physicsEngine.world.on('endContact', this.endContact.bind(this));
         this.collisionUtils = new CollisionUtils(this);
 
         this.ai = new Ai(this);
@@ -93,7 +93,7 @@ export default class NvGameEngine extends GameEngine {
 
               console.info("UNDEFINED OBJ FOUND IN WORLD");
 
-            } else if (obj.damage && ((obj.damage & this.damage.DESTROYED) > 0)) {
+            } else if (obj.damage && obj.damage >= obj.getMaxDamage()) {
 
               // remove players
               this.helmPlayerId = -1;

@@ -201,4 +201,18 @@ export default class Systems {
     }
   }
 
+  getStandardSystems() {
+    return {
+      SYS_SENSORS: SYS_SENSORS,
+      SYS_ENGINE: SYS_ENGINE,
+      SYS_MANEUVER: SYS_MANEUVER,
+      SYS_TORPS: SYS_TORPS,
+      SYS_PDC: SYS_PDC,
+      SYS_LIFE: SYS_LIFE,
+      SYS_CONSOLES: SYS_CONSOLES,
+      SYS_NAV: SYS_NAV,
+      SYS_RELOAD: SYS_RELOAD
+    };
+  }
+
 }

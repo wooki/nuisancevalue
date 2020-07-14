@@ -53,6 +53,15 @@ export default class Ship extends PhysicalObject2D {
       return Hulls[this.hull];
     }
 
+    // based on hull size
+    getMaxDamage() {
+      let hull = this.getHullData();
+      if (this.damage > 0) {
+        console.log("damage:"+(this.name||this.hull)+":"+this.damage);
+      }
+      return Math.floor((hull.size * hull.size * hull.width) / 50);
+    }
+
     // if the ship has active engines then apply force
     applyEngine() {
         let hullData = Hulls[this.hull];
@@ -169,7 +178,7 @@ export default class Ship extends PhysicalObject2D {
           game.removeObjectFromWorld(this.pdc);
         }
 
-        if (this.damage && ((this.damage | this.damage.DESTROYED) > 0)) {
+        if (this.damage && this.damage >= this.getMaxDamage()) {
 
           // was destroyed, so tell the UI
           gameEngine.emitonoff.emit('explosion', this);

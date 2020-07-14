@@ -25,7 +25,7 @@ export default class TestMission {
       angularVelocity: Math.random()
     });
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 8; i++) {
       let hullName = 'spacebug';
       let hullData = Hulls[hullName];
       let nv = game.addShip({
@@ -89,7 +89,7 @@ export default class TestMission {
     let asteroidDistance = 20000;
     let asteroidDistanceVariance = 5000;
 
-    for (let asteroidIndex = 0; asteroidIndex < 300; asteroidIndex++) {
+    for (let asteroidIndex = 0; asteroidIndex < 180; asteroidIndex++) {
 
         // create a point and vector then rotate to a random position
         let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);

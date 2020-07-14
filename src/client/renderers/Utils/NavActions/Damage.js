@@ -1,4 +1,3 @@
-import {default as GameDamage} from '../../../../common/Damage';
 import Hulls from '../../../../common/Hulls';
 import Ship from '../../../../common/Ship';
 
@@ -20,34 +19,13 @@ export default class Damage {
 
       if (obj instanceof Ship) {
 
-				let gd = new GameDamage();
-				let hullSystems = Hulls[obj.hull].damage;
-
-				// read damage from ship
+				// calc percentage
+				let maxDamage = obj.getMaxDamage();
 				let d = obj.damage;
+				let pecent = Math.floor((d/maxDamage) * 100);
 
 				// display a damage report
-        log.innerHTML = log.innerHTML + "\nDamage Report:";
-
-				// check each system we could have
-				for(let i = 0; i < gd.SEVERE_DAMAGE.length; i++) {
-						if (hullSystems & gd.SEVERE_DAMAGE[i]) { // could have it
-								let status = 'OK';
-								if (d & gd.SEVERE_DAMAGE[i]) { // could have it
-									status = 'FAIL';
-									log.innerHTML = log.innerHTML + "\n"+gd.DAMAGE_NAMES[gd.SEVERE_DAMAGE[i]]+": "+status;
-								}
-						}
-				}
-				for(let i = 0; i < gd.LIGHT_DAMAGE.length; i++) {
-					if (hullSystems & gd.LIGHT_DAMAGE[i]) { // could have it
-							let status = 'OK';
-							if (d & gd.LIGHT_DAMAGE[i]) { // could have it
-								status = 'FAIL';
-								log.innerHTML = log.innerHTML + "\n"+gd.DAMAGE_NAMES[gd.LIGHT_DAMAGE[i]]+": "+status;
-							}
-					}
-				}
+        log.innerHTML = log.innerHTML + "\nHull Integrity: "+percent+"%";
 
 
 

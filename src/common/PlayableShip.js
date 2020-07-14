@@ -84,7 +84,7 @@ export default class PlayableShip extends Ship {
           game.removeObjectFromWorld(this.pdc);
         }
 
-        if (this.damage && ((this.damage | this.damage.DESTROYED) > 0)) {
+        if (this.damage && this.damage >= this.getMaxDamage()) {
 
           // remove players
           this.helmPlayerId = -1;

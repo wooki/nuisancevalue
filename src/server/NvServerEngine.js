@@ -13,10 +13,6 @@ import SolarSystem from './Missions/SolarSystem';
 import TestMission from './Missions/TestMission';
 import SimpleTestMission from './Missions/SimpleTestMission';
 
-// 1 major damage for every 200, 1 minor damage for every 40 (left over)
-const severeDamageThreshold = 200;
-const lightDamageThreshold = 40;
-
 export default class NvServerEngine extends ServerEngine {
 
     constructor(io, gameEngine, inputOptions) {
@@ -27,43 +23,6 @@ export default class NvServerEngine extends ServerEngine {
         this.lastMissionSeconds = 0;
         this.missionSecondsOffset = 0;
         this.missions = [TestMission, SimpleTestMission, SolarSystem];
-    }
-
-    syncStateToClients(roomName) {
-      console.time("syncStateToClients");
-      // update clients only at the specified step interval, as defined in options
-        // or if this room needs to sync
-        const room = this.rooms[roomName];
-        if (room.requestImmediateSync ||
-            this.gameEngine.world.stepCount % this.options.updateRate === 0) {
-
-            const roomPlayers = Object.keys(this.connectedPlayers)
-                .filter(p => this.connectedPlayers[p].roomName === roomName);
-
-            // if at least one player is new, we should send a full payload
-            let diffUpdate = true;
-            for (const socketId of roomPlayers) {
-                const player = this.connectedPlayers[socketId];
-                if (player.state === 'new') {
-                    player.state = 'synced';
-                    diffUpdate = false;
-                }
-            }
-
-            // also, one in N syncs is a full update, or a special request
-            if ((room.syncCounter++ % this.options.fullSyncRate === 0) || room.requestFullSync)
-                diffUpdate = false;
-
-            const payload = this.serializeUpdate(roomName, { diffUpdate });
-            console.log("bytes:"+payload.dataBuffer.byteLength);
-            this.gameEngine.trace.info(() => `========== sending world update ${this.gameEngine.world.stepCount} to room ${roomName} is delta update: ${diffUpdate} ==========`);
-            for (const socketId of roomPlayers)
-                this.connectedPlayers[socketId].socket.emit('worldUpdate', payload);
-            this.networkTransmitter.clearPayload();
-            room.requestImmediateSync = false;
-            room.requestFullSync = false;
-        }
-        console.timeEnd("syncStateToClients");
     }
 
     // remove everything from the game
@@ -157,7 +116,7 @@ export default class NvServerEngine extends ServerEngine {
 
             // this.gameEngine.emit('damage', { ship: A, payload: acceleration, collision: e });
             let A = e.ship;
-            let acceleration = e.payload;
+            let payload = e.payload;
 
             // only ships take damage at the moment
             if (A instanceof Ship) {
@@ -172,23 +131,14 @@ export default class NvServerEngine extends ServerEngine {
               // console.log("Contact Eq normalA:");
               // console.dir(e.contactEquations[0].normalA);
 
-              const hullData = Hulls[A.hull];
-              const severe = Math.floor(acceleration / severeDamageThreshold);
-              const light = Math.floor((acceleration % severeDamageThreshold) / lightDamageThreshold);
-              if (light > 0 || severe > 0) {
-                const d = this.damage.getRandomDamage(light, severe, hullData.damage);
-                A.damage = A.damage | d
-              }
-              // every major & minor damage adds to a % chance of destruction
-              const destructionChance = ((severe * 0.1) + (light * 0.02));
-              const randomDestruction = Math.random();
-              if (randomDestruction < destructionChance) {
-                A.damage = A.damage | this.damage.DESTROYED;
-              }
+              // const hullData = A.hullData();
+              // const maxDamage = a.getMaxDamage();
+              A.damage = A.damage + payload;
+
             } else if (A instanceof Asteroid) {
 
               let splitChance = 0.1;
-              if (acceleration >= A.size) {
+              if (payload >= A.size) {
                 splitChance = 0.8;
               }
 
@@ -206,7 +156,7 @@ export default class NvServerEngine extends ServerEngine {
               let asteroid1Pos = Victor.fromObject(A.position);
               asteroid1Pos.add(randomVector);
               let asteroid1Vel = Victor.fromObject(A.velocity);
-              asteroid1Vel.add(randomVector.clone().normalize().multiply(new Victor(acceleration, acceleration)));
+              asteroid1Vel.add(randomVector.clone().normalize().multiply(new Victor(payload, payload)));
               let asteroid1size = A.size * 0.4;
 
               if (asteroid1size > 100) {

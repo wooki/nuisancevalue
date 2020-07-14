@@ -3,13 +3,13 @@ import Torpedo from '../common/Torpedo';
 import Planet from '../common/Planet';
 import Hulls from '../common/Hulls';
 import Victor from 'victor';
-import Damage from '../common/Damage';
+// import Systems from '../common/Systems';
 
 export default class CollisionUtils {
 
     constructor(gameEngine) {
       this.gameEngine = gameEngine;
-      this.damage = new Damage();
+      // this.damage = new Damage();
     }
 
     // identify the two objects which collided
@@ -41,7 +41,7 @@ export default class CollisionUtils {
 
         // if this keeps track of damage then destroy it
         if (B.damage || B.damage === 0) {
-          B.damage = B.damage | this.damage.DESTROYED;
+          this.assignDamageToObject(B, B.getMaxDamage(), e);
         } else {
           // anything else hitting a planet is auto-destroyed
           this.gameEngine.removeObjectFromWorld(B);
@@ -54,7 +54,7 @@ export default class CollisionUtils {
 
         // if this keeps track of damage then destroy it
         if (A.damage || A.damage === 0) {
-          A.damage = A.damage | this.damage.DESTROYED;
+          this.assignDamageToObject(A, A.getMaxDamage(), e);
         } else {
           // anything else hitting a planet is auto-destroyed
           this.gameEngine.removeObjectFromWorld(A);

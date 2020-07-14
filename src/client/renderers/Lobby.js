@@ -25,7 +25,7 @@ export default class LobbyRenderer {
       title.innerHTML = 'Nuisance Value Lobby';
       el.append(title);
 
-      let missions = ['Load Test Mission', 'Simple Test Mission', 'Load Solar System'];
+      let missions = ['Asteroid Test', 'Target Test', 'Solar System'];
       let missionsEl = document.createElement('div');
       missionsEl.classList.add('missions');
       el.append(missionsEl);
@@ -161,7 +161,6 @@ export default class LobbyRenderer {
 
     		if (obj instanceof Ship) {
           if (obj.playable === 1) {
-            console.info("SHIP:"+obj.name);
             this.addShip(obj);
             shipIds[objId] = true;
 
