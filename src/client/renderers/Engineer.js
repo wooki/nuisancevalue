@@ -42,7 +42,7 @@ export default class EngineerRenderer extends CompositeRenderer {
             width: 400,
             height: 400,
             zIndex: 1,
-            mapSize: 4000
+            mapSize: 6000
           }),
           new LocalMap({
             x: fullWidth - (400 + margin),
@@ -50,7 +50,7 @@ export default class EngineerRenderer extends CompositeRenderer {
             width: 400,
             height: 400,
             zIndex: 2,
-            mapSize: 4000
+            mapSize: 6000
           }),
           new LocalMapHud({
             x: fullWidth - (400 + margin),
@@ -58,7 +58,7 @@ export default class EngineerRenderer extends CompositeRenderer {
             width: 400,
             height: 400,
             zIndex: 3,
-            mapSize: 4000,
+            mapSize: 6000,
             arrowSize: 10,
             arrowMargin: 6,
             dialSmallDividerSize: 2,

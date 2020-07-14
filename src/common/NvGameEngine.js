@@ -10,7 +10,6 @@ import Victor from 'victor';
 import SolarObjects from './SolarObjects';
 import Hulls from './Hulls';
 import Comms from './Comms';
-import Damage from '../common/Damage';
 import EmitOnOff from 'emitonoff';
 import CollisionUtils from './CollisionUtils';
 import Ai from './Ai';
@@ -29,7 +28,6 @@ export default class NvGameEngine extends GameEngine {
         // this.physicsEngine.world.on('endContact', this.endContact.bind(this));
         this.collisionUtils = new CollisionUtils(this);
 
-        this.damage = new Damage();
         this.ai = new Ai(this);
 
         // game variables

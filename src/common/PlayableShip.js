@@ -43,7 +43,7 @@ export default class PlayableShip extends Ship {
                 itemType: BaseTypes.TYPES.UINT8 // 0=unloaded,n=torp type
             },
             fuel: { type: BaseTypes.TYPES.INT16 },
-            damage: { type: BaseTypes.TYPES.INT32 },
+            damage: { type: BaseTypes.TYPES.INT16 },
             pdcAngle: { type: BaseTypes.TYPES.FLOAT32 },
             pdcState: { type: BaseTypes.TYPES.UINT8 } //0=off,1=active,2=firing
         }, super.netScheme);
