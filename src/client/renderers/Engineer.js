@@ -2,13 +2,7 @@ import CompositeRenderer from './Composite';
 import LocalMapBackground from './SubRenderers/LocalMapBackground';
 import LocalMap from './SubRenderers/LocalMap';
 import LocalMapHud from './SubRenderers/LocalMapHud';
-import EngineControl from './SubRenderers/EngineControl';
-import ManeuverControl from './SubRenderers/ManeuverControl';
-import DockingControl from './SubRenderers/DockingControl';
-import HudData from './SubRenderers/HudData';
-import LocalMapPaths from './SubRenderers/LocalMapPaths';
-import ZoomControl from './SubRenderers/ZoomControl';
-import TargetSelection from './SubRenderers/TargetSelection';
+import PowerGrid from './SubRenderers/PowerGrid';
 
 // extend compsite with pre-set subrenderers
 export default class EngineerRenderer extends CompositeRenderer {
@@ -34,7 +28,7 @@ export default class EngineerRenderer extends CompositeRenderer {
         station: 'engineer',
         stationProperty: 'engineerPlayerId',
         baseUrl: '/',
-        dashboardColor: 0xCC00CC,
+        dashboardColor: 0x990000,
         subRenderers: [
           new LocalMapBackground({
             x: fullWidth - (400 + margin),
@@ -64,7 +58,14 @@ export default class EngineerRenderer extends CompositeRenderer {
             dialSmallDividerSize: 2,
             dialLargeDividerSize: 5,
             dialFontSize: 7
-          })
+          }),
+          new PowerGrid({
+            x: margin,
+            y: margin,
+            width: fullWidth - (400 + marginFull + margin),
+            height: (fullHeight*0.66) - marginFull,
+            zIndex: 4
+          }),
         ]
       };
 

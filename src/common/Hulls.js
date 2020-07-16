@@ -3,6 +3,7 @@ import {default as Systems} from './Systems';
 // bitwise stuff
 const systems = new Systems();
 const STANDARD_SYSTEMS = systems.getStandardSystems();
+const STANDARD_SYSTEMS_LAYOUT = systems.getSystemLayout();
 
 // some reference data for ships we can use in game
 export default {
@@ -22,7 +23,8 @@ export default {
 			size: 1000
 		},
 		fuel: 10000,
-		systems: STANDARD_SYSTEMS // this is a bit encoded set of valid systems that CAN BE damaged
+		systems: STANDARD_SYSTEMS, // this is a bit encoded set of valid systems that CAN BE damaged
+		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},
 
 	"tug": {
@@ -36,7 +38,8 @@ export default {
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		fuel: 10000,
-		systems: STANDARD_SYSTEMS
+		systems: STANDARD_SYSTEMS,
+		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},
 
 	"torpedo": {
@@ -68,7 +71,8 @@ export default {
 			size: 1000
 		},
 		fuel: 10000,
-		systems: STANDARD_SYSTEMS // this is a bit encoded set of valid systems that CAN BE damaged
+		systems: STANDARD_SYSTEMS,
+		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},
 
 	"blockade-runner": {
@@ -82,7 +86,8 @@ export default {
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		fuel: 10000,
-		systems: STANDARD_SYSTEMS
+		systems: STANDARD_SYSTEMS,
+		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},
 
 	"station": {
@@ -93,7 +98,8 @@ export default {
 		thrust: 0,
 		maneuver: 0,
 		mass: 0.1,
-		damage: STANDARD_SYSTEMS,
+		systems: STANDARD_SYSTEMS,
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		fuel: 10000,
 		dockable: true
 	}

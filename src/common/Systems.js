@@ -10,7 +10,7 @@ const CONNECTOR_NSEW = 7; // NORTH-SOUTH and EAST-WEST
 
 // grid of connectors
 const COLS = 30;
-const ROWS = 5;
+const ROWS = 8;
 
 // list of systems - can use mitmask to signal if they have power or not
 const SYS_SENSORS = Math.pow(2, 1);
@@ -213,6 +213,37 @@ export default class Systems {
       SYS_NAV: SYS_NAV,
       SYS_RELOAD: SYS_RELOAD
     };
+  }
+
+  getSystemLayout() {
+    return SYSTEMS;
+  }
+
+  getGridSize() {
+    return [COLS, ROWS];
+  }
+
+  getSystemName(currentSystem) {
+    switch (currentSystem) {
+      case SYS_SENSORS:
+        return "SENSORS";
+      case SYS_ENGINE:
+        return "ENGINE";
+      case SYS_MANEUVER:
+        return "MANEUVER";
+      case SYS_TORPS:
+        return "TORPEDOES";
+      case SYS_PDC:
+        return "PDC";
+      case SYS_LIFE:
+        return "LIFE SUPPORT";
+      case SYS_CONSOLES:
+        return "DISPLAYS";
+      case SYS_NAV:
+        return "NAV COM";
+      case SYS_RELOAD:
+        return "RELOADERS";
+    }
   }
 
 }

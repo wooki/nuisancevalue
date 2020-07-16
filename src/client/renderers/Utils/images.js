@@ -20,7 +20,9 @@ module.exports = {
 		space: 'assets/space.png',
 		black: 'assets/black.png',
 		exhaust: 'assets/exhaust.json',
-		exhaustflame: 'assets/exhaustflame.json'
+		exhaustflame: 'assets/exhaustflame.json',
+		powergridBackground: 'assets/powergrid.jpg',
+		powerlines: 'assets/powerlines.json'		
 	},
 	Colors: {
 		Black: 0x000000,
@@ -42,6 +44,17 @@ module.exports = {
 			uranus: 0xcef4f5,
 			neptune: 0x3e59d8,
 			pluto: 0xdbcebb
+		},
+		Systems: {
+			2: 0xFF0000,
+			4: 0x00FF00,
+			8: 0x3333FF,
+			16: 0xCC3300,
+			32: 0x00CC33,
+			64: 0x6600FF,
+			128: 0xFF00CC,
+			256: 0xCCFF00,
+			512: 0x00CCFF,
 		}
 	},
 	Fonts: {

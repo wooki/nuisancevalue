@@ -431,7 +431,6 @@ if (obj.hull == "torpedo") console.log(exhaustSprite.width+","+exhaustSprite.hei
     // create the engine sprite
     if (hullData.enginePositions) {
       let exhaustSheet = this.resources[this.parameters.baseUrl+Assets.Images[hullData.exhaustImage]].spritesheet;
-((0 - width) / 2) +
       hullData.enginePositions.forEach(function(e, i) {
         let exhaust = new PIXI.AnimatedSprite(exhaustSheet.animations[hullData.exhaustImage]);
         exhaust.width = 0;

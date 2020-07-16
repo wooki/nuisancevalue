@@ -1,6 +1,7 @@
 import { PhysicalObject2D, BaseTypes, TwoVector } from 'lance-gg';
 import Hulls from './Hulls';
 import Ship from './Ship';
+import Systems from './Systems';
 
 let game = null;
 
@@ -9,6 +10,9 @@ export default class PlayableShip extends Ship {
     constructor(gameEngine, options, props) {
       super(gameEngine, options, props);
       this.playable = 1;
+
+      let systems = new Systems();
+      this.power = systems.pack();
     }
 
     static get netScheme() {
@@ -41,6 +45,10 @@ export default class PlayableShip extends Ship {
             tubes: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.UINT8 // 0=unloaded,n=torp type
+            },
+            power: {
+                type: BaseTypes.TYPES.LIST,
+                itemType: BaseTypes.TYPES.INT16
             },
             fuel: { type: BaseTypes.TYPES.INT16 },
             damage: { type: BaseTypes.TYPES.INT16 },
