@@ -3,6 +3,8 @@ import Asteroid from '../common/Asteroid';
 import Torpedo from '../common/Torpedo';
 import PDC from '../common/PDC';
 import Ship from '../common/Ship';
+import PlayableShip from '../common/PlayableShip';
+import Systems from '../common/Systems';
 import Planet from '../common/Planet';
 import Hulls from '../common/Hulls';
 import SolarObjects from '../common/SolarObjects';
@@ -134,6 +136,23 @@ export default class NvServerEngine extends ServerEngine {
               // const hullData = A.hullData();
               // const maxDamage = a.getMaxDamage();
               A.damage = A.damage + payload;
+
+              // playable ship also take damage to power grid
+              if (A instanceof PlayableShip) {
+                A.grid = new Systems();
+                A.grid.unpack(A.power);
+
+                // add some damage
+                let powergridHits = Math.floor(payload / 33);
+                for (let i = 0; i < powergridHits; i++) {
+                  let gridSize = A.grid.getGridSize();
+                  let damageRow = Math.floor(gridSize[0] * Math.random());
+                  let damageCol = Math.floor(gridSize[1] * Math.random());
+                  A.grid.setConnector(damageRow, damageCol, 0);
+                }
+
+                A.power = A.grid.pack();
+              }
 
             } else if (A instanceof Asteroid) {
 

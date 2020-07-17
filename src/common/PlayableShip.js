@@ -133,5 +133,6 @@ export default class PlayableShip extends Ship {
         this.docked = other.docked;
         this.fuel = other.fuel;
         this.tubes = other.tubes;
+        this.power = other.power;
     }
 }

@@ -56,9 +56,6 @@ export default class Ship extends PhysicalObject2D {
     // based on hull size
     getMaxDamage() {
       let hull = this.getHullData();
-      if (this.damage > 0) {
-        console.log("damage:"+(this.name||this.hull)+":"+this.damage);
-      }
       return Math.floor((hull.size * hull.size * hull.width) / 50);
     }
 
