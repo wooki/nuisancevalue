@@ -39,25 +39,25 @@ const SYSTEMS = [
 // based on entry side and connector - get updated grid position
 let CONNECTOR_WALK = {};
 CONNECTOR_WALK['S'] = {};
-CONNECTOR_WALK['S'][CONNECTOR_NS] = [0, -1, 'S'];
-CONNECTOR_WALK['S'][CONNECTOR_SE] = [1, 0, 'W'];
-CONNECTOR_WALK['S'][CONNECTOR_SW] = [-1, 0, 'E'];
-CONNECTOR_WALK['S'][CONNECTOR_NSEW] = [0, -1, 'S'];
+CONNECTOR_WALK['S'][CONNECTOR_NS] = [-1, 0, 'S'];
+CONNECTOR_WALK['S'][CONNECTOR_SE] = [0, 1, 'W'];
+CONNECTOR_WALK['S'][CONNECTOR_SW] = [0, -1, 'E'];
+CONNECTOR_WALK['S'][CONNECTOR_NSEW] = [-1, 0, 'S'];
 CONNECTOR_WALK['N'] = {};
-CONNECTOR_WALK['N'][CONNECTOR_NS] = [0, 1, 'N'];
-CONNECTOR_WALK['N'][CONNECTOR_NE] = [1, 0, 'W'];
-CONNECTOR_WALK['N'][CONNECTOR_NW] = [-1, 0, 'E'];
-CONNECTOR_WALK['N'][CONNECTOR_NSEW] = [0, 1, 'N'];
+CONNECTOR_WALK['N'][CONNECTOR_NS] = [1, 0, 'N'];
+CONNECTOR_WALK['N'][CONNECTOR_NE] = [0, 1, 'W'];
+CONNECTOR_WALK['N'][CONNECTOR_NW] = [0, -1, 'E'];
+CONNECTOR_WALK['N'][CONNECTOR_NSEW] = [1, 0, 'N'];
 CONNECTOR_WALK['E'] = {};
-CONNECTOR_WALK['E'][CONNECTOR_EW] = [-1, 0, 'E'];
-CONNECTOR_WALK['E'][CONNECTOR_NE] = [0, -1, 'S'];
-CONNECTOR_WALK['E'][CONNECTOR_SE] = [0, 1, 'N'];
-CONNECTOR_WALK['E'][CONNECTOR_NSEW] = [-1, 0, 'E'];
+CONNECTOR_WALK['E'][CONNECTOR_EW] = [0, -1, 'E'];
+CONNECTOR_WALK['E'][CONNECTOR_NE] = [-1, 0, 'S'];
+CONNECTOR_WALK['E'][CONNECTOR_SE] = [1, 0, 'N'];
+CONNECTOR_WALK['E'][CONNECTOR_NSEW] = [0, -1, 'E'];
 CONNECTOR_WALK['W'] = {};
-CONNECTOR_WALK['W'][CONNECTOR_EW] = [1, 0, 'W'];
-CONNECTOR_WALK['W'][CONNECTOR_NW] = [0, -1, 'S'];
-CONNECTOR_WALK['W'][CONNECTOR_SW] = [0, 1, 'N'];
-CONNECTOR_WALK['W'][CONNECTOR_NSEW] = [1, 0, 'W'];
+CONNECTOR_WALK['W'][CONNECTOR_EW] = [0, 1, 'W'];
+CONNECTOR_WALK['W'][CONNECTOR_NW] = [-1, 0, 'S'];
+CONNECTOR_WALK['W'][CONNECTOR_SW] = [1, 0, 'N'];
+CONNECTOR_WALK['W'][CONNECTOR_NSEW] = [0, 1, 'W'];
 
 // ship systems and how the are connected to the reactor
 // connectiosn represented by a list of int16s that are packed/unpacked with
@@ -141,8 +141,16 @@ export default class Systems {
   followConnection(position, entry) {
 
     // have we reached the reactor?
-    if (position[1] < 0) {
+    if (position[0] < 0) {
       return 1;
+    }
+
+    if (position[0] > CONNECTOR_NSEW) {
+      return 0; // feed back into a system
+    }
+
+    if (position[1] < 0 || position[1] > (COLS - 1)) {
+      return 0; // off the edge
     }
 
     // get the connector at current position
@@ -177,7 +185,7 @@ export default class Systems {
       if (SYSTEMS[i] == system) {
 
         // start at bottom row
-        let position = [i, ROWS - 1];
+        let position = [ROWS - 1, i];
         let connector = this.grid[position[0]][position[1]];
 
         // must have connection SOUTH to be connected
@@ -201,6 +209,10 @@ export default class Systems {
     }
   }
 
+  getConnector(row, col) {
+    return this.grid[row][col];
+  }
+
   getStandardSystems() {
     return {
       SYS_SENSORS: SYS_SENSORS,
@@ -220,7 +232,7 @@ export default class Systems {
   }
 
   getGridSize() {
-    return [COLS, ROWS];
+    return [ROWS, COLS];
   }
 
   getSystemName(currentSystem) {
@@ -236,13 +248,42 @@ export default class Systems {
       case SYS_PDC:
         return "PDC";
       case SYS_LIFE:
-        return "LIFE SUPPORT";
+        return "LIFE\nSUPPORT";
       case SYS_CONSOLES:
-        return "DISPLAYS";
+        return "SCREENS";
       case SYS_NAV:
         return "NAV COM";
       case SYS_RELOAD:
         return "RELOADERS";
+    }
+  }
+
+  // checks the system has required connections - some scale, some are binary
+  getEfficiency(sys) {
+    let currentPower = this.isPowered(sys);
+    switch (sys) {
+      case SYS_SENSORS:
+        return (currentPower / 4);
+      case SYS_ENGINE:
+        let engPercent = (currentPower / 4);
+        if (engPercent > 1) engPercent = 1;
+        return engPercent;
+      case SYS_MANEUVER:
+        let manPercent = (currentPower / 2);
+        if (manPercent > 1) manPercent = 1;
+        return manPercent;
+      case SYS_TORPS:
+        return (currentPower > 0);
+      case SYS_PDC:
+        return (currentPower > 0);
+      case SYS_LIFE:
+        return (currentPower > 0);
+      case SYS_CONSOLES:
+        return (currentPower > 0);
+      case SYS_NAV:
+        return (currentPower > 0);
+      case SYS_RELOAD:
+        return (currentPower > 0);
     }
   }
 

@@ -13,6 +13,7 @@ import Comms from './Comms';
 import EmitOnOff from 'emitonoff';
 import CollisionUtils from './CollisionUtils';
 import Ai from './Ai';
+import Systems from './Systems';
 
 let gravityObjects = {};
 
@@ -29,6 +30,7 @@ export default class NvGameEngine extends GameEngine {
         this.collisionUtils = new CollisionUtils(this);
 
         this.ai = new Ai(this);
+        this.systems = new Systems();
 
         // game variables
         Object.assign(this, {
@@ -40,7 +42,7 @@ export default class NvGameEngine extends GameEngine {
         });
 
         this.on('preStep', this.preStep.bind(this));
-        this.on('postStep', this.postStep.bind(this));
+        // this.on('postStep', this.postStep.bind(this));
         this.on('playerDisconnected', this.playerDisconnected.bind(this));
 
         this.emitonoff = EmitOnOff();
@@ -132,6 +134,12 @@ export default class NvGameEngine extends GameEngine {
 
                 // apply current AI
                 this.ai.execute(obj);
+
+                // if this is a playable ship unpack it's power grid
+                if (obj instanceof PlayableShip) {
+                  obj.grid = new Systems();
+                  obj.grid.unpack(obj.power);
+                }
 
                 // only certain types have engines
                 if (obj.applyEngine) {
@@ -492,6 +500,20 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 let targetId = inputData.options.objId;
                 this.emit('settarget', { ship: ship, targetId: targetId });
+            }
+
+            // update a powercell
+            if (inputData.input == 'powercell') {
+
+                let ship = this.getPlayerShip(playerId);
+                let row = inputData.options.row;
+                let col = inputData.options.col;
+                let state = inputData.options.state;
+
+                // get the ship, unpack the state - set new state and repack
+                this.systems.unpack(ship.power);
+                this.systems.setConnector(row, col, state);
+                ship.power = this.systems.pack();
             }
 
             if (inputData.input == 'comms') {

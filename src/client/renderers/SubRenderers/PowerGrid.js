@@ -17,11 +17,12 @@ export default class PowerGrid {
       baseUrl: '/',
       borderWidth: 4,
       reactorFontSize: 72,
-      systemFontSize: 12,
+      systemFontSize: 26,
+      systemEfficiencyFontSize: 20,
       internalZIndex: {
         background: 1,
-        reactor: 2,
-        system: 2,
+        reactor: 5,
+        system: 6,
         powergrid :3
       }
     }, params);
@@ -80,8 +81,8 @@ export default class PowerGrid {
     this.grid = new Systems();
 
     // calculate sizes
-    this.gridSquareSize = this.parameters.width / this.grid.getGridSize()[0];
-    this.gridHeight = this.gridSquareSize * this.grid.getGridSize()[1];
+    this.gridSquareSize = this.parameters.width / this.grid.getGridSize()[1];
+    this.gridHeight = this.gridSquareSize * this.grid.getGridSize()[0];
     this.gridTop = this.parameters.y + ((this.parameters.height/2) - (this.gridHeight/2));
     this.gridBottom = this.parameters.y + ((this.parameters.height/2) + (this.gridHeight/2));
 
@@ -95,23 +96,6 @@ export default class PowerGrid {
 
     let hullData = playerShip.getHullData();
     this.grid.unpack(playerShip.power);
-    this.grid.setConnector(3, 3, 0);
-    this.grid.setConnector(3, 4, 1);
-    this.grid.setConnector(3, 5, 2);
-    this.grid.setConnector(3, 6, 3);
-    this.grid.setConnector(3, 7, 4);
-    this.grid.setConnector(3, 8, 5);
-    this.grid.setConnector(3, 9, 6);
-    this.grid.setConnector(3, 10, 7);
-
-    this.grid.setConnector(0, 20, 0);
-    this.grid.setConnector(1, 21, 0);
-    this.grid.setConnector(2, 20, 0);
-    this.grid.setConnector(3, 21, 0);
-    this.grid.setConnector(4, 20, 0);
-    this.grid.setConnector(5, 21, 0);
-    this.grid.setConnector(6, 20, 0);
-    this.grid.setConnector(7, 21, 0);    
 
     // both of these may change with ship updates
     this.drawSystems(hullData);
@@ -140,7 +124,7 @@ export default class PowerGrid {
       reactorTexture.width = this.parameters.width;
       this.sprites.reactor.addChild(reactorTexture);
 
-      let reactorLabel = new PIXI.Text("REACTOR", {fontSize: this.parameters.reactorFontSize, fontFamily : Assets.Fonts.Mono, fill : Assets.Colors.Black, align : 'center' });
+      let reactorLabel = new PIXI.Text("REACTOR", {dropShadow: true, dropShadowDistance: 0,dropShadowAlpha: 0.66, dropShadowBlur: 8, dropShadowColor: Assets.Colors.White, fontSize: this.parameters.reactorFontSize, fontFamily : Assets.Fonts.Mono, fill : Assets.Colors.Black, align : 'center' });
       reactorLabel.anchor.set(0.5);
       reactorLabel.x = this.centerX;
       reactorLabel.y = this.parameters.y + (reactorHeight/2) + 4;
@@ -189,13 +173,13 @@ export default class PowerGrid {
     }
 
     // iterate rows and create/update sprites to reflect data in grid
-    for (let i = 0; i < gridSize[1]; i++) {
+    for (let i = 0; i < gridSize[0]; i++) {
 
       // create or get row
       let row = this.sprites.grid[i] || [];
 
       // iterate cells in row and create/update sprites
-      for (let j = 0; j < gridSize[0]; j++) {
+      for (let j = 0; j < gridSize[1]; j++) {
 
         // if we haven't yet got that sprite create it
         if (!row[j]) {
@@ -205,15 +189,32 @@ export default class PowerGrid {
           cell.anchor.set(0, 0);
           cell.x = this.parameters.x + (j * this.gridSquareSize);
           cell.y = this.gridTop + (i * this.gridSquareSize);
-          cell.gotoAndStop(this.grid.grid[i][j]);
+          cell.interactive = true;
+          cell.on('mousedown', (e) => { this.cellClick(i, j, e) });
+          cell.on('touchstart', (e) => { this.cellClick(i, j, e) });
           this.sprites.powergridContainer.addChild(cell);
           row[j] = cell;
         }
 
         // set animation state
+        row[j].gotoAndStop(this.grid.getConnector(i, j));
 
       }
       this.sprites.grid[i] = row;
+    }
+  }
+
+  // toggle the cell state, updating server each time
+  cellClick(row, col, event) {
+
+    let currentState =this.grid.getConnector(row, col);
+    if (currentState != 0) {
+      let newState = (currentState + 1) % 7;
+      if (newState == 0) newState = 1;
+
+      if (this.renderer.client) {
+        this.renderer.client.setPowerCell(row, col, newState);
+      }
     }
   }
 
@@ -262,11 +263,13 @@ export default class PowerGrid {
       this.sprites.systems = {};
     }
 
+    let systemHeight = (this.parameters.x + this.parameters.height) - this.gridBottom;
+    systemHeight = Math.max(systemHeight, 180);
+    let systemTop = (this.parameters.y + this.parameters.height) - systemHeight;
+
     if (!this.sprites.systems[currentSystem]) {
       let sysSprite = new PIXI.Container();
       sysSprite.zIndex = this.parameters.internalZIndex.system;
-
-      let systemHeight = (this.parameters.x + this.parameters.height) - this.gridBottom;
 
       let systemGraphics = new PIXI.Graphics();
       systemGraphics.beginFill(Assets.Colors.Systems[currentSystem], 0.4);
@@ -276,17 +279,17 @@ export default class PowerGrid {
       systemGraphics.destroy();
       systemTexture = new PIXI.Sprite(systemTexture);
       systemTexture.x = this.parameters.x + (this.gridSquareSize * systemStart);
-      systemTexture.y = this.gridBottom;
+      systemTexture.y = systemTop;
       systemTexture.height = systemHeight;
       systemTexture.width = this.gridSquareSize * systemSize;
       this.sprites.reactor.addChild(systemTexture);
 
       let systemLabel = new PIXI.Text(this.grid.getSystemName(currentSystem), {dropShadow: true, dropShadowDistance: 0,dropShadowAlpha: 0.66, dropShadowBlur: 3, dropShadowColor: Assets.Colors.White, fontSize: this.parameters.systemFontSize, fontFamily : Assets.Fonts.Mono, fill : Assets.Colors.Black, align : 'center' });
-      systemLabel.anchor.set(0.5, 0);
+      systemLabel.anchor.set(0, 0.5);
       systemLabel.pivot.set(0.5);
       systemLabel.angle = -90;
-      systemLabel.x = this.parameters.x + (this.gridSquareSize * systemStart) + 2;
-      systemLabel.y = this.gridBottom + (systemHeight * 0.5);
+      systemLabel.x = this.parameters.x + (this.gridSquareSize * systemStart) + (this.gridSquareSize * systemSize * 0.5);
+      systemLabel.y = systemTop + (systemHeight - 30);
       this.sprites.reactor.addChild(systemLabel);
 
       this.gridContainer.addChild(sysSprite);
@@ -296,6 +299,21 @@ export default class PowerGrid {
     } else {
       // sprite exists but potentially changed - for now do nothing, need to change here if
       // ships can change systems eg. upgrade at station
+
+      // check efficiency of existing system
+      let efficiency = Math.round(this.grid.getEfficiency(currentSystem) * 100) + "%";
+      let efficiencyKey = 'eff'+currentSystem;
+      if (!this.sprites.systems[efficiencyKey]) {
+
+        let efficiencyLabel = new PIXI.Text(efficiency, {dropShadow: true, dropShadowDistance: 0,dropShadowAlpha: 0.66, dropShadowBlur: 3, dropShadowColor: Assets.Colors.White, fontSize: this.parameters.systemEfficiencyFontSize, fontFamily : Assets.Fonts.Mono, fill : Assets.Colors.Black, align : 'center' });
+        efficiencyLabel.anchor.set(0.5, 1);
+        efficiencyLabel.x = this.parameters.x + (this.gridSquareSize * systemStart) + (this.gridSquareSize * systemSize * 0.5);
+        efficiencyLabel.y = this.parameters.x + this.parameters.height;
+        this.sprites.reactor.addChild(efficiencyLabel);
+        this.sprites.systems[efficiencyKey] = efficiencyLabel;
+      } else {
+        this.sprites.systems[efficiencyKey].text = efficiency;
+      }
     }
   }
 
