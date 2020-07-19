@@ -9,7 +9,6 @@ import Planet from '../common/Planet';
 import Hulls from '../common/Hulls';
 import SolarObjects from '../common/SolarObjects';
 import Victor from 'victor';
-import Damage from '../common/Damage';
 import CollisionUtils from '../common/CollisionUtils';
 import SolarSystem from './Missions/SolarSystem';
 import TestMission from './Missions/TestMission';
@@ -20,7 +19,6 @@ export default class NvServerEngine extends ServerEngine {
     constructor(io, gameEngine, inputOptions) {
         super(io, gameEngine, inputOptions);
         this.collisionUtils = new CollisionUtils(gameEngine);
-        this.damage = new Damage();
         this.mission = null;
         this.lastMissionSeconds = 0;
         this.missionSecondsOffset = 0;
