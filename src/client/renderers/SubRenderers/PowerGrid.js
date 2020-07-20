@@ -139,28 +139,7 @@ export default class PowerGrid {
   // draw grid based on this.grid
   drawGrid(hullData) {
 
-    // SYS_SENSORS: SYS_SENSORS,
-    // SYS_ENGINE: SYS_ENGINE,
-    // SYS_MANEUVER: SYS_MANEUVER,
-    // SYS_TORPS: SYS_TORPS,
-    // SYS_PDC: SYS_PDC,
-    // SYS_LIFE: SYS_LIFE,
-    // SYS_CONSOLES: SYS_CONSOLES,
-    // SYS_NAV: SYS_NAV,
-    // SYS_RELOAD: SYS_RELOAD
     let systems = hullData.systems;
-    // console.dir(systems);
-    // [
-    //   SYS_SENSORS, SYS_SENSORS, SYS_SENSORS, SYS_SENSORS,
-    //   SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE,
-    //   SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER,
-    //   SYS_TORPS, SYS_TORPS, SYS_TORPS,
-    //   SYS_PDC, SYS_PDC, SYS_PDC,
-    //   SYS_LIFE, SYS_LIFE, SYS_LIFE, SYS_LIFE,
-    //   SYS_CONSOLES, SYS_CONSOLES,
-    //   SYS_NAV, SYS_NAV,
-    //   SYS_RELOAD, SYS_RELOAD
-    // ]
     let systemLayout = hullData.systemLayout;
     let gridSize = this.grid.getGridSize();
     let powerlinesSheet = this.resources[this.parameters.baseUrl+Assets.Images.powerlines].spritesheet;

@@ -22,18 +22,20 @@ const SYS_LIFE = Math.pow(2, 6);
 const SYS_CONSOLES = Math.pow(2, 7);
 const SYS_NAV = Math.pow(2, 8);
 const SYS_RELOAD = Math.pow(2, 9);
+const SYS_FUEL = Math.pow(2, 10);
 
 // systems take up space along row - which is where their connections start
 const SYSTEMS = [
   SYS_SENSORS, SYS_SENSORS, SYS_SENSORS, SYS_SENSORS,
   SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE,
+  SYS_FUEL, SYS_FUEL,
   SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER,
-  SYS_TORPS, SYS_TORPS, SYS_TORPS,
-  SYS_PDC, SYS_PDC, SYS_PDC,
+  SYS_TORPS, SYS_TORPS,
+  SYS_PDC, SYS_PDC,
+  SYS_RELOAD, SYS_RELOAD,
   SYS_LIFE, SYS_LIFE, SYS_LIFE, SYS_LIFE,
   SYS_CONSOLES, SYS_CONSOLES,
-  SYS_NAV, SYS_NAV,
-  SYS_RELOAD, SYS_RELOAD
+  SYS_NAV, SYS_NAV
 ]; // 30 total - to match ROWS
 
 // based on entry side and connector - get updated grid position
@@ -223,7 +225,8 @@ export default class Systems {
       SYS_LIFE: SYS_LIFE,
       SYS_CONSOLES: SYS_CONSOLES,
       SYS_NAV: SYS_NAV,
-      SYS_RELOAD: SYS_RELOAD
+      SYS_RELOAD: SYS_RELOAD,
+      SYS_FUEL: SYS_FUEL
     };
   }
 
@@ -255,6 +258,8 @@ export default class Systems {
         return "NAV COM";
       case SYS_RELOAD:
         return "RELOADERS";
+      case SYS_FUEL:
+        return "FUEL GEN";
     }
   }
 
@@ -265,7 +270,7 @@ export default class Systems {
       case SYS_SENSORS:
         return (currentPower / 4);
       case SYS_ENGINE:
-        let engPercent = (currentPower / 4);
+        let engPercent = (currentPower / 5);
         if (engPercent > 1) engPercent = 1;
         return engPercent;
       case SYS_MANEUVER:
@@ -273,17 +278,19 @@ export default class Systems {
         if (manPercent > 1) manPercent = 1;
         return manPercent;
       case SYS_TORPS:
-        return (currentPower > 0);
+        return (currentPower > 0 ? 1 : 0);
       case SYS_PDC:
-        return (currentPower > 0);
+        return (currentPower > 0 ? 1 : 0);
       case SYS_LIFE:
-        return (currentPower > 0);
+        return (currentPower > 0 ? 1 : 0);
       case SYS_CONSOLES:
-        return (currentPower > 0);
+        return (currentPower > 0 ? 1 : 0);
       case SYS_NAV:
-        return (currentPower > 0);
+        return (currentPower > 0 ? 1 : 0);
       case SYS_RELOAD:
-        return (currentPower > 0);
+        return (currentPower > 0 ? 1 : 0);
+      case SYS_FUEL:
+        return (currentPower > 0 ? 1 : 0);
     }
   }
 

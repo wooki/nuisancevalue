@@ -23,6 +23,7 @@ export default {
 			size: 1000
 		},
 		fuel: 10000,
+		tubes: 2,
 		systems: STANDARD_SYSTEMS, // this is a bit encoded set of valid systems that CAN BE damaged
 		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},
@@ -38,6 +39,7 @@ export default {
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		fuel: 10000,
+		tubes: 1,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},
@@ -53,7 +55,24 @@ export default {
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
 		fuel: 100,
-		payload: 600 // equivalent acceleration for damage
+		payload: 600, // equivalent acceleration for damage
+		maxClosing: 1000,
+		types: [ // allow different torps to override any of these - image, size, exhaust
+      {
+        fuel: 100,
+        payload: 100,
+        thrust: 2,
+        maxClosing: 100,
+        name: "Short Range"
+      },
+      {
+        fuel: 100,
+        payload: 100,
+        thrust: 2,
+        maxClosing: 100,
+        name: "Long Range"
+      }
+		]
 	},
 
 	"bushido": {
@@ -71,6 +90,7 @@ export default {
 			size: 1000
 		},
 		fuel: 10000,
+		tubes: 4,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},
@@ -85,7 +105,12 @@ export default {
 		maneuver: 0.8,
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
+		pdc: {
+			range: 5000,
+			size: 800
+		},
 		fuel: 10000,
+		tubes: 2,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT
 	},

@@ -2,14 +2,13 @@ import Victor from 'victor';
 import Utils from '../Utils/Utils';
 
 export default class TorpedoAi {
-	
+
 	execute(torpedo, game) {
-		console.log("execute:"+torpedo.targetId);
+
 		// find the target
 		let target = game.world.objects[torpedo.targetId];
 	    if (target) {
 
-				console.log("target");
 			// get our data
 			let ourPos = Victor.fromArray(torpedo.physicsObj.position);
 			let ourVelocity = new Victor(torpedo.physicsObj.velocity[0], torpedo.physicsObj.velocity[1]);
