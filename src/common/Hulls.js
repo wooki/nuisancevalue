@@ -63,14 +63,16 @@ export default {
         payload: 100,
         thrust: 2,
         maxClosing: 100,
-        name: "Short Range"
+        name: "Type I",
+				desc: "Some info about this torp"
       },
       {
         fuel: 100,
         payload: 100,
         thrust: 2,
         maxClosing: 100,
-        name: "Long Range"
+				name: "Type II",
+				desc: "Some info about this torp"
       }
 		]
 	},

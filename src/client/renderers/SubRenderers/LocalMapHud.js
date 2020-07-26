@@ -190,7 +190,7 @@ export default class LocalMapHud {
   }
 
   // watch the player ship and update
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
 

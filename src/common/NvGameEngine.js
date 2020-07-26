@@ -463,6 +463,15 @@ export default class NvGameEngine extends GameEngine {
             }
 
 
+            if (inputData.input == 'loadtorp') {
+
+                let ship = this.getPlayerShip(playerId);
+                let tube = inputData.options.tube;
+                let torpType = inputData.options.torpType;
+                ship.loadTorp(tube, torpType);                
+            }
+
+
 
             if (inputData.input == 'pdcangle') {
               let ship = this.getPlayerShip(playerId);

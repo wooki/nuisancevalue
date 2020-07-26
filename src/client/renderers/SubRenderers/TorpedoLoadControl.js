@@ -27,85 +27,143 @@ export default class TorpedoLoadControl {
     // this.resources = resources;
     this.renderer = renderer;
 
-    // draw first with no tubes (depends on ship hull)
-    this.tubes = [];
-    this.projector = createProjector();
-    this.projector.append(this.el, this.render.bind(this));
-
     // attach shortcut keys
     // if (this.parameters.keyboardControls && renderer.keyboardControls) {
     //   renderer.keyboardControls.bindKey('0', 'engine', { }, { level: 0 });
     // }
+
+    // get the torpedo types
+    this.torpTypes = Hulls["torpedo"].types;
+
+    // keep some local state indicating loading status
+    this.loadingState = [];
+
+    // draw first with no tubes (depends on ship hull)
+    this.tubes = [];
+    this.projector = createProjector();
+    this.projector.append(this.el, this.render.bind(this));
   }
 
   // watch player ship for the engine
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
-    this.engine = playerShip.engine;
-    let hullData = playership.getHullData();
-    this.tubeCount = hullData.tubes || 0;
-    this.projector.scheduleRender();
-  }
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
+    this.playerShip = playerShip;
 
-  // setEngine(engineLevel) {
-  //   if (this.renderer.client) {
-  //     this.renderer.client.setEngine(engineLevel);
-  //   }
-  // }
-
-  createbutton(engineLevel) {
-      // return h('div.key', {
-      //   classes: {
-      //     active: (this.engine == engineLevel)
-      //   },
-      //   key: 'btn'+engineLevel,
-      //   onclick: (event) => {
-      //     event.preventDefault();
-      //     this.setEngine(engineLevel);
-      //   }
-      //   },
-      //   [engineLevel.toString()]
-      // );
-  }
-
-  createTube(createTube(tube, tubeIndex) {) {
-      if (tube == null) return null;
-
-      // check state of the tube
-
-      // build some html
-      return h('div.data.tube', {
-          key: 'tube'+tubeIndex
-        },
-        Object.keys(item).map(function(key) {
-          if (key == 'type') {
-            return h('div.line.LED.'+item[key], {
-              styles: {
-                'background-color': this.parameters.colors[item[key]]
-              }
-            },[]);
-          } else {
-            return h('div.line', [
-              h('label', [key]),
-              h('data', [item[key]])
-            ]);
+    if (this.playerShip.tubes) {
+      for (let i = 0; i < this.playerShip.tubes.length; i++) {
+        if (this.loadingState[i] && this.loadingState[i].timeToLoad > 0) {
+          this.loadingState[i].timeToLoad = this.loadingState[i].timeToLoad - dt;
+        } else if (this.loadingState[i]) {
+          // send to game engine
+          if (this.renderer.client) {
+            this.renderer.client.loadTorp(i, this.loadingState[i].load);
+            this.loadingState[i] = false;
           }
-        }.bind(this))
+        }
+      }
+      this.projector.scheduleRender();
+    }
+
+  }
+
+  createLoadButton(tubeIndex, torpTypeIndex, name, active) {
+      return h('button', {
+        classes: {
+          active: active
+        },
+        key: 'btnLoad'+tubeIndex,
+        onclick: (event) => {
+
+          // start loading/unloading
+          this.loadingState[tubeIndex] = {
+            load: torpTypeIndex,
+            timeToLoad: 1000 * 10 // load takes 10 seconds
+          };
+
+          // immediately unload, but still use timer
+          if (torpTypeIndex == 0 && this.renderer.client) {
+            this.renderer.client.loadTorp(tubeIndex, 0);
+          }
+
+          // redraw to update button state
+          this.projector.scheduleRender();
+        }
+        },
+        [name]
       );
   }
 
+  createTube(tube, tubeIndex) {
+      if (tube == null) return null;
+
+      let title = h('h4', {key: 'title'}, ['TUBE #'+(tubeIndex+1)]);
+
+      // check state of the tube
+      let currentTorp = this.getTorpType(tube);
+      let currentState = h('div.current', {key: 'current'}, ['TUBE EMPTY']);
+      if (currentTorp) {
+          currentState = h('div.current', {key: 'current'}, [currentTorp.name]);
+      }
+
+      // load options depend on state
+      let loadOptions = [];
+
+      // check if this tube is currently loading
+      if (this.loadingState[tubeIndex]) {
+        // is loading - so just show progress
+        loadOptions.push(h('div.loading-progress', {key: 'loadprogress'}, [Math.round(this.loadingState[tubeIndex].timeToLoad/1000) + "s"]));
+
+      } else {
+        // not currently loading - so give options
+
+        for (let i = 0; i < this.torpTypes.length; i++) {
+          loadOptions.push(this.createLoadButton(
+            tubeIndex,
+            i+1,
+            this.torpTypes[i].name,
+            (currentTorp)
+          ));
+        }
+
+        loadOptions.push(this.createLoadButton(
+          tubeIndex,
+          0,
+          "Unload",
+          !(currentTorp)
+        ));
+      }
+
+      // build some html
+      return h('div.nv.ui.col.tube', {
+          key: 'tube'+tubeIndex
+        },
+        [
+          title,
+          currentState,
+          h('h4', {key: 'loader'}, ['LOADER']),
+          h('div.nv.ui.row.loadoptions', {key: 'loadoptions'}, loadOptions)
+        ]
+      );
+  }
+
+  getTorpType(i) {
+    // torps start at 0 (array) but 0 indicates unloaded, so adjust
+    if (i <= 0) return false;
+    return this.torpTypes[i - 1];
+  }
 
   render() {
 
     let rows = [];
 
-    if (this.playerShip.tubes) {
-      for (let i = 0; i < this.playerShip.tubes.length) {
+    if (this.playerShip && this.playerShip.tubes) {
+      for (let i = 0; i < this.playerShip.tubes.length; i++) {
         let tube = this.createTube(this.playerShip.tubes[i], i);
         rows.push(tube);
       }
     }
 
-    return h('div.nv.ui.row', {
+    return h('div.nv.ui.row.tubes', {
+      key: "tubes",
       styles: {
         position: 'absolute',
         left: this.parameters.x + 'px',

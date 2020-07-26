@@ -90,7 +90,7 @@ export default class PowerGrid {
     this.drawReactor();
   }
 
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
 

@@ -240,7 +240,7 @@ export default class LocalMap {
     }
   }
 
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
     const position = playerShip.physicsObj.position;

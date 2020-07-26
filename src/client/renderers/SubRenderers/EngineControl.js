@@ -43,7 +43,7 @@ export default class EngineControl {
   }
 
   // watch player ship for the engine
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
     this.engine = playerShip.engine;
     this.projector.scheduleRender();
   }

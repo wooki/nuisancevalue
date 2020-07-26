@@ -28,7 +28,7 @@ export default class CommsControl {
   }
 
   // watch player ship for comms state and target
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     if (isDocked) {
       this.playerShip = isDocked;

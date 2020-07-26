@@ -304,6 +304,7 @@ label {
 /* NEW STYLES FOR COMPOSITE UI */
 .nv {
   z-index: 200;
+  user-select: none;
 
   // border: 1px dotted #bada55;
 
@@ -394,6 +395,7 @@ label {
       margin: 3px;
       color: white;
       text-shadow: -1px -1px 2px #265026;
+      cursor: pointer;
 
       &:active {
         outline: none;
@@ -546,6 +548,66 @@ label {
         margin-bottom: auto;
       }
     } // .comms
+
+    // specialised tube reload ui
+    &.tube {
+      display: flex;
+      flex-direction: column;
+      font-size: 12px;
+      line-height: 18px;
+      margin: 0 15px;
+      padding: 5px;
+      background: #0c2b0c;
+      background: radial-gradient(circle, #0c2b0c 0%, #163516 75%, #000000 100%);
+      box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+      justify-content: flex-start;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      h4, div, button {
+        text-align: left;
+        color: black;
+        text-shadow: -1px -1px 2px #265026;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 18px;
+        margin: 0;
+      }
+      h4 {
+        margin-bottom: auto;
+      }
+
+      .loadOptions {
+          flex-wrap: wrap;
+          justify-content: center;
+          button.active {
+            display: none;
+          }
+      }
+
+      button {
+        padding: 2px 5px;
+        white-space: nowrap;
+        margin: 0 1px 2px 1px;
+
+        &:first-child {
+          margin-left: 0;
+        }
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
 
   } // .ui
 }

@@ -3,6 +3,7 @@ import LocalMapBackground from './SubRenderers/LocalMapBackground';
 import LocalMap from './SubRenderers/LocalMap';
 import LocalMapHud from './SubRenderers/LocalMapHud';
 import PowerGrid from './SubRenderers/PowerGrid';
+import TorpedoLoadControl from './SubRenderers/TorpedoLoadControl';
 
 // extend compsite with pre-set subrenderers
 export default class EngineerRenderer extends CompositeRenderer {
@@ -65,6 +66,13 @@ export default class EngineerRenderer extends CompositeRenderer {
             width: fullWidth - (400 + marginFull + margin),
             height: (fullHeight*0.66) - marginFull,
             zIndex: 4
+          }),
+          new TorpedoLoadControl({
+            x: margin,
+            y: marginFull + ((fullHeight*0.66) - marginFull),
+            width: fullWidth - (400 + marginFull + margin),
+            height: (fullHeight*0.33) - margin,
+            zIndex: 5
           }),
         ]
       };
