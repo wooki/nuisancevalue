@@ -549,6 +549,43 @@ label {
       }
     } // .comms
 
+    &.tube.row {
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 10px 0;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h4 {
+        margin: 0;
+        flex: 0 0 auto;
+      }
+      .current {
+        margin: 0 10px;
+        flex: 1 1 auto;
+      }
+
+      button.key {
+        flex: 0 0 auto;
+        display: none;
+        opacity: 1;
+        color: rgba(0, 0, 0, 0.4);
+        &.shown {
+          display: block;
+        }
+        &.enabled {
+          opacity: 1;
+          color: rgba(0, 0, 0, 1);
+        }
+      }
+    }
     // specialised tube reload ui
     &.tube {
       display: flex;
