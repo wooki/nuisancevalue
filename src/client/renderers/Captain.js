@@ -11,6 +11,7 @@ import ZoomControl from './SubRenderers/ZoomControl';
 import TargetSelection from './SubRenderers/TargetSelection';
 import OpenCommsControl from './SubRenderers/OpenCommsControl';
 import CommsControl from './SubRenderers/CommsControl';
+import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
 
 // extend compsite with pre-set subrenderers
 export default class CaptainRenderer extends CompositeRenderer {
@@ -72,18 +73,6 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 20,
             mapSize: 30000
           }),
-          // new EngineControl({
-          //   x: margin,
-          //   y: fullHeight - (margin + 372),
-          //   zIndex: 30,
-          //   keyboardControls: true
-          // }),
-          // new ManeuverControl({
-          //   x: margin + margin + 60, // engine control + 2 margins
-          //   y: fullHeight - (margin + 63),
-          //   zIndex: 30,
-          //   keyboardControls: true
-          // }),
           new ZoomControl({
             keyboardControls: true,
             onScreenControls: false
@@ -96,6 +85,13 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 30
           }),
           new TargetSelection({}), // watch for selection and set as target
+          new TorpedoFireControl({
+            x: margin,
+            y: (marginFull + 126),
+            width: Math.max(sideWidth, sideControlsMin),
+            zIndex: 30,
+            keyboardControls: false
+          }),
           new OpenCommsControl({
             x: margin,
             y: margin,
@@ -109,7 +105,8 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullWidth - marginFull,
             height: fullHeight - marginFull,
             zIndex: 100
-          })
+          }),
+
         ]
       };
 

@@ -240,7 +240,7 @@ export default class LocalMap {
     }
   }
 
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
     const position = playerShip.physicsObj.position;
@@ -300,7 +300,6 @@ export default class LocalMap {
     if (sprite) {
       if (obj.hull) {
 
-if (obj.hull == "torpedo") console.log("torp:");
         let hullData = Hulls[obj.hull];
         let height = hullData.size * this.parameters.scale;
         let width = height * hullData.width;
@@ -335,7 +334,6 @@ if (obj.hull == "torpedo") console.log("torp:");
             exhaustSprite.x = (0 - (width/2)) + (width * e[1]);
             exhaustSprite.y = (0 - (width/2)) + (width * e[2]);
             exhaustSprite.scale.set(scale, scale);
-if (obj.hull == "torpedo") console.log(exhaustSprite.width+","+exhaustSprite.height);
           });
         }
 
@@ -397,6 +395,10 @@ if (obj.hull == "torpedo") console.log(exhaustSprite.width+","+exhaustSprite.hei
   createShipSprite(ship, coord, zIndex) {
 
     let hullData = Hulls[ship.hull];
+    if (ship instanceof Torpedo) {
+      hullData = ship.torpData;
+    }
+
     let texture = this.resources[this.parameters.baseUrl+hullData.image].texture;
     let height = hullData.size * this.parameters.scale;
     let width = height * hullData.width;

@@ -3,6 +3,8 @@ import LocalMapBackground from './SubRenderers/LocalMapBackground';
 import LocalMap from './SubRenderers/LocalMap';
 import LocalMapHud from './SubRenderers/LocalMapHud';
 import PowerGrid from './SubRenderers/PowerGrid';
+import TorpedoLoadControl from './SubRenderers/TorpedoLoadControl';
+import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
 
 // extend compsite with pre-set subrenderers
 export default class EngineerRenderer extends CompositeRenderer {
@@ -23,6 +25,7 @@ export default class EngineerRenderer extends CompositeRenderer {
       const sideWidth = Math.round((spaceWidth/2) - margin);
       const marginFull = margin * 2;
       const sideControlsMin = 200;
+      const rightColWidth = 400;
 
       let config = {
         station: 'engineer',
@@ -31,26 +34,26 @@ export default class EngineerRenderer extends CompositeRenderer {
         dashboardColor: 0x990000,
         subRenderers: [
           new LocalMapBackground({
-            x: fullWidth - (400 + margin),
+            x: fullWidth - (rightColWidth + margin),
             y: margin,
-            width: 400,
-            height: 400,
+            width: rightColWidth,
+            height: rightColWidth,
             zIndex: 1,
             mapSize: 6000
           }),
           new LocalMap({
-            x: fullWidth - (400 + margin),
+            x: fullWidth - (rightColWidth + margin),
             y: margin,
-            width: 400,
-            height: 400,
+            width: rightColWidth,
+            height: rightColWidth,
             zIndex: 2,
             mapSize: 6000
           }),
           new LocalMapHud({
-            x: fullWidth - (400 + margin),
+            x: fullWidth - (rightColWidth + margin),
             y: margin,
-            width: 400,
-            height: 400,
+            width: rightColWidth,
+            height: rightColWidth,
             zIndex: 3,
             mapSize: 6000,
             arrowSize: 10,
@@ -62,9 +65,23 @@ export default class EngineerRenderer extends CompositeRenderer {
           new PowerGrid({
             x: margin,
             y: margin,
-            width: fullWidth - (400 + marginFull + margin),
+            width: fullWidth - (rightColWidth + marginFull + margin),
             height: (fullHeight*0.66) - marginFull,
             zIndex: 4
+          }),
+          new TorpedoLoadControl({
+            x: margin,
+            y: marginFull + ((fullHeight*0.66) - marginFull),
+            width: fullWidth - (rightColWidth + marginFull + margin),
+            height: (fullHeight*0.33) - margin,
+            zIndex: 5
+          }),
+          new EngineeringDataControl({
+            x: fullWidth - (rightColWidth + margin),
+            y: marginFull + rightColWidth,
+            width: rightColWidth,
+            height: (fullHeight - rightColWidth) - marginFull,
+            zIndex: 6
           }),
         ]
       };

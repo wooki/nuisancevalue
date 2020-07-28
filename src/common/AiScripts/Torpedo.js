@@ -2,14 +2,13 @@ import Victor from 'victor';
 import Utils from '../Utils/Utils';
 
 export default class TorpedoAi {
-	
+
 	execute(torpedo, game) {
-		console.log("execute:"+torpedo.targetId);
+
 		// find the target
 		let target = game.world.objects[torpedo.targetId];
 	    if (target) {
 
-				console.log("target");
 			// get our data
 			let ourPos = Victor.fromArray(torpedo.physicsObj.position);
 			let ourVelocity = new Victor(torpedo.physicsObj.velocity[0], torpedo.physicsObj.velocity[1]);
@@ -35,8 +34,8 @@ export default class TorpedoAi {
 			// estimate time to arrive - this isn't very accurarte but good enough
 			const maxPredictionTime = 30;
 
-			// try and reserve fuel by reducing speed as fuel depletes
-			let torpTopSpeed = 10 * torpedo.fuel;
+			// max speed depends on torp type
+			let torpTopSpeed = torpedo.maxClosing;
 
 			let closing = ((ourVelocity.clone().subtract(theirVelocity)).dot(direction) / direction.length());
 			// console.log("closing:"+closing);

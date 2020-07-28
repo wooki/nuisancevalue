@@ -109,7 +109,7 @@ export default class CompositeRenderer {
     destroyPlayership(playerShip) {
       if (this.destroyed) return;
       this.destroyed = true;
-      this.updatePlayerShip(playerShip, false, this.destroyed);
+      this.updatePlayerShip(playerShip, false, this.destroyed, 0);
 
       let root = document.getElementById('game');
       UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function() {
@@ -180,14 +180,14 @@ export default class CompositeRenderer {
         }
       }
     }
-    updatePlayerShip(playerShip, isDocked, isDestroyed) {
+    updatePlayerShip(playerShip, isDocked, isDestroyed, dt) {
 
       this.lastPlayerShip = playerShip; // remember, so we still have the data when it is removed from game
 
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
         if (this.subRenderers[i].updatePlayerShip) {
-          this.subRenderers[i].updatePlayerShip(playerShip, isDocked, this.isDestroyed, this);
+          this.subRenderers[i].updatePlayerShip(playerShip, isDocked, this.isDestroyed, this, dt);
         }
       }
     }
@@ -242,7 +242,7 @@ export default class CompositeRenderer {
           if (playerShip) {
 
             // keep track of our ship
-            this.updatePlayerShip(playerShip, this.isDocked, false);
+            this.updatePlayerShip(playerShip, this.isDocked, false, dt);
 
             // keep track so we know when something is gone
             let foundObjects = {};

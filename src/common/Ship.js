@@ -59,6 +59,10 @@ export default class Ship extends PhysicalObject2D {
       return Math.floor((hull.size * hull.size * hull.width) / 50);
     }
 
+    loadTorp(tube, torpType) {
+      this.tubes[tube] = torpType;
+    }
+
     // if the ship has active engines then apply force
     applyEngine() {
         let hullData = Hulls[this.hull];

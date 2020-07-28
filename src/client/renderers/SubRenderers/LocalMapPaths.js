@@ -155,7 +155,7 @@ export default class LocalMapPaths {
     }
   }
 
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
     let focusX = playerShip.physicsObj.position[0];

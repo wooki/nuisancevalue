@@ -23,8 +23,11 @@ export default {
 			size: 1000
 		},
 		fuel: 10000,
+		tubes: 2,
 		systems: STANDARD_SYSTEMS, // this is a bit encoded set of valid systems that CAN BE damaged
-		systemLayout: STANDARD_SYSTEMS_LAYOUT
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
+		maxWeaponStock: [6000, 20, 20],
+		defaultWeaponStock: [3000, 12, 6]
 	},
 
 	"tug": {
@@ -38,8 +41,11 @@ export default {
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		fuel: 10000,
+		tubes: 1,
 		systems: STANDARD_SYSTEMS,
-		systemLayout: STANDARD_SYSTEMS_LAYOUT
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
+		maxWeaponStock: [0, 10, 10],
+		defaultWeaponStock: [0, 10, 10]
 	},
 
 	"torpedo": {
@@ -53,7 +59,27 @@ export default {
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
 		fuel: 100,
-		payload: 600 // equivalent acceleration for damage
+		payload: 600, // equivalent acceleration for damage
+		maxClosing: 800,
+		types: [ // allow different torps to override any of these - image, size, exhaust
+      {
+        fuel: 100,
+        payload: 600,
+        thrust: 2,
+        maxClosing: 800,
+        name: "Type I",
+				desc: "Standard and reliable"
+      },
+      {
+        fuel: 80,
+        payload: 1000,
+        thrust: 3,
+        maxClosing: 1400,
+				name: "Type II",
+				desc: "Faster and harder hitting than the Type I but more erratic",
+				exhaustImage: 'exhaust' // or exhaust
+      }
+		]
 	},
 
 	"bushido": {
@@ -71,8 +97,11 @@ export default {
 			size: 1000
 		},
 		fuel: 10000,
+		tubes: 4,
 		systems: STANDARD_SYSTEMS,
-		systemLayout: STANDARD_SYSTEMS_LAYOUT
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
+		maxWeaponStock: [6000, 20, 20],
+		defaultWeaponStock: [3000, 12, 6]
 	},
 
 	"blockade-runner": {
@@ -85,9 +114,16 @@ export default {
 		maneuver: 0.8,
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
+		pdc: {
+			range: 5000,
+			size: 800
+		},
 		fuel: 10000,
+		tubes: 2,
 		systems: STANDARD_SYSTEMS,
-		systemLayout: STANDARD_SYSTEMS_LAYOUT
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
+		maxWeaponStock: [4000, 12, 12],
+		defaultWeaponStock: [3000, 8, 4]
 	},
 
 	"station": {

@@ -17,44 +17,41 @@ export default class PlayableShip extends Ship {
 
     static get netScheme() {
         return Object.assign({
-            name: { type: BaseTypes.TYPES.STRING },
-            size: { type: BaseTypes.TYPES.INT16 },
-            hull: { type: BaseTypes.TYPES.STRING },
-            engine: { type: BaseTypes.TYPES.UINT8 },
             helmPlayerId: { type: BaseTypes.TYPES.UINT8 },
             navPlayerId: { type: BaseTypes.TYPES.UINT8 },
             signalsPlayerId: { type: BaseTypes.TYPES.UINT8 },
             captainPlayerId: { type: BaseTypes.TYPES.UINT8 },
             engineerPlayerId: { type: BaseTypes.TYPES.UINT8 },
-            commsScript: { type: BaseTypes.TYPES.UINT8 },
-            dockedCommsScript: { type: BaseTypes.TYPES.UINT8 },
-            commsState: { type: BaseTypes.TYPES.UINT8 },
-            commsTargetId: { type: BaseTypes.TYPES.INT16 }, // currently talking to
-            targetId: { type: BaseTypes.TYPES.INT16 },
-            dockedId: { type: BaseTypes.TYPES.INT16 },
-            aiScript: { type: BaseTypes.TYPES.UINT8 },
-            aiPlan: { type: BaseTypes.TYPES.UINT8 },
-            docked: {
-                type: BaseTypes.TYPES.LIST,
-                itemType: BaseTypes.TYPES.CLASSINSTANCE
-            },
             waypoints: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.STRING
-            },
-            tubes: {
-                type: BaseTypes.TYPES.LIST,
-                itemType: BaseTypes.TYPES.UINT8 // 0=unloaded,n=torp type
             },
             power: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.INT16
             },
-            fuel: { type: BaseTypes.TYPES.INT16 },
-            damage: { type: BaseTypes.TYPES.INT16 },
-            pdcAngle: { type: BaseTypes.TYPES.FLOAT32 },
-            pdcState: { type: BaseTypes.TYPES.UINT8 } //0=off,1=active,2=firing
+            weaponStock: { // only playable ships have limited ammo
+                type: BaseTypes.TYPES.LIST,
+                itemType: BaseTypes.TYPES.INT16 // 0=PDC, n-1=torp type - value = ammo
+            },
+            fuel: { type: BaseTypes.TYPES.INT16 }
         }, super.netScheme);
+    }
+
+    loadTorp(tube, torpType) {
+
+      // check stock and only load if we have stock
+      if (torpType == 0) {
+        // unload, adds back to stock
+        this.weaponStock[this.tubes[tube]] = this.weaponStock[this.tubes[tube]] + 1;
+        this.tubes[tube] = torpType;
+
+      } else if (this.weaponStock[torpType] > 0) {
+        // super(tube, torpType);
+        this.tubes[tube] = torpType;
+        this.weaponStock[torpType] = this.weaponStock[torpType] - 1;
+      }
+
     }
 
     addWaypoint(name, x, y) {
@@ -112,27 +109,14 @@ export default class PlayableShip extends Ship {
 
     syncTo(other) {
         super.syncTo(other);
-        this.name = other.name;
-        this.size = other.size;
-        this.hull = other.hull;
-        this.engine = other.engine;
         this.helmPlayerId = other.helmPlayerId;
         this.navPlayerId = other.navPlayerId;
         this.signalsPlayerId = other.signalsPlayerId;
         this.captainPlayerId = other.captainPlayerId;
         this.engineerPlayerId = other.engineerPlayerId;
         this.waypoints = other.waypoints;
-        this.commsScript = other.commsScript;
-        this.dockedCommsScript = other.dockedCommsScript;
-        this.commsState = other.commsState;
-        this.commsTargetId = other.commsTargetId;
-        this.dockedId = other.dockedId;
-        this.targetId = other.targetId;
-        this.aiScript = other.aiScript;
-        this.aiPlan = other.aiPlan;
-        this.docked = other.docked;
         this.fuel = other.fuel;
-        this.tubes = other.tubes;
         this.power = other.power;
+        this.weaponStock = other.weaponStock;
     }
 }

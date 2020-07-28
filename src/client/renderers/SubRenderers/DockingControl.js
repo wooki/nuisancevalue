@@ -44,7 +44,7 @@ export default class DockingControl {
   }
 
   // just store out current ship
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
     this.playerShip = playerShip;
     if (isDocked) {
       this.dockTarget = {

@@ -90,7 +90,7 @@ export default class PowerGrid {
     this.drawReactor();
   }
 
-  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer) {
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
 
@@ -139,28 +139,7 @@ export default class PowerGrid {
   // draw grid based on this.grid
   drawGrid(hullData) {
 
-    // SYS_SENSORS: SYS_SENSORS,
-    // SYS_ENGINE: SYS_ENGINE,
-    // SYS_MANEUVER: SYS_MANEUVER,
-    // SYS_TORPS: SYS_TORPS,
-    // SYS_PDC: SYS_PDC,
-    // SYS_LIFE: SYS_LIFE,
-    // SYS_CONSOLES: SYS_CONSOLES,
-    // SYS_NAV: SYS_NAV,
-    // SYS_RELOAD: SYS_RELOAD
     let systems = hullData.systems;
-    // console.dir(systems);
-    // [
-    //   SYS_SENSORS, SYS_SENSORS, SYS_SENSORS, SYS_SENSORS,
-    //   SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE,
-    //   SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER,
-    //   SYS_TORPS, SYS_TORPS, SYS_TORPS,
-    //   SYS_PDC, SYS_PDC, SYS_PDC,
-    //   SYS_LIFE, SYS_LIFE, SYS_LIFE, SYS_LIFE,
-    //   SYS_CONSOLES, SYS_CONSOLES,
-    //   SYS_NAV, SYS_NAV,
-    //   SYS_RELOAD, SYS_RELOAD
-    // ]
     let systemLayout = hullData.systemLayout;
     let gridSize = this.grid.getGridSize();
     let powerlinesSheet = this.resources[this.parameters.baseUrl+Assets.Images.powerlines].spritesheet;
@@ -209,11 +188,9 @@ export default class PowerGrid {
 
     let currentState =this.grid.getConnector(row, col);
     if (currentState != 0) {
-      console.log("currentState:"+currentState);
       let newState = (currentState + 1) % 8;
       if (newState == 0) newState = 1;
-      console.log("newState:"+newState);
-
+      
       if (this.renderer.client) {
         this.renderer.client.setPowerCell(row, col, newState);
       }

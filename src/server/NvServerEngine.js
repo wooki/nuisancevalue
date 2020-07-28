@@ -306,7 +306,7 @@ export default class NvServerEngine extends ServerEngine {
             if (target) {
 
               // check the ship has a torp loaded in the specified tube
-              // TODO:!!!
+              let torpType = ship.tubes[tube] -1;
 
               // find direction to target
               let shipPos = Victor.fromArray(ship.physicsObj.position);
@@ -325,12 +325,12 @@ export default class NvServerEngine extends ServerEngine {
                   y: torpPos.y,
                   dX: torpVelocity.x,
                   dY: torpVelocity.y,
-                  mass: 0.0005, size: 30,
                   angle: torpAngle,
                   angularVelocity: 0,
                   targetId: e.targetId,
                   fuel: 200,
-                  engine: 1
+                  engine: 1,
+                  torpType: torpType
               });
             }
 

@@ -19,6 +19,10 @@ export default class NvClientEngine extends ClientEngine {
       this.sendInput("powercell", { row: row, col: col, state: newState });
     }
 
+    loadTorp(tube, torpType) {
+        this.sendInput("loadtorp", { tube: tube, torpType: torpType });
+    }
+
     setTarget(objId) {
         this.sendInput("target", { objId: objId });
     }

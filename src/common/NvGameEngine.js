@@ -158,52 +158,61 @@ export default class NvGameEngine extends GameEngine {
                 // if this object has a PDC then update it
                 if (obj instanceof Ship && obj.pdc) {
 
-                    // this is server only as the pdc is local
-                  let hullData = Hulls[obj.hull];
-                  if (hullData.pdc) {
-                    let angle = obj.pdcAngle;
-                    let range = hullData.pdc.range;
+                  if (obj.weaponStock[0] > 0) {
 
-                    // position range away at angle from ships bearing
-                    let p = new Victor(0, range);
+                    // reduce ammo
+                    obj.weaponStock[0] = obj.weaponStock[0] - 1;
 
-                    // rotate
-                    p.rotate(angle);
+                      // this is server only as the pdc is local
+                    let hullData = Hulls[obj.hull];
+                    if (hullData.pdc) {
+                      let angle = obj.pdcAngle;
+                      let range = hullData.pdc.range;
 
-                    // add the current ship position
-                    p = p.add(Victor.fromArray(obj.physicsObj.position));
-                    let v = Victor.fromArray(obj.physicsObj.velocity);
+                      // position range away at angle from ships bearing
+                      let p = new Victor(0, range);
 
-                    obj.pdc.physicsObj.position = [p.x, p.y];
-                    obj.pdc.physicsObj.velocity = [v.x, v.y];
+                      // rotate
+                      p.rotate(angle);
 
-                    // also fire a single ray from one ship to the other to hit anything directy between
-                    let ray = new Ray({
-                      mode: Ray.ALL,
-                      from: obj.physicsObj.position,
-                      to: obj.pdc.physicsObj.position,
-                      callback: function(result){
-                        // find the hit
-                        let hitObj = null;
-                        this.world.forEachObject((id, o) => {
-                          if (o.physicsObj === result.body) {
-                            hitObj = o;
-                          }
-                          if (hitObj) {
-                            if (hitObj === obj) {
-                              // hit firing ship (ignore)
-                            } else if (hitObj === obj.pdc) {
-                              // hit PDC (ignore)
-                            } else {
-                              // do damage
-                              obj.pdc.processSingleContact(hitObj);
+                      // add the current ship position
+                      p = p.add(Victor.fromArray(obj.physicsObj.position));
+                      let v = Victor.fromArray(obj.physicsObj.velocity);
+
+                      obj.pdc.physicsObj.position = [p.x, p.y];
+                      obj.pdc.physicsObj.velocity = [v.x, v.y];
+
+                      // also fire a single ray from one ship to the other to hit anything directy between
+                      let ray = new Ray({
+                        mode: Ray.ALL,
+                        from: obj.physicsObj.position,
+                        to: obj.pdc.physicsObj.position,
+                        callback: function(result){
+                          // find the hit
+                          let hitObj = null;
+                          this.world.forEachObject((id, o) => {
+                            if (o.physicsObj === result.body) {
+                              hitObj = o;
                             }
-                          }
-                        });
-                      }.bind(this)
-                    });
-                    let result = new RaycastResult();
-                    this.physicsEngine.world.raycast(result, ray);
+                            if (hitObj) {
+                              if (hitObj === obj) {
+                                // hit firing ship (ignore)
+                              } else if (hitObj === obj.pdc) {
+                                // hit PDC (ignore)
+                              } else {
+                                // do damage
+                                obj.pdc.processSingleContact(hitObj);
+                              }
+                            }
+                          });
+                        }.bind(this)
+                      });
+                      let result = new RaycastResult();
+                      this.physicsEngine.world.raycast(result, ray);
+                    }
+                  } else {
+                    // if we've run out of ammo stop firing
+                    this.emit('pdc', { ship: obj, angle: obj.pdcAngle, state: 1 });
                   }
                 }
 
@@ -463,6 +472,15 @@ export default class NvGameEngine extends GameEngine {
             }
 
 
+            if (inputData.input == 'loadtorp') {
+
+                let ship = this.getPlayerShip(playerId);
+                let tube = inputData.options.tube;
+                let torpType = inputData.options.torpType;
+                ship.loadTorp(tube, torpType);
+            }
+
+
 
             if (inputData.input == 'pdcangle') {
               let ship = this.getPlayerShip(playerId);
@@ -580,6 +598,8 @@ export default class NvGameEngine extends GameEngine {
               velocity: new TwoVector(params['dX'], params['dY']),
               angle: params['angle']
           });
+          s.weaponStock = hullData.defaultWeaponStock || [];
+
         } else {
           s = new Ship(this, {}, {
               mass: params['mass'] || hullData.mass, angularVelocity: 0,
@@ -642,9 +662,18 @@ export default class NvGameEngine extends GameEngine {
     // create Torpedo
     addTorpedo(params) {
 
+        // get some settings from torpedo type: mass, size, fuel
+        let td = Object.assign({}, Hulls['torpedo']);
+        if (this.torpType) {
+          td = Object.assign(td, Hulls['torpedo'].types[this.torpType]);
+        }
+        let mass = td.mass;
+        let size = td.size;
+
         // x, y, dX, dY, mass, size, angle, angularVelocity
         let t = new Torpedo(this, {}, {
-            mass: params['mass'],
+            mass: mass,
+            size: size,
             angularVelocity: params['angularVelocity'],
             position: new TwoVector(params['x'], params['y']),
             velocity: new TwoVector(params['dX'], params['dY']),
@@ -653,6 +682,7 @@ export default class NvGameEngine extends GameEngine {
         t.targetId = params['targetId'];
         t.fuel = params['fuel'];
         t.engine = params['engine'];
+        t.torpType = params['torpType'];
         return this.addObjectToWorld(t);
     }
 
