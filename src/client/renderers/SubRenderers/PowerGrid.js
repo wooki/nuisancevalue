@@ -188,11 +188,9 @@ export default class PowerGrid {
 
     let currentState =this.grid.getConnector(row, col);
     if (currentState != 0) {
-      console.log("currentState:"+currentState);
       let newState = (currentState + 1) % 8;
       if (newState == 0) newState = 1;
-      console.log("newState:"+newState);
-
+      
       if (this.renderer.client) {
         this.renderer.client.setPowerCell(row, col, newState);
       }

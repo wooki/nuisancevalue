@@ -68,8 +68,8 @@ export default {
       },
       {
         fuel: 100,
-        payload: 100,
-        thrust: 2,
+        payload: 1000,
+        thrust: 4,
         maxClosing: 100,
 				name: "Type II",
 				desc: "Some info about this torp"

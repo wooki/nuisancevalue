@@ -468,7 +468,7 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 let tube = inputData.options.tube;
                 let torpType = inputData.options.torpType;
-                ship.loadTorp(tube, torpType);                
+                ship.loadTorp(tube, torpType);
             }
 
 
@@ -651,9 +651,18 @@ export default class NvGameEngine extends GameEngine {
     // create Torpedo
     addTorpedo(params) {
 
+        // get some settings from torpedo type: mass, size, fuel
+        let td = Object.assign({}, Hulls['torpedo']);
+        if (this.torpType) {
+          td = Object.assign(td, Hulls['torpedo'].types[this.torpType]);
+        }
+        let mass = td.mass;
+        let size = td.size;
+
         // x, y, dX, dY, mass, size, angle, angularVelocity
         let t = new Torpedo(this, {}, {
-            mass: params['mass'],
+            mass: mass,
+            size: size,
             angularVelocity: params['angularVelocity'],
             position: new TwoVector(params['x'], params['y']),
             velocity: new TwoVector(params['dX'], params['dY']),
@@ -662,6 +671,7 @@ export default class NvGameEngine extends GameEngine {
         t.targetId = params['targetId'];
         t.fuel = params['fuel'];
         t.engine = params['engine'];
+        t.torpType = params['torpType'];
         return this.addObjectToWorld(t);
     }
 

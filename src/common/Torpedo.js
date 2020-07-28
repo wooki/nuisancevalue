@@ -8,18 +8,14 @@ export default class Torpedo extends PhysicalObject2D {
 
   constructor(gameEngine, options, props) {
       super(gameEngine, options, props);
-      this.hull = "torpedo";
-      this.size = Hulls['torpedo'].size;
-      this.payload = Hulls['torpedo'].payload;
-      this.aiScript = 1; // torpedo ai script
-      this.thrust = Hulls['torpedo'].thrust;
   }
 
   static get netScheme() {
       return Object.assign({
         targetId: { type: BaseTypes.TYPES.INT16 },
         fuel: { type: BaseTypes.TYPES.INT16 },
-        engine: { type: BaseTypes.TYPES.UINT8 }
+        engine: { type: BaseTypes.TYPES.UINT8 },
+        torpType: { type: BaseTypes.TYPES.UINT8 }
       }, super.netScheme);
   }
 
@@ -32,13 +28,41 @@ export default class Torpedo extends PhysicalObject2D {
     }
   };
 
+  get torpData() {
+    let td = Object.assign({}, Hulls['torpedo']);
+    if (this.torpType || this.torpType == 0) {
+      td = Object.assign(td, Hulls['torpedo'].types[this.torpType]);
+    }
+    return td;
+  }
+
+  get hull() {
+    return "torpedo";
+  }
+
+  get payload() {
+    return this.torpData.payload;
+  }
+
+  get aiScript() {
+    return 1; // torp ai
+  }
+
+  get thrust() {
+    return this.torpData.thrust;
+  }
+
+  get maxClosing() {
+    return this.torpData.maxClosing;
+  }
+
   // if the ship has active engines then apply force
   applyEngine() {
-      let hullData = Hulls[this.hull];
+      // let hullData = Hulls[this.hull];
 
       if (this.engine && this.engine > 0) {
         if (this.fuel > 0) {
-          this.physicsObj.applyForceLocal([0, hullData.thrust]); // engine only fires 1
+          this.physicsObj.applyForceLocal([0, this.thrust]); // engine only fires 1
         }
         this.fuel = this.fuel - this.engine;
       }
@@ -78,6 +102,7 @@ export default class Torpedo extends PhysicalObject2D {
         this.targetId = other.targetId;
         this.fuel = other.fuel;
         this.engine = other.engine;
+        this.torpType = other.torpType;
     }
 
     toString() {
