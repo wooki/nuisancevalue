@@ -85,6 +85,13 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 30
           }),
           new TargetSelection({}), // watch for selection and set as target
+          new TorpedoFireControl({
+            x: margin,
+            y: (marginFull + 126),
+            width: Math.max(sideWidth, sideControlsMin),
+            zIndex: 30,
+            keyboardControls: false
+          }),
           new OpenCommsControl({
             x: margin,
             y: margin,
@@ -98,13 +105,6 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullWidth - marginFull,
             height: fullHeight - marginFull,
             zIndex: 100
-          }),
-          new TorpedoFireControl({
-            x: margin,
-            y: (marginFull + 126),
-            width: Math.max(sideWidth, sideControlsMin),
-            zIndex: 30,
-            keyboardControls: false
           }),
 
         ]

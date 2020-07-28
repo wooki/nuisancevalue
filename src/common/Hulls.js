@@ -26,8 +26,8 @@ export default {
 		tubes: 2,
 		systems: STANDARD_SYSTEMS, // this is a bit encoded set of valid systems that CAN BE damaged
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
-		maxWeaponStock: [12000, 20, 20],
-		defaultWeaponStock: [6000, 12, 6]
+		maxWeaponStock: [6000, 20, 20],
+		defaultWeaponStock: [3000, 12, 6]
 	},
 
 	"tug": {
@@ -100,8 +100,8 @@ export default {
 		tubes: 4,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
-		maxWeaponStock: [12000, 20, 20],
-		defaultWeaponStock: [6000, 12, 6]
+		maxWeaponStock: [6000, 20, 20],
+		defaultWeaponStock: [3000, 12, 6]
 	},
 
 	"blockade-runner": {
@@ -122,8 +122,8 @@ export default {
 		tubes: 2,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
-		maxWeaponStock: [8000, 12, 12],
-		defaultWeaponStock: [6000, 8, 4]
+		maxWeaponStock: [4000, 12, 12],
+		defaultWeaponStock: [3000, 8, 4]
 	},
 
 	"station": {
