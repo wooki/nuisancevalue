@@ -30,8 +30,28 @@ export default class PlayableShip extends Ship {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.INT16
             },
+            weaponStock: { // only playable ships have limited ammo
+                type: BaseTypes.TYPES.LIST,
+                itemType: BaseTypes.TYPES.INT16 // 0=PDC, n-1=torp type - value = ammo
+            },
             fuel: { type: BaseTypes.TYPES.INT16 }
         }, super.netScheme);
+    }
+
+    loadTorp(tube, torpType) {
+
+      // check stock and only load if we have stock
+      if (torpType == 0) {
+        // unload, adds back to stock
+        this.weaponStock[this.tubes[tube]] = this.weaponStock[this.tubes[tube]] + 1;
+        this.tubes[tube] = torpType;
+
+      } else if (this.weaponStock[torpType] > 0) {
+        // super(tube, torpType);
+        this.tubes[tube] = torpType;
+        this.weaponStock[torpType] = this.weaponStock[torpType] - 1;
+      }
+
     }
 
     addWaypoint(name, x, y) {
@@ -97,5 +117,6 @@ export default class PlayableShip extends Ship {
         this.waypoints = other.waypoints;
         this.fuel = other.fuel;
         this.power = other.power;
+        this.weaponStock = other.weaponStock;
     }
 }

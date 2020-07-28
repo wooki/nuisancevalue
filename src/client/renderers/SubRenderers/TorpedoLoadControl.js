@@ -44,7 +44,7 @@ export default class TorpedoLoadControl {
     this.projector.append(this.el, this.render.bind(this));
   }
 
-  // watch player ship for the engine
+  // watch player ship 
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
     this.playerShip = playerShip;
 
@@ -116,11 +116,12 @@ export default class TorpedoLoadControl {
         // not currently loading - so give options
 
         for (let i = 0; i < this.torpTypes.length; i++) {
+          let haveStock = (this.playerShip && this.playerShip.weaponStock[i+1] > 0);
           loadOptions.push(this.createLoadButton(
             tubeIndex,
             i+1,
             this.torpTypes[i].name,
-            (currentTorp)
+            (currentTorp || !haveStock)
           ));
         }
 

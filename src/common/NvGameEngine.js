@@ -589,6 +589,8 @@ export default class NvGameEngine extends GameEngine {
               velocity: new TwoVector(params['dX'], params['dY']),
               angle: params['angle']
           });
+          s.weaponStock = hullData.defaultWeaponStock || [];
+
         } else {
           s = new Ship(this, {}, {
               mass: params['mass'] || hullData.mass, angularVelocity: 0,
