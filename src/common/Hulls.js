@@ -56,23 +56,24 @@ export default {
 		damage: 0, // has no systems to damage (although should never get checked)
 		fuel: 100,
 		payload: 600, // equivalent acceleration for damage
-		maxClosing: 1000,
+		maxClosing: 800,
 		types: [ // allow different torps to override any of these - image, size, exhaust
       {
         fuel: 100,
-        payload: 100,
+        payload: 600,
         thrust: 2,
-        maxClosing: 100,
+        maxClosing: 800,
         name: "Type I",
-				desc: "Some info about this torp"
+				desc: "Standard and reliable"
       },
       {
-        fuel: 100,
+        fuel: 80,
         payload: 1000,
-        thrust: 4,
-        maxClosing: 100,
+        thrust: 3,
+        maxClosing: 1400,
 				name: "Type II",
-				desc: "Some info about this torp"
+				desc: "Faster and harder hitting than the Type I but more erratic",
+				exhaustImage: 'exhaust' // or exhaust
       }
 		]
 	},

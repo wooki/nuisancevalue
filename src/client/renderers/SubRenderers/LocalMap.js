@@ -395,6 +395,10 @@ export default class LocalMap {
   createShipSprite(ship, coord, zIndex) {
 
     let hullData = Hulls[ship.hull];
+    if (ship instanceof Torpedo) {
+      hullData = ship.torpData;
+    }
+
     let texture = this.resources[this.parameters.baseUrl+hullData.image].texture;
     let height = hullData.size * this.parameters.scale;
     let width = height * hullData.width;

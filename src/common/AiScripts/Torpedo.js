@@ -34,8 +34,8 @@ export default class TorpedoAi {
 			// estimate time to arrive - this isn't very accurarte but good enough
 			const maxPredictionTime = 30;
 
-			// try and reserve fuel by reducing speed as fuel depletes
-			let torpTopSpeed = 10 * torpedo.fuel;
+			// max speed depends on torp type
+			let torpTopSpeed = torpedo.maxClosing;
 
 			let closing = ((ourVelocity.clone().subtract(theirVelocity)).dot(direction) / direction.length());
 			// console.log("closing:"+closing);
