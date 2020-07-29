@@ -13,6 +13,9 @@ export default class ManeuverControl {
       baseUrl: '/',
       keyboardControls: true,
       onScreenControls: true,
+      minZoom: 0.2,
+      maxZoom: 2,
+      zoomStep: 0.02,
       labels: {
       	'+': 'Zoom+',
       	'-': 'Zoom-'
@@ -58,11 +61,11 @@ export default class ManeuverControl {
   setZoom(direction) {
   	let zoom = this.zoom;
   	if (direction == '+') {
-  		zoom = zoom * 1.02;
-  		if (zoom > 2) zoom = 2;
+  		zoom = zoom * (1 + this.parameters.zoomStep);
+  		if (zoom > this.parameters.maxZoom) zoom = this.parameters.maxZoom;
   	} else {
-  		zoom = zoom * 0.98;
-  		if (zoom < 0.2) zoom = 0.2;
+  		zoom = zoom * (1 - this.parameters.zoomStep);
+  		if (zoom < this.parameters.minZoom) zoom = this.parameters.minZoom;
   	}
   	this.zoom = zoom;
 
