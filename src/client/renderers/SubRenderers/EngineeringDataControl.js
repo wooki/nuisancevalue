@@ -32,7 +32,13 @@ export default class EngineeringDataControl {
 
   // watch player ship for
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
-    this.playerShip = playerShip;
+
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
+    
     this.projector.scheduleRender();
   }
 
@@ -40,8 +46,8 @@ export default class EngineeringDataControl {
     return h('div.line', {
       key: "line-"+key
     }, [
-      h('label', {}, [key]),
-      h('data', {}, [data.toString()])
+      h('label', {key: 'label-'+key}, [key]),
+      h('data', {key: 'data-'+key}, [data.toString()])
     ]);
   }
 
@@ -77,7 +83,7 @@ export default class EngineeringDataControl {
 
         let torpTypeId = i+1;
         if (hullData.maxWeaponStock[torpTypeId] && (this.playerShip.weaponStock[torpTypeId] || this.playerShip.weaponStock[torpTypeId] === 0)) {
-          lines.push(this.createLine("Torpedos " + torpTypes[i].name, this.playerShip.weaponStock[torpTypeId] + "/" + hullData.maxWeaponStock[torpTypeId]));
+          lines.push(this.createLine("Torpedoes - " + torpTypes[i].name, this.playerShip.weaponStock[torpTypeId] + "/" + hullData.maxWeaponStock[torpTypeId]));
         }
       }
 

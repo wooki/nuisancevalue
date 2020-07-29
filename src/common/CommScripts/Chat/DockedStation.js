@@ -71,6 +71,7 @@ export default class DockedStationChat extends Chat {
 			],
 			onEnter: function(ship, playerShip, game) {
         if (playerShip.getHullData().pdc) {
+          console.log("Loading:"+playerShip.getHullData().maxWeaponStock[0]);
           playerShip.weaponStock[0] = playerShip.getHullData().maxWeaponStock[0];
         }
 			}

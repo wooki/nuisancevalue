@@ -46,7 +46,12 @@ export default class TorpedoLoadControl {
 
   // watch player ship
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
-    this.playerShip = playerShip;
+
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
 
     if (this.playerShip.tubes) {
       for (let i = 0; i < this.playerShip.tubes.length; i++) {

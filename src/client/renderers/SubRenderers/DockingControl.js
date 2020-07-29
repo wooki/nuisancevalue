@@ -181,7 +181,7 @@ export default class DockingControl {
 
   render() {
 
-    if (this.dockTarget == null) {
+    if (this.dockTarget == null || this.dockTarget.obj == null) {
       return h('div.nv.ui', {
         key: 'dockingcontrol',
         styles: {

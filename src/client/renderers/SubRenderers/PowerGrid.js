@@ -92,7 +92,11 @@ export default class PowerGrid {
 
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
-    this.playerShip = playerShip;
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
 
     let hullData = playerShip.getHullData();
     this.grid.unpack(playerShip.power);
@@ -190,7 +194,7 @@ export default class PowerGrid {
     if (currentState != 0) {
       let newState = (currentState + 1) % 8;
       if (newState == 0) newState = 1;
-      
+
       if (this.renderer.client) {
         this.renderer.client.setPowerCell(row, col, newState);
       }

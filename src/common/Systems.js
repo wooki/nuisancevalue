@@ -84,6 +84,11 @@ export default class Systems {
   // data is an array going from top left across each row in turn. Each item
   // is an int16 that contains 5, 3 bit numbers to convert to the CONNECTOR
   unpack(data) {
+    if (!data) {
+      console.log("no data to unpack");
+      console.dir(data);
+      return;
+    }
 
     // iterate rows and cols pulling out data
     for (let i = 0; i < data.length; i++) {

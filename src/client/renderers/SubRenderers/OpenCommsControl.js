@@ -47,6 +47,11 @@ export default class CommsOpenControl {
     if (this.targetObj && this.playerShip.targetId != this.targetObj.id) {
       this.targetObj = null;
     }
+
+    if (isDocked) {
+      this.targetObj = playerShip.id;
+    }
+
     this.projector.scheduleRender();
   }
 
