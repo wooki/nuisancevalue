@@ -12,6 +12,8 @@ import TargetSelection from './SubRenderers/TargetSelection';
 import OpenCommsControl from './SubRenderers/OpenCommsControl';
 import CommsControl from './SubRenderers/CommsControl';
 import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
+import LocalMapPdcHud from './SubRenderers/LocalMapPdcHud';
+import PdcFireControl from './SubRenderers/PdcFireControl';
 
 // extend compsite with pre-set subrenderers
 export default class CaptainRenderer extends CompositeRenderer {
@@ -73,6 +75,14 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 20,
             mapSize: 30000
           }),
+          new LocalMapPdcHud({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 25,
+            mapSize: 30000
+          }),
           new ZoomControl({
             keyboardControls: true,
             onScreenControls: false
@@ -83,30 +93,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: Math.max(sideWidth, sideControlsMin),
             height: fullHeight - marginFull,
             zIndex: 30
-          }),
-          new TargetSelection({}), // watch for selection and set as target
-          new TorpedoFireControl({
-            x: margin,
-            y: (marginFull + 126),
-            width: Math.max(sideWidth, sideControlsMin),
-            zIndex: 30,
-            keyboardControls: false
-          }),
-          new OpenCommsControl({
-            x: margin,
-            y: margin,
-            width: Math.max(sideWidth, sideControlsMin),
-            zIndex: 40,
-            keyboardControls: true
-          }),
-          new CommsControl({
-            x: margin,
-            y: margin,
-            width: fullWidth - marginFull,
-            height: fullHeight - marginFull,
-            zIndex: 100
-          }),
-
+          }),        
         ]
       };
 

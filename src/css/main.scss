@@ -344,8 +344,18 @@ label {
       }
     }
 
+    &.x-stretch {
+      & > * {
+        flex-grow: 1;
+      }
+    }
+
     &.justify-end {
       justify-content: flex-end;
+    }
+
+    &.col > .row {
+      margin: 3px 0;
     }
 
     .LED {
@@ -449,21 +459,29 @@ label {
       }
     } // .button
 
-    &.col button {
+    &.col > button {
       &:first-child {
           margin-top: 0;
-      }
-      &:last-child {
-          margin-bottom: 0;
-      }
-    }
-
-    &.row button {
-      &:first-child {
+          margin-right: 0;
           margin-left: 0;
       }
       &:last-child {
+          margin-bottom: 0;
           margin-right: 0;
+          margin-left: 0;
+      }
+    }
+
+    &.row > button {
+      &:first-child {
+          margin-left: 0;
+          margin-top: 0;
+          margin-bottom: 0;
+      }
+      &:last-child {
+          margin-right: 0;
+          margin-top: 0;
+          margin-bottom: 0;
       }
     }
 

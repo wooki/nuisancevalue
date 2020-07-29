@@ -37,9 +37,6 @@ export default class ManeuverControl {
 
     // attach shortcut keys
     if (this.parameters.keyboardControls && renderer.keyboardControls) {
-      renderer.keyboardControls.bindKey('left', 'maneuver', { }, { direction: 'l' });
-      renderer.keyboardControls.bindKey('right', 'maneuver', { }, { direction: 'r' });
-
       renderer.keyboardControls.bindKey(['equal sign', 'add'], 'zoom', { repeat: true }, { callback: (action, params) => {
       	this.setZoom('+');
       }});
@@ -93,7 +90,8 @@ export default class ManeuverControl {
         left: this.parameters.x + 'px',
         top: this.parameters.y + 'px',
         width: this.parameters.width + 'px',
-        height: this.parameters.height + 'px'
+        height: this.parameters.height + 'px',
+        zIndex: this.parameters.zIndex.toString()
       }
     },
     [

@@ -76,7 +76,8 @@ export default class EngineControl {
         left: this.parameters.x + 'px',
         top: this.parameters.y + 'px',
         width: this.parameters.width + 'px',
-        height: this.parameters.height + 'px'
+        height: this.parameters.height + 'px',
+        zIndex: this.parameters.zIndex.toString()
       }
     },
     [

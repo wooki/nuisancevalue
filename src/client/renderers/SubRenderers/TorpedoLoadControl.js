@@ -44,7 +44,7 @@ export default class TorpedoLoadControl {
     this.projector.append(this.el, this.render.bind(this));
   }
 
-  // watch player ship 
+  // watch player ship
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
     this.playerShip = playerShip;
 
@@ -170,7 +170,8 @@ export default class TorpedoLoadControl {
         left: this.parameters.x + 'px',
         top: this.parameters.y + 'px',
         width: this.parameters.width + 'px',
-        height: this.parameters.height + 'px'
+        height: this.parameters.height + 'px',
+        zIndex: this.parameters.zIndex.toString()
       }
       },
       rows

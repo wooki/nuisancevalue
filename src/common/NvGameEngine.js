@@ -503,8 +503,10 @@ export default class NvGameEngine extends GameEngine {
                 let newState = ship.pdcState;
                 if (inputData.options.direction == '+') {
                   newState = newState + 1;
-                } else {
+                } else if (inputData.options.direction == '-') {
                   newState = newState - 1;
+                } else {
+                  newState = parseInt(inputData.options.direction);
                 }
                 if (newState < 0) newState = 0;
                 if (newState > 2) newState = 2;
