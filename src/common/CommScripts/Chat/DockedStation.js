@@ -47,6 +47,7 @@ export default class DockedStationChat extends Chat {
 			}
 		};
 
+    //  Restock Torpedoes - submenu of torp types
     this.states[this.offset + 2] = { // state 2
 			text: "I'll get the Quartermaster on it right away.",
 			responses: [
@@ -70,7 +71,7 @@ export default class DockedStationChat extends Chat {
 			],
 			onEnter: function(ship, playerShip, game) {
         if (playerShip.getHullData().pdc) {
-          playerShip.pdcAmmo = playerShip.getHullData().pdc.ammo;
+          playerShip.weaponStock[0] = playerShip.getHullData().maxWeaponStock[0];
         }
 			}
 		};

@@ -65,7 +65,7 @@ export default class EngineeringDataControl {
       lines.push(this.createLine("Hull Damage", percentDamage + "%"));
 
       // fuel remaining
-      lines.push(this.createLine("Fuel", this.playerShip.fuel + "/" + hullData.fuel));
+      lines.push(this.createLine("Fuel", Math.round(this.playerShip.fuel) + "/" + hullData.fuel));
 
       // Ammo stocks
       if (hullData.maxWeaponStock[0] && (this.playerShip.weaponStock[0] || this.playerShip.weaponStock[0] === 0)) {
