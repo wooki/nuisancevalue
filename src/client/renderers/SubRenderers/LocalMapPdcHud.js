@@ -72,7 +72,12 @@ export default class LocalMapPdcHud {
   // watch the player ship and update
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
-    this.playerShip = playerShip;
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
+    
     this.drawPDCHud();
   }
 

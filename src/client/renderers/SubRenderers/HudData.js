@@ -132,6 +132,13 @@ export default class HudData {
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
+    let actualPlayerShip = playerShip;
+    if (isDocked) {
+      this.dockedPlayerShip = isDocked;
+      actualPlayerShip = isDocked;
+    } else {
+      this.dockedPlayerShip = null;
+    }
 
     // update the data items
     if (!isDestroyed) {
@@ -148,10 +155,10 @@ export default class HudData {
       this.dataItems[this.parameters.itemOrder.gravity] = this.getGravityData(playerShip);
 
       // target
-      this.dataItems[this.parameters.itemOrder.target] = this.getTargetData(playerShip);
+      this.dataItems[this.parameters.itemOrder.target] = this.getTargetData(actualPlayerShip);
 
       // waypoint (last because they repeat - so ignore the sorting)
-      let waypointDataItems = this.getWaypointData(playerShip);
+      let waypointDataItems = this.getWaypointData(actualPlayerShip);
       this.dataItems = this.dataItems.concat(waypointDataItems);
 
 
@@ -245,14 +252,14 @@ export default class HudData {
     this.currentTargetId = playerShip.targetId;
   }
 
-  getWaypointData(playerShip) {
+  getWaypointData(actualPlayerShip) {
 
     let wpData = [];
 
     // if we have waypoints either add to map or add to dial
-    if (playerShip.waypoints) {
+    if (actualPlayerShip.waypoints) {
 
-      playerShip.waypoints.forEach(function(wp) {
+      actualPlayerShip.waypoints.forEach(function(wp) {
 
           // unpack
           let waypointParams = wp.split(',');
@@ -263,14 +270,14 @@ export default class HudData {
           }
 
           // check if the waypoint will be on screen, or to be drawn on dial
-          waypoint.ourPos = Victor.fromArray(playerShip.physicsObj.position);
+          waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
           waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
           waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
           let bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
           let degrees = this.radiansToDegrees(bearing);
           waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
           waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
-          let ourSpeed = Victor.fromArray(playerShip.physicsObj.velocity);
+          let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
           waypoint.closing = 0;
           if (waypoint.distanceToWaypoint != 0) {
               waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);

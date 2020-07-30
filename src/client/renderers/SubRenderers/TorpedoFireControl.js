@@ -45,10 +45,16 @@ export default class TorpedoFireControl {
     this.projector.append(this.el, this.render.bind(this));
   }
 
-  // watch player ship for the engine
+  // watch player ship
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
-    this.playerShip = playerShip;
-    this.targetId = playerShip.targetId;
+
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
+
+    this.targetId = this.playerShip.targetId;
 
     if (this.playerShip.tubes) {
       this.projector.scheduleRender();

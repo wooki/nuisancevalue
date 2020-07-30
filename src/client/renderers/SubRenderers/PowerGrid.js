@@ -98,8 +98,8 @@ export default class PowerGrid {
       this.playerShip = playerShip;
     }
 
-    let hullData = playerShip.getHullData();
-    this.grid.unpack(playerShip.power);
+    let hullData = this.playerShip.getHullData();
+    this.grid.unpack(this.playerShip.power);
 
     // both of these may change with ship updates
     this.drawSystems(hullData);

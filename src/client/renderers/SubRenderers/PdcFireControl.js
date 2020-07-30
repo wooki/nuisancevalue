@@ -43,7 +43,11 @@ export default class PdcFireControl {
   // watch player ship for the engine
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
-    this.playerShip = playerShip;
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
 
     // not shown if ship has no PDC
     let hullData = this.playerShip.getHullData();

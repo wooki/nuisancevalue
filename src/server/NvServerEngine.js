@@ -244,7 +244,11 @@ export default class NvServerEngine extends ServerEngine {
         });
 
         this.gameEngine.on('settarget', e => {
-            e.ship.targetId = e.targetId;
+            if (e.ship.dockedId >= 0) {
+              e.ship.targetId = e.ship.dockedId;
+            } else {
+              e.ship.targetId = e.targetId;
+            }
         });
 
         this.gameEngine.on('pdc', e => {

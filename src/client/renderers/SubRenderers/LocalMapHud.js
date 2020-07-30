@@ -193,6 +193,13 @@ export default class LocalMapHud {
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
+    let actualPlayerShip = playerShip;
+    if (isDocked) {
+      this.dockedPlayerShip = isDocked;
+      actualPlayerShip = isDocked;
+    } else {
+      this.dockedPlayerShip = null;
+    }
 
     // add or update the player ship
     if (!isDestroyed) {
@@ -207,10 +214,10 @@ export default class LocalMapHud {
       this.setBearing(playerShip);
 
       // target
-      this.setTarget(playerShip);
+      this.setTarget(actualPlayerShip);
 
       // waypoint
-      this.setWaypoints(playerShip);
+      this.setWaypoints(actualPlayerShip);
     }
   }
 
@@ -308,14 +315,14 @@ export default class LocalMapHud {
     this.currentTargetId = playerShip.targetId;
   }
 
-  setWaypoints(playerShip) {
+  setWaypoints(actualPlayerShip) {
 
     let currentWaypoints = {};
 
     // if we have waypoints either add to map or add to dial
-    if (playerShip.waypoints) {
+    if (actualPlayerShip.waypoints) {
 
-      playerShip.waypoints.forEach(function(wp) {
+      actualPlayerShip.waypoints.forEach(function(wp) {
 
           // unpack
           let waypointParams = wp.split(',');
@@ -329,14 +336,14 @@ export default class LocalMapHud {
           currentWaypoints[waypoint.name] = waypoint;
 
           // check if the waypoint will be on screen, or to be drawn on dial
-          waypoint.ourPos = Victor.fromArray(playerShip.physicsObj.position);
+          waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
           waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
           waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
           // waypoint.waypointDirection = new Victor(waypoint.waypointDirection.x, waypoint.waypointDirection.y);
           waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
           waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
 
-          let ourSpeed = Victor.fromArray(playerShip.physicsObj.velocity);
+          let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
           waypoint.closing = 0;
           if (waypoint.distanceToWaypoint != 0) {
               waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);

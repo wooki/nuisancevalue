@@ -34,8 +34,14 @@ export default class ManeuverControl {
   // watch player ship for the engine
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
-    let hullData = Hulls[playerShip.hull];
-    this.fuel = Math.round(playerShip.fuel);
+    if (isDocked) {
+      this.playerShip = isDocked;
+    } else {
+      this.playerShip = playerShip;
+    }
+
+    let hullData = Hulls[this.playerShip.hull];
+    this.fuel = Math.round(this.playerShip.fuel);
     this.maxFuel = Math.round(hullData.fuel);
 
     this.projector.scheduleRender();

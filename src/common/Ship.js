@@ -126,6 +126,7 @@ export default class Ship extends PhysicalObject2D {
 
         // update our data
         this.dockedId = dockWith;
+        this.targetId = dockWith;
         if (this.pdcState > 0) this.pdcState = 0;
     }
 
