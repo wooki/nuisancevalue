@@ -48,6 +48,7 @@ export default class LocalMap {
       subdivisions: 10,
       mimimumSpriteSize: 10,
       borderWidth: 4,
+      focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       internalZIndex: {
         background: 1,
@@ -76,6 +77,7 @@ export default class LocalMap {
     this.resources = resources;
     this.renderer = renderer;
 
+    this.focusObjectCoord = [];
     this.sprites = []; // keep track of sprites on the map
     this.mapObjects = []; // keep track of actual objects
     this.playerSprite = null;
@@ -100,6 +102,26 @@ export default class LocalMap {
     this.mapContainer.mask = dashboardMaskBorderGraphics;
   }
 
+  // get the coord depending on the focus type
+  getFocusCoord() {
+    if (this.parameters.focus == "player") {
+      // get the playerShip coord
+      if (this.playerShip) {
+        this.focusObjectCoord = this.playerShip.physicsObj.position;
+        return this.focusObjectCoord;
+      }
+    } else if (Array.isArray(this.parameters.focus)) {
+      // coord
+      this.focusObjectCoord = this.parameters.focus;
+      return this.focusObjectCoord;
+    } else {
+      // get the coord of the object with that id
+      return this.focusObjectCoord;
+    }
+
+    return [0, 0]; // shouldn't get here
+  }
+
   // needed to listen for zoom
   updateSharedState(state, renderer) {
 
@@ -120,9 +142,7 @@ export default class LocalMap {
   addExplosion(obj, renderer) {
     if (this.playerShip) {
       let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                           obj.physicsObj.position[1],
-                                           this.playerShip.physicsObj.position[0],
-                                           this.playerShip.physicsObj.position[1]);
+                                           obj.physicsObj.position[1]);
 
 
       UiUtils.addExplosion(this.resources[this.parameters.baseUrl+Assets.Images.explosion].spritesheet,
@@ -166,9 +186,7 @@ export default class LocalMap {
       }
 
     let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                         obj.physicsObj.position[1],
-                                         this.playerShip.physicsObj.position[0],
-                                         this.playerShip.physicsObj.position[1]);
+                                         obj.physicsObj.position[1]);
 
     if (isPDC) {
       const explosionSize = 200;
@@ -189,11 +207,13 @@ export default class LocalMap {
 
   updateObject(obj, renderer) {
 
+    if (obj.id == this.parameters.focus) {
+        this.focusObjectCoord = obj.physicsObj.position;
+    }
+
     // update position
     let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                         obj.physicsObj.position[1],
-                                         this.playerShip.physicsObj.position[0],
-                                         this.playerShip.physicsObj.position[1]);
+                                         obj.physicsObj.position[1]);
 
     let sprite = this.sprites[obj.id];
     if (sprite) {
@@ -255,8 +275,6 @@ export default class LocalMap {
       if (!isDestroyed) {
 
         let coord = this.relativeScreenCoord(playerShip.physicsObj.position[0],
-                                             playerShip.physicsObj.position[1],
-                                             playerShip.physicsObj.position[0],
                                              playerShip.physicsObj.position[1]);
 
         // add the player ship sprite if we haven't got it
@@ -265,6 +283,8 @@ export default class LocalMap {
             this.addSpriteToMap(this.playerSprite, playerShip.id);
         } else {
           this.updateObjectScale(playerShip, playerShip.id); // also scales engines - which is why we do here
+          this.playerSprite.x = coord.x;
+          this.playerSprite.y = coord.y;
         }
 
         // set the player ship rotation
@@ -358,7 +378,11 @@ export default class LocalMap {
 
   }
 
-  relativeScreenCoord(x, y, focusX, focusY) {
+  relativeScreenCoord(x, y) {
+
+      const focus = this.getFocusCoord();
+      const focusX = focus[0];
+      const focusY = focus[1];
 
 			let matrix = new PIXI.Matrix();
 			matrix.translate(x, y);

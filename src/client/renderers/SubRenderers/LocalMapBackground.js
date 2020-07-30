@@ -21,6 +21,7 @@ export default class LocalMapBackground {
       mimimumSpriteSize: 10,
       borderWidth: 4,
       backgroundAsset: 'space',
+      focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       internalZIndex: {
         background: 1,
@@ -48,6 +49,8 @@ export default class LocalMapBackground {
     this.pixiContainer = pixiContainer;
     this.resources = resources;
     this.renderer = renderer;
+
+    this.focusObjectCoord = [];
 
     // put everything in a container
     this.mapContainer = new PIXI.Container();
@@ -130,10 +133,37 @@ export default class LocalMapBackground {
     }
   }
 
+  // get the coord depending on the focus type
+  getFocusCoord() {
+    if (this.parameters.focus == "player") {
+      // get the playerShip coord
+      if (this.playerShip) {
+        this.focusObjectCoord = this.playerShip.physicsObj.position;
+        return this.focusObjectCoord;
+      }
+    } else if (Array.isArray(this.parameters.focus)) {
+      // coord
+      this.focusObjectCoord = this.parameters.focus;
+      return this.focusObjectCoord;
+    } else {
+      // get the coord of the object with that id
+      return this.focusObjectCoord;
+    }
+
+    return [0, 0]; // shouldn't get here
+  }
+
+  updateObject(obj, renderer) {
+    if (obj.id == this.parameters.focus) {
+        this.focusObjectCoord = obj.physicsObj.position;
+    }
+  }
+
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
-    const position = playerShip.physicsObj.position;
+    // const position = playerShip.physicsObj.position;
+    const position = this.getFocusCoord();
     if (position) {
       this.updateGrid(position[0], position[1]);
     }

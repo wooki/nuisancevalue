@@ -24,6 +24,7 @@ export default class LocalMapPdcHud {
       zIndex: 2,
       baseUrl: '/',
       mapSize: 10000, // how much to display across the width of the map
+      focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       zoom: 1
     }, params);
@@ -39,6 +40,7 @@ export default class LocalMapPdcHud {
     this.pixiContainer = pixiContainer;
     this.resources = resources;
 
+    this.focusObjectCoord = [];
     this.sprites = []; // keep track of sprites on the map
 
     // put everything in a container
@@ -59,6 +61,26 @@ export default class LocalMapPdcHud {
     }
     dashboardMaskGraphics.endFill();
     this.hudContainer.mask = dashboardMaskGraphics;
+  }
+
+  // get the coord depending on the focus type
+  getFocusCoord() {
+    if (this.parameters.focus == "player") {
+      // get the playerShip coord
+      if (this.playerShip) {
+        this.focusObjectCoord = this.playerShip.physicsObj.position;
+        return this.focusObjectCoord;
+      }
+    } else if (Array.isArray(this.parameters.focus)) {
+      // coord
+      this.focusObjectCoord = this.parameters.focus;
+      return this.focusObjectCoord;
+    } else {
+      // get the coord of the object with that id
+      return this.focusObjectCoord;
+    }
+
+    return [0, 0]; // shouldn't get here
   }
 
   // needed to listen for zoom
@@ -86,6 +108,12 @@ export default class LocalMapPdcHud {
     this.drawPDCHud();
   }
 
+  updateObject(obj, renderer) {
+    if (obj.id == this.parameters.focus) {
+        this.focusObjectCoord = obj.physicsObj.position;
+    }
+  }
+
   drawPDCHud() {
 
     if (!this.playerShip) return;
@@ -100,18 +128,22 @@ export default class LocalMapPdcHud {
       let rotation = UiUtils.adjustAngle(this.playerShip.pdcAngle);
 
       // draw/add the helm sprite and set rotation
+      let position = this.relativeScreenCoord(this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1]);
+
       if (!this.sprites.pdcHud) {
         this.sprites.pdcHud = new PIXI.Sprite(this.resources[this.parameters.baseUrl+Assets.Images.pdchud].texture);
         this.sprites.pdcHud.filters = [ effects.pdcHudColor ];
         this.sprites.pdcHud.width = hullData.pdc.range * 2 * this.parameters.scale;
         this.sprites.pdcHud.height = hullData.pdc.range * 2 * this.parameters.scale;
         this.sprites.pdcHud.anchor.set(0.5);
-        this.sprites.pdcHud.x = this.centerX;
-        this.sprites.pdcHud.y = this.centerY;
+        this.sprites.pdcHud.x = position.x;
+        this.sprites.pdcHud.y = position.y;
         this.sprites.pdcHud.zIndex = this.parameters.zIndex;
         this.sprites.pdcHud.rotation = rotation;
         this.hudContainer.addChild(this.sprites.pdcHud);
       } else {
+        this.sprites.pdcHud.x = position.x;
+        this.sprites.pdcHud.y = position.y;
         this.sprites.pdcHud.width = hullData.pdc.range * 2 * this.parameters.scale;
         this.sprites.pdcHud.height = hullData.pdc.range * 2 * this.parameters.scale;
         this.sprites.pdcHud.rotation = rotation;
@@ -121,6 +153,23 @@ export default class LocalMapPdcHud {
         this.sprites.pdcHud.visible = false;
     }
   }
+
+  relativeScreenCoord(x, y) {
+
+    const focus = this.getFocusCoord();
+    const focusX = focus[0];
+    const focusY = focus[1];
+
+      let matrix = new PIXI.Matrix();
+			matrix.translate(x, y);
+			matrix.translate(0 - focusX, 0 - focusY);
+			matrix.scale(this.parameters.scale, this.parameters.scale);
+			matrix.translate(this.centerX, this.centerY);
+			let p = new PIXI.Point(0, 0);
+			p = matrix.apply(p);
+
+    	return p;
+	}
 
 
 }

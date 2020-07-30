@@ -25,6 +25,7 @@ export default class LocalMapPaths {
       zoom: 1,
       predictTime: 60,
       trackObjects: true,
+      focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       colors: {
         gravity: 0x3333FF,
@@ -45,6 +46,8 @@ export default class LocalMapPaths {
     this.pixiApp = pixiApp;
     this.pixiContainer = pixiContainer;
     this.resources = resources;
+
+    this.focusObjectCoord = [];
 
     // put everything in a container
     this.mapContainer = new PIXI.Container();
@@ -90,6 +93,26 @@ export default class LocalMapPaths {
       this.mapContainer.addChild(this.helmPathUi);
   }
 
+  // get the coord depending on the focus type
+  getFocusCoord() {
+    if (this.parameters.focus == "player") {
+      // get the playerShip coord
+      if (this.playerShip) {
+        this.focusObjectCoord = this.playerShip.physicsObj.position;
+        return this.focusObjectCoord;
+      }
+    } else if (Array.isArray(this.parameters.focus)) {
+      // coord
+      this.focusObjectCoord = this.parameters.focus;
+      return this.focusObjectCoord;
+    } else {
+      // get the coord of the object with that id
+      return this.focusObjectCoord;
+    }
+
+    return [0, 0]; // shouldn't get here
+  }
+
   // needed to listen for zoom
   updateSharedState(state, renderer) {
 
@@ -115,6 +138,10 @@ export default class LocalMapPaths {
 
   updateObject(obj, renderer) {
 
+    if (obj.id == this.parameters.focus) {
+        this.focusObjectCoord = obj.physicsObj.position;
+    }
+
     if (this.parameters.trackObjects) {
       // decide if we want to plot it's path
       if (obj instanceof Ship ||
@@ -124,9 +151,7 @@ export default class LocalMapPaths {
 
         // get position
         let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                             obj.physicsObj.position[1],
-                                             this.playerShip.physicsObj.position[0],
-                                             this.playerShip.physicsObj.position[1]);
+                                             obj.physicsObj.position[1]);
 
         // check if object is on the map
         let distance = Math.abs(Victor.fromArray(this.playerShip.physicsObj.position).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
@@ -142,7 +167,7 @@ export default class LocalMapPaths {
 
           this.predictedPaths['object'+obj.id] = {
             color: this.parameters.colors.other,
-            points: this.relativeScreenCoords(predictedPath, this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1])
+            points: this.relativeScreenCoords(predictedPath)
           };
         } else {
           // remove it
@@ -163,12 +188,9 @@ export default class LocalMapPaths {
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
-    let focusX = playerShip.physicsObj.position[0];
-    let focusY = playerShip.physicsObj.position[1];
 
     let coord = this.relativeScreenCoord(playerShip.physicsObj.position[0],
-                                         playerShip.physicsObj.position[1],
-                                         focusX, focusY);
+                                         playerShip.physicsObj.position[1]);
 
 
     // plot the path of our gravity object if there is one
@@ -184,7 +206,7 @@ export default class LocalMapPaths {
 
       this.predictedPaths.gravity = {
         color: this.parameters.colors.gravity,
-        points: this.relativeScreenCoords(predictedGravityPath, focusX, focusY),
+        points: this.relativeScreenCoords(predictedGravityPath),
         path: predictedGravityPath // used for adjusting other paths
       };
     } else {
@@ -199,7 +221,7 @@ export default class LocalMapPaths {
 
     this.predictedPaths.playerShip = {
       color: this.parameters.colors.heading,
-      points: this.relativeScreenCoords(ourPredictedPath, focusX, focusY)
+      points: this.relativeScreenCoords(ourPredictedPath)
     };
 
     // we get this updated every tick, so redraw here
@@ -218,9 +240,13 @@ export default class LocalMapPaths {
     return adjustedPath;
   }
 
-  relativeScreenCoord(x, y, focusX, focusY) {
+  relativeScreenCoord(x, y) {
 
-			let matrix = new PIXI.Matrix();
+      const focus = this.getFocusCoord();
+      const focusX = focus[0];
+      const focusY = focus[1];
+
+      let matrix = new PIXI.Matrix();
 			matrix.translate(x, y);
 			matrix.translate(0 - focusX, 0 - focusY);
 			matrix.scale(this.parameters.scale, this.parameters.scale);
@@ -240,7 +266,7 @@ export default class LocalMapPaths {
 				if (x === undefined) { x = p[0]; }
 				if (y === undefined) { y = p[1]; }
 
-				convertedPoints.push(this.relativeScreenCoord(x, y, focusX, focusY));
+				convertedPoints.push(this.relativeScreenCoord(x, y));
 
 			}.bind(this));
 		}
