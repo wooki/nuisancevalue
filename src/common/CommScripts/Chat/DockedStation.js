@@ -1,4 +1,5 @@
 import Chat from './Chat';
+import Hulls from '../../Hulls';
 
 // chat script for a docked station
 export default class DockedStationChat extends Chat {
@@ -48,17 +49,21 @@ export default class DockedStationChat extends Chat {
 		};
 
     //  Restock Torpedoes - submenu of torp types
+    let torpedoOptions = [];
+    for (let torpI = 0; torpI < Hulls["torpedo"].types.length; torpI++) {
+      torpedoOptions.push({
+        text: Hulls["torpedo"].types[torpI].name + ", " + Hulls["torpedo"].types[torpI].desc,
+        nextState: this.offset + 5 + torpI
+      });
+    }
+    torpedoOptions.push({
+      text: "Back to the Dockmaster",
+      nextState: this.offset + 0
+    });
+
     this.states[this.offset + 2] = { // state 2
-			text: "I'll get the Quartermaster on it right away.",
-			responses: [
-				{ // response 0
-					text: "Back to the Dockmaster",
-					nextState: this.offset + 0
-				}
-			],
-			onEnter: function(ship, playerShip, game) {
-        playerShip.torpedoes = playerShip.getHullData().torpedoes;
-			}
+			text: "Which Torpedoes are you after? We have " + Hulls["torpedo"].types.length + " types:",
+			responses: torpedoOptions
 		};
 
     this.states[this.offset + 3] = { // state 3
@@ -86,6 +91,25 @@ export default class DockedStationChat extends Chat {
 				}
 			]
 		};
+
+    // load each torp type
+    for (let torpJ = 0; torpJ < Hulls["torpedo"].types.length; torpJ++) {
+      this.states[this.offset + 5 + torpJ] = {
+        text: "I'll get the Quartermaster on it right away.",
+  			responses: [
+  				{ // response 0
+  					text: "Back to the Dockmaster",
+  					nextState: this.offset + 0
+  				}
+  			],
+  			onEnter: function(ship, playerShip, game) {
+          if (playerShip.getHullData().tubes) {
+            console.log("Loading:"+playerShip.getHullData().maxWeaponStock[torpJ + 1]);
+            playerShip.weaponStock[torpJ + 1] = playerShip.getHullData().maxWeaponStock[torpJ + 1];
+          }
+  			}
+  		};
+    }
 
 
   }

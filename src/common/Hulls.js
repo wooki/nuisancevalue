@@ -76,7 +76,7 @@ export default {
         thrust: 3,
         maxClosing: 1400,
 				name: "Type II",
-				desc: "Faster and harder hitting than the Type I but more erratic",
+				desc: "Fast and powerful, but erratic",
 				exhaustImage: 'exhaust' // or exhaust
       }
 		]
