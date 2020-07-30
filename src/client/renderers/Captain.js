@@ -47,7 +47,8 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 5,
-            mapSize: 30000
+            mapSize: 100000,
+            shape: "rectangle"
           }),
           new LocalMapPaths({
             x: halfWidth - (halfHeight - margin),
@@ -57,7 +58,8 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 12,
             predictTime: 36,
             trackObjects: false,
-            mapSize: 30000
+            mapSize: 100000,
+            shape: "rectangle"
           }),
           new LocalMap({
             x: halfWidth - (halfHeight - margin),
@@ -65,27 +67,24 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 15,
-            mapSize: 30000
+            mapSize: 100000,
+            shape: "rectangle"
           }),
-          new LocalMapHud({
-            x: halfWidth - (halfHeight - margin),
-            y: margin,
-            width: fullHeight - marginFull,
-            height: fullHeight - marginFull,
-            zIndex: 20,
-            mapSize: 30000
-          }),
-          new LocalMapPdcHud({
-            x: halfWidth - (halfHeight - margin),
-            y: margin,
-            width: fullHeight - marginFull,
-            height: fullHeight - marginFull,
-            zIndex: 25,
-            mapSize: 30000
-          }),
+          // new LocalMapHud({
+          //   x: halfWidth - (halfHeight - margin),
+          //   y: margin,
+          //   width: fullHeight - marginFull,
+          //   height: fullHeight - marginFull,
+          //   zIndex: 20,
+          //   mapSize: 30000,
+          //   shape: "rectangle"
+          // }),
           new ZoomControl({
             keyboardControls: true,
-            onScreenControls: false
+            onScreenControls: false,
+            minZoom: 0.1,
+            maxZoom: 8,
+            zoomStep: 0.05,
           }),
           new HudData({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
@@ -93,7 +92,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: Math.max(sideWidth, sideControlsMin),
             height: fullHeight - marginFull,
             zIndex: 30
-          }),        
+          }),
         ]
       };
 

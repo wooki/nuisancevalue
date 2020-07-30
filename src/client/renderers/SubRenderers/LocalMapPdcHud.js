@@ -24,6 +24,7 @@ export default class LocalMapPdcHud {
       zIndex: 2,
       baseUrl: '/',
       mapSize: 10000, // how much to display across the width of the map
+      shape: "circle", // or "rectangle"
       zoom: 1
     }, params);
 
@@ -51,7 +52,11 @@ export default class LocalMapPdcHud {
 
     let dashboardMaskGraphics = new PIXI.Graphics();
     dashboardMaskGraphics.beginFill(Assets.Colors.Black, 1);
-    dashboardMaskGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    if (this.parameters.shape == "circle") {
+      dashboardMaskGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    } else {
+      dashboardMaskGraphics.drawRect(this.centerX - (this.parameters.width/2), this.centerY - (this.parameters.height/2), this.parameters.width, this.parameters.height);
+    }
     dashboardMaskGraphics.endFill();
     this.hudContainer.mask = dashboardMaskGraphics;
   }
@@ -77,7 +82,7 @@ export default class LocalMapPdcHud {
     } else {
       this.playerShip = playerShip;
     }
-    
+
     this.drawPDCHud();
   }
 

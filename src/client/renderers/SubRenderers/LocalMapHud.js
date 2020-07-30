@@ -21,6 +21,7 @@ export default class LocalMapHud {
       baseUrl: '/',
       mapSize: 10000, // how much to display across the width of the map
       zoom: 1,
+      shape: "circle", // or "rectangle"
       internalZIndex: {
         background: 1,
         dialLabels: 1,
@@ -79,7 +80,11 @@ export default class LocalMapHud {
 
     let dashboardMaskGraphics = new PIXI.Graphics();
     dashboardMaskGraphics.beginFill(Assets.Colors.Black, 1);
-    dashboardMaskGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    if (this.parameters.shape == "circle") {
+      dashboardMaskGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    } else {
+      dashboardMaskGraphics.drawRect(this.centerX - (this.parameters.width/2), this.centerY - (this.parameters.height/2), this.parameters.width, this.parameters.height);
+    }
     dashboardMaskGraphics.endFill();
     this.hudContainer.mask = dashboardMaskGraphics;
 

@@ -25,6 +25,7 @@ export default class LocalMapPaths {
       zoom: 1,
       predictTime: 60,
       trackObjects: true,
+      shape: "circle", // or "rectangle"
       colors: {
         gravity: 0x3333FF,
         heading: 0x00FF00,
@@ -57,7 +58,11 @@ export default class LocalMapPaths {
     // prevent drawing outside the map
     let dashboardMaskBorderGraphics = new PIXI.Graphics();
     dashboardMaskBorderGraphics.beginFill(Assets.Colors.Black, 1);
-    dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    if (this.parameters.shape == "circle") {
+      dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    } else {
+      dashboardMaskBorderGraphics.drawRect(this.centerX - (this.parameters.width/2), this.centerY - (this.parameters.height/2), this.parameters.width, this.parameters.height);
+    }
     this.mapContainer.mask = dashboardMaskBorderGraphics;
 
     // keep a reference to the objects we are tracking and turn into array when we update

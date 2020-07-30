@@ -48,6 +48,7 @@ export default class LocalMap {
       subdivisions: 10,
       mimimumSpriteSize: 10,
       borderWidth: 4,
+      shape: "circle", // or "rectangle"
       internalZIndex: {
         background: 1,
         grid :2,
@@ -91,7 +92,11 @@ export default class LocalMap {
     // prevent drawing outside the map
     let dashboardMaskBorderGraphics = new PIXI.Graphics();
     dashboardMaskBorderGraphics.beginFill(Assets.Colors.Black, 1);
-    dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    if (this.parameters.shape == "circle") {
+      dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    } else {
+      dashboardMaskBorderGraphics.drawRect(this.centerX - (this.parameters.width/2), this.centerY - (this.parameters.height/2), this.parameters.width, this.parameters.height);
+    }
     this.mapContainer.mask = dashboardMaskBorderGraphics;
   }
 

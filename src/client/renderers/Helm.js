@@ -41,7 +41,7 @@ export default class HelmRenderer extends CompositeRenderer {
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 5,
+            zIndex: 5
           }),
           new LocalMapPaths({
             x: halfWidth - (halfHeight - margin),
@@ -90,7 +90,7 @@ export default class HelmRenderer extends CompositeRenderer {
           }),
           new FuelGauge({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
-            y: fullHeight - (margin + 63), 
+            y: fullHeight - (margin + 63),
             width: Math.max(sideWidth, sideControlsMin),
             height: 63,
             zIndex: 25

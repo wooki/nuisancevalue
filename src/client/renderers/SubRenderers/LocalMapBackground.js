@@ -21,6 +21,7 @@ export default class LocalMapBackground {
       mimimumSpriteSize: 10,
       borderWidth: 4,
       backgroundAsset: 'space',
+      shape: "circle", // or "rectangle"
       internalZIndex: {
         background: 1,
         grid :2,
@@ -63,7 +64,12 @@ export default class LocalMapBackground {
     // draw a border around the mask
     let borderGraphics = new PIXI.Graphics();
     borderGraphics.lineStyle(this.parameters.borderWidth, Assets.Colors.Dial, 1, 0.5);
-    borderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    if (this.parameters.shape == "circle") {
+      borderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    } else {
+      borderGraphics.drawRect(this.centerX - (this.parameters.width/2), this.centerY - (this.parameters.height/2), this.parameters.width, this.parameters.height);
+    }
+
     let borderTexture = pixiApp.renderer.generateTexture(borderGraphics);
     borderGraphics.destroy();
     borderTexture = new PIXI.Sprite(borderTexture);
@@ -76,7 +82,11 @@ export default class LocalMapBackground {
     // prevent drawing outside the map
     let dashboardMaskBorderGraphics = new PIXI.Graphics();
     dashboardMaskBorderGraphics.beginFill(Assets.Colors.Black, 1);
-    dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    if (this.parameters.shape == "circle") {
+      dashboardMaskBorderGraphics.drawCircle(this.centerX, this.centerY, (this.parameters.width/2));
+    } else {
+      dashboardMaskBorderGraphics.drawRect(this.centerX - (this.parameters.width/2), this.centerY - (this.parameters.height/2), this.parameters.width, this.parameters.height);
+    }
     this.mapContainer.mask = dashboardMaskBorderGraphics;
 
     // draw background
