@@ -25,15 +25,12 @@ export default class CaptainRenderer extends CompositeRenderer {
       const fullHeight = window.innerHeight;
       const halfWidth = Math.round(fullWidth/2);
       const halfHeight = Math.round(fullHeight/2);
-      let spaceWidth = fullWidth - fullHeight;
       let margin = 30;
-      if (spaceWidth < 0) {
-        spaceWidth = 0;
-        margin = 15;
-      }
-      const sideWidth = Math.round((spaceWidth/2) - margin);
       const marginFull = margin * 2;
-      const sideControlsMin = 200;
+      const sideWidth = (fullWidth * 0.25) - marginFull;
+      const sideControlsMin = 360;
+      const sidebarWidth = Math.min(sideWidth, sideControlsMin);
+      const mainAreaWidth = fullWidth - sidebarWidth;
 
       let config = {
         station: 'captain',
@@ -42,19 +39,21 @@ export default class CaptainRenderer extends CompositeRenderer {
         dashboardColor: 0x990000,
         subRenderers: [
           new LocalMapBackground({
-            x: halfWidth - (halfHeight - margin),
-            y: margin,
-            width: fullHeight - marginFull,
-            height: fullHeight - marginFull,
+            x: 0,
+            y: 0,
+            width: mainAreaWidth,
+            height: fullHeight,
             zIndex: 5,
             mapSize: 100000,
-            shape: "rectangle"
+            shape: "rectangle",
+            borderWidth: 0,
+            backgroundAsset: 'black'
           }),
           new LocalMapPaths({
-            x: halfWidth - (halfHeight - margin),
-            y: margin,
-            width: fullHeight - marginFull,
-            height: fullHeight - marginFull,
+            x: 0,
+            y: 0,
+            width: mainAreaWidth,
+            height: fullHeight,
             zIndex: 12,
             predictTime: 36,
             trackObjects: false,
@@ -62,10 +61,10 @@ export default class CaptainRenderer extends CompositeRenderer {
             shape: "rectangle"
           }),
           new LocalMap({
-            x: halfWidth - (halfHeight - margin),
-            y: margin,
-            width: fullHeight - marginFull,
-            height: fullHeight - marginFull,
+            x: 0,
+            y: 0,
+            width: mainAreaWidth,
+            height: fullHeight,
             zIndex: 15,
             mapSize: 100000,
             shape: "rectangle"
@@ -82,14 +81,14 @@ export default class CaptainRenderer extends CompositeRenderer {
           new ZoomControl({
             keyboardControls: true,
             onScreenControls: false,
-            minZoom: 0.1,
+            minZoom: 0.05,
             maxZoom: 8,
             zoomStep: 0.05,
           }),
           new HudData({
-            x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
+            x: mainAreaWidth + margin,
             y: margin,
-            width: Math.max(sideWidth, sideControlsMin),
+            width: sidebarWidth - marginFull,
             height: fullHeight - marginFull,
             zIndex: 30
           }),
