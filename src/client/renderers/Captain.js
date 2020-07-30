@@ -48,7 +48,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             shape: "rectangle",
             borderWidth: 0,
             backgroundAsset: 'black',
-            focus: [0, 0]
+            focus: 5
           }),
           new LocalMapPaths({
             x: 0,
@@ -60,7 +60,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             trackObjects: false,
             mapSize: 100000,
             shape: "rectangle",
-            focus: [0, 0]
+            focus: 5
           }),
           new LocalMap({
             x: 0,
@@ -70,7 +70,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 15,
             mapSize: 100000,
             shape: "rectangle",
-            focus: [0, 0]
+            focus: 5
           }),
           new LocalMapHud({
             x: 0,
@@ -81,7 +81,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             mapSize: 100000,
             shape: "rectangle",
             dial: false,
-            focus: [0, 0]
+            focus: 5
           }),
           new ZoomControl({
             keyboardControls: true,

@@ -47,7 +47,8 @@ export default class SignalsRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 5,
-            mapSize: 30000            
+            mapSize: 30000            ,
+            focus: 5
           }),
           new LocalMapPaths({
             x: halfWidth - (halfHeight - margin),
@@ -57,7 +58,8 @@ export default class SignalsRenderer extends CompositeRenderer {
             zIndex: 12,
             predictTime: 36,
             trackObjects: false,
-            mapSize: 30000            
+            mapSize: 30000            ,
+            focus: 5
           }),
           new LocalMap({
             x: halfWidth - (halfHeight - margin),
@@ -65,7 +67,8 @@ export default class SignalsRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 15,
-            mapSize: 30000            
+            mapSize: 30000            ,
+            focus: 5
           }),
           new LocalMapHud({
             x: halfWidth - (halfHeight - margin),
@@ -73,7 +76,8 @@ export default class SignalsRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 20,
-            mapSize: 30000                       
+            mapSize: 30000                       ,
+            focus: 5
           }),
           new LocalMapPdcHud({
             x: halfWidth - (halfHeight - margin),
@@ -81,7 +85,8 @@ export default class SignalsRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 25,
-            mapSize: 30000            
+            mapSize: 30000            ,
+            focus: 5
           }),
           new ZoomControl({
             keyboardControls: true,
