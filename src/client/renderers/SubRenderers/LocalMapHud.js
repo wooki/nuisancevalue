@@ -207,7 +207,7 @@ export default class LocalMapHud {
       let targetText = roundedDistance + Assets.Units.distance;
 
       // if (distanceToTarget < mapShown) {
-      if (distanceToTargetFromFocus < mapShown) {
+      if (this.parameters.dial == false || distanceToTargetFromFocus < mapShown) {
           // draw to map
           this.unsetDialMarker('dialTarget');
           this.setMarker('markTarget', targetPos.x, targetPos.y, 'target', null);
@@ -543,7 +543,7 @@ export default class LocalMapHud {
   }
 
   relativeScreenCoord(x, y) {
-
+    
     const focus = this.getFocusCoord();
     const focusX = focus[0];
     const focusY = focus[1];

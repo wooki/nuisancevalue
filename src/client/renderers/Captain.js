@@ -73,12 +73,12 @@ export default class CaptainRenderer extends CompositeRenderer {
             focus: [0, 0]
           }),
           new LocalMapHud({
-            x: halfWidth - (halfHeight - margin),
-            y: margin,
-            width: fullHeight - marginFull,
-            height: fullHeight - marginFull,
+            x: 0,
+            y: 0,
+            width: mainAreaWidth,
+            height: fullHeight,
             zIndex: 20,
-            mapSize: 30000,
+            mapSize: 100000,
             shape: "rectangle",
             dial: false,
             focus: [0, 0]
