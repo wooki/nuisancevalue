@@ -126,6 +126,14 @@ export default class LocalMapPaths {
       // recreate with new scale
       this.createHelmPathUi();
     }
+
+    // focus has changed
+    if (state.focus && state.focus != this.parameters.focus) {
+
+      // update setting and position immediately
+      this.parameters.focus = focus;
+      this.focusObjectCoord = this.getFocusCoord();
+    }
   }
 
   // predictedPaths is an object keyed with the id of objects we follow so

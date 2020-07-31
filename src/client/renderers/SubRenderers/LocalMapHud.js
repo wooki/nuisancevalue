@@ -177,6 +177,14 @@ export default class LocalMapHud {
       this.parameters.scale = this.parameters.height * this.parameters.zoom / (this.parameters.mapSize);
 
     }
+
+    // focus has changed
+    if (state.focus && state.focus != this.parameters.focus) {
+
+      // update setting and position immediately
+      this.parameters.focus = focus;
+      this.focusObjectCoord = this.getFocusCoord();
+    }
   }
 
   // watch for object updates so we can display the target
@@ -543,7 +551,7 @@ export default class LocalMapHud {
   }
 
   relativeScreenCoord(x, y) {
-    
+
     const focus = this.getFocusCoord();
     const focusX = focus[0];
     const focusY = focus[1];

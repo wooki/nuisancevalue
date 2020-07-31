@@ -131,6 +131,14 @@ export default class LocalMapBackground {
       }
 
     }
+
+    // focus has changed
+    if (state.focus && state.focus != this.parameters.focus) {
+
+      // update setting and position immediately
+      this.parameters.focus = focus;
+      this.focusObjectCoord = this.getFocusCoord();
+    }
   }
 
   // get the coord depending on the focus type

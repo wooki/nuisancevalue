@@ -41,32 +41,28 @@ export default class HelmRenderer extends CompositeRenderer {
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 5            ,
-            focus: 5
+            zIndex: 5            
           }),
           new LocalMapPaths({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 12            ,
-            focus: 5
+            zIndex: 12            
           }),
           new LocalMap({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 15            ,
-            focus: 5
+            zIndex: 15            
           }),
           new LocalMapHud({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
-            zIndex: 20            ,
-            focus: 5
+            zIndex: 20            
           }),
           new EngineControl({
             x: margin,

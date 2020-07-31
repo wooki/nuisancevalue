@@ -324,6 +324,10 @@ label {
     align-items: center;
     box-sizing: border-box;
 
+    &.scrollable {
+        overflow: auto;
+    }
+
     // column
     &.col {
       &.stretch {
@@ -533,6 +537,18 @@ label {
         color: #aaa;
         padding: 0 5px;
       }
+      .actions {
+        button {
+          flex: 1 1 auto;
+          text-align: center;
+          color: black;
+          text-shadow: -1px -1px 2px #265026;
+          font-weight: normal;
+          font-size: 12px;
+          line-height: 18px;
+          margin: 0 2px;
+        }
+      }
     } // .data
 
     // specialised comms ui
@@ -641,6 +657,9 @@ label {
         margin-bottom: auto;
       }
 
+      .actions {
+
+      }
       .loadOptions {
           flex-wrap: wrap;
           justify-content: center;

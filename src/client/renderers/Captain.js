@@ -5,7 +5,7 @@ import LocalMapHud from './SubRenderers/LocalMapHud';
 import EngineControl from './SubRenderers/EngineControl';
 import ManeuverControl from './SubRenderers/ManeuverControl';
 import DockingControl from './SubRenderers/DockingControl';
-import HudData from './SubRenderers/HudData';
+// import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import TargetSelection from './SubRenderers/TargetSelection';
@@ -14,6 +14,8 @@ import CommsControl from './SubRenderers/CommsControl';
 import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
 import LocalMapPdcHud from './SubRenderers/LocalMapPdcHud';
 import PdcFireControl from './SubRenderers/PdcFireControl';
+import NavData from './SubRenderers/NavData';
+import SelectedNavData from './SubRenderers/SelectedNavData';
 
 // extend compsite with pre-set subrenderers
 export default class CaptainRenderer extends CompositeRenderer {
@@ -30,7 +32,7 @@ export default class CaptainRenderer extends CompositeRenderer {
       const sideWidth = (fullWidth * 0.25) - marginFull;
       const sideControlsMin = 360;
       const sidebarWidth = Math.min(sideWidth, sideControlsMin);
-      const mainAreaWidth = fullWidth - sidebarWidth;
+      const mainAreaWidth = fullWidth - (2 * sidebarWidth);
 
       let config = {
         station: 'captain',
@@ -39,7 +41,7 @@ export default class CaptainRenderer extends CompositeRenderer {
         dashboardColor: 0x990000,
         subRenderers: [
           new LocalMapBackground({
-            x: 0,
+            x: sidebarWidth,
             y: 0,
             width: mainAreaWidth,
             height: fullHeight,
@@ -47,11 +49,10 @@ export default class CaptainRenderer extends CompositeRenderer {
             mapSize: 100000,
             shape: "rectangle",
             borderWidth: 0,
-            backgroundAsset: 'black',
-            focus: 5
+            backgroundAsset: 'black'
           }),
           new LocalMapPaths({
-            x: 0,
+            x: sidebarWidth,
             y: 0,
             width: mainAreaWidth,
             height: fullHeight,
@@ -59,29 +60,26 @@ export default class CaptainRenderer extends CompositeRenderer {
             predictTime: 36,
             trackObjects: false,
             mapSize: 100000,
-            shape: "rectangle",
-            focus: 5
+            shape: "rectangle"
           }),
           new LocalMap({
-            x: 0,
+            x: sidebarWidth,
             y: 0,
             width: mainAreaWidth,
             height: fullHeight,
             zIndex: 15,
             mapSize: 100000,
-            shape: "rectangle",
-            focus: 5
+            shape: "rectangle"
           }),
           new LocalMapHud({
-            x: 0,
+            x: sidebarWidth,
             y: 0,
             width: mainAreaWidth,
             height: fullHeight,
             zIndex: 20,
             mapSize: 100000,
             shape: "rectangle",
-            dial: false,
-            focus: 5
+            dial: false
           }),
           new ZoomControl({
             keyboardControls: true,
@@ -90,8 +88,15 @@ export default class CaptainRenderer extends CompositeRenderer {
             maxZoom: 8,
             zoomStep: 0.05,
           }),
-          new HudData({
-            x: mainAreaWidth + margin,
+          new NavData({
+            x: sidebarWidth + mainAreaWidth + margin,
+            y: margin,
+            width: sidebarWidth - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 30
+          }),
+          new SelectedNavData({
+            x: margin,
             y: margin,
             width: sidebarWidth - marginFull,
             height: fullHeight - marginFull,

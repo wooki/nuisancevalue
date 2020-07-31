@@ -44,32 +44,48 @@ export default class HudData {
     this.projector.append(this.el, this.render.bind(this));
   }
 
+  // designed to be overriden, should return false or an array of elements
+  createItemActions(item, index) {
+    return false;
+  }
+
   createItem(item, index) {
       if (item == null) return null;
+
+      // standard hud display of properties and type
+      let lines = Object.keys(item).map(function(key) {
+        if (key == 'source') {
+          // do nothing - this is the original data object, for subclasses
+        } else if (key == 'type') {
+          return h('div.line.LED.'+item[key], {
+            styles: {
+              'background-color': this.parameters.colors[item[key]]
+            }
+          },[]);
+        } else {
+          return h('div.line', [
+            h('label', [key]),
+            h('data', [item[key]])
+          ]);
+        }
+      }.bind(this));
+
+      // allow addition of actions line at the end
+      let actions = this.createItemActions(item, index);
+      if (actions) {
+        lines.push(h('div.nv.ui.row.actions', {key: "huddata-actions-"+index}, actions));
+      }
 
       return h('div.data.'+item.type, {
           key: 'item'+index
         },
-        Object.keys(item).map(function(key) {
-          if (key == 'type') {
-            return h('div.line.LED.'+item[key], {
-              styles: {
-                'background-color': this.parameters.colors[item[key]]
-              }
-            },[]);
-          } else {
-            return h('div.line', [
-              h('label', [key]),
-              h('data', [item[key]])
-            ]);
-          }
-        }.bind(this))
+        lines
       );
   }
 
   render() {
 
-    return h('div.nv.ui', {
+    return h('div.nv.ui.scrollable', {
       styles: {
         position: 'absolute',
         left: this.parameters.x + 'px',
@@ -111,7 +127,8 @@ export default class HudData {
         bearing: Math.round(degrees) + "°",
         distance: roundedDistance + Assets.Units.distance,
         closing: closing.toPrecision(3) + Assets.Units.speed,
-        time: timeToTarget + "s"
+        time: timeToTarget + "s",
+        source: obj
       };
     }
 
@@ -181,7 +198,8 @@ export default class HudData {
 
     return {
       type: 'bearing',
-      bearing: Math.round(degrees) + "°"
+      bearing: Math.round(degrees) + "°",
+      source: playerShip
     };
   }
 
@@ -209,7 +227,8 @@ export default class HudData {
            bearing: Math.round(degrees) + "°",
            distance: gravityDistanceText + Assets.Units.distance,
            closing: closing.toPrecision(3) + Assets.Units.speed,
-           time: timeToTarget + "s"
+           time: timeToTarget + "s",
+           source: playerShip.gravityData
          };
 
     } else {
@@ -230,7 +249,8 @@ export default class HudData {
       return {
         type: 'heading',
         bearing: Math.round(degrees) + "°",
-        speed: speedText + Assets.Units.speed
+        speed: speedText + Assets.Units.speed,
+        source: playerShip
       };
     } else {
       return null;
@@ -291,7 +311,8 @@ export default class HudData {
             bearing: Math.round(degrees) + "°",
             distance: roundedDistance + Assets.Units.distance,
             closing: waypoint.closing.toPrecision(3) + Assets.Units.speed,
-            time: timeToTarget + "s"
+            time: timeToTarget + "s",
+            source: wp
           });
       }.bind(this));
     }

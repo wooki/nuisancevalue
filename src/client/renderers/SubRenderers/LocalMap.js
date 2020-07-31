@@ -137,6 +137,14 @@ export default class LocalMap {
         this.updateObjectScale(obj, obj.id);
       });
     }
+
+    // focus has changed
+    if ((state.focus || state.focus == 0) && state.focus != this.parameters.focus) {
+
+      // update setting and position immediately
+      this.parameters.focus = state.focus;
+      this.focusObjectCoord = this.getFocusCoord();
+    }
   }
 
   addExplosion(obj, renderer) {
@@ -268,6 +276,14 @@ export default class LocalMap {
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
+    let actualPlayerShip = playerShip;
+    if (isDocked) {
+      this.dockedPlayerShip = isDocked;
+      actualPlayerShip = isDocked;
+    } else {
+      this.dockedPlayerShip = null;
+    }
+
     const position = playerShip.physicsObj.position;
     if (position) {
 
@@ -402,12 +418,23 @@ export default class LocalMap {
 
       // let selectedGuid = parseInt(guid);
       let obj = this.mapObjects[guid];
+
+      // cloud be the player ship
+      if ((!obj) && this.playerShip && this.playerShip.id == guid) {
+        obj = this.playerShip;
+
+      } else if ((!obj) && this.dockedPlayerShip && this.dockedPlayerShip.id == guid) {
+        obj = this.dockedPlayerShip;
+        
+      }
+
       if (obj) {
         this.renderer.updateSharedState({
       		selection: obj
       	});
       }
   }
+
 
   addSpriteToMap(sprite, guid) {
 

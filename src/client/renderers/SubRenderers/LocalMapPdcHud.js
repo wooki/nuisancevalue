@@ -94,6 +94,14 @@ export default class LocalMapPdcHud {
       this.parameters.scale = this.parameters.height * this.parameters.zoom / (this.parameters.mapSize);
 
     }
+
+    // focus has changed
+    if (state.focus && state.focus != this.parameters.focus) {
+
+      // update setting and position immediately
+      this.parameters.focus = focus;
+      this.focusObjectCoord = this.getFocusCoord();
+    }
   }
 
   // watch the player ship and update
