@@ -182,7 +182,7 @@ export default class LocalMapHud {
     if (state.focus && state.focus != this.parameters.focus) {
 
       // update setting and position immediately
-      this.parameters.focus = focus;
+      this.parameters.focus = state.focus;
       this.focusObjectCoord = this.getFocusCoord();
     }
   }

@@ -41,9 +41,9 @@ export default class CaptainRenderer extends CompositeRenderer {
         dashboardColor: 0x990000,
         subRenderers: [
           new LocalMapBackground({
-            x: sidebarWidth,
+            x: 0,
             y: 0,
-            width: mainAreaWidth,
+            width: fullWidth,
             height: fullHeight,
             zIndex: 5,
             mapSize: 100000,
@@ -52,29 +52,30 @@ export default class CaptainRenderer extends CompositeRenderer {
             backgroundAsset: 'black'
           }),
           new LocalMapPaths({
-            x: sidebarWidth,
+            x: 0,
             y: 0,
-            width: mainAreaWidth,
+            width: fullWidth,
             height: fullHeight,
             zIndex: 12,
-            predictTime: 36,
-            trackObjects: false,
+            predictTime: 180,
+            trackObjects: true,
+            relativeToGravity: false,
             mapSize: 100000,
             shape: "rectangle"
           }),
           new LocalMap({
-            x: sidebarWidth,
+            x: 0,
             y: 0,
-            width: mainAreaWidth,
+            width: fullWidth,
             height: fullHeight,
             zIndex: 15,
             mapSize: 100000,
             shape: "rectangle"
           }),
           new LocalMapHud({
-            x: sidebarWidth,
+            x: 0,
             y: 0,
-            width: mainAreaWidth,
+            width: fullWidth,
             height: fullHeight,
             zIndex: 20,
             mapSize: 100000,
@@ -89,14 +90,14 @@ export default class CaptainRenderer extends CompositeRenderer {
             zoomStep: 0.05,
           }),
           new NavData({
-            x: sidebarWidth + mainAreaWidth + margin,
+            x: margin,
             y: margin,
             width: sidebarWidth - marginFull,
             height: fullHeight - marginFull,
             zIndex: 30
           }),
           new SelectedNavData({
-            x: margin,
+            x: sidebarWidth + mainAreaWidth + margin,
             y: margin,
             width: sidebarWidth - marginFull,
             height: fullHeight - marginFull,

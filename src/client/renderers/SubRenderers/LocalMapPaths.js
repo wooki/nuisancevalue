@@ -25,6 +25,7 @@ export default class LocalMapPaths {
       zoom: 1,
       predictTime: 60,
       trackObjects: true,
+      relativeToGravity: true,
       focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       colors: {
@@ -121,7 +122,7 @@ export default class LocalMapPaths {
 
       // recalc scale
       this.parameters.zoom = state.zoom;
-      this.parameters.scale = this.parameters.height * this.parameters.zoom / (this.parameters.mapSize);
+      this.parameters.scale = this.parameters.height * this.parameters.zoom / this.parameters.mapSize;
 
       // recreate with new scale
       this.createHelmPathUi();
@@ -131,7 +132,7 @@ export default class LocalMapPaths {
     if (state.focus && state.focus != this.parameters.focus) {
 
       // update setting and position immediately
-      this.parameters.focus = focus;
+      this.parameters.focus = state.focus;
       this.focusObjectCoord = this.getFocusCoord();
     }
   }
@@ -162,14 +163,14 @@ export default class LocalMapPaths {
                                              obj.physicsObj.position[1]);
 
         // check if object is on the map
-        let distance = Math.abs(Victor.fromArray(this.playerShip.physicsObj.position).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
-        if (distance < this.parameters.mapSize) {
+        let distance = Math.abs(Victor.fromArray(this.getFocusCoord()).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
+        if (distance < (this.parameters.mapSize / this.parameters.zoom)) {
 
-          // always plot your own ships path and adjust to gravity path
+          // predict object path and adjust to gravity path
           let predictedPath = UiUtils.predictPath(obj, this.parameters.predictTime);
 
           // adjust our path to be relative to our gravity
-          if (this.predictedPaths.gravity && this.predictedPaths.gravity.path) {
+          if (this.parameters.relativeToGravity && this.predictedPaths.gravity && this.predictedPaths.gravity.path) {
               predictedPath = this.makeRelativePath(predictedPath, this.predictedPaths.gravity.path);
           }
 
@@ -197,10 +198,6 @@ export default class LocalMapPaths {
 
     this.playerShip = playerShip;
 
-    let coord = this.relativeScreenCoord(playerShip.physicsObj.position[0],
-                                         playerShip.physicsObj.position[1]);
-
-
     // plot the path of our gravity object if there is one
     let predictedGravityPath = null;
     if (playerShip.gravityData && playerShip.gravityData.direction) {
@@ -225,7 +222,9 @@ export default class LocalMapPaths {
     let ourPredictedPath = UiUtils.predictPath(playerShip, this.parameters.predictTime);
 
     // adjust our path to be relative to our gravity
-    if (predictedGravityPath) ourPredictedPath = this.makeRelativePath(ourPredictedPath, predictedGravityPath);
+    if (this.parameters.relativeToGravity && predictedGravityPath) {
+      ourPredictedPath = this.makeRelativePath(ourPredictedPath, predictedGravityPath);
+    }
 
     this.predictedPaths.playerShip = {
       color: this.parameters.colors.heading,
@@ -257,6 +256,10 @@ export default class LocalMapPaths {
       let matrix = new PIXI.Matrix();
 			matrix.translate(x, y);
 			matrix.translate(0 - focusX, 0 - focusY);
+
+      // take off the difference between player position and focus position
+      // matrix.translate(0 - focusX, 0 - focusY);
+
 			matrix.scale(this.parameters.scale, this.parameters.scale);
 			matrix.translate(this.centerX, this.centerY);
 			let p = new PIXI.Point(0, 0);
@@ -265,7 +268,7 @@ export default class LocalMapPaths {
 			return p;
 	}
 
-  relativeScreenCoords(points, focusX, focusY) {
+  relativeScreenCoords(points) {
 		let convertedPoints = [];
 		if (points) {
 			points.forEach(function(p) {

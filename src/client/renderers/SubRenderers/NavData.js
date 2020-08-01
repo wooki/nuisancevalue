@@ -23,13 +23,21 @@ export default class NavData extends HudData {
           		focus: "player"
           	});
           }
-        }, ["FOCUS"]),
+        }, [h("img", {
+          src: "./"+Assets.Images.focus,
+          height: 26,
+          width: 26
+        }, [])]),
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
             console.log("SELECT PLAYER SHIP");
           }
-        }, ["SELECT"])
+        }, [h("img", {
+          src: "./"+Assets.Images.select,
+          height: 26,
+          width: 26
+        }, [])])
       ];
 
     } else if (item.type == "gravity") {
@@ -42,13 +50,21 @@ export default class NavData extends HudData {
           		focus: gravityObjectId
           	});
           }
-        }, ["FOCUS"]),
+        }, [h("img", {
+          src: "./"+Assets.Images.focus,
+          height: 26,
+          width: 26
+        }, [])]),
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
             console.log("SELECT GRAVITY OBJECT");
           }
-        }, ["SELECT"])
+        }, [h("img", {
+          src: "./"+Assets.Images.select,
+          height: 26,
+          width: 26
+        }, [])])
       ];
 
     } else if (item.type == "target") {

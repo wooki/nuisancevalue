@@ -1,9 +1,14 @@
 import Victor from 'victor';
 import Assets from '../Utils/images.js';
 import {h, createProjector} from 'maquette';
+import Torpedo from '../../../common/Torpedo';
+import Ship from '../../../common/Ship';
+import Asteroid from '../../../common/Asteroid';
+import Planet from '../../../common/Planet';
+import Hulls from '../../../common/Hulls';
 
 // Info panels for the data drawn on LocalMapHud
-export default class HudData {
+export default class SelectedNavData {
 
   constructor(params) {
     this.parameters = Object.assign({
@@ -34,9 +39,6 @@ export default class HudData {
   // watch shared state for current selection setting
   updateSharedState(state, renderer) {
 
-    console.log("updateSharedState");
-    console.dir(state);
-
     if (state.selection) {
       if (this.selected != state.selection.id) {
         this.selectedObject = null;
@@ -51,7 +53,71 @@ export default class HudData {
   }
 
   createItemActions(item) {
-    return false;
+
+    let ourShip = this.playerShip;
+    if (this.dockedPlayerShip) {
+      ourShip = this.dockedPlayerShip;
+    }
+
+    let actions = [];
+
+    if (item.source.id == ourShip.playaer) {
+
+      actions = [
+        h("button", {
+          key: "sleectednav-action-focus",
+          onclick: (event) => {
+            this.renderer.updateSharedState({
+          		focus: "player"
+          	});
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.focus,
+          height: 24,
+          width: 24
+        }, [])])
+      ];
+
+    } else {
+
+      actions = [
+        h("button", {
+          key: "sleectednav-action-focus",
+          onclick: (event) => {
+            this.renderer.updateSharedState({
+          		focus: item.source.id
+          	});
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.focus,
+          height: 26,
+          width: 26
+        }, [])]),
+        h("button", {
+          key: "sleectednav-action-wp",
+          onclick: (event) => {
+            console.log("CREATE WAYPOINT");
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.waypoint,
+          height: 26,
+          width: 26
+        }, [])]),
+        h("button", {
+          key: "sleectednav-action-orbit",
+          onclick: (event) => {
+            console.log("CREATE ORBIT WAYPOINT");
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.orbitwaypoint,
+          height: 26,
+          width: 26
+        }, [])])
+      ];
+
+    }
+
+    return actions;
   }
 
   createItem(item) {
@@ -63,10 +129,19 @@ export default class HudData {
         if (key == 'source') {
           // ignore this is just for adding data/actions later
         } else if (key == 'image') {
-          return h('img.line', {
-            src: item[key]
-          },[]);
-        } else {
+          if (item[key]) {
+            return h('div.image', {
+            },[
+              h('img', {
+                src: item[key],
+                // height: 32, // in the future set size based on actual size and distance!
+                // width: 32
+              },[])
+            ]);
+          } else {
+            return null;
+          }
+        } else if (item[key]) {
           return h('div.line', [
             h('label', [key]),
             h('data', [item[key]])
@@ -119,15 +194,41 @@ export default class HudData {
     let roundedDistance = Math.round(distanceToObj);
     let timeToTarget = Math.round(distanceToObj/closing);
 
-    return {
-      type: 'ship',
-      label: obj.name || obj.hull || obj.texture,
+    let type = 'Ship';
+    let image = null;
+
+    let label = obj.name || obj.hull || obj.texture;
+    if (obj instanceof Ship) {
+      image = "./" + obj.getHullData().image;
+
+    } else if (obj instanceof Planet) {
+      type = 'Planet';
+      image = "./" + Assets.Images[obj.texture];
+
+    } else if (obj instanceof Asteroid) {
+      type = 'Asteroid';
+      image = "./" + Assets.Images.asteroid;
+
+    } else if (obj instanceof Torpedo) {
+      type = 'Torpedo';
+
+    }
+
+    let summary = {
+      image: image,
+      type: type,
+      label: label,
       bearing: Math.round(degrees) + "°",
       distance: roundedDistance + Assets.Units.distance,
       closing: closing.toPrecision(3) + Assets.Units.speed,
-      time: timeToTarget + "s",
       source: obj
     };
+
+    if (timeToTarget != NaN && timeToTarget < Infinity && timeToTarget > -Infinity) {
+      summary.time = timeToTarget + "s";
+    }
+
+    return summary;
   }
 
   // watch for object id

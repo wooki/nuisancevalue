@@ -7,8 +7,17 @@ export default class HelmPathUi extends PIXI.Graphics {
     constructor(params) {
         super();
 
-        this.params = Object.assign({ uiSize: 1000, uiWidth: 1000, uiHeight:
-        1000, scale: 1, alpha: 1, zIndex: 1, paths: [] }, params);
+        this.params = Object.assign({
+          uiSize: 1000,
+          uiWidth: 1000,
+          uiHeight: 1000,
+          scale: 1,
+          alpha: 1,
+          zIndex: 1,
+          paths: []
+        }, params);
+
+        this.paths = this.params.paths;
 
         this.draw();
     }

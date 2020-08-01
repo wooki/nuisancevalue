@@ -28,6 +28,10 @@ export default class Torpedo extends PhysicalObject2D {
     }
   };
 
+  getHullData() {
+    return this.torpData;
+  }
+  
   get torpData() {
     let td = Object.assign({}, Hulls['torpedo']);
     if (this.torpType || this.torpType == 0) {
