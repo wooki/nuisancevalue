@@ -129,7 +129,9 @@ export default class LocalMapPaths {
     }
 
     // focus has changed
-    if (state.focus && state.focus != this.parameters.focus) {
+    if ((state.focus || state.focus == 0) && state.focus != this.parameters.focus) {
+
+      this.predictedPaths = {}; // when we move, remove old lines
 
       // update setting and position immediately
       this.parameters.focus = state.focus;
@@ -157,10 +159,6 @@ export default class LocalMapPaths {
           obj instanceof Planet ||
           obj instanceof Asteroid ||
           obj instanceof Torpedo) {
-
-        // get position
-        let coord = this.relativeScreenCoord(obj.physicsObj.position[0],
-                                             obj.physicsObj.position[1]);
 
         // check if object is on the map
         let distance = Math.abs(Victor.fromArray(this.getFocusCoord()).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
@@ -200,7 +198,7 @@ export default class LocalMapPaths {
 
     // plot the path of our gravity object if there is one
     let predictedGravityPath = null;
-    if (playerShip.gravityData && playerShip.gravityData.direction) {
+    if (this.parameters.relativeToGravity && playerShip.gravityData && playerShip.gravityData.direction) {
       predictedGravityPath = UiUtils.predictPath({
         physicsObj: {
           position: playerShip.gravityData.source,
