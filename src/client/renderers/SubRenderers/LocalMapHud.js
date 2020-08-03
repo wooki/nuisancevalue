@@ -24,6 +24,7 @@ export default class LocalMapHud {
       focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       dial: true,
+      showSelection: false,
       internalZIndex: {
         background: 1,
         dialLabels: 1,
@@ -38,14 +39,16 @@ export default class LocalMapHud {
         gravity: new ColorReplaceFilter([0, 0, 0], [0.2, 0.2, 1], 0.1),
         heading: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
         waypoint: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
-        target: new ColorReplaceFilter([0, 0, 0], [0, 1, 1], 0.1)
+        target: new ColorReplaceFilter([0, 0, 0], [0, 1, 1], 0.1),
+        selection: new ColorReplaceFilter([0, 0, 0], [0.9, 0.9, 0.9], 0.1)
       },
       colors: {
         bearing: 0xFF0000,
         gravity: 0x3333FF,
         heading: 0x00FF00,
         waypoint: 0xFFFF00,
-        target: 0x00FFFF
+        target: 0x00FFFF,
+        selection: 0xDEDEDE
       },
       arrowSize: 15,
       margin: 4,
@@ -185,6 +188,44 @@ export default class LocalMapHud {
       this.parameters.focus = state.focus;
       this.focusObjectCoord = this.getFocusCoord();
     }
+
+    // watch for selection change - allow to set to null
+    if (this.selection != state.selection) {
+      this.unsetMarker('markSelection');
+      this.unsetDialMarker('dialSelection');
+      this.selection = state.selection;
+    }
+  }
+
+  plotObject(obj, name, icon) {
+
+    // check if the target will be on screen, or to be drawn on dial
+    let ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
+
+    let targetPos = Victor.fromArray(obj.physicsObj.position);
+    let targetDirection = targetPos.clone().subtract(ourPos);
+    let distanceToTarget = targetDirection.magnitude();
+    let bearingToTarget = 0 - targetDirection.verticalAngle() % (2 * Math.PI);
+
+    let focusPos = Victor.fromArray(this.getFocusCoord());
+    let targetDirectionFromFocus = targetPos.clone().subtract(focusPos);
+    let distanceToTargetFromFocus = targetDirectionFromFocus.magnitude();
+    let bearingToTargetFromFocus = 0 - targetDirectionFromFocus.verticalAngle() % (2 * Math.PI);
+
+    let roundedDistance = Math.round(distanceToTarget);
+    let mapShown = (this.parameters.height/2) / this.parameters.scale;
+    let targetText = roundedDistance + Assets.Units.distance;
+
+    // if (distanceToTarget < mapShown) {
+    if (this.parameters.dial == false || distanceToTargetFromFocus < mapShown) {
+        // draw to map
+        this.unsetDialMarker('dial'+name);
+        this.setMarker('mark'+name, targetPos.x, targetPos.y, icon, null);
+    } else {
+        // draw on the dial
+        this.unsetMarker('mark'+name);
+        this.setDialMarker('dial'+name, bearingToTargetFromFocus, icon, targetText);
+    }
   }
 
   // watch for object updates so we can display the target
@@ -197,34 +238,14 @@ export default class LocalMapHud {
     // if this matches our current target set marker
     if (this.currentTargetId === obj.id) {
 
-      // check if the target will be on screen, or to be drawn on dial
-      let ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
+      this.plotObject(obj, 'Target', 'target');
 
-      let targetPos = Victor.fromArray(obj.physicsObj.position);
-      let targetDirection = targetPos.clone().subtract(ourPos);
-      let distanceToTarget = targetDirection.magnitude();
-      let bearingToTarget = 0 - targetDirection.verticalAngle() % (2 * Math.PI);
+    } else if (this.selection && this.selection.id == obj.id) {
 
-      let focusPos = Victor.fromArray(this.getFocusCoord());
-      let targetDirectionFromFocus = targetPos.clone().subtract(focusPos);
-      let distanceToTargetFromFocus = targetDirectionFromFocus.magnitude();
-      let bearingToTargetFromFocus = 0 - targetDirectionFromFocus.verticalAngle() % (2 * Math.PI);
+      // above else means we don't show selection for the current target,
+      // which is probably better than showing one icon on top of the other
+      this.plotObject(obj, 'Selection', 'selection');
 
-      let roundedDistance = Math.round(distanceToTarget);
-      let mapShown = (this.parameters.height/2) / this.parameters.scale;
-      let targetText = roundedDistance + Assets.Units.distance;
-
-      // if (distanceToTarget < mapShown) {
-      if (this.parameters.dial == false || distanceToTargetFromFocus < mapShown) {
-          // draw to map
-          this.unsetDialMarker('dialTarget');
-          this.setMarker('markTarget', targetPos.x, targetPos.y, 'target', null);
-      } else {
-          // draw on the dial
-          this.unsetMarker('markTarget');
-          // this.setDialMarker('dialTarget', bearingToTarget, 'target', targetText);
-          this.setDialMarker('dialTarget', bearingToTargetFromFocus, 'target', targetText);
-      }
     }
 
   }
@@ -237,6 +258,11 @@ export default class LocalMapHud {
          this.unsetMarker('markTarget');
          this.unsetDialMarker('dialTarget');
        }
+
+    } else if (this.selection && key == this.selection.id) {
+      // remove marker
+      this.unsetMarker('markSelection');
+      this.unsetDialMarker('dialSelection');
     }
   }
 
@@ -269,6 +295,15 @@ export default class LocalMapHud {
 
       // waypoint
       this.setWaypoints(actualPlayerShip);
+
+      // selection
+      if (this.selection) {
+        if (this.playerShip.id == this.selection.id) {
+          this.plotObject(this.playerShip, 'Selection', 'selection');
+        } else if (this.dockedPlayerShip && this.dockedPlayerShip.id == this.selection.id) {
+          this.plotObject(this.dockedPlayerShip, 'Selection', 'selection');
+        }
+      }
     }
   }
 

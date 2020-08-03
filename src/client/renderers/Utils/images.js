@@ -15,6 +15,7 @@ module.exports = {
 		dashboard: 'assets/dashboard.jpg',
 		arrow: 'assets/arrow.png',
 		target: 'assets/target.png',
+		selection: 'assets/selection.png',
 		select: 'assets/select.png',
 		focus: 'assets/focus.png',
 		waypoint: 'assets/waypoint.png',

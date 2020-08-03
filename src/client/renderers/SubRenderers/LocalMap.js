@@ -419,13 +419,13 @@ export default class LocalMap {
       // let selectedGuid = parseInt(guid);
       let obj = this.mapObjects[guid];
 
-      // cloud be the player ship
+      // coud be the player ship
       if ((!obj) && this.playerShip && this.playerShip.id == guid) {
         obj = this.playerShip;
 
       } else if ((!obj) && this.dockedPlayerShip && this.dockedPlayerShip.id == guid) {
         obj = this.dockedPlayerShip;
-        
+
       }
 
       if (obj) {

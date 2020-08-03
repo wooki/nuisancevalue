@@ -61,7 +61,7 @@ export default class SelectedNavData {
 
     let actions = [];
 
-    if (item.source.id == ourShip.playaer) {
+    if (item.source.id == ourShip.id) {
 
       actions = [
         h("button", {

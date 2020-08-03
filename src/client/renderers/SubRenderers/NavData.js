@@ -31,7 +31,9 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
-            console.log("SELECT PLAYER SHIP");
+            this.renderer.updateSharedState({
+            		selection: playerShip
+          	});
           }
         }, [h("img", {
           src: "./"+Assets.Images.select,
@@ -58,7 +60,9 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
-            console.log("SELECT GRAVITY OBJECT");
+            this.renderer.updateSharedState({
+            		selection: item.source
+          	});
           }
         }, [h("img", {
           src: "./"+Assets.Images.select,
@@ -70,7 +74,32 @@ export default class NavData extends HudData {
     } else if (item.type == "target") {
       let targetObject = item.source;
 
-      console.log("ACTIONS FOR TARGET");
+      return [
+        h("button", {
+          key: "navdata-action-focus"+index,
+          onclick: (event) => {
+            this.renderer.updateSharedState({
+          		focus: item.source.id
+          	});
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.focus,
+          height: 26,
+          width: 26
+        }, [])]),
+        h("button", {
+          key: "navdata-action-select"+index,
+          onclick: (event) => {
+            this.renderer.updateSharedState({
+            		selection: item.source
+          	});
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.select,
+          height: 26,
+          width: 26
+        }, [])])
+      ];
 
     } else if (item.type == "waypoint") {
       let waypoint = item.source;
