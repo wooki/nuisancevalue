@@ -551,6 +551,15 @@ label {
         &.speed {
           order: 11;
         }
+        &.orbit_at_3k {
+          order: 12;
+        }
+        &.orbit_at_6k {
+          order: 13;
+        }
+        &.orbit_at_9k {
+          order: 14;
+        }
 
       }
       .image {

@@ -203,7 +203,7 @@ export default class SelectedNavData {
     let radius = Math.round(obj.size / 2) + SolarObjects.units.distance;
     let surfaceG = null;
     let label = obj.name || obj.hull || obj.texture;
-    
+
     let summary = {
       label: label,
       mass: mass,
@@ -228,6 +228,21 @@ export default class SelectedNavData {
         summary.surface_gravity = surfaceG + SolarObjects.units.force;
       }
 
+      // let orbitRadius1 = obj.size + 3000; # include or exclude size
+      let orbitRadius1 = 3000;
+      let orbitSpeed1 = Math.sqrt((SolarObjects.constants.G * obj.mass) / orbitRadius1);
+      summary.orbit_at_3k = Math.round(orbitSpeed1) + SolarObjects.units.speed;
+
+      // let orbitRadius2 = obj.size + 6000;
+      let orbitRadius2 = 6000;
+      let orbitSpeed2 = Math.sqrt((SolarObjects.constants.G * obj.mass) / orbitRadius2);
+      summary.orbit_at_6k = Math.round(orbitSpeed2) + SolarObjects.units.speed;
+
+      // let orbitRadius3 = obj.size + 9000;
+      let orbitRadius3 = 9000;
+      let orbitSpeed3 = Math.sqrt((SolarObjects.constants.G * obj.mass) / orbitRadius3);
+      summary.orbit_at_9k = Math.round(orbitSpeed3) + SolarObjects.units.speed;
+
     } else if (obj instanceof Asteroid) {
       summary.type = 'Asteroid';
       summary.image = "./" + Assets.Images.asteroid;
@@ -240,6 +255,7 @@ export default class SelectedNavData {
       summary.time = timeToTarget + "s";
     }
 
+    console.dir(summary);
     return summary;
   }
 
