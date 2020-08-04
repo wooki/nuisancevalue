@@ -517,6 +517,41 @@ label {
         margin: 0 0 2px 0;
         text-transform: uppercase;
         overflow: hidden;
+
+        &.image {
+          order: 1;
+        }
+        &.type {
+          order: 2;
+        }
+        &.label {
+          order: 3;
+        }
+        &.bearing {
+          order: 4;
+        }
+        &.distance {
+          order: 5;
+        }
+        &.mass {
+          order: 6;
+        }
+        &.radius {
+          order: 7;
+        }
+        &.surface_gravity {
+          order: 8;
+        }
+        &.closing {
+          order: 9;
+        }
+        &.time {
+          order: 10;
+        }
+        &.speed {
+          order: 11;
+        }
+
       }
       .image {
         background-color: black;
@@ -527,7 +562,7 @@ label {
         justify-content: center;
         overflow: hidden;
         img {
-          flex: 0 0 auto;          
+          flex: 0 0 auto;
           max-width: 85%;
           max-height: 85%;
         }
@@ -553,6 +588,7 @@ label {
       }
       .actions {
         margin: 0 -6px;
+        order: 99;
         button {
           flex: 1 1 auto;
           text-align: center;

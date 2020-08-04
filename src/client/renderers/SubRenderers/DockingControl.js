@@ -173,10 +173,10 @@ export default class DockingControl {
   }
 
   createLine(label, content) {
-    return h('div.line', {
+    return h('div.line.'+label, {
         key: label
       }, [
-        h('label', [label]),
+        h('label', [label.replace('_', ' ')]),
         h('data', [content])
     ]);
   }

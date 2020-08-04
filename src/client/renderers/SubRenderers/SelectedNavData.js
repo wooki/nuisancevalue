@@ -6,6 +6,7 @@ import Ship from '../../../common/Ship';
 import Asteroid from '../../../common/Asteroid';
 import Planet from '../../../common/Planet';
 import Hulls from '../../../common/Hulls';
+import SolarObjects from '../../../common/SolarObjects';
 
 // Info panels for the data drawn on LocalMapHud
 export default class SelectedNavData {
@@ -142,8 +143,8 @@ export default class SelectedNavData {
             return null;
           }
         } else if (item[key]) {
-          return h('div.line', [
-            h('label', [key]),
+          return h('div.line.'+key, [
+            h('label', [key.replace("_", " ")]),
             h('data', [item[key]])
           ]);
         }
@@ -194,35 +195,46 @@ export default class SelectedNavData {
     let roundedDistance = Math.round(distanceToObj);
     let timeToTarget = Math.round(distanceToObj/closing);
 
-    let type = 'Ship';
-    let image = null;
+    // vector of object
+    let v = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
 
+    let mass = obj.physicsObj.mass.toPrecision(3) + SolarObjects.units.mass;
+    let speed = Math.round(v.magnitude()) + SolarObjects.units.speed;
+    let radius = Math.round(obj.size / 2) + SolarObjects.units.distance;
+    let surfaceG = null;
     let label = obj.name || obj.hull || obj.texture;
-    if (obj instanceof Ship) {
-      image = "./" + obj.getHullData().image;
-
-    } else if (obj instanceof Planet) {
-      type = 'Planet';
-      image = "./" + Assets.Images[obj.texture];
-
-    } else if (obj instanceof Asteroid) {
-      type = 'Asteroid';
-      image = "./" + Assets.Images.asteroid;
-
-    } else if (obj instanceof Torpedo) {
-      type = 'Torpedo';
-
-    }
-
+    
     let summary = {
-      image: image,
-      type: type,
       label: label,
+      mass: mass,
+      radius: radius,
       bearing: Math.round(degrees) + "°",
       distance: roundedDistance + Assets.Units.distance,
       closing: closing.toPrecision(3) + Assets.Units.speed,
+      speed: speed,
       source: obj
     };
+
+    if (obj instanceof Ship) {
+      summary.type = 'Ship';
+      summary.image = "./" + obj.getHullData().image;
+
+    } else if (obj instanceof Planet) {
+      summary.type = 'Planet';
+      summary.image = "./" + Assets.Images[obj.texture];
+
+      surfaceG = Math.round(((SolarObjects.constants.G * obj.physicsObj.mass) / Math.pow((obj.size / 2), 2)) * 100) / 100;
+      if (surfaceG) {
+        summary.surface_gravity = surfaceG + SolarObjects.units.force;
+      }
+
+    } else if (obj instanceof Asteroid) {
+      summary.type = 'Asteroid';
+      summary.image = "./" + Assets.Images.asteroid;
+
+    } else if (obj instanceof Torpedo) {
+      summary.type = 'Torpedo';
+    }
 
     if (timeToTarget != NaN && timeToTarget < Infinity && timeToTarget > -Infinity) {
       summary.time = timeToTarget + "s";

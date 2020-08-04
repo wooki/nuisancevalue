@@ -51,7 +51,7 @@ export default class Traveller {
 					let distance = ourPos.clone().subtract(targetPos);
 
 					// if we're within 20,000 enter orbit
-					if (distance.magnitude() < (12000 + target.size)) {
+					if (distance.magnitude() < (18000 + target.size)) {
 
 						ship.aiPlan = 1; // enter orbit
 						ship.orbitTime = 60 + (Math.random()*180); // count time to hang around
@@ -86,15 +86,12 @@ export default class Traveller {
 			let orbitSpeed = Math.sqrt((SolarObjects.constants.G * ship.gravityData.mass) / distance + 1);
 			let angleOffset = 90;
 			if (distance < (desiredOrbitDistance * 0.8)) {
-				orbitSpeed = orbitSpeed * 1.1;
+				// orbitSpeed = orbitSpeed * 1.1;
 			} else if (distance > (desiredOrbitDistance * 2)) {
-				angleOffset = 45;
-				// orbitSpeed = orbitSpeed * 0.75;
-			} else if (distance > (desiredOrbitDistance * 1.5)) {
 				angleOffset = 60;
 				// orbitSpeed = orbitSpeed * 0.75;
 			} else if (distance > desiredOrbitDistance) {
-				orbitSpeed = orbitSpeed * 0.75;
+				// orbitSpeed = orbitSpeed * 0.9;
 			}
 
 			// create a vector that matches that speed, perpendicular (anti-clockwise) from gravity source

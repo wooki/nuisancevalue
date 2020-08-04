@@ -57,14 +57,14 @@ export default class HudData {
         if (key == 'source') {
           // do nothing - this is the original data object, for subclasses
         } else if (key == 'type') {
-          return h('div.line.LED.'+item[key], {
+          return h('div.line.LED.type.'+item[key], {
             styles: {
               'background-color': this.parameters.colors[item[key]]
             }
           },[]);
         } else {
-          return h('div.line', [
-            h('label', [key]),
+          return h('div.line.'+key, [
+            h('label', [key.replace('_', ' ')]),
             h('data', [item[key]])
           ]);
         }

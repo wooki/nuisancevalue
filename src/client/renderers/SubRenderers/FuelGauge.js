@@ -69,7 +69,7 @@ export default class ManeuverControl {
     [
       h('div.data', [
         led,
-        h('div.line', [
+        h('div.line.fuel', [
           h('label', ["Fuel"]),
           h('data', [fuelDesc])
         ])

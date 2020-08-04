@@ -1,6 +1,7 @@
 import {h, createProjector} from 'maquette';
 
 import Hulls from '../../../common/Hulls';
+import SolarObjects from '../../../common/SolarObjects';
 
 // Show damage, hit points, ammo stocks etc.
 // HTML for now
@@ -38,15 +39,15 @@ export default class EngineeringDataControl {
     } else {
       this.playerShip = playerShip;
     }
-    
+
     this.projector.scheduleRender();
   }
 
   createLine(key, data) {
-    return h('div.line', {
+    return h('div.line.'+key, {
       key: "line-"+key
     }, [
-      h('label', {key: 'label-'+key}, [key]),
+      h('label', {key: 'label-'+key}, [key.replace('_', ' ')]),
       h('data', {key: 'data-'+key}, [data.toString()])
     ]);
   }
@@ -68,6 +69,7 @@ export default class EngineeringDataControl {
           percentDamage = Math.round(currentDamage / maxDamage);
       }
 
+      lines.push(this.createLine("Hull", hullData.name));
       lines.push(this.createLine("Hull Damage", percentDamage + "%"));
 
       // fuel remaining
@@ -87,6 +89,24 @@ export default class EngineeringDataControl {
         }
       }
 
+      // show some engine data
+      let accn1 = (hullData.thrust / hullData.mass);
+      let accn2 = (hullData.thrust*2 / hullData.mass);
+      let accn3 = (hullData.thrust*3 / hullData.mass);
+      let accn4 = (hullData.thrust*4 / hullData.mass);
+      let accn5 = (hullData.thrust*5 / hullData.mass);
+      let timeTo100 = (100 / accn5);
+      let timeTo500 = (500 / accn5);
+      let timeTo1000 = (1000 / accn5);
+
+      lines.push(this.createLine("Engine 1", accn1.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine 2", accn2.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine 3", accn3.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine 4", accn4.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine 5", accn5.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Δ100", SolarObjects.units.speed+" in "+timeTo100.toFixed(3)+"s"));
+      lines.push(this.createLine("Δ500", SolarObjects.units.speed+" in "+timeTo500.toFixed(3)+"s"));
+      lines.push(this.createLine("Δ1000", SolarObjects.units.speed+" in "+timeTo1000.toFixed(3)+"s"));
     }
 
     return h('div.nv.ui', {

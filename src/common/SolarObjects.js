@@ -16,8 +16,7 @@ module.exports = {
 	},
 
 	constants: {
-		G: 6.673 * Math.pow(10, -11)
-		// G: 3.673 * Math.pow(10, -11)
+		G: 6.673 * Math.pow(10, -11)		
 	},
 
 	Sol: {
