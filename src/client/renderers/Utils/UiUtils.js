@@ -91,6 +91,8 @@ export default {
 
 	addPDC(explosionSheet, pixiContainer, x, y, area, explosionSize, numberPerSecond, scale, minSize, zIndex) {
 
+		console.warn("DEPRICATED: UiUtils.addPDC");
+
 		let useSize = this.getUseSize(scale, explosionSize, explosionSize, 0.01, minSize);
 
 		// recuce below 1 per frame by statisticallyadjusting
@@ -117,6 +119,7 @@ export default {
 	},
 
 	leaveTimer(message, rootEl) {
+
 		let p = new Promise(function(resolve, reject) {
 
 		let uiDestroyed = document.createElement("div");
@@ -147,6 +150,8 @@ export default {
 	},
 
   getUseSize(scale, width, height, minimumScale, minimumSize) {
+
+		console.warn("DEPRICATED: UiUtils.getUseSize");
 
       let useScale = scale;
       if (useScale < minimumScale) {
@@ -182,6 +187,8 @@ export default {
 
   createElement(document, tag, id, classes, innerHTML, onClick) {
 
+		console.warn("DEPRICATED: UiUtils.createElement");
+
       let button = document.createElement(tag);
       button.id = id;
       classes.forEach(function(c) {
@@ -196,12 +203,17 @@ export default {
   },
 
   addElement(container, document, tag, id, classes, innerHTML, onClick) {
+
+		console.warn("DEPRICATED: UiUtils.addElement");
+
       let el = this.createElement(document, tag, id, classes, innerHTML, onClick);
       container.append(el);
       return el;
   },
 
   setSizes(settings, window, gridSize) {
+
+			console.warn("DEPRICATED: UiUtils.setSizes");
 
       // get the smaller of the two dimensions, work to that
       // size for the map etc. so we can draw a circle
@@ -222,6 +234,8 @@ export default {
 	// update settings with recalcuated scale
 	setZoom(settings, gridSize, zoom) {
 
+		console.warn("DEPRICATED: UiUtils.setZoom");
+
 		settings.zoom = zoom;
 		settings.scale = (settings.narrowUi / settings.mapSize) * zoom;
 		settings.gridSize = Math.floor(gridSize * settings.scale);
@@ -229,6 +243,9 @@ export default {
 
 
 	removeFromMap(mapObjects, sprites, guid) {
+
+		console.warn("DEPRICATED: UiUtils.removeFromMap");
+
 			if (mapObjects[guid]) {
 					mapObjects[guid].destroy();
 					delete mapObjects[guid];
@@ -238,6 +255,8 @@ export default {
 
 	// convert a game coord to the coord on screen ie. relative to the player ship in the centre
 	relativeScreenCoord(x, y, focusX, focusY, screenWidth, screenHeight, angle, scale) {
+
+		console.warn("DEPRICATED: UiUtils.relativeScreenCoord");
 
 			let screenX = Math.floor(screenWidth / 2);
 			let screenY = Math.floor(screenHeight / 2);
@@ -256,6 +275,9 @@ export default {
 
 	// convert an array of points
 	relativeScreenCoords(points, focusX, focusY, screenWidth, screenHeight, angle, scale) {
+
+		console.warn("DEPRICATED: UiUtils.relativeScreenCoords");
+
 		let convertedPoints = [];
 		if (points) {
 			points.forEach(function(p) {
@@ -274,6 +296,9 @@ export default {
 	// update includes scaling of offset, so nothing else should scale (except size) of player ship
 	// additional objects position will need to be scaled (player ship is always centre)
 	updateGrid(settings, sprites, x, y) {
+
+		console.warn("DEPRICATED: UiUtils.updateGrid");
+
 			if (sprites.gridSprite) {
 					let positionChange = new PIXI.Point(x * settings.scale, y * settings.scale);
 					sprites.gridSprite.tilePosition.x = Math.floor(settings.UiWidth / 2) - (positionChange.x);
@@ -287,6 +312,9 @@ export default {
   },
 
   radiansToDegrees(radians) {
+
+		console.warn("DEPRICATED: UiUtils.radiansToDegrees");
+
       if (radians < 0) {
         return this.radiansToDegrees((radians + (Math.PI*2)));
       } else if (radians > (Math.PI*2)) {
@@ -298,6 +326,9 @@ export default {
 
   // UI for a helm item (name, target closing speed etc.)
   helmDataItem(item) {
+
+		console.warn("DEPRICATED: UiUtils.helmDataItem");
+
 
     let el = document.createElement('div');
     el.classList.add('helm-data-item');
@@ -329,6 +360,9 @@ export default {
 
   // UI for a list of helm items (names, and details)
   helmDataItems(items) {
+
+		console.warn("DEPRICATED: UiUtils.helmDataItems");
+
 
     let el = document.createElement('div');
     el.classList.add('ui-container');

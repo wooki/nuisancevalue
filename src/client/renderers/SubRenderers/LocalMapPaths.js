@@ -162,7 +162,7 @@ export default class LocalMapPaths {
 
         // check if object is on the map
         let distance = Math.abs(Victor.fromArray(this.getFocusCoord()).subtract(Victor.fromArray(obj.physicsObj.position)).magnitude());
-        if (distance < (this.parameters.mapSize / this.parameters.zoom)) {
+        if (obj instanceof Planet || distance < Math.min(100000, (this.parameters.mapSize / this.parameters.zoom)/2)) { // max 100000 range
 
           // predict object path and adjust to gravity path
           let predictedPath = UiUtils.predictPath(obj, this.parameters.predictTime);

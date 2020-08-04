@@ -77,7 +77,9 @@ export default {
 		// 		amount: gravSourceAmount,
 		// 		vector: gravVector,
 		// 		mass: gravSource.physicsObj.mass,
-		// 		velocity: gravSource.physicsObj.velocity
+		// 		velocity: gravSource.physicsObj.velocity,
+		// size: gravSource.size,
+		// id: gravSource.id,
 		// }
 
 		// if we have a gravity source, predict it's path first (this ignores gravity/engine acting on it)
@@ -144,8 +146,26 @@ export default {
 			// multiply current velocity to adjust for our step time
 			let v = currentVelocity.clone().multiply(new Victor(timeStep, timeStep));
 
-			// apply current velocity
-			currentPos = currentPos.add(v);
+			// check if previous position is inside grav source - if so just write out same position
+			if (predictions.length > 0 && obj.gravityData) {
+				let gravityPosition = gravityPath[predictions.length - 1];
+
+				let objectSizes = (obj.gravityData.size/2) + (obj.size/2);
+				let distanceFromGravSource = Math.abs(gravityPosition.clone().subtract(predictions[predictions.length - 1]).magnitude()) - objectSizes;
+
+				// console.log("distanceFromGravSource:"+distanceFromGravSource);
+
+				if (distanceFromGravSource <= 0) {
+					currentPos = gravityPosition;
+					currentTime = s;
+				} else {
+					// apply current velocity - we're not hitting gravity
+					currentPos = currentPos.add(v);
+				}
+			} else {
+				// apply current velocity - no gravity source
+				currentPos = currentPos.add(v);
+			}
 
 			// then add
 			predictions.push(currentPos);

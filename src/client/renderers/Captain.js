@@ -57,7 +57,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullWidth,
             height: fullHeight,
             zIndex: 12,
-            predictTime: 180,
+            predictTime: 120,
             trackObjects: true,
             relativeToGravity: false,
             mapSize: 100000,
