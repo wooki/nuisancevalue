@@ -16,6 +16,7 @@ import ZoomControl from './SubRenderers/ZoomControl';
 // import PdcFireControl from './SubRenderers/PdcFireControl';
 import NavData from './SubRenderers/NavData';
 import SelectedNavData from './SubRenderers/SelectedNavData';
+import LocalMapPanControl from './SubRenderers/LocalMapPanControl';
 
 // extend compsite with pre-set subrenderers
 export default class CaptainRenderer extends CompositeRenderer {
@@ -88,6 +89,10 @@ export default class CaptainRenderer extends CompositeRenderer {
             minZoom: 0.05,
             maxZoom: 8,
             zoomStep: 0.05,
+          }),
+          new LocalMapPanControl({
+            wasd: true,
+            arrows: false,
           }),
           new NavData({
             x: margin,

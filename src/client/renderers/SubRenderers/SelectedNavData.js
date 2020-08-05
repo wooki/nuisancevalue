@@ -255,7 +255,6 @@ export default class SelectedNavData {
       summary.time = timeToTarget + "s";
     }
 
-    console.dir(summary);
     return summary;
   }
 
@@ -263,7 +262,6 @@ export default class SelectedNavData {
   updateObject(obj, renderer) {
 
     if (this.selected === obj.id) {
-
 
       this.selectedObject = this.objectSummary(obj);
       this.projector.scheduleRender();

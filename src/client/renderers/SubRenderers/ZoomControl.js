@@ -1,7 +1,7 @@
 import {h, createProjector} from 'maquette';
 
 // Buttons for setting zoom, via shared state (client side only)
-export default class ManeuverControl {
+export default class ZoomControl {
 
   constructor(params) {
     this.parameters = Object.assign({
