@@ -5,6 +5,11 @@ let p2 = null;
 
 export default class Asteroid extends PhysicalObject2D {
 
+    constructor(gameEngine, options, props) {
+        super(gameEngine, options, props);
+        this.texture = "Asteroid";
+    }
+
     static get netScheme() {
         return Object.assign({
             size: { type: BaseTypes.TYPES.INT16 }

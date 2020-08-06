@@ -8,6 +8,7 @@ export default class Torpedo extends PhysicalObject2D {
 
   constructor(gameEngine, options, props) {
       super(gameEngine, options, props);
+      this.texture = "Torpedo";
   }
 
   static get netScheme() {
@@ -31,7 +32,7 @@ export default class Torpedo extends PhysicalObject2D {
   getHullData() {
     return this.torpData;
   }
-  
+
   get torpData() {
     let td = Object.assign({}, Hulls['torpedo']);
     if (this.torpType || this.torpType == 0) {
