@@ -30,10 +30,12 @@ export default class Traveller {
 			if (ship.targetId > -1) {
 
 				let ourPos = Victor.fromArray(ship.physicsObj.position);
-				let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
+				if (ship.gravityData) {
+					let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 
-				if (gravVector.magnitude() > 10000) {
-					ship.aiPlan = 3; // travel to destination
+					if (gravVector.magnitude() > 10000) {
+						ship.aiPlan = 3; // travel to destination
+					}
 				}
 			}
 		}
