@@ -5,7 +5,6 @@ import HelmRenderer from './renderers/Helm';
 import CaptainRenderer from './renderers/Captain';
 import EngineerRenderer from './renderers/Engineer';
 import NavRenderer from './renderers/Nav';
-import GamesMasterRenderer from './renderers/GamesMaster';
 import SignalsRenderer from './renderers/Signals';
 import EmitOnOff from 'emitonoff';
 
