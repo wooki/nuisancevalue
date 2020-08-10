@@ -2,6 +2,7 @@ import { PhysicalObject2D, BaseTypes, TwoVector } from 'lance-gg';
 import Hulls from './Hulls';
 import Ship from './Ship';
 import Systems from './Systems';
+import Waypoint from './Waypoint';
 
 let game = null;
 
@@ -24,7 +25,7 @@ export default class PlayableShip extends Ship {
             engineerPlayerId: { type: BaseTypes.TYPES.UINT8 },
             waypoints: {
                 type: BaseTypes.TYPES.LIST,
-                itemType: BaseTypes.TYPES.STRING
+                itemType: BaseTypes.TYPES.CLASSINSTANCE
             },
             power: {
                 type: BaseTypes.TYPES.LIST,
@@ -54,22 +55,26 @@ export default class PlayableShip extends Ship {
 
     }
 
-    addWaypoint(name, x, y) {
+    addWaypoint(objId, orbit) {
         let currentWaypointIndex = this.waypoints.findIndex(function(wp) {
-            return wp.startsWith(name+',')
+            return wp.objId == objId;
         });
 
         if (currentWaypointIndex >= 0) {
-            this.waypoints[currentWaypointIndex] = name + "," + Math.round(x) + "," + Math.round(y);
+            this.waypoints[currentWaypointIndex].orbit = orbit;
         } else {
-            this.waypoints.push(name + "," + Math.round(x) + "," + Math.round(y));
+          let wp = new Waypoint();
+          wp.objId = objId;
+          wp.orbit = orbit;
+          this.waypoints.push(wp);
         }
     }
 
-    removeWaypoint(name) {
-        let currentWaypointIndex = this.waypoints.findIndex(function(wp) {
-            return wp.startsWith(name+',')
-        });
+    removeWaypoint(objId) {
+      
+      let currentWaypointIndex = this.waypoints.findIndex(function(wp) {
+          return wp.objId == objId;
+      });
 
         if (currentWaypointIndex >= 0) {
             this.waypoints.splice(currentWaypointIndex, 1);

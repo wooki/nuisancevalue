@@ -81,7 +81,9 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 20,
             mapSize: 100000,
             shape: "rectangle",
-            dial: false
+            dial: false,
+            predictTime: 120,
+            showSelection: true
           }),
           new ZoomControl({
             keyboardControls: true,

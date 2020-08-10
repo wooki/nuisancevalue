@@ -145,6 +145,9 @@ export default class LocalMap {
       this.parameters.focus = state.focus;
       this.focusObjectCoord = this.getFocusCoord();
     }
+
+    // remember selected object
+    this.selected = state.selection;
   }
 
   addExplosion(obj, renderer) {
@@ -271,6 +274,14 @@ export default class LocalMap {
         delete this.sprites[key];
         delete this.mapObjects[key];
     }
+
+    // watch for current selection being removed
+    if (this.selected && this.selected.id == key) {
+      this.renderer.updateSharedState({
+        selection: null
+      });
+    }
+
   }
 
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {

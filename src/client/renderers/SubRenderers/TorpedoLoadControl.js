@@ -115,7 +115,7 @@ export default class TorpedoLoadControl {
       // check if this tube is currently loading
       if (this.loadingState[tubeIndex]) {
         // is loading - so just show progress
-        loadOptions.push(h('div.loading-progress', {key: 'loadprogress'}, [Math.round(this.loadingState[tubeIndex].timeToLoad/1000) + "s"]));
+        loadOptions.push(h('div.loading-progress', {key: 'loadprogress'}, [Math.round(this.loadingState[tubeIndex].timeToLoad/1000) + " s"]));
 
       } else {
         // not currently loading - so give options

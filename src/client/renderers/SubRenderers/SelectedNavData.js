@@ -53,6 +53,57 @@ export default class SelectedNavData {
     this.projector.scheduleRender();
   }
 
+  getCurrentWaypoint(objId) {
+
+    if (this.playerShip && this.playerShip.waypoints) {
+      for (let i = 0; i < this.playerShip.waypoints.length; i++) {
+        if (this.playerShip.waypoints[i].objId == objId) {
+          return this.playerShip.waypoints[i];
+        }
+      }
+    }
+
+    return false;
+  }
+
+  addWaypoint(objId, orbit) {
+    this.renderer.client.addWaypoint(objId, orbit);
+  }
+
+  removeWaypoint(objId) {
+    this.renderer.client.removeWaypoint(objId);
+  }
+
+  // toggle between a waypoint on the object and no waypoint
+  toggleInterceptWaypoint(obj) {
+
+    let currentWaypoint = this.getCurrentWaypoint(obj.id);
+
+    if (currentWaypoint) {
+      this.removeWaypoint(obj.id);
+    } else {
+      this.addWaypoint(obj.id, 0);
+    }
+  }
+
+  // toggle over a waypoint at 3k, 6k, 9k and no waypoint
+  toggleOrbitWaypoint(obj) {
+
+    let currentWaypoint = this.getCurrentWaypoint(obj.id);
+
+    if (currentWaypoint && currentWaypoint.orbit == 0) {
+      this.addWaypoint(obj.id, 3000);
+    } else if (currentWaypoint && currentWaypoint.orbit == 3000) {
+      this.addWaypoint(obj.id, 6000);
+    } else if (currentWaypoint && currentWaypoint.orbit == 6000) {
+      this.addWaypoint(obj.id, 9000);
+    } else if (currentWaypoint && currentWaypoint.orbit == 9000) {
+      this.removeWaypoint(obj.id);
+    } else {
+      this.addWaypoint(obj.id, 3000);
+    }
+  }
+
   createItemActions(item) {
 
     let ourShip = this.playerShip;
@@ -66,7 +117,7 @@ export default class SelectedNavData {
 
       actions = [
         h("button", {
-          key: "sleectednav-action-focus",
+          key: "selectednav-action-focus",
           onclick: (event) => {
             this.renderer.updateSharedState({
           		focus: "player"
@@ -74,8 +125,8 @@ export default class SelectedNavData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.focus,
-          height: 24,
-          width: 24
+          height: 26,
+          width: 26
         }, [])])
       ];
 
@@ -83,7 +134,7 @@ export default class SelectedNavData {
 
       actions = [
         h("button", {
-          key: "sleectednav-action-focus",
+          key: "selectednav-action-focus",
           onclick: (event) => {
             this.renderer.updateSharedState({
           		focus: item.source.id
@@ -95,26 +146,31 @@ export default class SelectedNavData {
           width: 26
         }, [])]),
         h("button", {
-          key: "sleectednav-action-wp",
+          key: "selectednav-action-wp",
           onclick: (event) => {
-            console.log("CREATE WAYPOINT");
+            this.toggleInterceptWaypoint(item.source)
           }
         }, [h("img", {
           src: "./"+Assets.Images.waypoint,
           height: 26,
           width: 26
-        }, [])]),
-        h("button", {
-          key: "sleectednav-action-orbit",
-          onclick: (event) => {
-            console.log("CREATE ORBIT WAYPOINT");
-          }
-        }, [h("img", {
-          src: "./"+Assets.Images.orbitwaypoint,
-          height: 26,
-          width: 26
         }, [])])
       ];
+
+      if (item.source instanceof Planet) {
+        actions.push(
+          h("button", {
+            key: "selectednav-action-orbit",
+            onclick: (event) => {
+              this.toggleOrbitWaypoint(item.source)
+            }
+          }, [h("img", {
+            src: "./"+Assets.Images.orbitwaypoint,
+            height: 26,
+            width: 26
+          }, [])])
+        );
+      }
 
     }
 
@@ -123,7 +179,7 @@ export default class SelectedNavData {
 
   createItem(item) {
 
-      if (item == null) return null;
+    if (item == null) return null;
 
       // standard hud display of properties and type
       let lines = Object.keys(item).map(function(key) {
@@ -252,7 +308,7 @@ export default class SelectedNavData {
     }
 
     if (timeToTarget != NaN && timeToTarget < Infinity && timeToTarget > -Infinity) {
-      summary.time = timeToTarget + "s";
+      summary.time = timeToTarget + " s";
     }
 
     return summary;
@@ -305,51 +361,53 @@ export default class SelectedNavData {
       this.selectedObject = this.objectSummary(isDocked);
       this.projector.scheduleRender();
 
-    } else if (this.selected && typeof this.selected == "string" && this.selected.startsWith("waypoint")) {
+    // } else if (this.selected && typeof this.selected == "string" && this.selected.startsWith("waypoint")) {
 
-      if (actualPlayerShip.waypoints) {
+      // waypoints are not selectable!
 
-        actualPlayerShip.waypoints.forEach(function(wp) {
-
-            // unpack
-            let waypointParams = wp.split(',');
-            let waypoint = {
-                name: waypointParams[0],
-                x: parseInt(waypointParams[1]),
-                y: parseInt(waypointParams[2])
-            }
-
-            if ("waypoint-"+waypoint.name == this.selected) {
-
-              // check if the waypoint will be on screen, or to be drawn on dial
-              waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
-              waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
-              waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
-              let bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
-              let degrees = this.radiansToDegrees(bearing);
-              waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
-              waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
-              let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
-              waypoint.closing = 0;
-              if (waypoint.distanceToWaypoint != 0) {
-                  waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
-              }
-              let roundedDistance = Math.round(waypoint.distanceToWaypoint);
-              let timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
-
-              this.selectedObject = {
-                type: 'waypoint',
-                label: waypoint.name,
-                bearing: Math.round(degrees) + "°",
-                distance: roundedDistance + Assets.Units.distance,
-                closing: waypoint.closing.toPrecision(3) + Assets.Units.speed,
-                time: timeToTarget + "s",
-                source: wp
-              };
-            }
-        }.bind(this));
-      this.projector.scheduleRender();
-    }
+    //   if (actualPlayerShip.waypoints) {
+    //
+    //     actualPlayerShip.waypoints.forEach(function(wp) {
+    //
+    //         // unpack
+    //         let waypointParams = wp.split(',');
+    //         let waypoint = {
+    //             name: waypointParams[0],
+    //             x: parseInt(waypointParams[1]),
+    //             y: parseInt(waypointParams[2])
+    //         }
+    //
+    //         if ("waypoint-"+waypoint.name == this.selected) {
+    //
+    //           // check if the waypoint will be on screen, or to be drawn on dial
+    //           waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
+    //           waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
+    //           waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
+    //           let bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
+    //           let degrees = this.radiansToDegrees(bearing);
+    //           waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
+    //           waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
+    //           let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
+    //           waypoint.closing = 0;
+    //           if (waypoint.distanceToWaypoint != 0) {
+    //               waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+    //           }
+    //           let roundedDistance = Math.round(waypoint.distanceToWaypoint);
+    //           let timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
+    //
+    //           this.selectedObject = {
+    //             type: 'waypoint',
+    //             label: waypoint.name,
+    //             bearing: Math.round(degrees) + "°",
+    //             distance: roundedDistance + Assets.Units.distance,
+    //             closing: waypoint.closing.toPrecision(3) + Assets.Units.speed,
+    //             time: timeToTarget + " s",
+    //             source: wp
+    //           };
+    //         }
+    //     }.bind(this));
+    //   this.projector.scheduleRender();
+    // }
   }
 
 

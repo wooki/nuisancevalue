@@ -60,7 +60,8 @@ export default class EngineerRenderer extends CompositeRenderer {
             arrowMargin: 6,
             dialSmallDividerSize: 2,
             dialLargeDividerSize: 5,
-            dialFontSize: 7
+            dialFontSize: 7,
+            predictTime: 120 // to match waypoint predicition with nav     
           }),
           new PowerGrid({
             x: margin,

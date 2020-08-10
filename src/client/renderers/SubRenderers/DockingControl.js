@@ -232,8 +232,8 @@ export default class DockingControl {
           this.dockTarget.state = 0;
         }
       }, ['Abort Dock']);
-      info2 = this.createLine('Max Range',  this.parameters.dockMaxDistance + Assets.Units.distance);
-      info4 = this.createLine('Max Closing',  '±' + this.parameters.dockMaxClosing + Assets.Units.speed);
+      info2 = this.createLine('Max_Range',  this.parameters.dockMaxDistance + Assets.Units.distance);
+      info4 = this.createLine('Max_Closing',  '±' + this.parameters.dockMaxClosing + Assets.Units.speed);
     } else if (this.dockTarget.state == 2) {
       dockButton = h('button.key.dock', {
         key: 'undock',

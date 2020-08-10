@@ -341,11 +341,11 @@ export default class NvServerEngine extends ServerEngine {
         });
 
         this.gameEngine.on('addwaypoint', e => {
-            e.ship.addWaypoint(e.name, e.x, e.y);
+            e.ship.addWaypoint(e.objId, e.orbit);
         });
 
         this.gameEngine.on('removewaypoint', e => {
-            e.ship.removeWaypoint(e.name);
+            e.ship.removeWaypoint(e.objId);
         });
     }
 

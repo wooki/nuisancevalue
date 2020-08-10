@@ -88,7 +88,7 @@ export default class LocalMapPanControl {
   	}
 
     // focus has changed
-    if (state.focus && state.focus != this.parameters.focus) {
+    if ((state.focus || state.focus == 0) && state.focus != this.parameters.focus) {
       this.parameters.focus = state.focus;
     }
   }

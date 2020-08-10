@@ -2,6 +2,7 @@ const PIXI = require('pixi.js');
 
 import Assets from '../Utils/images.js';
 import Victor from 'victor';
+import UiUtils from '../Utils/UiUtils';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 // import UiUtils from '../Utils/UiUtils';
 
@@ -25,6 +26,7 @@ export default class LocalMapHud {
       shape: "circle", // or "rectangle"
       dial: true,
       showSelection: false,
+      predictTime: 60,
       internalZIndex: {
         background: 1,
         dialLabels: 1,
@@ -74,6 +76,7 @@ export default class LocalMapHud {
 
     this.focusObjectCoord = [];
     this.sprites = []; // keep track of sprites on the map
+    this.waypointData = {}; // keep track of waypoints plotted so we can remove them
 
     // put everything in a container
     this.hudContainer = new PIXI.Container();
@@ -182,7 +185,7 @@ export default class LocalMapHud {
     }
 
     // focus has changed
-    if (state.focus && state.focus != this.parameters.focus) {
+    if ((state.focus || state.focus == 0) && state.focus != this.parameters.focus) {
 
       // update setting and position immediately
       this.parameters.focus = state.focus;
@@ -197,7 +200,7 @@ export default class LocalMapHud {
     }
   }
 
-  plotObject(obj, name, icon) {
+  plotObject(obj, name, icon, label) {
 
     // check if the target will be on screen, or to be drawn on dial
     let ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
@@ -215,6 +218,10 @@ export default class LocalMapHud {
     let roundedDistance = Math.round(distanceToTarget);
     let mapShown = (this.parameters.height/2) / this.parameters.scale;
     let targetText = roundedDistance + Assets.Units.distance;
+
+    if (label) {
+      targetText = label;
+    }
 
     // if (distanceToTarget < mapShown) {
     if (this.parameters.dial == false || distanceToTargetFromFocus < mapShown) {
@@ -240,7 +247,7 @@ export default class LocalMapHud {
 
       this.plotObject(obj, 'Target', 'target');
 
-    } else if (this.selection && this.selection.id == obj.id) {
+    } else if (this.parameters.showSelection && (this.selection || this.selection === 0) && this.selection.id == obj.id) {
 
       // above else means we don't show selection for the current target,
       // which is probably better than showing one icon on top of the other
@@ -248,6 +255,21 @@ export default class LocalMapHud {
 
     }
 
+    // check if we have a waypoint for this object
+    let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
+    if (actualPlayerShip.waypoints) {
+      for (let i = 0; i < actualPlayerShip.waypoints.length; i++) {
+        if (actualPlayerShip.waypoints[i].objId == obj.id) {
+
+          let waypoint = UiUtils.createWaypointData(this.playerShip, obj, actualPlayerShip.waypoints[i].orbit, this.parameters.predictTime);
+          waypoint.physicsObj = {
+            position: [waypoint.waypointPos.x, waypoint.waypointPos.y]
+          };
+          this.plotObject(waypoint, waypoint.objId, 'waypoint', waypoint.name);
+          this.waypointData[waypoint.objId] = true;
+        }
+      }
+    }
   }
 
   // if current target is removed
@@ -259,10 +281,23 @@ export default class LocalMapHud {
          this.unsetDialMarker('dialTarget');
        }
 
-    } else if (this.selection && key == this.selection.id) {
+    }
+
+    if ((this.selection || this.selection === 0) && key == this.selection.id) {
       // remove marker
       this.unsetMarker('markSelection');
       this.unsetDialMarker('dialSelection');
+    }
+
+    // remove any waypoint sprite for object removed
+    let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
+    let waypointIndex = actualPlayerShip.waypoints.indexOf(wp => {
+      wp.objId == key;
+    });
+    if (waypointIndex >= 0) {
+      this.unsetMarker('mark'+name);
+      this.unsetDialMarker('dial'+name);
+      delete this.waypointData[waypoint.objId];
     }
   }
 
@@ -294,13 +329,28 @@ export default class LocalMapHud {
       this.setTarget(actualPlayerShip);
 
       // waypoint
-      this.setWaypoints(actualPlayerShip);
+      // this.setWaypoints(actualPlayerShip);
+
+      // remove waypoints we've plotted but tat the ship no longer has a waypoint for
+      let waypointKeys = Object.keys(this.waypointData);
+      if (actualPlayerShip && this.waypointData && waypointKeys.length > 0) {
+        for (let i = 0; i < waypointKeys.length; i++) {
+          let match = actualPlayerShip.waypoints.find(wp => {
+            wp.objId == waypointKeys[i];
+          });
+          if (!match) {
+            this.unsetMarker('mark'+waypointKeys[i]);
+            this.unsetDialMarker('dial'+waypointKeys[i]);
+          }
+        }
+      }
+
 
       // selection
       if (this.selection) {
-        if (this.playerShip.id == this.selection.id) {
+        if (this.parameters.showSelection && this.playerShip.id == this.selection.id) {
           this.plotObject(this.playerShip, 'Selection', 'selection');
-        } else if (this.dockedPlayerShip && this.dockedPlayerShip.id == this.selection.id) {
+        } else if (this.parameters.showSelection && this.dockedPlayerShip && this.dockedPlayerShip.id == this.selection.id) {
           this.plotObject(this.dockedPlayerShip, 'Selection', 'selection');
         }
       }
@@ -403,75 +453,75 @@ export default class LocalMapHud {
 
   setWaypoints(actualPlayerShip) {
 
-    let currentWaypoints = {};
-
-    // if we have waypoints either add to map or add to dial
-    if (actualPlayerShip.waypoints) {
-
-      actualPlayerShip.waypoints.forEach(function(wp) {
-
-          // unpack
-          let waypointParams = wp.split(',');
-          let waypoint = {
-              name: waypointParams[0],
-              x: parseInt(waypointParams[1]),
-              y: parseInt(waypointParams[2])
-          }
-
-          // remember for future
-          currentWaypoints[waypoint.name] = waypoint;
-
-          // check if the waypoint will be on screen, or to be drawn on dial
-          waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
-          waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
-          waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
-          // waypoint.waypointDirection = new Victor(waypoint.waypointDirection.x, waypoint.waypointDirection.y);
-          waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
-          waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
-
-          let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
-          waypoint.closing = 0;
-          if (waypoint.distanceToWaypoint != 0) {
-              waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
-          }
-
-          // let roundedDistance = Math.round(waypoint.distanceToWaypoint / 1000) * 1000;
-          let roundedDistance = Math.round(waypoint.distanceToWaypoint);
-          let mapShown = (this.parameters.height/2) / this.parameters.scale;
-          let waypointText = waypoint.name + "\n" +
-                             roundedDistance + Assets.Units.distance + "\n" +
-                             waypoint.closing.toPrecision(3) + Assets.Units.speed;
-
-
-         let focusPos = Victor.fromArray(this.getFocusCoord());
-         waypoint.directionFromFocus =   waypoint.waypointPos.clone().subtract(focusPos);
-         waypoint.distanceFromFocus = waypoint.directionFromFocus.magnitude();
-
-         // if (waypoint.distanceToWaypoint < mapShown) {
-         if ( waypoint.distanceFromFocus < mapShown) {
-              // draw to map
-              this.unsetDialMarker('dial'+waypoint.name);
-              this.setMarker('mark'+waypoint.name, waypoint.x, waypoint.y, 'waypoint', waypoint.name);
-          } else {
-              // draw on the dial
-              this.unsetMarker('mark'+waypoint.name);
-              this.setDialMarker('dial'+waypoint.name, waypoint.bearing, 'waypoint', waypointText);
-          }
-      }.bind(this));
-    }
-
-    // remove any waypoints we don't see any more
-    if (this.waypoints) {
-      Object.keys(this.waypoints).forEach((key) => {
-        if (!currentWaypoints[key]) {
-          this.unsetDialMarker(key);
-          this.unsetMarker(key);
-        }
-      });
-    }
-
-    // remember these waypoints (so we can spot when they are removed)
-    this.waypoints = currentWaypoints || [];
+    // let currentWaypoints = {};
+    //
+    // // if we have waypoints either add to map or add to dial
+    // if (actualPlayerShip.waypoints) {
+    //
+    //   actualPlayerShip.waypoints.forEach(function(wp) {
+    //
+    //       // unpack
+    //       let waypointParams = wp.split(',');
+    //       let waypoint = {
+    //           name: waypointParams[0],
+    //           x: parseInt(waypointParams[1]),
+    //           y: parseInt(waypointParams[2])
+    //       }
+    //
+    //       // remember for future
+    //       currentWaypoints[waypoint.name] = waypoint;
+    //
+    //       // check if the waypoint will be on screen, or to be drawn on dial
+    //       waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
+    //       waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
+    //       waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
+    //       // waypoint.waypointDirection = new Victor(waypoint.waypointDirection.x, waypoint.waypointDirection.y);
+    //       waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
+    //       waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
+    //
+    //       let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
+    //       waypoint.closing = 0;
+    //       if (waypoint.distanceToWaypoint != 0) {
+    //           waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+    //       }
+    //
+    //       // let roundedDistance = Math.round(waypoint.distanceToWaypoint / 1000) * 1000;
+    //       let roundedDistance = Math.round(waypoint.distanceToWaypoint);
+    //       let mapShown = (this.parameters.height/2) / this.parameters.scale;
+    //       let waypointText = waypoint.name + "\n" +
+    //                          roundedDistance + Assets.Units.distance + "\n" +
+    //                          waypoint.closing.toPrecision(3) + Assets.Units.speed;
+    //
+    //
+    //      let focusPos = Victor.fromArray(this.getFocusCoord());
+    //      waypoint.directionFromFocus =   waypoint.waypointPos.clone().subtract(focusPos);
+    //      waypoint.distanceFromFocus = waypoint.directionFromFocus.magnitude();
+    //
+    //      // if (waypoint.distanceToWaypoint < mapShown) {
+    //      if ( waypoint.distanceFromFocus < mapShown) {
+    //           // draw to map
+    //           this.unsetDialMarker('dial'+waypoint.name);
+    //           this.setMarker('mark'+waypoint.name, waypoint.x, waypoint.y, 'waypoint', waypoint.name);
+    //       } else {
+    //           // draw on the dial
+    //           this.unsetMarker('mark'+waypoint.name);
+    //           this.setDialMarker('dial'+waypoint.name, waypoint.bearing, 'waypoint', waypointText);
+    //       }
+    //   }.bind(this));
+    // }
+    //
+    // // remove any waypoints we don't see any more
+    // if (this.waypoints) {
+    //   Object.keys(this.waypoints).forEach((key) => {
+    //     if (!currentWaypoints[key]) {
+    //       this.unsetDialMarker(key);
+    //       this.unsetMarker(key);
+    //     }
+    //   });
+    // }
+    //
+    // // remember these waypoints (so we can spot when they are removed)
+    // this.waypoints = currentWaypoints || [];
   }
 
   setDialMarker(name, angle, styleName, text) {

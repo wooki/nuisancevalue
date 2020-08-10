@@ -1,5 +1,6 @@
 import Victor from 'victor';
 import Assets from '../Utils/images.js';
+import UiUtils from '../Utils/UiUtils';
 import {h, createProjector} from 'maquette';
 
 // Info panels for the data drawn on LocalMapHud
@@ -13,6 +14,7 @@ export default class HudData {
       height: 600,
       zIndex: 1,
       baseUrl: '/',
+      predictTime: 60,
       colors: {
         bearing: '#FF0000', //0xFF0000,
         gravity: '#3333FF', //0x3333FF,
@@ -40,6 +42,7 @@ export default class HudData {
 
     // draw
     this.dataItems = []; // start with empty list of items
+    this.waypointDataItems = {}; // start with empty list of items
     this.projector = createProjector();
     this.projector.append(this.el, this.render.bind(this));
   }
@@ -85,6 +88,14 @@ export default class HudData {
 
   render() {
 
+    let items = this.dataItems.map(function(item, index) {
+      return this.createItem(item, index)
+    }.bind(this));
+
+    Object.keys(this.waypointDataItems).forEach((key, index) => {
+      items.push(this.createItem(this.waypointDataItems[key], 'waypoint-'+index));
+    });
+
     return h('div.nv.ui.scrollable', {
       styles: {
         position: 'absolute',
@@ -95,9 +106,7 @@ export default class HudData {
         zIndex: this.parameters.zIndex.toString()
       }
     },
-    this.dataItems.map(function(item, index) {
-      return this.createItem(item, index)
-    }.bind(this))
+    items
     );
   }
 
@@ -127,9 +136,36 @@ export default class HudData {
         bearing: Math.round(degrees) + "°",
         distance: roundedDistance + Assets.Units.distance,
         closing: closing.toPrecision(3) + Assets.Units.speed,
-        time: timeToTarget + "s",
+        time: timeToTarget + " s",
         source: obj
       };
+    }
+
+    // check if we have a waypoint for this object
+    let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
+    if (actualPlayerShip.waypoints) {
+      for (let i = 0; i < actualPlayerShip.waypoints.length; i++) {
+        if (actualPlayerShip.waypoints[i].objId == obj.id) {
+
+          let waypoint = UiUtils.createWaypointData(this.playerShip, obj, actualPlayerShip.waypoints[i].orbit, this.parameters.predictTime);
+
+          this.waypointDataItems['waypoint-'+obj.id] = {
+            type: 'waypoint',
+            label: waypoint.name,
+            bearing: Math.round(waypoint.degrees) + "°",
+            distance: waypoint.roundedDistance + Assets.Units.distance,
+            closing: waypoint.closing.toPrecision(3) + Assets.Units.speed,
+            source: waypoint
+          };
+          if (waypoint.timeToTarget > -Infinity && waypoint.timeToTarget < Infinity) {
+            this.waypointDataItems['waypoint-'+obj.id].time = waypoint.timeToTarget + " s";
+          }
+          // console.log("waypoint");
+          // console.dir(this.waypointDataItems['waypoint-'+obj.id]);
+
+          this.projector.scheduleRender();
+        }
+      }
     }
 
   }
@@ -142,6 +178,15 @@ export default class HudData {
          this.dataItems[this.parameters.itemOrder.target] = null;
          this.projector.scheduleRender();
        }
+    }
+
+    // remove waypoint
+    let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
+    let waypointIndex = actualPlayerShip.waypoints.indexOf(wp => {
+      wp.objId == key;
+    });
+    if (waypointIndex >= 0) {
+      delete this.waypointDataItems[waypointIndex];
     }
   }
 
@@ -174,10 +219,18 @@ export default class HudData {
       // target
       this.dataItems[this.parameters.itemOrder.target] = this.getTargetData(actualPlayerShip);
 
-      // waypoint (last because they repeat - so ignore the sorting)
-      let waypointDataItems = this.getWaypointData(actualPlayerShip);
-      this.dataItems = this.dataItems.concat(waypointDataItems);
-
+      // remove any waypoint Data items we have that we don't have waypoints for any more
+      let waypointKeys = Object.keys(this.waypointDataItems);
+      if (actualPlayerShip && this.waypointDataItems && waypointKeys.length > 0) {
+        for (let i = 0; i < waypointKeys.length; i++) {
+          let match = actualPlayerShip.waypoints.find(wp => {
+            wp.objId == this.waypointDataItems[waypointKeys[i]].objId;
+          });
+          if (!match) {
+            delete this.waypointDataItems[waypointKeys[i]];
+          }
+        }
+      }
 
       this.projector.scheduleRender();
     }
@@ -227,7 +280,7 @@ export default class HudData {
            bearing: Math.round(degrees) + "°",
            distance: gravityDistanceText + Assets.Units.distance,
            closing: closing.toPrecision(3) + Assets.Units.speed,
-           time: timeToTarget + "s",
+           time: timeToTarget + " s",
            source: playerShip.gravityData
          };
 
@@ -272,52 +325,5 @@ export default class HudData {
     this.currentTargetId = playerShip.targetId;
   }
 
-  getWaypointData(actualPlayerShip) {
-
-    let wpData = [];
-
-    // if we have waypoints either add to map or add to dial
-    if (actualPlayerShip.waypoints) {
-
-      actualPlayerShip.waypoints.forEach(function(wp) {
-
-          // unpack
-          let waypointParams = wp.split(',');
-          let waypoint = {
-              name: waypointParams[0],
-              x: parseInt(waypointParams[1]),
-              y: parseInt(waypointParams[2])
-          }
-
-          // check if the waypoint will be on screen, or to be drawn on dial
-          waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
-          waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
-          waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
-          let bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
-          let degrees = this.radiansToDegrees(bearing);
-          waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
-          waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
-          let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
-          waypoint.closing = 0;
-          if (waypoint.distanceToWaypoint != 0) {
-              waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
-          }
-          let roundedDistance = Math.round(waypoint.distanceToWaypoint);
-          let timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
-
-          wpData.push({
-            type: 'waypoint',
-            label: waypoint.name,
-            bearing: Math.round(degrees) + "°",
-            distance: roundedDistance + Assets.Units.distance,
-            closing: waypoint.closing.toPrecision(3) + Assets.Units.speed,
-            time: timeToTarget + "s",
-            source: wp
-          });
-      }.bind(this));
-    }
-
-    return wpData;
-  }
 
 }

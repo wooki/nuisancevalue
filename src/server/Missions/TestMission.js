@@ -13,6 +13,14 @@ export default class TestMission {
 
   build() {
 
+    game.addAsteroid({
+        x: 30000,
+        y: 0,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 500
+    });
+
     let mars = game.addPlanet({
       x: 20000,
       y: 0,
@@ -25,7 +33,7 @@ export default class TestMission {
       angularVelocity: Math.random()
     });
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 1; i++) {
       let hullName = 'spacebug';
       let hullData = Hulls[hullName];
       let nv = game.addShip({
@@ -38,7 +46,7 @@ export default class TestMission {
           angle: Math.PI,
           playable: (i == 0 ? 1 : 0),
           aiScript: (i == 0 ? 0 : 2),
-          targetId: mars.id
+          // targetId: mars.id
           // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
       });
     }
@@ -89,7 +97,7 @@ export default class TestMission {
     let asteroidDistance = 20000;
     let asteroidDistanceVariance = 5000;
 
-    for (let asteroidIndex = 0; asteroidIndex < 180; asteroidIndex++) {
+    for (let asteroidIndex = 0; asteroidIndex < 0; asteroidIndex++) {
 
         // create a point and vector then rotate to a random position
         let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);

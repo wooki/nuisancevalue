@@ -70,7 +70,8 @@ export default class SignalsRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 20,
-            mapSize: 30000
+            mapSize: 30000,
+            predictTime: 120 // to match waypoint predicition with nav
           }),
           new LocalMapPdcHud({
             x: halfWidth - (halfHeight - margin),

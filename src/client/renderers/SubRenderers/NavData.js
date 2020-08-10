@@ -104,7 +104,7 @@ export default class NavData extends HudData {
     } else if (item.type == "waypoint") {
       let waypoint = item.source;
 
-      console.log("ACTIONS FOR WAYPOINT");
+      // console.log("ACTIONS FOR WAYPOINT");
 
     }
     return false;

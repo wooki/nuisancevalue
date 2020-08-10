@@ -70,14 +70,14 @@ export default class EngineeringDataControl {
       }
 
       lines.push(this.createLine("Hull", hullData.name));
-      lines.push(this.createLine("Hull Damage", percentDamage + "%"));
+      lines.push(this.createLine("Hull_Damage", percentDamage + "%"));
 
       // fuel remaining
       lines.push(this.createLine("Fuel", Math.round(this.playerShip.fuel) + "/" + hullData.fuel));
 
       // Ammo stocks
       if (hullData.maxWeaponStock[0] && (this.playerShip.weaponStock[0] || this.playerShip.weaponStock[0] === 0)) {
-        lines.push(this.createLine("PDC Rounds", this.playerShip.weaponStock[0] + "/" + hullData.maxWeaponStock[0]));
+        lines.push(this.createLine("PDC_Rounds", this.playerShip.weaponStock[0] + "/" + hullData.maxWeaponStock[0]));
       }
 
       // torp ammo stocks
@@ -85,7 +85,7 @@ export default class EngineeringDataControl {
 
         let torpTypeId = i+1;
         if (hullData.maxWeaponStock[torpTypeId] && (this.playerShip.weaponStock[torpTypeId] || this.playerShip.weaponStock[torpTypeId] === 0)) {
-          lines.push(this.createLine("Torpedoes - " + torpTypes[i].name, this.playerShip.weaponStock[torpTypeId] + "/" + hullData.maxWeaponStock[torpTypeId]));
+          lines.push(this.createLine("Torpedoes_-_" + torpTypes[i].name.replace(' ', '_'), this.playerShip.weaponStock[torpTypeId] + "/" + hullData.maxWeaponStock[torpTypeId]));
         }
       }
 
@@ -99,11 +99,11 @@ export default class EngineeringDataControl {
       let timeTo500 = (500 / accn5);
       let timeTo1000 = (1000 / accn5);
 
-      lines.push(this.createLine("Engine 1", accn1.toFixed(3) + SolarObjects.units.speed+'/s'));
-      lines.push(this.createLine("Engine 2", accn2.toFixed(3) + SolarObjects.units.speed+'/s'));
-      lines.push(this.createLine("Engine 3", accn3.toFixed(3) + SolarObjects.units.speed+'/s'));
-      lines.push(this.createLine("Engine 4", accn4.toFixed(3) + SolarObjects.units.speed+'/s'));
-      lines.push(this.createLine("Engine 5", accn5.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine_1", accn1.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine_2", accn2.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine_3", accn3.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine_4", accn4.toFixed(3) + SolarObjects.units.speed+'/s'));
+      lines.push(this.createLine("Engine_5", accn5.toFixed(3) + SolarObjects.units.speed+'/s'));
       lines.push(this.createLine("Δ100", SolarObjects.units.speed+" in "+timeTo100.toFixed(3)+"s"));
       lines.push(this.createLine("Δ500", SolarObjects.units.speed+" in "+timeTo500.toFixed(3)+"s"));
       lines.push(this.createLine("Δ1000", SolarObjects.units.speed+" in "+timeTo1000.toFixed(3)+"s"));

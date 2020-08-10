@@ -55,12 +55,12 @@ export default class NvClientEngine extends ClientEngine {
         this.sendInput("maneuver", { direction: direction} );
     }
 
-    addWaypoint(name, x, y) {
-        this.sendInput("waypoint", { name: name, x: x, y: y } );
+    addWaypoint(objId, orbit) {
+        this.sendInput("waypoint", { objId: objId, orbit: orbit } );
     }
 
-    removeWaypoint(name) {
-        this.sendInput("waypoint", { name: name } );
+    removeWaypoint(objId) {
+        this.sendInput("waypoint", { objId: objId, orbit: -1 } );
     }
 
     // update ship comms

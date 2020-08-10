@@ -133,7 +133,7 @@ export default class LocalMapBackground {
     }
 
     // focus has changed
-    if (state.focus && state.focus != this.parameters.focus) {
+    if ((state.focus || state.focus == 0) && state.focus != this.parameters.focus) {
 
       // update setting and position immediately
       this.parameters.focus = state.focus;

@@ -31,6 +31,61 @@ export default {
 		return count;
   },
 
+
+	createWaypointData(actualPlayerShip, obj, orbit, predictTime) {
+
+		// orbit !!!
+
+		// get some data
+		let waypoint = {
+			objId: obj.id,
+			name: (obj.name || obj.hull || obj.texture) + " intercept",
+		};
+		if (orbit && orbit > 0) {
+			waypoint.name = (obj.name || obj.hull || obj.texture) + " orbit " + orbit + Assets.Units.distance;
+		}
+		waypoint.ourPos = Victor.fromArray(actualPlayerShip.physicsObj.position);
+		waypoint.waypointPos = Victor.fromArray(obj.physicsObj.position);
+		waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
+		// waypoint.bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
+		waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
+		waypoint.degrees = this.radiansToDegrees(waypoint.bearing);
+		waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
+		let ourSpeed = Victor.fromArray(actualPlayerShip.physicsObj.velocity);
+		waypoint.closing = 0;
+		if (waypoint.distanceToWaypoint != 0) {
+				waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+		}
+		waypoint.roundedDistance = Math.round(waypoint.distanceToWaypoint);
+		waypoint.timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
+
+		// guess our arrival time, if we're within the predicition time
+		if (waypoint.timeToTarget > 0 && waypoint.timeToTarget <= predictTime) {
+
+			let time = waypoint.distanceToWaypoint / waypoint.closing;
+
+			// predict future position and adjust for orbit
+			let predictedPath = this.predictPath(obj, time);
+			let predictedPos = predictedPath[predictedPath.length - 1];
+			
+			// use predicted position and recalculate
+			waypoint.waypointPos = Victor.fromObject(predictedPos);
+			waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
+			// waypoint.bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
+			waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
+			waypoint.degrees = this.radiansToDegrees(waypoint.bearing);
+			waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
+			waypoint.closing = 0;
+			if (waypoint.distanceToWaypoint != 0) {
+					waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+			}
+			waypoint.roundedDistance = Math.round(waypoint.distanceToWaypoint);
+			waypoint.timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
+		}
+
+		return waypoint;
+	},
+
 	// // build some caches of sprites
 	// loadedAssets(loader, resources) {
 	//
@@ -313,9 +368,7 @@ export default {
 
   radiansToDegrees(radians) {
 
-		console.warn("DEPRICATED: UiUtils.radiansToDegrees");
-
-      if (radians < 0) {
+		  if (radians < 0) {
         return this.radiansToDegrees((radians + (Math.PI*2)));
       } else if (radians > (Math.PI*2)) {
         return this.radiansToDegrees((radians - (Math.PI*2)));

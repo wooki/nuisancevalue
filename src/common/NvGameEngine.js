@@ -14,6 +14,7 @@ import EmitOnOff from 'emitonoff';
 import CollisionUtils from './CollisionUtils';
 import Ai from './Ai';
 import Systems from './Systems';
+import Waypoint from './Waypoint';
 
 let gravityObjects = {};
 
@@ -302,6 +303,7 @@ export default class NvGameEngine extends GameEngine {
       serializer.registerClass(Planet);
       serializer.registerClass(Torpedo);
       serializer.registerClass(PDC);
+      serializer.registerClass(Waypoint);
     }
 
     // finds the player (optionally in a specific role)
@@ -451,15 +453,13 @@ export default class NvGameEngine extends GameEngine {
             if (inputData.input == 'waypoint') {
 
                 let ship = this.getPlayerShip(playerId);
-                let name = inputData.options.name;
-                let x = inputData.options.x;
-                let y = inputData.options.y;
-                if (x === undefined || y === undefined) {
-                    // ship.removeWaypoint(name); // MOVED TO SERVER ONLY via event
-                    this.emit('removewaypoint', { ship: ship, name: name });
+                let objId = inputData.options.objId;
+                let orbit = inputData.options.orbit;
+                
+                if (orbit === undefined || orbit < 0) {
+                    this.emit('removewaypoint', { ship: ship, objId: objId });
                 } else {
-                    // ship.addWaypoint(name, x, y); // MOVED TO SERVER ONLY via event
-                    this.emit('addwaypoint', { ship: ship, name: name, x: x, y: y });
+                    this.emit('addwaypoint', { ship: ship, objId: objId, orbit: orbit });
                 }
             }
 
