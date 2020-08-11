@@ -104,7 +104,32 @@ export default class NavData extends HudData {
     } else if (item.type == "waypoint") {
       let waypoint = item.source;
 
-      // console.log("ACTIONS FOR WAYPOINT");
+      return [
+        h("button", {
+          key: "navdata-action-focus"+index,
+          onclick: (event) => {
+            this.renderer.updateSharedState({
+              focus: waypoint.objId
+            });
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.focus,
+          height: 26,
+          width: 26
+        }, [])]),
+        h("button", {
+          key: "navdata-action-select"+index,
+          onclick: (event) => {
+            this.renderer.updateSharedState({
+                selection: waypoint.obj
+            });
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.select,
+          height: 26,
+          width: 26
+        }, [])])
+      ];
 
     }
     return false;

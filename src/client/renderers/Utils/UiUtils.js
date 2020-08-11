@@ -87,6 +87,8 @@ export default {
 			waypoint.timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
 		}
 
+		waypoint.obj = obj; // useful to keep a ref!
+
 		return waypoint;
 	},
 
