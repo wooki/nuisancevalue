@@ -165,7 +165,7 @@ export default class LobbyRenderer {
           if (obj.docked && obj.docked.length > 0) {
             obj.docked.forEach((dockedObj) => {
               if (dockedObj instanceof Ship && dockedObj.playable === 1) {
-                ships.push(obj);
+                ships.push(dockedObj);
 
                 if (dockedObj.helmPlayerId == this.game.playerId) {
                     station = 'helm';

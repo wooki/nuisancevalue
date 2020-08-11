@@ -237,13 +237,18 @@ export default class SelectedNavData {
 
   objectSummary(obj) {
 
-    let ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
+    let shipForPosition = this.dockedWithShip;
+    if (!shipForPosition) {
+      shipForPosition = this.playerShip;
+    }
+
+    let ourPos = Victor.fromArray(shipForPosition.physicsObj.position);
     let objPos = Victor.fromArray(obj.physicsObj.position);
     let objDirection = objPos.clone().subtract(ourPos);
     let bearing = (Math.PI - objDirection.verticalAngle()) % (2 * Math.PI);
     let degrees = this.radiansToDegrees(bearing);
     let distanceToObj = objDirection.magnitude();
-    let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
+    let ourSpeed = Victor.fromArray(shipForPosition.physicsObj.velocity);
     let closing = 0;
     if (distanceToObj != 0) {
         closing = (ourSpeed.dot(objDirection) / distanceToObj);
@@ -252,7 +257,7 @@ export default class SelectedNavData {
     let timeToTarget = Math.round(distanceToObj/closing);
 
     // vector of object
-    let v = new Victor(obj.physicsObj.velocity[0], 0 - obj.physicsObj.velocity[1]);
+    let v = new Victor(shipForPosition.velocity[0], 0-shipForPosition.velocity[1]);
 
     let mass = obj.physicsObj.mass.toPrecision(3) + SolarObjects.units.mass;
     let speed = Math.round(v.magnitude()) + SolarObjects.units.speed;
@@ -347,8 +352,10 @@ export default class SelectedNavData {
 
     if (isDocked) {
       this.playerShip = isDocked;
+      this.dockedWithShip = playerShip;
     } else {
       this.playerShip = playerShip;
+      this.dockedWithShip = null;
     }
 
     if (this.selected === playerShip.id) {
@@ -361,54 +368,7 @@ export default class SelectedNavData {
       this.selectedObject = this.objectSummary(isDocked);
       this.projector.scheduleRender();
 
-    // } else if (this.selected && typeof this.selected == "string" && this.selected.startsWith("waypoint")) {
-
-      // waypoints are not selectable!
-
-    //   if (actualPlayerShip.waypoints) {
-    //
-    //     actualPlayerShip.waypoints.forEach(function(wp) {
-    //
-    //         // unpack
-    //         let waypointParams = wp.split(',');
-    //         let waypoint = {
-    //             name: waypointParams[0],
-    //             x: parseInt(waypointParams[1]),
-    //             y: parseInt(waypointParams[2])
-    //         }
-    //
-    //         if ("waypoint-"+waypoint.name == this.selected) {
-    //
-    //           // check if the waypoint will be on screen, or to be drawn on dial
-    //           waypoint.ourPos = Victor.fromArray(this.playerShip.physicsObj.position);
-    //           waypoint.waypointPos = Victor.fromArray([waypoint.x, waypoint.y]);
-    //           waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
-    //           let bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
-    //           let degrees = this.radiansToDegrees(bearing);
-    //           waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
-    //           waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
-    //           let ourSpeed = Victor.fromArray(this.playerShip.physicsObj.velocity);
-    //           waypoint.closing = 0;
-    //           if (waypoint.distanceToWaypoint != 0) {
-    //               waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
-    //           }
-    //           let roundedDistance = Math.round(waypoint.distanceToWaypoint);
-    //           let timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
-    //
-    //           this.selectedObject = {
-    //             type: 'waypoint',
-    //             label: waypoint.name,
-    //             bearing: Math.round(degrees) + "°",
-    //             distance: roundedDistance + Assets.Units.distance,
-    //             closing: waypoint.closing.toPrecision(3) + Assets.Units.speed,
-    //             time: timeToTarget + " s",
-    //             source: wp
-    //           };
-    //         }
-    //     }.bind(this));
-    //   this.projector.scheduleRender();
-    // }
-  }
+    }
 
 
   }

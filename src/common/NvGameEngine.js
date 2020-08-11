@@ -393,15 +393,31 @@ export default class NvGameEngine extends GameEngine {
         if (playerId != 0) {
 
 
-          // handle loading mission
-          if (inputData.input == 'load-mission') {
-              this.emit('load-mission', { playerId: playerId, missionId: inputData.options.missionId });
-          }
+            // handle loading mission
+            if (inputData.input == 'load-mission') {
+                this.emit('load-mission', { playerId: playerId, missionId: inputData.options.missionId });
+            }
 
             // handle joining ship
             if (inputData.input == 'join-ship') {
                 let ship = this.world.objects[inputData.options.objId];
-                this.emit('join-ship', { playerId: playerId, ship: ship, station: inputData.options.station });
+                let dockedWithShip = null;
+
+                // might be docked!
+                if (!ship) {
+                  this.world.forEachObject((objId, obj) => {
+                    if (obj instanceof Ship && !ship) {
+                      ship = obj.docked.find(function(dockedShip) {
+                        return (objId == obj.id);
+                      });
+                      if (ship) {
+                        dockedWithShip = obj;
+                      }
+                    }
+                  });
+                }
+
+                this.emit('join-ship', { playerId: playerId, ship: ship, dockedWithShip: dockedWithShip, station: inputData.options.station });
             }
 
             // handle engine - helm only (no options, so we can bind to keys)
@@ -455,7 +471,7 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 let objId = inputData.options.objId;
                 let orbit = inputData.options.orbit;
-                
+
                 if (orbit === undefined || orbit < 0) {
                     this.emit('removewaypoint', { ship: ship, objId: objId });
                 } else {

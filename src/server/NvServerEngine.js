@@ -71,36 +71,24 @@ export default class NvServerEngine extends ServerEngine {
           let playerId = e.playerId;
           let ship = e.ship;
           let station = e.station;
-          // let ship = this.world.objects[inputData.options.objId];
+          let dockedWithShip = e.dockedWithShip;
 
-          // might be docked
-          if (!ship) {
-            this.gameEngine.world.forEachObject((objId, obj) => {
-              if (obj instanceof Ship && !ship) {
-                ship = obj.docked.find(function(dockedShip) {
-                  return (objId == obj.id);
-                });
-              }
-            });
-          } else {
-
-            // try and add them
-            if (station == "helm" && ship.helmPlayerId == 0) {
-                ship.helmPlayerId = playerId;
-                ship.playerId = playerId; // set the ownership to last player to join
-            } else if (station == "nav" && ship.navPlayerId == 0) {
-                ship.navPlayerId = playerId;
-                ship.playerId = playerId; // set the ownership to last player to join
-            } else if (station == "signals" && ship.signalsPlayerId == 0) {
-                ship.signalsPlayerId = playerId;
-                ship.playerId = playerId; // set the ownership to last player to join
-            } else if (station == "engineer" && ship.engineerPlayerId == 0) {
-                ship.engineerPlayerId = playerId;
-                ship.playerId = playerId; // set the ownership to last player to join
-            } else if (station == "captain" && ship.captainPlayerId == 0) {
-                ship.captainPlayerId = playerId;
-                ship.playerId = playerId; // set the ownership to last player to join
-            }
+          // try and add them
+          if (station == "helm" && ship.helmPlayerId == 0) {
+              ship.helmPlayerId = playerId;
+              ship.playerId = playerId; // set the ownership to last player to join
+          } else if (station == "nav" && ship.navPlayerId == 0) {
+              ship.navPlayerId = playerId;
+              ship.playerId = playerId; // set the ownership to last player to join
+          } else if (station == "signals" && ship.signalsPlayerId == 0) {
+              ship.signalsPlayerId = playerId;
+              ship.playerId = playerId; // set the ownership to last player to join
+          } else if (station == "engineer" && ship.engineerPlayerId == 0) {
+              ship.engineerPlayerId = playerId;
+              ship.playerId = playerId; // set the ownership to last player to join
+          } else if (station == "captain" && ship.captainPlayerId == 0) {
+              ship.captainPlayerId = playerId;
+              ship.playerId = playerId; // set the ownership to last player to join
           }
         });
 
