@@ -60,14 +60,18 @@ export default {
 		waypoint.timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
 
 		// guess our arrival time, if we're within the predicition time
-		if (waypoint.timeToTarget > 0 && waypoint.timeToTarget <= predictTime) {
+		if (waypoint.timeToTarget > 0) {
 
 			let time = waypoint.distanceToWaypoint / waypoint.closing;
 
 			// predict future position and adjust for orbit
-			let predictedPath = this.predictPath(obj, time);
+			let predictionsPerSecond = 1;
+			if (time > predictTime) {
+				predictionsPerSecond = 0.25;
+			}
+			let predictedPath = this.predictPath(obj, Math.min(time*3,predictTime), predictionsPerSecond);
 			let predictedPos = predictedPath[predictedPath.length - 1];
-			
+
 			// use predicted position and recalculate
 			waypoint.waypointPos = Victor.fromObject(predictedPos);
 			waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
