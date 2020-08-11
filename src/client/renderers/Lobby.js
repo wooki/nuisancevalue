@@ -1,178 +1,163 @@
+import {h, createProjector} from 'maquette';
+
 import Ship from './../../common/Ship';
 import Hulls from './../../common/Hulls';
-import morphdom from 'morphdom';
-
-let el = null;
-let shipsEl = null;
-let game = null;
-let client = null;
-let gm = false;
 
 export default class LobbyRenderer {
 
     constructor(gameEngine, clientEngine) {
-    	game = gameEngine;
-    	client = clientEngine;
+    	this.game = gameEngine;
+    	this.client = clientEngine;
 
-      this.shipEls = {};
+      this.root = document.getElementById('game');
 
-    	let root = document.getElementById('game');
-      root.innerHTML = '';
-    	el = document.createElement('div');
-    	el.classList.add('lobby');
+      this.missions = ['Asteroid Test', 'Target Test', 'Solar System'];
+      this.playableShips = [];
 
-      let title = document.createElement('h1');
-      title.innerHTML = 'Nuisance Value Lobby';
-      el.append(title);
-
-      let missions = ['Asteroid Test', 'Target Test', 'Solar System'];
-      let missionsEl = document.createElement('div');
-      missionsEl.classList.add('missions');
-      el.append(missionsEl);
-      missions.forEach((mission, index) => {
-        let missionEl = document.createElement('div');
-        missionEl.addEventListener('click', (event) => { this.loadMission(index) } );
-        missionEl.innerHTML = mission;
-        missionEl.classList.add('load-mission');
-        missionsEl.append(missionEl);
-      });
-
-      shipsEl = document.createElement('div');
-      shipsEl.classList.add('ships');
-      el.append(shipsEl);
-
-      let gmEl = document.createElement('button');
-      gmEl.classList.add('gm-join');
-      gmEl.innerHTML = "Join as GM";
-      gmEl.addEventListener('click', (event) => { this.gamesMasterJoin() } );
-      el.append(gmEl);
-
-
-    	root.append(el);
+      this.projector = createProjector();
+      this.projector.append(this.root, this.render.bind(this));
     }
 
     remove() {
-      if (el) {
-        el.remove();
-        el = null;
-      }
+      this.projector.stop();
     }
 
     loadMission(id) {
       let result = confirm("Are you sure?");
       if (result) {
-        client.loadMission(id);
+        this.client.loadMission(id);
       }
     }
 
     joinShip(shipId, station) {
-    	client.joinShip(shipId, station);
+    	this.client.joinShip(shipId, station);
     }
 
-    gamesMasterJoin() {
-      gm = true;
+    render() {
+
+      let missions = [h('label.mission', ["Missions:"])];
+      for (let i = 0; i < this.missions.length; i++) {
+        missions.push(
+          h('button.mission', {
+            key: 'mission-'+i,
+            onclick: (event) => {
+              this.loadMission(i);
+            }
+          },
+            [this.missions[i]])
+        );
+      }
+
+      let ships = [];
+      for (let j = 0; j < this.playableShips.length; j++) {
+        ships.push(this.createShip(this.playableShips[j]));
+      }
+
+      return h('div.nv.ui.col.lobby', {
+        key: 'lobby',
+        styles: {
+        }
+      },
+      [
+        h('h1', ["Nuisance Value Lobby"]),
+        h('div.nv.ui.row', {
+          key: 'missions'
+          },
+          missions
+        ),
+        h('hr'),
+        h('div.nv.ui.col', {
+          key: 'ships'
+          },
+          ships
+        )
+      ]);
     }
 
-    drawShipUi(obj) {
+    createShip(obj) {
 
-      let shipEl = document.createElement('div');
-      shipEl.classList.add('ship');
-      let shipName = document.createElement('div');
-      let shipDesc = document.createElement('div');
-      shipName.innerHTML = obj.name;
-      shipDesc.innerHTML = obj.hull + " class";
-      shipName.classList.add('name');
-      shipDesc.classList.add('description');
-      shipEl.append(shipName);
-      shipEl.append(shipDesc);
-
-      let hullData = Hulls[obj.hull];
-
-      let shipImage = document.createElement('img');
-      shipImage.classList.add('hull');
-      shipImage.setAttribute('src', hullData.image);
-      shipEl.append(shipImage);
+      let hullData = obj.getHullData();
+      let content = [];
+      content.push(h('img', {
+        src: hullData.image,
+        height: '32px',
+        width: '32px'
+      }, []));
+      content.push(h('label', [obj.name + ", "+hullData.name+' Class:']));
 
       if (obj.helmPlayerId == 0) {
-        let helmEl = document.createElement('div');
-        helmEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'helm') } );
-        helmEl.innerHTML = "Helm";
-        helmEl.classList.add('join');
-        shipEl.append(helmEl);
+        content.push(h('button.join', {
+          key: 'helm',
+          onclick: (event) => {
+            this.joinShip(obj.id, 'helm');
+          }
+        }, ["Helm"]));
       }
-
       if (obj.navPlayerId == 0) {
-        let navEl = document.createElement('div');
-        navEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'nav') } );
-        navEl.innerHTML = "Navigator";
-        navEl.classList.add('join');
-        shipEl.append(navEl);
+        content.push(h('button.join', {
+          key: 'nav',
+          onclick: (event) => {
+            this.joinShip(obj.id, 'nav');
+          }
+        }, ["Nav"]));
       }
-
       if (obj.signalsPlayerId == 0) {
-        let signalsEl = document.createElement('div');
-        signalsEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'signals') } );
-        signalsEl.innerHTML = "Signals";
-        signalsEl.classList.add('join');
-        shipEl.append(signalsEl);
+        content.push(h('button.join', {
+          key: 'signals',
+          onclick: (event) => {
+            this.joinShip(obj.id, 'signals');
+          }
+        }, ["Signals"]));
       }
-
       if (obj.engineerPlayerId == 0) {
-        let signalsEl = document.createElement('div');
-        signalsEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'engineer') } );
-        signalsEl.innerHTML = "Engineer";
-        signalsEl.classList.add('join');
-        shipEl.append(signalsEl);
+        content.push(h('button.join', {
+          key: 'engineer',
+          onclick: (event) => {
+            this.joinShip(obj.id, 'engineer');
+          }
+        }, ["Engineer"]));
       }
-
       if (obj.captainPlayerId == 0) {
-        let signalsEl = document.createElement('div');
-        signalsEl.addEventListener('click', (event) => { this.joinShip(obj.id, 'captain') } );
-        signalsEl.innerHTML = "Captain";
-        signalsEl.classList.add('join');
-        shipEl.append(signalsEl);
+        content.push(h('button.join', {
+          key: 'captain',
+          onclick: (event) => {
+            this.joinShip(obj.id, 'captain');
+          }
+        }, ["Captain"]));
       }
 
-      return shipEl;
-    }
+      return h('div.nv.ui.row.ship', {
+        key: 'ship-'+obj.id
+        },
+        content
+      );
 
-    addShip(obj) {
-      if (!this.shipEls[obj.id]) {
-        this.shipEls[obj.id] = this.drawShipUi(obj);
-        shipsEl.append(this.shipEls[obj.id]);
-      } else {
-        morphdom(this.shipEls[obj.id], this.drawShipUi(obj));
-      }
     }
 
     // just draw rooms (ships) to join
     draw(t, dt) {
 
-      if (gm) {
-        return "gm";
-      }
-
       let station = false;
-      let shipIds = {};
+      let ships = [];
 
-      // let ships = game.world.forEachObject((objId, obj) => {
-      for (let objId of Object.keys(game.world.objects)) {
-        let obj = game.world.objects[objId];
+      // look at all the ships, building UI and also looking for this player being
+      // set into a stations
+      for (let objId of Object.keys(this.game.world.objects)) {
+        let obj = this.game.world.objects[objId];
 
     		if (obj instanceof Ship) {
           if (obj.playable === 1) {
-            this.addShip(obj);
-            shipIds[objId] = true;
+            ships.push(obj);
 
-            if (obj.helmPlayerId == game.playerId) {
+            if (obj.helmPlayerId == this.game.playerId) {
                 station = 'helm';
-            } else if (obj.navPlayerId == game.playerId) {
+            } else if (obj.navPlayerId == this.game.playerId) {
                 station = 'nav';
-            } else if (obj.signalsPlayerId == game.playerId) {
+            } else if (obj.signalsPlayerId == this.game.playerId) {
                 station = 'signals';
-            } else if (obj.engineerPlayerId == game.playerId) {
+            } else if (obj.engineerPlayerId == this.game.playerId) {
                 station = 'engineer';
-            } else if (obj.captainPlayerId == game.playerId) {
+            } else if (obj.captainPlayerId == this.game.playerId) {
                 station = 'captain';
             }
           }
@@ -180,33 +165,28 @@ export default class LobbyRenderer {
           if (obj.docked && obj.docked.length > 0) {
             obj.docked.forEach((dockedObj) => {
               if (dockedObj instanceof Ship && dockedObj.playable === 1) {
-                this.addShip(dockedObj);
+                ships.push(obj);
 
-                if (dockedObj.helmPlayerId == game.playerId) {
+                if (dockedObj.helmPlayerId == this.game.playerId) {
                     station = 'helm';
-                } else if (dockedObj.navPlayerId == game.playerId) {
+                } else if (dockedObj.navPlayerId == this.game.playerId) {
                     station = 'nav';
-                } else if (dockedObj.signalsPlayerId == game.playerId) {
+                } else if (dockedObj.signalsPlayerId == this.game.playerId) {
                     station = 'signals';
-                } else if (dockedObj.engineerPlayerId == game.playerId) {
+                } else if (dockedObj.engineerPlayerId == this.game.playerId) {
                     station = 'engineer';
-                } else if (dockedObj.captainPlayerId == game.playerId) {
+                } else if (dockedObj.captainPlayerId == this.game.playerId) {
                     station = 'captain';
                 }
               }
             });
           }
 	    	}
-      }
-    	// });
+      }  // done getting playable ships and checking for station
 
-      // remove any we didn't see
-      Object.keys(this.shipEls).forEach((key) => {
-        if (!shipIds[key]) {
-          this.shipEls[key].remove();
-          delete this.shipEls[key];
-        }
-      });
+      // replace the playable ships and trigger a render
+      this.playableShips = ships;
+      this.projector.scheduleRender();
 
       return station; // stay here until ship chosen
     }
