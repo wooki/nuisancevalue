@@ -34,12 +34,11 @@ export default {
 
 	createWaypointData(actualPlayerShip, obj, orbit, predictTime) {
 
-		// orbit !!!
-
 		// get some data
 		let waypoint = {
 			objId: obj.id,
 			name: (obj.name || obj.hull || obj.texture) + " intercept",
+			obj: obj // useful to keep a ref for selection etc. since waypoint not select/clickable
 		};
 		if (orbit && orbit > 0) {
 			waypoint.name = (obj.name || obj.hull || obj.texture) + " orbit " + orbit + Assets.Units.distance;
@@ -87,7 +86,30 @@ export default {
 			waypoint.timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
 		}
 
-		waypoint.obj = obj; // useful to keep a ref!
+		// if we're looking for an orbit then plot the desired amount
+		// at a right angle to our ship's approach, rotating anti-clockwise
+		if (orbit && orbit > 0) {
+
+			let approachDirection = waypoint.waypointDirection.clone().invert().normalize();
+			approachDirection = approachDirection.rotate(-90);
+			approachDirection = approachDirection.multiply(new Victor(orbit, orbit));
+
+			// add to position
+			waypoint.waypointPos = waypoint.waypointPos.add(approachDirection);
+
+			// use orbit position and recalculate
+			waypoint.waypointDirection = waypoint.waypointPos.clone().subtract(waypoint.ourPos);
+			// waypoint.bearing = (Math.PI - waypoint.waypointDirection.verticalAngle()) % (2 * Math.PI);
+			waypoint.bearing = 0 - waypoint.waypointDirection.verticalAngle() % (2 * Math.PI);
+			waypoint.degrees = this.radiansToDegrees(waypoint.bearing);
+			waypoint.distanceToWaypoint = waypoint.waypointDirection.magnitude();
+			waypoint.closing = 0;
+			if (waypoint.distanceToWaypoint != 0) {
+					waypoint.closing = (ourSpeed.dot(waypoint.waypointDirection) / waypoint.distanceToWaypoint);
+			}
+			waypoint.roundedDistance = Math.round(waypoint.distanceToWaypoint);
+			waypoint.timeToTarget = Math.round(waypoint.distanceToWaypoint/waypoint.closing);
+		}
 
 		return waypoint;
 	},
