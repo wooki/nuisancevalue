@@ -257,7 +257,7 @@ export default class SelectedNavData {
     let timeToTarget = Math.round(distanceToObj/closing);
 
     // vector of object
-    let v = new Victor(shipForPosition.velocity[0], 0-shipForPosition.velocity[1]);
+    let v = new Victor(obj.physicsObj.velocity[0], 0-obj.physicsObj.velocity[1]);
 
     let mass = obj.physicsObj.mass.toPrecision(3) + SolarObjects.units.mass;
     let speed = Math.round(v.magnitude()) + SolarObjects.units.speed;
