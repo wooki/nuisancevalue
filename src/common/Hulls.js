@@ -51,11 +51,11 @@ export default {
 	"torpedo": {
 		name: 'Torpedo',
 		image: 'assets/torpedo.png',
-		size: 100, // used for height (artificially big so they show up!!)
+		size: 30, // used for height (artificially big so they show up!!)
 		width: 0.1875, // ratio to height
 		mass: 0.0001,
 		thrust: 2,
-		enginePositions: [[3, 0.5, 1.0]],// [scale, %x, %y] // also artificially big
+		enginePositions: [[2, 0.5, 1.0]],// [scale, %x, %y] // also artificially big
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
 		fuel: 100,
