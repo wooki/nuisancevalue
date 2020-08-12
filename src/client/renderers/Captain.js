@@ -2,21 +2,13 @@ import CompositeRenderer from './Composite';
 import LocalMapBackground from './SubRenderers/LocalMapBackground';
 import LocalMap from './SubRenderers/LocalMap';
 import LocalMapHud from './SubRenderers/LocalMapHud';
-// import EngineControl from './SubRenderers/EngineControl';
-// import ManeuverControl from './SubRenderers/ManeuverControl';
-// import DockingControl from './SubRenderers/DockingControl';
-// import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
-// import TargetSelection from './SubRenderers/TargetSelection';
 // import OpenCommsControl from './SubRenderers/OpenCommsControl';
 // import CommsControl from './SubRenderers/CommsControl';
-// import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
-// import LocalMapPdcHud from './SubRenderers/LocalMapPdcHud';
-// import PdcFireControl from './SubRenderers/PdcFireControl';
-import NavData from './SubRenderers/NavData';
-import SelectedNavData from './SubRenderers/SelectedNavData';
+import HudData from './SubRenderers/HudData';
 import LocalMapPanControl from './SubRenderers/LocalMapPanControl';
+import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
 
 // extend compsite with pre-set subrenderers
 export default class CaptainRenderer extends CompositeRenderer {
@@ -28,12 +20,15 @@ export default class CaptainRenderer extends CompositeRenderer {
       const fullHeight = window.innerHeight;
       const halfWidth = Math.round(fullWidth/2);
       const halfHeight = Math.round(fullHeight/2);
+      let spaceWidth = fullWidth - fullHeight;
       let margin = 30;
+      if (spaceWidth < 0) {
+        spaceWidth = 0;
+        margin = 15;
+      }
+      const sideWidth = Math.round((spaceWidth/2) - margin);
       const marginFull = margin * 2;
-      const sideWidth = (fullWidth * 0.25) - marginFull;
-      const sideControlsMin = 360;
-      const sidebarWidth = Math.min(sideWidth, sideControlsMin);
-      const mainAreaWidth = fullWidth - (2 * sidebarWidth);
+      const sideControlsMin = 200;
 
       let config = {
         station: 'captain',
@@ -42,73 +37,61 @@ export default class CaptainRenderer extends CompositeRenderer {
         dashboardColor: 0x990000,
         subRenderers: [
           new LocalMapBackground({
-            x: 0,
-            y: 0,
-            width: fullWidth,
-            height: fullHeight,
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
             zIndex: 5,
-            mapSize: 100000,
-            shape: "rectangle",
-            borderWidth: 0,
-            backgroundAsset: 'black'
+            mapSize: 30000
           }),
           new LocalMapPaths({
-            x: 0,
-            y: 0,
-            width: fullWidth,
-            height: fullHeight,
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
             zIndex: 12,
-            predictTime: 120,
+            predictTime: 30,
             trackObjects: true,
-            relativeToGravity: false,
-            mapSize: 100000,
-            shape: "rectangle"
+            mapSize: 30000
           }),
           new LocalMap({
-            x: 0,
-            y: 0,
-            width: fullWidth,
-            height: fullHeight,
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
             zIndex: 15,
-            mapSize: 100000,
-            shape: "rectangle"
+            mapSize: 30000
           }),
           new LocalMapHud({
-            x: 0,
-            y: 0,
-            width: fullWidth,
-            height: fullHeight,
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
             zIndex: 20,
-            mapSize: 100000,
-            shape: "rectangle",
-            dial: false,
-            predictTime: 120,
-            showSelection: true
+            mapSize: 30000,
+            predictTime: 120 // to match waypoint predicition with nav
           }),
           new ZoomControl({
             keyboardControls: true,
-            onScreenControls: false,
-            minZoom: 0.05,
-            maxZoom: 8,
-            zoomStep: 0.05,
+            onScreenControls: false
           }),
           new LocalMapPanControl({
             wasd: true,
-            arrows: false,
+            arrows: true,
           }),
-          new NavData({
+          new HudData({
             x: margin,
             y: margin,
-            width: sidebarWidth - marginFull,
+            width: Math.max(sideWidth, sideControlsMin),
             height: fullHeight - marginFull,
             zIndex: 30
           }),
-          new SelectedNavData({
-            x: sidebarWidth + mainAreaWidth + margin,
+          new EngineeringDataControl({
+            x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
             y: margin,
-            width: sidebarWidth - marginFull,
-            height: fullHeight - marginFull,
-            zIndex: 30
+            width: Math.max(sideWidth, sideControlsMin),
+            height: (fullHeight - marginFull),
+            zIndex: 31
           }),
         ]
       };
