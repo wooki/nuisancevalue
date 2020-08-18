@@ -1,5 +1,6 @@
 import CompositeRenderer from './Composite';
 import LocalMapBackground from './SubRenderers/LocalMapBackground';
+import LocalMapRanges from './SubRenderers/LocalMapRanges';
 import LocalMap from './SubRenderers/LocalMap';
 import LocalMapHud from './SubRenderers/LocalMapHud';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
@@ -42,6 +43,14 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 5,
+            mapSize: 30000
+          }),
+          new LocalMapRanges({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 9,
             mapSize: 30000
           }),
           new LocalMapPaths({

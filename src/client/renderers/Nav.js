@@ -1,5 +1,6 @@
 import CompositeRenderer from './Composite';
 import LocalMapBackground from './SubRenderers/LocalMapBackground';
+import LocalMapRanges from './SubRenderers/LocalMapRanges';
 import LocalMap from './SubRenderers/LocalMap';
 import LocalMapHud from './SubRenderers/LocalMapHud';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
@@ -41,6 +42,15 @@ export default class NavRenderer extends CompositeRenderer {
             shape: "rectangle",
             borderWidth: 0,
             backgroundAsset: 'black'
+          }),
+          new LocalMapRanges({
+            x: 0,
+            y: 0,
+            width: fullWidth,
+            height: fullHeight,
+            zIndex: 9,
+            mapSize: 100000,
+            shape: "rectangle"
           }),
           new LocalMapPaths({
             x: 0,

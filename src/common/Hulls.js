@@ -27,7 +27,8 @@ export default {
 		systems: STANDARD_SYSTEMS, // this is a bit encoded set of valid systems that CAN BE damaged
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [3000, 20, 20],
-		defaultWeaponStock: [1000, 12, 6]
+		defaultWeaponStock: [1000, 12, 6],
+		scanRanges: [6000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 	},
 
 	"tug": {
@@ -45,7 +46,8 @@ export default {
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [0, 10, 10],
-		defaultWeaponStock: [0, 10, 10]
+		defaultWeaponStock: [0, 10, 10],
+		scanRanges: [6000, 60000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 	},
 
 	"torpedo": {
@@ -61,6 +63,7 @@ export default {
 		fuel: 100,
 		payload: 600, // equivalent acceleration for damage
 		maxClosing: 800,
+		scanRanges: [0, 10000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		types: [ // allow different torps to override any of these - image, size, exhaust
       {
         fuel: 100,
@@ -101,7 +104,8 @@ export default {
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [3000, 20, 20],
-		defaultWeaponStock: [1000, 12, 6]
+		defaultWeaponStock: [1000, 12, 6],
+		scanRanges: [6000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 	},
 
 	"blockade-runner": {
@@ -123,7 +127,8 @@ export default {
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [2000, 12, 12],
-		defaultWeaponStock: [1000, 8, 4]
+		defaultWeaponStock: [1000, 8, 4],
+		scanRanges: [5000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 	},
 
 	"station": {
@@ -137,6 +142,7 @@ export default {
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		fuel: 10000,
-		dockable: true
+		dockable: true,
+		scanRanges: [10000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 	}
 }

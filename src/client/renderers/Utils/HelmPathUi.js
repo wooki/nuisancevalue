@@ -28,10 +28,6 @@ export default class HelmPathUi extends PIXI.Graphics {
         this.zIndex = this.params.zIndex;
         this.width = this.params.uiWidth;
         this.height = this.params.uiHeight;
-        let smallestDimension = this.params.uiWidth;
-        if (this.params.uiHeight < smallestDimension) {
-          smallestDimension = this.params.uiHeight;
-        }
         this.anchor = 0.5;
         this.x = (this.params.uiWidth / 2);
         this.y = (this.params.uiHeight / 2);
