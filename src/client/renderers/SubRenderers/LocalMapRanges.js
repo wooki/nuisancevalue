@@ -30,8 +30,8 @@ export default class LocalMapRanges {
         sensors: 0xFFFFFF
       },
       alphas: {
-        visual: 0.02,
-        sensors: 0.02
+        visual: 0.03,
+        sensors: 0.03
       }
     }, params);
 
