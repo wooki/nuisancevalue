@@ -25,6 +25,11 @@ export default class NvGameEngine extends GameEngine {
         super(options);
 
         this.physicsEngine = new P2PhysicsEngine({ gameEngine: this });
+
+        this.physicsEngine.world.islandSplit = false; // suggestion for odd error
+        // https://github.com/schteppe/p2.js/issues/223
+        // https://stackoverflow.com/questions/55385238/running-several-physics-worlds-on-node-js-not-getting-most-out-of-server
+
         // this.physicsEngine.world.defaultContactMaterial.friction = 100;
         this.physicsEngine.world.on('impact', this.handleCollision.bind(this));
         this.physicsEngine.world.on('beginContact', this.beginContact.bind(this));

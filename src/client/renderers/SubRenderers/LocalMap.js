@@ -207,6 +207,7 @@ export default class LocalMap {
         let shipSprite = this.createShipSprite(obj, coord, this.parameters.internalZIndex.ship);
         this.addSpriteToMap(shipSprite, obj.id);
     } else {
+
       this.addToMap(alias,
               obj.id,
               texture,
@@ -330,9 +331,17 @@ export default class LocalMap {
 
   addToMap(alias, guid, texture, width, height, x, y, zIndex, addLabel) {
 
+    let w = width * this.parameters.scale;
+    let h = height * this.parameters.scale;
+
+    if (h < this.parameters.mimimumSpriteSize) {
+      w = w * (this.parameters.mimimumSpriteSize / h);
+      h = this.parameters.mimimumSpriteSize;
+    }
+
       let sprite = new PIXI.Sprite(texture);
-      sprite.width = width * this.parameters.scale;
-      sprite.height = height * this.parameters.scale;
+      sprite.width = w;
+      sprite.height = h;
       sprite.anchor.set(0.5);
       sprite.x = x;
       sprite.y = y;
