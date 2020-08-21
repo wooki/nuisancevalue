@@ -67,7 +67,7 @@ export default class DockingControl {
     // is this elligable for docking (must be a ship - then check hull)
     if (obj instanceof Ship) {
 
-      let hullData = Hulls[obj.hull];
+      let hullData = obj.getHullData();
       if (hullData.dockable) {
 
         // measure distance

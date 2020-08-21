@@ -14,24 +14,24 @@ export default class TestMission {
   build() {
 
     game.addAsteroid({
-        x: 30000,
+        x: 110000,
         y: 0,
         dX: 0,
         dY: 0,
         mass: 1, size: 500
     });
 
-    let mars = game.addPlanet({
-      x: 20000,
-      y: 0,
-      dX: 0,
-      dY: 0,
-      mass: SolarObjects.Mars.mass,
-      size: SolarObjects.Mars.diameter,
-      texture: 'mars',
-      angle: Math.random() * 2 * Math.PI,
-      angularVelocity: Math.random()
-    });
+    // let mars = game.addPlanet({
+    //   x: 20000,
+    //   y: 0,
+    //   dX: 0,
+    //   dY: 0,
+    //   mass: SolarObjects.Mars.mass,
+    //   size: SolarObjects.Mars.diameter,
+    //   texture: 'mars',
+    //   angle: Math.random() * 2 * Math.PI,
+    //   angularVelocity: Math.random()
+    // });
 
     for (let i = 0; i < 1; i++) {
       let hullName = 'spacebug';

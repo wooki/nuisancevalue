@@ -9,6 +9,7 @@ import PDC from './PDC';
 import Victor from 'victor';
 import SolarObjects from './SolarObjects';
 import Hulls from './Hulls';
+import Factions from './Factions';
 import Comms from './Comms';
 import EmitOnOff from 'emitonoff';
 import CollisionUtils from './CollisionUtils';
@@ -32,6 +33,7 @@ export default class NvGameEngine extends GameEngine {
 
         this.ai = new Ai(this);
         this.systems = new Systems();
+        this.factions = new Factions();
 
         // game variables
         Object.assign(this, {
@@ -39,7 +41,8 @@ export default class NvGameEngine extends GameEngine {
             PLANET: Math.pow(2, 1),
             ASTEROID: Math.pow(2, 2),
             TORPEDO: Math.pow(2, 3),
-            PDC: Math.pow(2, 4)
+            PDC: Math.pow(2, 4),
+            SCAN: Math.pow(2, 5)
         });
 
         this.on('preStep', this.preStep.bind(this));
@@ -72,9 +75,9 @@ export default class NvGameEngine extends GameEngine {
         }
     }
 
-    postStep(params) {
+    // postStep(params) {
       // console.timeEnd("step");
-    }
+    // }
 
     // update world objects for engines/gravity etc
     preStep(params) {
@@ -165,7 +168,7 @@ export default class NvGameEngine extends GameEngine {
                     obj.weaponStock[0] = obj.weaponStock[0] - 1;
 
                       // this is server only as the pdc is local
-                    let hullData = Hulls[obj.hull];
+                    let hullData = obj.getHullData();
                     if (hullData.pdc) {
                       let angle = obj.pdcAngle;
                       let range = hullData.pdc.range;
@@ -349,32 +352,71 @@ export default class NvGameEngine extends GameEngine {
     }
 
     handleCollision(e) {
-        this.collisionUtils.assignDamage(e);
+
+      this.collisionUtils.assignDamage(e);
     }
 
     // PDCs managed with contact not impact as they are sensors and we want
     // to check damage each tick
+    // Sensor and Visual Scan are similar
     beginContact(e) {
 
-        let [A, B] = this.collisionUtils.getObjects(e);
+        console.log("beginContact");
+
+        let [A, B, typeA, typeB] = this.collisionUtils.getObjects(e);
         if (!A || !B) return;
 
-        if (A instanceof PDC && !(B instanceof PDC)) {
+        if (typeA == 'VisualScan') {
+
+          console.log("typeA VisualScan");
+          console.dir(typeB);
+          B.scannedBy(A.faction);
+
+        } else if (typeB == 'VisualScan') {
+
+          console.log("typeB VisualScan");
+          console.dir(typeA);
+          A.scannedBy(B.faction);
+
+        } else if (typeA == 'Sensor') {
+
+          console.log("typeA Sensor");
+          console.dir(typeB);
+          B.sensedBy(A.faction);
+
+        } else if (typeB == 'Sensor') {
+
+          console.log("typeB Sensor");
+          console.dir(typeA);
+          A.sensedBy(B.faction);
+
+        } else if (A instanceof PDC && !(B instanceof PDC)) {
           // PDC hit must be managed by the server because there is a % changce
           this.emit('pdchit', { obj: B, pdc: A, collision: e });
 
         } else if (B instanceof PDC && !(A instanceof PDC)) {
           // PDC hit must be managed by the server because there is a % changce
           this.emit('pdchit', { obj: A, pdc: B, collision: e });
+
         }
     }
 
     endContact(e) {
 
-        let [A, B] = this.collisionUtils.getObjects(e);
+      console.log("endContact");
+
+        let [A, B, typeA, typeB] = this.collisionUtils.getObjects(e);
         if (!A || !B) return;
 
-        if (A instanceof PDC && !(B instanceof PDC)) {
+        if (typeA == 'Sensor') {
+
+          B.unsensedBy(A.faction);
+
+        } else if (typeB == 'Sensor') {
+
+          A.unsensedBy(B.faction);
+
+        } else if (A instanceof PDC && !(B instanceof PDC)) {
           // PDC hit must be managed by the server because there is a % changce
           this.emit('endpdchit', { obj: B, pdc: A, collision: e });
 
@@ -500,7 +542,7 @@ export default class NvGameEngine extends GameEngine {
 
             if (inputData.input == 'pdcangle') {
               let ship = this.getPlayerShip(playerId);
-              let hullData = Hulls[ship.hull];
+              let hullData = ship.getHullData();
               if (hullData.pdc) {
                 let newAngle = ship.pdcAngle;
                 if (inputData.options.direction == '+') {
@@ -514,7 +556,7 @@ export default class NvGameEngine extends GameEngine {
 
             if (inputData.input == 'pdcstate') {
               let ship = this.getPlayerShip(playerId);
-              let hullData = Hulls[ship.hull];
+              let hullData = ship.getHullData();
               if (hullData.pdc) {
                 let newState = ship.pdcState;
                 if (inputData.options.direction == '+') {
@@ -644,6 +686,9 @@ export default class NvGameEngine extends GameEngine {
         s.targetId = params['targetId'] || -1;
         s.aiScript = params['aiScript'] || 0;
         s.aiPlan = params['aiPlan'] || 0;
+        s.faction = params['faction'] || this.factions.defaultFaction;
+        s.sensed = params['sensed'] || 0;
+        s.scanned = params['scanned'] || 0;
         s.dockedId = params['dockedId'] || -1;
         s.docked = [];
         s.damage = params['damage'] || 0;
@@ -674,6 +719,8 @@ export default class NvGameEngine extends GameEngine {
             angle: params['angle']
         });
         a.size = params['size'];
+        a.sensed = params['sensed'] || 0;
+        a.scanned = params['scanned'] || 0;
         return this.addObjectToWorld(a);
     }
 
@@ -701,6 +748,9 @@ export default class NvGameEngine extends GameEngine {
         t.fuel = params['fuel'];
         t.engine = params['engine'];
         t.torpType = params['torpType'];
+        t.sensed = params['sensed'] || 0;
+        t.scanned = params['scanned'] || 0;
+
         return this.addObjectToWorld(t);
     }
 

@@ -183,13 +183,13 @@ export default class LocalMap {
         zIndex = this.parameters.internalZIndex.planet;
         alias = obj.texture;
       } else if (obj instanceof Ship) {
-          let hullData = Hulls[obj.hull];
+          let hullData = obj.getHullData();
           texture = this.resources[this.parameters.baseUrl+hullData.image].texture;
           zIndex = this.parameters.internalZIndex.ship;
           alias = obj.hull;
           widthRatio = hullData.width;
       } else if (obj instanceof Torpedo) {
-          let hullData = Hulls[obj.hull];
+          let hullData = obj.getHullData();
           texture = this.resources[this.parameters.baseUrl+hullData.image].texture;
           zIndex = this.parameters.internalZIndex.torpedo;
           alias = obj.hull;
@@ -352,7 +352,7 @@ export default class LocalMap {
     if (sprite) {
       if (obj.hull) {
 
-        let hullData = Hulls[obj.hull];
+        let hullData = obj.getHullData();
         let height = hullData.size * this.parameters.scale;
         let width = height * hullData.width;
 
@@ -461,7 +461,7 @@ export default class LocalMap {
 
   createShipSprite(ship, coord, zIndex) {
 
-    let hullData = Hulls[ship.hull];
+    let hullData = ship.getHullData();
     if (ship instanceof Torpedo) {
       hullData = ship.torpData;
     }

@@ -16,7 +16,9 @@ export default class Torpedo extends PhysicalObject2D {
         targetId: { type: BaseTypes.TYPES.INT16 },
         fuel: { type: BaseTypes.TYPES.INT16 },
         engine: { type: BaseTypes.TYPES.UINT8 },
-        torpType: { type: BaseTypes.TYPES.UINT8 }
+        torpType: { type: BaseTypes.TYPES.UINT8 },
+        sensed: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
+        scanned: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
       }, super.netScheme);
   }
 
@@ -43,6 +45,26 @@ export default class Torpedo extends PhysicalObject2D {
 
   get hull() {
     return "torpedo";
+  }
+
+  sensedBy(factionId) {
+    this.sensed = this.sensed | factionId;
+  }
+
+  unsensedBy(factionId) {
+    this.sensed = this.sensed ^ factionId;
+  }
+
+  scannedBy(factionId) {
+    this.scanned = this.scanned | factionId;
+  }
+
+  isSensedBy(factionId) {
+    return (this.sensed & factionId) > 0;
+  }
+
+  isScannedBy(factionId) {
+    return (this.scanned & factionId) > 0;
   }
 
   get payload() {
@@ -89,7 +111,7 @@ export default class Torpedo extends PhysicalObject2D {
         let shape = new p2.Circle({
             radius: (this.size/2),
             collisionGroup: game.TORPEDO,
-            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO | game.PDC
+            collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO | game.PDC | game.SCAN
         });
         this.physicsObj.addShape(shape);
         game.physicsEngine.world.addBody(this.physicsObj);
@@ -108,6 +130,8 @@ export default class Torpedo extends PhysicalObject2D {
         this.fuel = other.fuel;
         this.engine = other.engine;
         this.torpType = other.torpType;
+        this.scanned = other.scanned;
+        this.sensed = other.sensed;
     }
 
     toString() {

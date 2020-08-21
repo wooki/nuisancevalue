@@ -207,11 +207,13 @@ export default class CompositeRenderer {
 
           // find the player ship first, so we can set objects positions relative to it
           let playerShip = null;
+          let actualPlayerShip = null;
           let gameObjects = [];
           this.game.world.forEachObject((objId, obj) => {
               if (obj instanceof Ship) {
                   if (obj[this.stationConfig.stationProperty] == this.game.playerId) {
                       playerShip = obj;
+                      actualPlayerShip = obj;
                       this.isDocked = false;
                   } else {
 
@@ -232,6 +234,7 @@ export default class CompositeRenderer {
                   });
                   if (dockedMatch) {
                     this.isDocked = dockedMatch; // keep actual player ship available
+                    actualPlayerShip = dockedMatch;
                     playerShip = obj;
                   }
                 }
@@ -249,16 +252,27 @@ export default class CompositeRenderer {
 
             // player has been excluded from this list already
             gameObjects.forEach((obj) => {
-              // is this a new, or existing object?
-              if (this.serverObjects[obj.id]) {
-                this.updateObject(obj);
-              } else {
-                this.serverObjects[obj.id] = true;
-                this.addObject(obj);
+
+              // check if we have sensed (for types that need to be)
+              let sensed = false;
+              if (!obj.isSensedBy) {
+                sensed = true;
+              } else if (obj.sensedBy && obj.isSensedBy(actualPlayerShip.faction)) {
+                sensed = true;
               }
 
-              // remember we had this one
-              foundObjects[obj.id] = true;
+              if (sensed) {
+                // is this a new, or existing object?
+                if (this.serverObjects[obj.id]) {
+                  this.updateObject(obj);
+                } else {
+                  this.serverObjects[obj.id] = true;
+                  this.addObject(obj);
+                }
+
+                // remember we had this one
+                foundObjects[obj.id] = true;
+              }
             });
 
 

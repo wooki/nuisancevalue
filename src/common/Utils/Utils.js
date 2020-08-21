@@ -98,8 +98,8 @@ export default {
 		let currentVelocity = new Victor(obj.physicsObj.velocity[0], obj.physicsObj.velocity[1]);
 
 		let hullData = null;
-		if (obj.hull) {
-			hullData = Hulls[obj.hull];
+		if (obj.getHullData) {
+			hullData = obj.getHullData();
 		}
 
 		// iterate timeStep for duration

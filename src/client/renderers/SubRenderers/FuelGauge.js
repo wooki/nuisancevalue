@@ -40,7 +40,7 @@ export default class ManeuverControl {
       this.playerShip = playerShip;
     }
 
-    let hullData = Hulls[this.playerShip.hull];
+    let hullData = this.playerShip.getHullData();
     this.fuel = Math.round(this.playerShip.fuel);
     this.maxFuel = Math.round(hullData.fuel);
 

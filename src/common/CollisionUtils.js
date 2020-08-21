@@ -15,12 +15,18 @@ export default class CollisionUtils {
     // identify the two objects which collided
     getObjects(e) {
       let A, B;
+      let typeA, typeB;
+
       this.gameEngine.world.forEachObject((id, obj) => {
-        if (obj.physicsObj === e.bodyA) { A = obj; }
-        if (obj.physicsObj === e.bodyB) { B = obj; }
+        if (!A && obj.physicsObj === e.bodyA) { A = obj; typeA = 'physicsObj'; }
+        if (!B && obj.physicsObj === e.bodyB) { B = obj; typeB = 'physicsObj'; }
+        if (!A && obj.physicsObjVisualScan === e.bodyA) { A = obj; typeA = 'VisualScan'; }
+        if (!B && obj.physicsObjVisualScan === e.bodyB) { B = obj; typeB = 'VisualScan'; }
+        if (!A && obj.physicsObjSensor === e.bodyA) { A = obj; typeA = 'Sensor'; }
+        if (!B && obj.physicsObjSensor === e.bodyB) { B = obj; typeB = 'Sensor'; }
       });
 
-      return [A, B];
+      return [A, B, typeA, typeB];
     } // getObjects
 
     // this fires an event, so only the server adds randomised damage

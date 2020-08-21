@@ -8,20 +8,21 @@ export default class Factions {
 		this.neutral = 1;
 		this.hostile = 2;
 
-		this.independent = 0; // often the player - usualy neutral/friendly to all
-		this.spaceForce = 1; // galactic police
-		this.pirates = 2; // enemy to all
-    this.colonists = 3; // often preyed on by corps or pirates
-    this.russian = 4; // national, at war with ferrous
-    this.russianWar = 5; // national, at war with commonwealth & ferrous
-    this.chninese = 6; // national
-    this.chnineseWar = 7; // national, at war with corporations
-    this.commonwealth = 8; // national, at war with colonists
-    this.mikkei = 9; // corporation, Mikkei Combine at war with ferrous and russian
-    this.jupiter = 10; // corporation, JMC Jupiter Mining Corp
-    this.ferrous = 11; // corporation, FC Ferrous Corp, at war with colonists and mikkei
+		this.independent = 1; // often the player - usualy neutral/friendly to all
+		this.spaceForce = 2; // galactic police
+		this.pirates = 3; // enemy to all
+    this.colonists = 4; // often preyed on by corps or pirates
+    this.russian = 5; // national, at war with ferrous
+    this.russianWar = 6; // national, at war with commonwealth & ferrous
+    this.chninese = 7; // national
+    this.chnineseWar = 8; // national, at war with corporations
+    this.commonwealth = 9; // national, at war with colonists
+    this.mikkei = 10; // corporation, Mikkei Combine at war with ferrous and russian
+    this.jupiter = 11; // corporation, JMC Jupiter Mining Corp
+    this.ferrous = 12; // corporation, FC Ferrous Corp, at war with colonists and mikkei
+    this.defaultFaction = 1;
 
-    this.defaultRelations = [1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    this.defaultRelations = [1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 		this.factions = [];
 
 		this.factions[this.independent] = {
@@ -41,7 +42,7 @@ export default class Factions {
 
     this.factions[this.pirates] = {
 			name: 'Pirates',
-      relations: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+      relations: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 		}
 
     this.factions[this.colonists] = {
@@ -114,11 +115,11 @@ export default class Factions {
 	}
 
 	isFriendly(faction1Id, faction2Id) {
-		return (this.factions[faction1Id][faction2Id] == this.friendly && this.factions[faction2Id][faction1Id] == this.friendly);
+		return (this.factions[faction1Id].relations[faction2Id] == this.friendly && this.factions[faction2Id].relations[faction1Id] == this.friendly);
 	}
 
 	isHostile(faction1Id, faction2Id) {
-		return (this.factions[faction1Id][faction2Id] == this.hostile || this.factions[faction2Id][faction1Id] == this.hostile);
+		return (this.factions[faction1Id].relations[faction2Id] == this.hostile || this.factions[faction2Id].relations[faction1Id] == this.hostile);
 	}
 
 

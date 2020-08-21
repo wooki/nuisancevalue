@@ -12,8 +12,32 @@ export default class Asteroid extends PhysicalObject2D {
 
     static get netScheme() {
         return Object.assign({
-            size: { type: BaseTypes.TYPES.INT16 }
+            size: { type: BaseTypes.TYPES.INT16 },
+            sensed: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
+            scanned: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
         }, super.netScheme);
+    }
+
+    sensedBy(factionId) {
+      // console.log("asteroid sensedBy:"+factionId);
+      // console.log(this.sensed);
+      this.sensed = this.sensed | factionId;
+    }
+
+    unsensedBy(factionId) {
+      this.sensed = this.sensed ^ factionId;
+    }
+
+    scannedBy(factionId) {
+      this.scanned = this.scanned | factionId;
+    }
+
+    isSensedBy(factionId) {
+      return (this.sensed & factionId) > 0;
+    }
+
+    isScannedBy(factionId) {
+      return (this.scanned & factionId) > 0;
     }
 
     // get bending() {
@@ -34,8 +58,9 @@ export default class Asteroid extends PhysicalObject2D {
             collisionGroup: game.ASTEROID,
             // collisionMask: game.SHIP | game.PLANET | game.TORPEDO | game.PDC
             // having too many things on the map that can collide massively effects the performance
-            collisionMask: game.SHIP | game.PLANET | game.ASTEROID | game.TORPEDO | game.PDC
-            // collisionMask: game.SHIP // don't collide with other asteroids or planets
+            // NOTE: actually solved better by slowing down the frequency of data being sent out by server
+            // since most movement is predictable you don't notice a slower update rate at all
+            collisionMask: game.SHIP | game.PLANET | game.ASTEROID | game.TORPEDO | game.PDC | game.SCAN
         });
         this.physicsObj = new p2.Body({
             mass: this.mass,
@@ -60,5 +85,7 @@ export default class Asteroid extends PhysicalObject2D {
     syncTo(other) {
         super.syncTo(other);
         this.size = other.size;
+        this.scanned = other.scanned;
+        this.sensed = other.sensed;
     }
 }
