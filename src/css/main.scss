@@ -47,6 +47,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     box-sizing: border-box;
+    user-select: none;
 
     pointer-events: none;
     & > * {
@@ -248,49 +249,51 @@ body {
         overflow: hidden;
 
         &.image {
-          order: 1;
-        }
-        &.type {
-          order: 2;
-        }
-        &.label {
-          order: 3;
-        }
-        &.bearing {
-          order: 4;
-        }
-        &.distance {
-          order: 5;
-        }
-        &.mass {
-          order: 6;
-        }
-        &.radius {
-          order: 7;
-        }
-        &.surface_gravity {
-          order: 8;
-        }
-        &.closing {
-          order: 9;
-        }
-        &.time {
           order: 10;
         }
+        &.type {
+          order: 20;
+        }
+        &.label {
+          order: 30;
+        }
+        &.bearing {
+          order: 40;
+        }
+        &.distance {
+          order: 50;
+        }
+        &.mass {
+          order: 60;
+        }
+        &.radius {
+          order: 70;
+        }
+        &.surface_gravity {
+          order: 80;
+        }
+        &.closing {
+          order: 90;
+        }
+        &.time {
+          order: 100;
+        }
         &.speed {
-          order: 11;
+          order: 110;
         }
         &.orbit_at_3k {
-          order: 12;
+          order: 120;
         }
         &.orbit_at_6k {
-          order: 13;
+          order: 130;
         }
         &.orbit_at_9k {
-          order: 14;
+          order: 140;
         }
-
-      }
+        &.scanned {
+          order: 145;
+        }
+      }      
       .image {
         background-color: black;
         margin: -20px -15px 8px -15px;
@@ -326,7 +329,7 @@ body {
       }
       .actions {
         margin: 0 -6px;
-        order: 99;
+        order: 999;
         button {
           flex: 1 1 auto;
           text-align: center;

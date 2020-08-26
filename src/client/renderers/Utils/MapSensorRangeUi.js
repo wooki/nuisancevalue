@@ -1,6 +1,7 @@
 // draws circles centred on the player ship indicating their hulls visual and sensor ranges
-
 const PIXI = require('pixi.js');
+
+import {AlphaFilter} from '@pixi/filter-alpha';
 
 export default class MapSensorRangeUi extends PIXI.Graphics {
 
@@ -12,12 +13,17 @@ export default class MapSensorRangeUi extends PIXI.Graphics {
           uiWidth: 1000,
           uiHeight: 1000,
           scale: 1,
-          alpha: 1,
+          alpha: 0.2,
           zIndex: 1,
-          ranges: [], // {x: 0, y: 0, radius: 0, color: 0xff0000, alpha: 0.5}
+          color: 0xFFFFFF,
+          ranges: [], // array of ranges,  {x: 0, y: 0, radius: 0}
         }, params);
 
-        this.paths = this.params.paths;
+        let filter = new AlphaFilter();
+        filter.alpha = this.params.alpha;
+        this.filters = [filter];
+
+        this.ranges = this.params.ranges;
 
         this.draw();
     }
@@ -31,16 +37,23 @@ export default class MapSensorRangeUi extends PIXI.Graphics {
         this.anchor = 0.5;
         this.x = (this.params.uiWidth / 2);
         this.y = (this.params.uiHeight / 2);
-        this.alpha = this.params.alpha;
 
-        if (this.ranges) {
-          this.ranges.forEach((range) => {
-            if (range) {
-              this.beginFill(range.color, range.alpha);
-              this.drawCircle(range.x - this.x, range.y - this.y, range.radius);
-              this.endFill();
+        // this doesn't work - each circle drawn overlaps and combines, we need
+        // to set a filter instead (done in constructor)
+        // this.alpha = this.params.alpha;
+
+        if (this.ranges && this.ranges.length > 0) {
+
+          this.beginFill(this.params.color);
+
+          for (let i = 0; i < this.ranges.length; i++) {
+            if (this.ranges[i]) {
+              this.drawCircle(this.ranges[i].x - this.x, this.ranges[i].y - this.y, this.ranges[i].radius);
             }
-          });
+          }
+
+          this.endFill();
+
         }
 
     }

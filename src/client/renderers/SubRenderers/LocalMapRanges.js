@@ -30,8 +30,8 @@ export default class LocalMapRanges {
         sensors: 0xFFFFFF
       },
       alphas: {
-        visual: 0.03,
-        sensors: 0.03
+        visual: 0.025,
+        sensors: 0.025
       }
     }, params);
 
@@ -47,6 +47,7 @@ export default class LocalMapRanges {
     this.resources = resources;
 
     this.focusObjectCoord = [];
+    this.sameFactionShips = {};
 
     // put everything in a container
     this.mapContainer = new PIXI.Container();
@@ -70,24 +71,44 @@ export default class LocalMapRanges {
     this.createMapSensorRangeUi();
   }
 
+  // now handles two ranges
   createMapSensorRangeUi() {
 
+    // snesor range
     if (this.mapSensorRangeUi) {
       this.mapContainer.removeChild(this.mapSensorRangeUi);
       this.mapSensorRangeUi.destroy();
       this.mapSensorRangeUi = null;
     }
-
-    // create a helmPathUi to draw the paths that we'll add/update later
     this.mapSensorRangeUi = new MapSensorRangeUi({
           uiSize: this.parameters.height,
           uiWidth: this.parameters.width,
           uiHeight: this.parameters.height,
           scale: this.parameters.scale,
           zIndex: 1,
-          ranges: this.getRangesArray()
+          color: this.parameters.colors.sensors,
+          alpha: this.parameters.alphas.sensors,
+          ranges: this.getSensorRangesArray()
       });
       this.mapContainer.addChild(this.mapSensorRangeUi);
+
+      // visual range
+      if (this.mapVisualRangeUi) {
+        this.mapContainer.removeChild(this.mapVisualRangeUi);
+        this.mapVisualRangeUi.destroy();
+        this.mapVisualRangeUi = null;
+      }
+      this.mapVisualRangeUi = new MapSensorRangeUi({
+            uiSize: this.parameters.height,
+            uiWidth: this.parameters.width,
+            uiHeight: this.parameters.height,
+            scale: this.parameters.scale,
+            zIndex: 2,
+            color: this.parameters.colors.visual,
+            alpha: this.parameters.alphas.visual,
+            ranges: this.getVisualRangesArray()
+        });
+        this.mapContainer.addChild(this.mapVisualRangeUi);
   }
 
   // get the coord depending on the focus type
@@ -135,8 +156,7 @@ export default class LocalMapRanges {
     }
   }
 
-  getRangesArray() {
-
+  getRangesArray(index) {
     let ranges = [];
 
     if (this.playerShip) {
@@ -144,46 +164,83 @@ export default class LocalMapRanges {
       let hullData = this.playerShip.getHullData();
       let p = this.relativeScreenCoord(this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1]);
 
-      // visual range
-      let visualRange = hullData.scanRanges[0] * this.parameters.scale;
-      if (visualRange) {
-        ranges.push({
-          x: p.x,
-          y: p.y,
-          radius: visualRange,
-          color: this.parameters.colors.visual,
-          alpha: this.parameters.alphas.visual
-        })
-      }
-
       // sensor range
-      let sensorRange = hullData.scanRanges[1] * this.parameters.scale;
+      let sensorRange = hullData.scanRanges[index] * this.parameters.scale;
       if (sensorRange) {
         ranges.push({
           x: p.x,
           y: p.y,
-          radius: sensorRange,
-          color: this.parameters.colors.sensors,
-          alpha: this.parameters.alphas.sensors
-        })
+          radius: sensorRange
+        });
       }
+    }
+
+    // also draw for every ship of same faction
+    let actualPlayerShip = this.dockedShip || this.playerShip;
+    if (this.sameFactionShips && actualPlayerShip) {
+
+      Object.keys(this.sameFactionShips).forEach((key) => {
+
+        let obj = this.sameFactionShips[key];
+
+        if (obj && obj.physicsObj && obj.faction == actualPlayerShip.faction) {
+
+          let shipHullData = obj.getHullData();
+          let range = shipHullData.scanRanges[index] * this.parameters.scale;
+          if (range) {
+            let objP = this.relativeScreenCoord(obj.physicsObj.position[0], obj.physicsObj.position[1]);
+            ranges.push({
+              x: objP.x,
+              y: objP.y,
+              radius: range
+            });
+          }
+        }
+      });
+
     }
 
     return ranges;
   }
 
+  getSensorRangesArray() {
+    return this.getRangesArray(1);
+  }
+
+  getVisualRangesArray() {
+    return this.getRangesArray(0);
+  }
+
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
+    this.dockedShip = isDocked;
 
     // we get this updated every tick, so redraw here
-    this.mapSensorRangeUi.update(this.getRangesArray());
+    this.mapSensorRangeUi.update(this.getSensorRangesArray());
+    this.mapVisualRangeUi.update(this.getVisualRangesArray());
   }
 
-  updateObject(obj, renderer) {
+  everyRemoveObject(obj, renderer) {
+    let actualPlayerShip = this.dockedShip || this.playerShip;
+    if (actualPlayerShip && obj instanceof Ship) {
+      if (obj.faction == actualPlayerShip.faction) {
+        delete this.sameFactionShips[obj.id];
+      }
+    }
+  }
+
+  everyObject(obj, renderer) {
 
     if (obj.id == this.parameters.focus) {
         this.focusObjectCoord = obj.physicsObj.position;
+    }
+
+    let actualPlayerShip = this.dockedShip || this.playerShip;
+    if (actualPlayerShip && obj instanceof Ship) {
+      if (obj.faction == actualPlayerShip.faction) {
+        this.sameFactionShips[obj.id] = obj;
+      }
     }
   }
 

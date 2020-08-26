@@ -85,7 +85,7 @@ export default class SolarSystem extends Mission {
             hull: hullName2,
             angle: Math.PI,
             playable: 1,
-            faction: 1,
+            faction: 2,
             aiScript: 2, // Traveller
             targetId: i+1//planets.Earth.id
         });
@@ -110,6 +110,7 @@ export default class SolarSystem extends Mission {
           commsScript: 1,
           dockedCommsScript: 2,
           angle: 0,
+          faction: 2,
           fixedgravity: planets.Jupiter.id.toString()
       });
 
@@ -132,6 +133,7 @@ export default class SolarSystem extends Mission {
           commsScript: 1,
           dockedCommsScript: 2,
           angle: 30,
+          faction: 2,
           fixedgravity: planets.Saturn.id.toString()
       });
 

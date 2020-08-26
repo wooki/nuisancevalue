@@ -172,6 +172,22 @@ export default class CompositeRenderer {
         }
       }
     }
+    everyObject(obj) {
+      // notify subrenderers
+      for (let i = 0; i < this.subRenderers.length; i++) {
+        if (this.subRenderers[i].everyObject) {
+          this.subRenderers[i].everyObject(obj, this);
+        }
+      }
+    }
+    everyRemoveObject(obj) {
+      // notify subrenderers
+      for (let i = 0; i < this.subRenderers.length; i++) {
+        if (this.subRenderers[i].everyRemoveObject) {
+          this.subRenderers[i].everyRemoveObject(obj, this);
+        }
+      }
+    }
     removeObject(key) {
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
@@ -248,20 +264,32 @@ export default class CompositeRenderer {
             this.updatePlayerShip(playerShip, this.isDocked, false, dt);
 
             // keep track so we know when something is gone
-            let foundObjects = {};
+            let allObjects = {};
+            let sensedObjects = {};
 
             // player has been excluded from this list already
             gameObjects.forEach((obj) => {
 
+              // some stations require every object
+              this.everyObject(obj, this);
+              allObjects[obj.id] = true;
+
               // check if we have sensed (for types that need to be)
               let sensed = false;
               if (!obj.isSensedBy) {
-                sensed = true;
+                sensed = true; // objects that don't have this are always visible (ie planets and PDCs)
               } else if (obj.sensedBy && obj.isSensedBy(actualPlayerShip.faction)) {
                 sensed = true;
               }
 
-              if (sensed) {
+              // check we have scanned (of possible)
+              let scanned = false;
+              if (obj.isScannedBy) {
+                scanned = obj.isScannedBy(actualPlayerShip.faction);
+              }
+
+              // show sensed or scanned objects only
+              if (sensed || scanned) {
                 // is this a new, or existing object?
                 if (this.serverObjects[obj.id]) {
                   this.updateObject(obj);
@@ -271,17 +299,21 @@ export default class CompositeRenderer {
                 }
 
                 // remember we had this one
-                foundObjects[obj.id] = true;
+                sensedObjects[obj.id] = true;
               }
             });
 
 
             // remove any objects that we no-longer have
             Object.keys(this.serverObjects).forEach((key) => {
-                if (!foundObjects[key]) {
-                    delete this.serverObjects[key];
-                    this.removeObject(key);
-                }
+              if (!sensedObjects[key]) {
+                  delete this.serverObjects[key];
+                  this.removeObject(key);
+              }
+              if (!allObjects[key]) {
+                  // delete this.serverObjects[key];
+                  this.everyRemoveObject(key);
+              }
             });
 
           } else {

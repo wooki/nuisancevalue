@@ -74,19 +74,19 @@ export default class NvServerEngine extends ServerEngine {
           let dockedWithShip = e.dockedWithShip;
 
           // try and add them
-          if (station == "helm" && ship.helmPlayerId == 0) {
+          if (ship && station == "helm" && ship.helmPlayerId == 0) {
               ship.helmPlayerId = playerId;
               ship.playerId = playerId; // set the ownership to last player to join
-          } else if (station == "nav" && ship.navPlayerId == 0) {
+          } else if (ship && station == "nav" && ship.navPlayerId == 0) {
               ship.navPlayerId = playerId;
               ship.playerId = playerId; // set the ownership to last player to join
-          } else if (station == "signals" && ship.signalsPlayerId == 0) {
+          } else if (ship && station == "signals" && ship.signalsPlayerId == 0) {
               ship.signalsPlayerId = playerId;
               ship.playerId = playerId; // set the ownership to last player to join
-          } else if (station == "engineer" && ship.engineerPlayerId == 0) {
+          } else if (ship && station == "engineer" && ship.engineerPlayerId == 0) {
               ship.engineerPlayerId = playerId;
               ship.playerId = playerId; // set the ownership to last player to join
-          } else if (station == "captain" && ship.captainPlayerId == 0) {
+          } else if (ship && station == "captain" && ship.captainPlayerId == 0) {
               ship.captainPlayerId = playerId;
               ship.playerId = playerId; // set the ownership to last player to join
           }

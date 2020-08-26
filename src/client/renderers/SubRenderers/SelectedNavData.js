@@ -6,6 +6,7 @@ import Ship from '../../../common/Ship';
 import Asteroid from '../../../common/Asteroid';
 import Planet from '../../../common/Planet';
 import Hulls from '../../../common/Hulls';
+import Factions from '../../../common/Factions';
 import SolarObjects from '../../../common/SolarObjects';
 
 // Info panels for the data drawn on LocalMapHud
@@ -20,6 +21,8 @@ export default class SelectedNavData {
       zIndex: 1,
       baseUrl: '/'
     }, params);
+
+    this.factions = new Factions();
   }
 
   // keep references and add to the html
@@ -265,8 +268,24 @@ export default class SelectedNavData {
     let surfaceG = null;
     let label = obj.name || obj.hull || obj.texture;
 
-    let summary = {
-      label: label,
+    let summary = {};
+
+    let showDetail = true;
+    if (obj.isScannedBy) {
+      let actualPlayerShip = this.dockedWithShip || this.playerShip;
+
+      // if not scanned, hide or obscure some info
+      showDetail = obj.isScannedBy(actualPlayerShip.faction);
+
+      summary.scanned = showDetail ? "Yes" : "No";
+
+      if (!showDetail) {
+        mass = "~" + (Math.round(obj.physicsObj.mass / 100) * 100).toPrecision(3) + SolarObjects.units.mass;
+        radius = "~" + Math.round(Math.round((obj.size / 2) / 100) * 100) + SolarObjects.units.distance;
+      }
+    }
+
+    summary = Object.assign(summary, {
       mass: mass,
       radius: radius,
       bearing: Math.round(degrees) + "°",
@@ -274,11 +293,17 @@ export default class SelectedNavData {
       closing: closing.toPrecision(3) + Assets.Units.speed,
       speed: speed,
       source: obj
-    };
+    });
+
+    if (showDetail) {
+      summary.label = label;
+    }
 
     if (obj instanceof Ship) {
-      summary.type = 'Ship';
-      summary.image = "./" + obj.getHullData().image;
+      if (showDetail) {
+        summary.type = 'Ship';
+        summary.image = "./" + obj.getHullData().image;
+      }
 
     } else if (obj instanceof Planet) {
       summary.type = 'Planet';
@@ -305,16 +330,26 @@ export default class SelectedNavData {
       summary.orbit_at_9k = Math.round(orbitSpeed3) + SolarObjects.units.speed;
 
     } else if (obj instanceof Asteroid) {
-      summary.type = 'Asteroid';
-      summary.image = "./" + Assets.Images.asteroid;
+      if (showDetail) {
+        summary.type = 'Asteroid';
+        summary.image = "./" + Assets.Images.asteroid;
+      }
 
     } else if (obj instanceof Torpedo) {
-      summary.type = 'Torpedo';
+      if (showDetail) {
+        summary.type = 'Torpedo';
+      }
     }
 
     if (timeToTarget != NaN && timeToTarget < Infinity && timeToTarget > -Infinity) {
       summary.time = timeToTarget + " s";
     }
+
+    if (showDetail && obj.faction) {
+      summary.faction = this.factions.getFaction(obj.faction).name;
+    }
+
+
 
     return summary;
   }

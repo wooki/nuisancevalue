@@ -366,33 +366,25 @@ export default class NvGameEngine extends GameEngine {
     // Sensor and Visual Scan are similar
     beginContact(e) {
 
-        console.log("beginContact");
+        // console.log("beginContact");
 
         let [A, B, typeA, typeB] = this.collisionUtils.getObjects(e);
         if (!A || !B) return;
 
         if (typeA == 'VisualScan') {
 
-          console.log("typeA VisualScan");
-          console.dir(typeB);
           B.scannedBy(A.faction);
 
         } else if (typeB == 'VisualScan') {
 
-          console.log("typeB VisualScan");
-          console.dir(typeA);
           A.scannedBy(B.faction);
 
         } else if (typeA == 'Sensor') {
 
-          console.log("typeA Sensor");
-          console.dir(typeB);
           B.sensedBy(A.faction);
 
         } else if (typeB == 'Sensor') {
 
-          console.log("typeB Sensor");
-          console.dir(typeA);
           A.sensedBy(B.faction);
 
         } else if (A instanceof PDC && !(B instanceof PDC)) {
@@ -408,7 +400,7 @@ export default class NvGameEngine extends GameEngine {
 
     endContact(e) {
 
-      console.log("endContact");
+      // console.log("endContact");
 
         let [A, B, typeA, typeB] = this.collisionUtils.getObjects(e);
         if (!A || !B) return;
@@ -709,6 +701,10 @@ export default class NvGameEngine extends GameEngine {
           s.pdcState = 0;
           s.pdcAngle = params['angle'];
         }
+
+        // always scan own faction
+        s.sensedBy(s.faction);
+        s.scannedBy(s.faction);
 
         return this.addObjectToWorld(s);
     }

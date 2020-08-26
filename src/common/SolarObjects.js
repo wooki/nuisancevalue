@@ -12,11 +12,12 @@ module.exports = {
 		speed: ' Mm/s',
 		distance: ' Mm',
 		force: ' N',
-		mass: ' kg'
+		// mass: ' kg'
+		mass: ' aM'
 	},
 
 	constants: {
-		G: 6.673 * Math.pow(10, -11)		
+		G: 6.673 * Math.pow(10, -11)
 	},
 
 	Sol: {
@@ -24,7 +25,7 @@ module.exports = {
 		// mass: 1989100 * Math.pow(10, 24),
 		// orbit: 0
 		diameter: Math.sqrt(1391000) * 10,
-		mass: Math.sqrt(1989100 / 4000) * Math.pow(10, 18),
+		mass: Math.sqrt(1989100 / 1000) * Math.pow(10, 18),
 		orbit: 0
 	},
 
