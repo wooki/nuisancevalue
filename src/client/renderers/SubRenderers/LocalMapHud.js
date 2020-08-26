@@ -377,7 +377,7 @@ export default class LocalMapHud {
     arrowSprite.width = this.parameters.arrowSize;
     arrowSprite.height = this.parameters.arrowSize;
     arrowSprite.anchor.set(0.5);
-    arrowSprite.filters = [ filter ];
+    arrowSprite.filters = [ filter ]; // this line breaks the glow filter for friend/foe on the sprite on the map
     arrowSprite.zIndex = zIndex;
     return arrowSprite;
   }
@@ -583,7 +583,7 @@ export default class LocalMapHud {
       sprite.height = this.parameters.markerSize;
       sprite.anchor.set(0.5);
       sprite.zIndex = this.parameters.internalZIndex[styleName];
-      sprite.filters = [ this.parameters.filters[styleName] ];
+      sprite.filters = [ this.parameters.filters[styleName] ]; // when using the glow filter for friend/foe on the map this line breaks selection!
       this.hudContainer.addChild(sprite);
       this.sprites[name] = sprite;
     }

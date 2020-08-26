@@ -3,7 +3,10 @@ const PIXI = require('pixi.js');
 import Victor from 'victor';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
-import {CRTFilter} from '@pixi/filter-crt';
+// import {GlowFilter} from '@pixi/filter-glow'; // produced odd bugs with color replace filter used on LocalMapHud
+// import {ColorOverlayFilter} from '@pixi/filter-color-overlay';
+import {OutlineFilter} from '@pixi/filter-outline';
+// import {CRTFilter} from '@pixi/filter-crt';
 
 import Assets from '../Utils/images.js';
 import Hulls from '../../../common/Hulls';
@@ -13,22 +16,6 @@ import PDC from '../../../common/PDC';
 import Torpedo from '../../../common/Torpedo';
 import Asteroid from '../../../common/Asteroid';
 import Planet from '../../../common/Planet';
-
-const effects = {
-  waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
-  targetColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
-  crt: new CRTFilter({
-    curvature: 8,
-    lineWidth: 10,
-    lineContrast: 0.8, // 0.4,
-    noise: 0.4, // 0.2,
-    noiseSize: 1.6, // 1.2,
-    vignetting: 0,
-    vignettingAlpha: 0,
-    seed: 0,
-    time: 0
-  })
-};
 
 export default class LocalMap {
 
@@ -62,6 +49,42 @@ export default class LocalMap {
         waypoints: 60,
         explosion: 70,
         ui: 101
+      },
+      effects: {
+        waypointColor: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
+        // targetColor: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
+        // friendGlow: new GlowFilter({
+        //   distance: 3 * window.devicePixelRatio,
+        //   color: 0x00FF00,
+        //   quality: 0.6
+        // }),
+        // neutralGlow: new GlowFilter({
+        //   distance: 3 * window.devicePixelRatio,
+        //   color: 0x0000FF,
+        //   quality: 0.6
+        // }),
+        // enemyGlow: new GlowFilter({
+        //   distance: 3 * window.devicePixelRatio,
+        //   color: 0xFF0000,
+        //   quality: 0.6
+        // }),
+        // friendGlow: new ColorOverlayFilter(0x00FF00),
+        // neutralGlow: new ColorOverlayFilter(0x0000FF),
+        // enemyGlow: new ColorOverlayFilter(0xFF0000),
+        friendFilter: new OutlineFilter(1, 0x00FF00, 0.6),
+        neutralFilter: new OutlineFilter(1, 0x0000FF, 0.6),
+        enemyFilter: new OutlineFilter(1, 0xFF0000, 0.6),
+        // crt: new CRTFilter({
+        //   curvature: 8,
+        //   lineWidth: 10,
+        //   lineContrast: 0.8, // 0.4,
+        //   noise: 0.4, // 0.2,
+        //   noiseSize: 1.6, // 1.2,
+        //   vignetting: 0,
+        //   vignettingAlpha: 0,
+        //   seed: 0,
+        //   time: 0
+        // })
       }
     }, params);
 
@@ -257,6 +280,29 @@ export default class LocalMap {
           this.updateObjectScale(obj, obj.id);
         }
       }
+
+      // check if we have scanned - and if so, is it friend or foe?
+      if (obj.isScannedBy && obj.faction) {
+
+        let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
+        let isScanned = obj.isScannedBy(actualPlayerShip.faction);
+
+        if (isScanned) {
+          if (obj.isFriend(actualPlayerShip.faction)) {
+            sprite.filters = [ this.parameters.effects.friendFilter];
+
+          } else if (obj.isHostile(actualPlayerShip.faction)) {
+            sprite.filters = [ this.parameters.effects.enemyFilter];
+
+          } else {
+            sprite.filters = [ this.parameters.effects.neutralFilter];
+          }
+        } else {
+          // not scanned so remove any filter
+          sprite.filters = [];
+        }
+      }
+
     } else if (obj instanceof PDC) {
         // instead of drawing - always create a load of random small explosions
         const explosionSize = 200;
@@ -348,7 +394,7 @@ export default class LocalMap {
       sprite.zIndex = zIndex;
       sprite.hitArea = new PIXI.Circle(0, 0, Math.max(16/sprite.scale.x, sprite.texture.width/2, sprite.texture.height/2));
       if (guid.toString().startsWith('waypoint-')) {
-        sprite.filters = [ effects.waypointColor ];
+        sprite.filters = [ this.parameters.effects.waypointColor ];
       }
 
       return this.addSpriteToMap(sprite, guid);

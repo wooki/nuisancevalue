@@ -44,12 +44,27 @@ export default class TestMission {
           dY: 0,
           hull: hullName,
           angle: Math.PI,
+          faction: 2,
           playable: (i == 0 ? 1 : 0),
           aiScript: (i == 0 ? 0 : 2),
           // targetId: mars.id
           // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
       });
     }
+
+    let earthStation1 = game.addShip({
+        name: "Earth Station 1",
+        x: 60000,
+        y: 0,
+        dX: 0,
+        dY: 0,
+        size: 560, // need to read mass and size from hull
+        hull: 'station',
+        commsScript: 1,
+        dockedCommsScript: 2,
+        angle: 2,
+        faction: 2
+    });
 
     // let hullName2 = 'tug';
     // let hullData2 = Hulls[hullName2];

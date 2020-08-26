@@ -25,6 +25,7 @@ export default class NavRenderer extends CompositeRenderer {
       const sideControlsMin = 360;
       const sidebarWidth = Math.min(sideWidth, sideControlsMin);
       const mainAreaWidth = fullWidth - (2 * sidebarWidth);
+      const mapSize = 100000;
 
       let config = {
         station: 'nav',
@@ -38,7 +39,7 @@ export default class NavRenderer extends CompositeRenderer {
             width: fullWidth,
             height: fullHeight,
             zIndex: 5,
-            mapSize: 100000,
+            mapSize: mapSize,
             shape: "rectangle",
             borderWidth: 0,
             backgroundAsset: 'black'
@@ -49,7 +50,7 @@ export default class NavRenderer extends CompositeRenderer {
             width: fullWidth,
             height: fullHeight,
             zIndex: 9,
-            mapSize: 100000,
+            mapSize: mapSize,
             shape: "rectangle"
           }),
           new LocalMapPaths({
@@ -61,7 +62,7 @@ export default class NavRenderer extends CompositeRenderer {
             predictTime: 120,
             trackObjects: true,
             relativeToGravity: false,
-            mapSize: 100000,
+            mapSize: mapSize,
             shape: "rectangle"
           }),
           new LocalMap({
@@ -70,7 +71,7 @@ export default class NavRenderer extends CompositeRenderer {
             width: fullWidth,
             height: fullHeight,
             zIndex: 15,
-            mapSize: 100000,
+            mapSize: mapSize,
             shape: "rectangle"
           }),
           new LocalMapHud({
@@ -79,7 +80,7 @@ export default class NavRenderer extends CompositeRenderer {
             width: fullWidth,
             height: fullHeight,
             zIndex: 20,
-            mapSize: 100000,
+            mapSize: mapSize,
             shape: "rectangle",
             dial: false,
             predictTime: 120,

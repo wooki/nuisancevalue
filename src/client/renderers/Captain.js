@@ -30,6 +30,7 @@ export default class CaptainRenderer extends CompositeRenderer {
       const sideWidth = Math.round((spaceWidth/2) - margin);
       const marginFull = margin * 2;
       const sideControlsMin = 200;
+      const mapSize = 30000;
 
       let config = {
         station: 'captain',
@@ -43,7 +44,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 5,
-            mapSize: 30000
+            mapSize: mapSize
           }),
           new LocalMapRanges({
             x: halfWidth - (halfHeight - margin),
@@ -51,7 +52,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 9,
-            mapSize: 30000
+            mapSize: mapSize
           }),
           new LocalMapPaths({
             x: halfWidth - (halfHeight - margin),
@@ -61,7 +62,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 12,
             predictTime: 30,
             trackObjects: true,
-            mapSize: 30000
+            mapSize: mapSize
           }),
           new LocalMap({
             x: halfWidth - (halfHeight - margin),
@@ -69,7 +70,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 15,
-            mapSize: 30000
+            mapSize: mapSize
           }),
           new LocalMapHud({
             x: halfWidth - (halfHeight - margin),
@@ -77,7 +78,8 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 20,
-            mapSize: 30000,
+            mapSize: mapSize,
+            // dial: false,
             predictTime: 120 // to match waypoint predicition with nav
           }),
           new ZoomControl({

@@ -282,7 +282,16 @@ export default class SelectedNavData {
       if (!showDetail) {
         mass = "~" + (Math.round(obj.physicsObj.mass / 100) * 100).toPrecision(3) + SolarObjects.units.mass;
         radius = "~" + Math.round(Math.round((obj.size / 2) / 100) * 100) + SolarObjects.units.distance;
+      } else if (obj.faction) {
+          if (obj.isFriend(actualPlayerShip.faction)) {
+            summary.IFF = "Friend";
+          } else if (obj.isHostile(actualPlayerShip.faction)) {
+            summary.IFF = "Hostile";
+          } else {
+            summary.IFF = "Neutral";
+          }
       }
+
     }
 
     summary = Object.assign(summary, {

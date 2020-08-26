@@ -14,8 +14,8 @@ export default class Factions {
     this.colonists = 4; // often preyed on by corps or pirates
     this.russian = 5; // national, at war with ferrous
     this.russianWar = 6; // national, at war with commonwealth & ferrous
-    this.chninese = 7; // national
-    this.chnineseWar = 8; // national, at war with corporations
+    this.chinese = 7; // national
+    this.chineseWar = 8; // national, at war with corporations
     this.commonwealth = 9; // national, at war with colonists
     this.mikkei = 10; // corporation, Mikkei Combine at war with ferrous and russian
     this.jupiter = 11; // corporation, JMC Jupiter Mining Corp
@@ -36,8 +36,9 @@ export default class Factions {
 			name: 'Space Force',
       relations: this.defaultRelations.slice()
 		}
+    this.factions[this.spaceForce].relations[this.spaceForce] = this.friendly;
     this.factions[this.spaceForce].relations[this.russianWar] = this.hostile;
-    this.factions[this.spaceForce].relations[this.chnineseWar] = this.hostile;
+    this.factions[this.spaceForce].relations[this.chineseWar] = this.hostile;
 
 
     this.factions[this.pirates] = {
@@ -49,6 +50,7 @@ export default class Factions {
 			name: 'Colonists',
       relations: this.defaultRelations.slice()
 		}
+    this.factions[this.colonists].relations[this.colonists] = this.friendly;
     this.factions[this.colonists].relations[this.independent] = this.friendly;
     this.factions[this.colonists].relations[this.commonwealth] = this.hostile;
     this.factions[this.colonists].relations[this.ferrous] = this.hostile;
@@ -57,32 +59,41 @@ export default class Factions {
 			name: 'Russian Federation',
       relations: this.defaultRelations.slice()
 		}
+    this.factions[this.russian].relations[this.russian] = this.friendly;
+    this.factions[this.russian].relations[this.russianWar] = this.friendly;
     this.factions[this.russian].relations[this.ferrous] = this.hostile;
 
     this.factions[this.russianWar] = {
 			name: 'Russian Federation',
       relations: this.defaultRelations.slice()
 		}
+    this.factions[this.russianWar].relations[this.russian] = this.friendly;
+    this.factions[this.russianWar].relations[this.russianWar] = this.friendly;
     this.factions[this.russianWar].relations[this.ferrous] = this.hostile;
     this.factions[this.russianWar].relations[this.commonwealth] = this.hostile;
 
-    this.factions[this.chninese] = {
+    this.factions[this.chinese] = {
 			name: 'People\'s Republic of China',
       relations: this.defaultRelations.slice()
 		}
+    this.factions[this.chinese].relations[this.chinese] = this.friendly;
+    this.factions[this.chinese].relations[this.chineseWar] = this.friendly;
 
-    this.factions[this.chnineseWar] = {
+    this.factions[this.chineseWar] = {
 			name: 'People\'s Republic of China',
       relations: this.defaultRelations.slice()
 		}
-    this.factions[this.chnineseWar].relations[this.mikkei] = this.hostile;
-    this.factions[this.chnineseWar].relations[this.jupiter] = this.hostile;
-    this.factions[this.chnineseWar].relations[this.ferrous] = this.hostile;
+    this.factions[this.chineseWar].relations[this.chinese] = this.friendly;
+    this.factions[this.chineseWar].relations[this.chineseWar] = this.friendly;
+    this.factions[this.chineseWar].relations[this.mikkei] = this.hostile;
+    this.factions[this.chineseWar].relations[this.jupiter] = this.hostile;
+    this.factions[this.chineseWar].relations[this.ferrous] = this.hostile;
 
     this.factions[this.commonwealth] = {
 			name: 'Commonwealth of Nations',
       relations: this.defaultRelations.slice()
 		}
+    this.factions[this.commonwealth].relations[this.commonwealth] = this.friendly;
     this.factions[this.commonwealth].relations[this.colonists] = this.hostile;
     this.factions[this.commonwealth].relations[this.russianWar] = this.hostile;
 
@@ -90,22 +101,25 @@ export default class Factions {
 			name: 'Mikkei Combine',
       relations: this.defaultRelations.slice()
 		}
-    this.factions[this.mikkei].relations[this.chnineseWar] = this.hostile;
+    this.factions[this.mikkei].relations[this.mikkei] = this.friendly;
+    this.factions[this.mikkei].relations[this.chineseWar] = this.hostile;
     this.factions[this.mikkei].relations[this.ferrous] = this.hostile;
 
     this.factions[this.jupiter] = {
 			name: 'Jupiter Mining Corporation',
       relations: this.defaultRelations.slice()
 		}
-    this.factions[this.mikkei].relations[this.chnineseWar] = this.hostile;
+    this.factions[this.jupiter].relations[this.jupiter] = this.friendly;
+    this.factions[this.mikkei].relations[this.chineseWar] = this.hostile;
 
     this.factions[this.ferrous] = {
 			name: 'Ferrous Corp',
       relations: this.defaultRelations.slice()
 		}
+    this.factions[this.ferrous].relations[this.ferrous] = this.friendly;
     this.factions[this.ferrous].relations[this.russian] = this.hostile;
     this.factions[this.ferrous].relations[this.russianWar] = this.hostile;
-    this.factions[this.ferrous].relations[this.chnineseWar] = this.hostile;
+    this.factions[this.ferrous].relations[this.chineseWar] = this.hostile;
     this.factions[this.ferrous].relations[this.mikkei] = this.hostile;
 
 	}
@@ -115,7 +129,7 @@ export default class Factions {
 	}
 
 	isFriendly(faction1Id, faction2Id) {
-		return (this.factions[faction1Id].relations[faction2Id] == this.friendly && this.factions[faction2Id].relations[faction1Id] == this.friendly);
+    return (this.factions[faction1Id].relations[faction2Id] == this.friendly && this.factions[faction2Id].relations[faction1Id] == this.friendly);
 	}
 
 	isHostile(faction1Id, faction2Id) {

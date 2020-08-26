@@ -293,7 +293,10 @@ body {
         &.scanned {
           order: 145;
         }
-      }      
+        &.IFF {
+          order: 150;
+        }
+      }
       .image {
         background-color: black;
         margin: -20px -15px 8px -15px;
