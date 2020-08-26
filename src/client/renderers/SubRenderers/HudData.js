@@ -2,6 +2,7 @@ import Victor from 'victor';
 import Assets from '../Utils/images.js';
 import UiUtils from '../Utils/UiUtils';
 import {h, createProjector} from 'maquette';
+import SolarObjects from '../../../common/SolarObjects';
 
 // Info panels for the data drawn on LocalMapHud
 export default class HudData {
@@ -130,15 +131,41 @@ export default class HudData {
       let roundedDistance = Math.round(distanceToObj);
       let timeToTarget = Math.round(distanceToObj/closing);
 
-      this.dataItems[this.parameters.itemOrder.target] = {
+      let data = {
         type: 'target',
         label: obj.name || obj.hull || obj.texture,
         bearing: Math.round(degrees) + "°",
         distance: roundedDistance + Assets.Units.distance,
         closing: closing.toPrecision(3) + Assets.Units.speed,
         time: timeToTarget + " s",
-        source: obj
+        source: obj,
+        mass: obj.physicsObj.mass.toPrecision(3) + SolarObjects.units.mass,
+        radius: Math.round(obj.size / 2) + SolarObjects.units.distance
       };
+
+      // see if we scanned
+      if (obj.isScannedBy) {
+        let actualPlayerShip = this.dockedWithShip || this.playerShip;
+
+        let isScanned = obj.isScannedBy(actualPlayerShip.faction);
+        data.scanned = isScanned ? "Yes" : "No";
+
+        if (!isScanned) {
+          mass = "~" + (Math.round(obj.physicsObj.mass / 100) * 100).toPrecision(3) + SolarObjects.units.mass;
+          radius = "~" + Math.round(Math.round((obj.size / 2) / 100) * 100) + SolarObjects.units.distance;
+        } else if (obj.faction) {
+            if (obj.isFriend(actualPlayerShip.faction)) {
+              data.IFF = "Friend";
+            } else if (obj.isHostile(actualPlayerShip.faction)) {
+              data.IFF = "Hostile";
+            } else {
+              data.IFF = "Neutral";
+            }
+        }
+
+      }
+
+      this.dataItems[this.parameters.itemOrder.target] = data;
     }
 
     // check if we have a waypoint for this object
