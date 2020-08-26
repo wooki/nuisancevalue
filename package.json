@@ -7,6 +7,9 @@
   "description": "An HTML5 multiplayer bridge simulator game based on Lance, P2 and PIXI",
   "main": "main.js",
   "dependencies": {
+    "serialize-javascript": "^3.1.0",
+    "elliptic": "^6.5.3",
+    "lodash": "^4.17.19",
     "@babel/node": "^7.10.5",
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^4.6.0",
