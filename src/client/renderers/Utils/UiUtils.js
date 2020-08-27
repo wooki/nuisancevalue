@@ -215,7 +215,7 @@ export default {
 			uiDestroyed.innerHTML = "<div>"+leaveTimer+"</div>";
 			leaveTimer = leaveTimer - 1;
 			if (leaveTimer < 0) {
-				resolve();
+				resolve(uiDestroyed);
 			} else {
 				setTimeout(() => {
 					countDown();

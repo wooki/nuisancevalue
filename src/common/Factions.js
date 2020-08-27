@@ -129,10 +129,20 @@ export default class Factions {
 	}
 
 	isFriendly(faction1Id, faction2Id) {
+    if (!this.factions[faction1Id] || !this.factions[faction2Id]) {
+      console.log("Missing Faction Info:"+faction1Id+"/"+faction2Id);
+      console.trace();
+      return false;
+    }
     return (this.factions[faction1Id].relations[faction2Id] == this.friendly && this.factions[faction2Id].relations[faction1Id] == this.friendly);
 	}
 
 	isHostile(faction1Id, faction2Id) {
+    if (!this.factions[faction1Id] || !this.factions[faction2Id]) {
+      console.log("Missing Faction Info:"+faction1Id+"/"+faction2Id);
+      console.trace();
+      return false;
+    }
 		return (this.factions[faction1Id].relations[faction2Id] == this.hostile || this.factions[faction2Id].relations[faction1Id] == this.hostile);
 	}
 

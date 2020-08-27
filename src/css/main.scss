@@ -24,6 +24,24 @@ body {
   font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
 }
 
+.ui-leaving, .ui-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 7vw;
+  color: white;
+  text-align: center;
+  font-family: Lucida Console,Lucida Sans Typewriter,Bitstream Vera Sans Mono,monospace;
+  div {
+    text-align: center;
+  }
+}
+
 
 /* STYLES FOR COMPOSITE UI */
 .nv {

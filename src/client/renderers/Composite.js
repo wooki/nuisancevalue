@@ -112,7 +112,8 @@ export default class CompositeRenderer {
       this.updatePlayerShip(playerShip, false, this.destroyed, 0);
 
       let root = document.getElementById('game');
-      UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function() {
+      UiUtils.leaveTimer("YOU WERE DESTROYED", root).then(function(el) {
+        el.remove();
         this.backToLobby = true;
       }.bind(this));
     }
