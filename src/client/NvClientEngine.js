@@ -15,6 +15,10 @@ export default class NvClientEngine extends ClientEngine {
       // });
     }
 
+    scan(targetId) {
+      this.sendInput("scan", { objId: targetId })
+    }
+
     setPowerCell(row, col, newState) {
       this.sendInput("powercell", { row: row, col: col, state: newState });
     }

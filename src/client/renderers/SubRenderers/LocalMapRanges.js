@@ -224,7 +224,7 @@ export default class LocalMapRanges {
   everyRemoveObject(obj, renderer) {
     let actualPlayerShip = this.dockedShip || this.playerShip;
     if (actualPlayerShip && obj instanceof Ship) {
-      if (obj.faction == actualPlayerShip.faction) {
+      if (obj.isFriend(actualPlayerShip.faction)) {
         delete this.sameFactionShips[obj.id];
       }
     }
@@ -238,7 +238,7 @@ export default class LocalMapRanges {
 
     let actualPlayerShip = this.dockedShip || this.playerShip;
     if (actualPlayerShip && obj instanceof Ship) {
-      if (obj.faction == actualPlayerShip.faction) {
+      if (obj.isFriend(actualPlayerShip.faction)) {
         this.sameFactionShips[obj.id] = obj;
       }
     }

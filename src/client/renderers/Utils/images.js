@@ -26,7 +26,9 @@ module.exports = {
 		exhaust: 'assets/exhaust.json',
 		exhaustflame: 'assets/exhaustflame.json',
 		powergridBackground: 'assets/powergrid.jpg',
-		powerlines: 'assets/powerlines.json'
+		powerlines: 'assets/powerlines.json',
+		scanAnimation: 'assets/scanning.gif',
+		scan: 'assets/scan.png'
 	},
 	Colors: {
 		Black: 0x000000,

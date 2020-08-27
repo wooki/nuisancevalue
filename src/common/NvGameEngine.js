@@ -591,6 +591,7 @@ export default class NvGameEngine extends GameEngine {
                 ship.power = this.systems.pack();
             }
 
+            // comms updates
             if (inputData.input == 'comms') {
 
                 let ship = this.world.objects[inputData.options.id];
@@ -634,6 +635,15 @@ export default class NvGameEngine extends GameEngine {
                     // chance for script to send commands to ship or game
                     let c = new Comms(this, null);
                     c.executeOnEnter(ship, playerShip);
+                }
+            } // end of comms
+
+            if (inputData.input == 'scan') {
+
+                let ship = this.getPlayerShip(playerId);
+                let obj = this.world.objects[inputData.options.objId];
+                if (obj && obj.scannedBy) {
+                  obj.scannedBy(ship.faction);
                 }
             }
 
@@ -702,9 +712,11 @@ export default class NvGameEngine extends GameEngine {
           s.pdcAngle = params['angle'];
         }
 
-        // always scan own faction
-        s.sensedBy(s.faction);
-        s.scannedBy(s.faction);
+        // scan own faction, if friendly
+        if (s.isFriend(s.faction)) {
+          s.sensedBy(s.faction);
+          s.scannedBy(s.faction);
+        }
 
         return this.addObjectToWorld(s);
     }

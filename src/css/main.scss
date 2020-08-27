@@ -275,6 +275,9 @@ body {
         &.label {
           order: 30;
         }
+        &.hull {
+          order: 35;
+        }
         &.bearing {
           order: 40;
         }
@@ -311,8 +314,11 @@ body {
         &.scanned {
           order: 145;
         }
-        &.IFF {
+        &.faction {
           order: 150;
+        }
+        &.IFF {
+          order: 160;
         }
       }
       .image {
@@ -362,6 +368,17 @@ body {
           margin: 0 2px;
           img {
             margin: -3px 0;
+          }
+        } // button
+
+        .scan.active {
+          margin: 15px 5px 0 5px;
+          background-color: black;
+          text-align: left;
+          img {
+            margin: 0;
+            object-fit: cover;
+            transition: width 10ms ease-in-out;
           }
         }
       }

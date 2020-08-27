@@ -3,6 +3,8 @@ import Assets from '../Utils/images.js';
 import UiUtils from '../Utils/UiUtils';
 import {h, createProjector} from 'maquette';
 import SolarObjects from '../../../common/SolarObjects';
+import Factions from '../../../common/Factions';
+import Asteroid from '../../../common/Asteroid';
 
 // Info panels for the data drawn on LocalMapHud
 export default class HudData {
@@ -40,6 +42,7 @@ export default class HudData {
     // this.pixiContainer = pixiContainer;
     // this.resources = resources;
     this.renderer = renderer;
+    this.factions = new Factions();
 
     // draw
     this.dataItems = []; // start with empty list of items
@@ -60,6 +63,19 @@ export default class HudData {
       let lines = Object.keys(item).map(function(key) {
         if (key == 'source') {
           // do nothing - this is the original data object, for subclasses
+        } else if (key == 'image') {
+          if (item[key]) {
+            return h('div.image', {
+            },[
+              h('img', {
+                src: item[key],
+                // height: 32, // in the future set size based on actual size and distance!
+                // width: 32
+              },[])
+            ]);
+          } else {
+            return null;
+          }
         } else if (key == 'type') {
           return h('div.line.LED.type.'+item[key], {
             styles: {
@@ -112,7 +128,7 @@ export default class HudData {
   }
 
   // watch for object updates so we can display the target
-  updateObject(obj, renderer) {
+  everyObject(obj, renderer) {
     // if this matches our current target set marker
     if (this.currentTargetId === obj.id) {
 
@@ -151,16 +167,38 @@ export default class HudData {
         data.scanned = isScanned ? "Yes" : "No";
 
         if (!isScanned) {
-          mass = "~" + (Math.round(obj.physicsObj.mass / 100) * 100).toPrecision(3) + SolarObjects.units.mass;
-          radius = "~" + Math.round(Math.round((obj.size / 2) / 100) * 100) + SolarObjects.units.distance;
-        } else if (obj.faction) {
-            if (obj.isFriend(actualPlayerShip.faction)) {
-              data.IFF = "Friend";
-            } else if (obj.isHostile(actualPlayerShip.faction)) {
-              data.IFF = "Hostile";
-            } else {
-              data.IFF = "Neutral";
+          data.mass = "~" + (Math.round(obj.physicsObj.mass / 100) * 100).toPrecision(3) + SolarObjects.units.mass;
+          data.radius = "~" + Math.round(Math.round((obj.size / 2) / 100) * 100) + SolarObjects.units.distance;
+        } else {
+
+          if (obj.faction) {
+              if (obj.isFriend(actualPlayerShip.faction)) {
+                data.IFF = "Friend";
+              } else if (obj.isHostile(actualPlayerShip.faction)) {
+                data.IFF = "Hostile";
+              } else {
+                data.IFF = "Neutral";
+              }
+
+              if (obj.faction) {
+                data.faction = this.factions.getFaction(obj.faction).name;
+              }
+          }
+
+          if (obj.getHullData) {
+            let hullData = obj.getHullData();
+            data.hull = hullData.name;
+            data.image = "./" + hullData.image;
+          } else {
+
+            if (obj instanceof Asteroid) {
+
+              data.image = "./" + Assets.Images.asteroid;
+
+            } else if (obj.texture && Assets.Images[obj.texture]) {
+              data.image = "./" + Assets.Images[obj.texture];
             }
+          }
         }
 
       }
@@ -198,7 +236,7 @@ export default class HudData {
   }
 
   // if current target is removed
-  removeObject(key, renderer) {
+  everyRemoveObject(key, renderer) {
     if (this.currentTargdataItemsetId || this.currentTargetId === 0) {
        if (this.currentTargetId == key) {
          // remove marker

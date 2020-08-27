@@ -3,7 +3,6 @@ import LocalMapBackground from './SubRenderers/LocalMapBackground';
 import LocalMapRanges from './SubRenderers/LocalMapRanges';
 import LocalMap from './SubRenderers/LocalMap';
 import LocalMapHud from './SubRenderers/LocalMapHud';
-import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import TargetSelection from './SubRenderers/TargetSelection';
@@ -12,6 +11,7 @@ import CommsControl from './SubRenderers/CommsControl';
 import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
 import LocalMapPdcHud from './SubRenderers/LocalMapPdcHud';
 import PdcFireControl from './SubRenderers/PdcFireControl';
+import SignalsData from './SubRenderers/SignalsData';
 
 // extend compsite with pre-set subrenderers
 export default class SignalsRenderer extends CompositeRenderer {
@@ -94,7 +94,7 @@ export default class SignalsRenderer extends CompositeRenderer {
             keyboardControls: true,
             onScreenControls: false
           }),
-          new HudData({
+          new SignalsData({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
             y: margin,
             width: Math.max(sideWidth, sideControlsMin),
