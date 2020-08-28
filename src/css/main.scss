@@ -371,14 +371,27 @@ body {
           }
         } // button
 
+        .scan {
+          flex: 1 1 auto;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          align-items: center;
+          button {
+            flex: 0 0 25%;
+            margin-left: auto;
+          }
+        }
         .scan.active {
           margin: 15px 5px 0 5px;
           background-color: black;
           text-align: left;
           img {
+            flex-grow: 0;
+            flex-shrink: 0;
             margin: 0;
             object-fit: cover;
-            transition: width 10ms ease-in-out;
+            // transition: width 10ms ease-in-out;
           }
         }
       }
