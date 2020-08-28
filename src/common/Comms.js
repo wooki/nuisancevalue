@@ -65,8 +65,8 @@ export default class Comms {
 
 			// get the current state
 			let isDocked = (playerShip.dockedId == selectedObj.id);
-			let isFriendly = this.factions.isFriendly(0, 0); // TODO: get ship faction
-			let isHostile = this.factions.isHostile(0, 0);
+			let isFriendly = this.factions.isFriendly(playerShip.faction, selectedObj.faction);
+			let isHostile = this.factions.isHostile(playerShip.faction, selectedObj.faction);
 			let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
 
 			// return to Signals station
@@ -101,8 +101,8 @@ export default class Comms {
 
 			// get the current state
 			let isDocked = (playerShip.dockedId == selectedObj.id);
-			let isFriendly = this.factions.isFriendly(0, 0);
-			let isHostile = this.factions.isHostile(0, 0);
+			let isFriendly = this.factions.isFriendly(playerShip.faction, selectedObj.faction);
+			let isHostile = this.factions.isHostile(playerShip.faction, selectedObj.faction);
 			let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
 
 			// get the response for the users choice
@@ -141,8 +141,8 @@ export default class Comms {
 
 			// get the current state
 			let isDocked = (playerShip.dockedId == selectedObj.id);
-			let isFriendly = this.factions.isFriendly(0, 0);
-			let isHostile = this.factions.isHostile(0, 0);
+			let isFriendly = this.factions.isFriendly(playerShip.faction, selectedObj.faction);
+			let isHostile = this.factions.isHostile(playerShip.faction, selectedObj.faction);
 			let state = script.getState(selectedObj.commsState, isDocked, isFriendly, isHostile);
 
 			return state;
