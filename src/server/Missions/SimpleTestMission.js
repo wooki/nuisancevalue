@@ -46,76 +46,83 @@ export default class SimpleTestMission {
         dY: 0,
         hull: hullName,
         angle: Math.PI,
-        playable: 1
+        playable: 1,
+        faction: 10
     });
 
-    hullName = 'tug';
-    hullData = Hulls[hullName];
-    game.addShip({
-        name: "Target 1",
-        x: 1000,
-        y: 2000,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI,
-        engine: 3
-    });
-
-    game.addShip({
-        name: "Target 2",
-        x: 0-1000,
-        y: 2000,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI,
-        engine: 5
-    });
-
-    game.addShip({
-        name: "Target 3",
-        x: 0,
-        y: -500,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI,
-        engine: 2
-    });
-
-    game.addShip({
-        name: "Target 4",
-        x: 20000,
-        y: -10000,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI/2,
-        engine: 4
-    });
-
-    game.addShip({
-        name: "Target 5",
-        x: 20000,
-        y: -9000,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI/2,
-        engine: 3
-    });
-
-    game.addShip({
-        name: "Target 6",
-        x: 20000,
-        y: -8000,
-        dX: 0,
-        dY: 0,
-        hull: hullName,
-        angle: Math.PI/2,
-        engine: 5
-    });
+    // hullName = 'tug';
+    // hullData = Hulls[hullName];
+    // game.addShip({
+    //     name: "Target 1",
+    //     x: 1000,
+    //     y: 2000,
+    //     dX: 0,
+    //     dY: 0,
+    //     hull: hullName,
+    //     angle: Math.PI,
+    //     engine: 3,
+    //     faction: 1
+    // });
+    //
+    // game.addShip({
+    //     name: "Target 2",
+    //     x: 0-1000,
+    //     y: 2000,
+    //     dX: 0,
+    //     dY: 0,
+    //     hull: hullName,
+    //     angle: Math.PI,
+    //     engine: 5,
+    //     faction: 2
+    // });
+    //
+    // game.addShip({
+    //     name: "Target 3",
+    //     x: 0,
+    //     y: -500,
+    //     dX: 0,
+    //     dY: 0,
+    //     hull: hullName,
+    //     angle: Math.PI,
+    //     engine: 2,
+    //     faction: 3
+    // });
+    //
+    // game.addShip({
+    //     name: "Target 4",
+    //     x: 20000,
+    //     y: -10000,
+    //     dX: 0,
+    //     dY: 0,
+    //     hull: hullName,
+    //     angle: Math.PI/2,
+    //     engine: 4,
+    //     faction: 4
+    // });
+    //
+    // game.addShip({
+    //     name: "Target 5",
+    //     x: 20000,
+    //     y: -9000,
+    //     dX: 0,
+    //     dY: 0,
+    //     hull: hullName,
+    //     angle: Math.PI/2,
+    //     engine: 3,
+    //     faction: 5
+    // });
+    //
+    // game.addShip({
+    //     name: "Target 6",
+    //     x: 20000,
+    //     y: -8000,
+    //     dX: 0,
+    //     dY: 0,
+    //     hull: hullName,
+    //     angle: Math.PI/2,
+    //     engine: 5,
+    //     faction: 9
+    // });
     game.addShip({
         name: "Target 7",
         x: 20000,
@@ -124,7 +131,8 @@ export default class SimpleTestMission {
         dY: 0-700,
         hull: hullName,
         angle: Math.PI*0.66,
-        engine: 5
+        engine: 5,
+        faction: 7
     });
 
   }

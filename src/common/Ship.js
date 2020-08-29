@@ -77,6 +77,7 @@ export default class Ship extends PhysicalObject2D {
     }
 
     scannedBy(factionId) {
+console.log("Ship scannedBy "+factionId+" "+this.name);
       this.scanned = this.scanned | factionId;
     }
 
@@ -85,6 +86,11 @@ export default class Ship extends PhysicalObject2D {
     }
 
     isScannedBy(factionId) {
+console.log("isScannedBy "+factionId+" "+this.name);
+console.log("scanned: "+this.scanned);
+if ((this.scanned & factionId) > 0) {
+  console.log("RESULT: "+(this.scanned & factionId));
+}
       return (this.scanned & factionId) > 0;
     }
 

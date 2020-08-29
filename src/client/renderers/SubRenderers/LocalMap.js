@@ -16,6 +16,7 @@ import PDC from '../../../common/PDC';
 import Torpedo from '../../../common/Torpedo';
 import Asteroid from '../../../common/Asteroid';
 import Planet from '../../../common/Planet';
+import Factions from '../../../common/Factions';
 
 export default class LocalMap {
 
@@ -104,6 +105,7 @@ export default class LocalMap {
     this.sprites = []; // keep track of sprites on the map
     this.mapObjects = []; // keep track of actual objects
     this.playerSprite = null;
+    this.factions = new Factions();
 
     // put everything in a container
     this.mapContainer = new PIXI.Container();
@@ -287,19 +289,38 @@ export default class LocalMap {
         let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
         let isScanned = obj.isScannedBy(actualPlayerShip.faction);
 
+        let hullSprite = sprite.getChildByName('hull');
+        if (!hullSprite) {
+          hullSprite = sprite;
+        }
+
         if (isScanned) {
+
+          // TODO: maybe only highlight enemy ships??
           if (obj.isFriend(actualPlayerShip.faction)) {
-            sprite.filters = [ this.parameters.effects.friendFilter];
+            hullSprite.filters = [ this.parameters.effects.friendFilter];
 
           } else if (obj.isHostile(actualPlayerShip.faction)) {
-            sprite.filters = [ this.parameters.effects.enemyFilter];
+            hullSprite.filters = [ this.parameters.effects.enemyFilter];
 
           } else {
-            sprite.filters = [ this.parameters.effects.neutralFilter];
+            // hullSprite.filters = [ this.parameters.effects.neutralFilter];
+            hullSprite.filters = [];
           }
+
+          // TODO: replace with color replace filter
+          let tint = this.factions.getFaction(obj.faction).color;
+          tint = PIXI.utils.hex2rgb(tint);
+          tint[0] = Math.min(1, tint[0] + 0.5);
+          tint[1] = Math.min(1, tint[1] + 0.5);
+          tint[2] = Math.min(1, tint[2] + 0.5);
+          tint = PIXI.utils.rgb2hex(tint);
+          hullSprite.tint = tint;
+
         } else {
           // not scanned so remove any filter
-          sprite.filters = [];
+          hullSprite.filters = [];
+          hullSprite.tint = 0xFFFFFF;
         }
       }
 
