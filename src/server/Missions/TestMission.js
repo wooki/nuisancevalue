@@ -1,4 +1,5 @@
 import Hulls from '../../common/Hulls';
+import Factions from '../../common/Factions';
 import SolarObjects from '../../common/SolarObjects';
 import Victor from 'victor';
 
@@ -9,6 +10,7 @@ export default class TestMission {
 
   constructor(gameEngine) {
     game = gameEngine;
+    this.factions = new Factions();
   }
 
   build() {
@@ -44,7 +46,7 @@ export default class TestMission {
           dY: 0,
           hull: hullName,
           angle: Math.PI,
-          faction: 2,
+          faction: this.factions.spaceForce,
           playable: (i == 0 ? 1 : 0),
           aiScript: (i == 0 ? 0 : 2),
           // targetId: mars.id
@@ -63,7 +65,7 @@ export default class TestMission {
         commsScript: 1,
         dockedCommsScript: 2,
         angle: 2,
-        faction: 2
+        faction: this.factions.spaceForce,
     });
 
     // let hullName2 = 'tug';

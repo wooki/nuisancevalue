@@ -20,7 +20,7 @@ export default class Factions {
     this.mikkei = Math.pow(2, 9); // corporation, Mikkei Combine at war with ferrous and russian
     this.jupiter = Math.pow(2, 10); // corporation, JMC Jupiter Mining Corp
     this.ferrous = Math.pow(2, 11); // corporation, FC Ferrous Corp, at war with colonists and mikkei
-    this.defaultFaction = 1;
+    this.defaultFaction = this.independent;
 
     this.factions = {};
     this.defaultRelations = {};
@@ -36,7 +36,6 @@ export default class Factions {
     this.defaultRelations[this.mikkei] = 1;
     this.defaultRelations[this.jupiter] = 1;
     this.defaultRelations[this.ferrous] = 1;
-
 
 		this.factions[this.independent] = {
 			name: 'Independent',
@@ -167,9 +166,6 @@ export default class Factions {
 
 	isFriendly(faction1Id, faction2Id) {
     if (!this.factions[faction1Id] || !this.factions[faction2Id]) {
-      console.log("Missing Faction Info:"+faction1Id+"/"+faction2Id);
-      console.dir(this.factions);
-      console.trace();
       return false;
     }
     return (this.factions[faction1Id].relations[faction2Id] == this.friendly && this.factions[faction2Id].relations[faction1Id] == this.friendly);
@@ -177,9 +173,6 @@ export default class Factions {
 
 	isHostile(faction1Id, faction2Id) {
     if (!this.factions[faction1Id] || !this.factions[faction2Id]) {
-      console.log("Missing Faction Info:"+faction1Id+"/"+faction2Id);
-      console.dir(this.factions);
-      console.trace();
       return false;
     }
 		return (this.factions[faction1Id].relations[faction2Id] == this.hostile || this.factions[faction2Id].relations[faction1Id] == this.hostile);

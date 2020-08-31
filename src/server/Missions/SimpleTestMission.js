@@ -1,3 +1,4 @@
+import Factions from '../../common/Factions';
 import Hulls from '../../common/Hulls';
 import Victor from 'victor';
 
@@ -8,6 +9,7 @@ export default class SimpleTestMission {
 
   constructor(gameEngine) {
     game = gameEngine;
+    this.factions = new Factions();
   }
 
   build() {
@@ -47,7 +49,7 @@ export default class SimpleTestMission {
         hull: hullName,
         angle: Math.PI,
         playable: 1,
-        faction: 10
+        faction: this.factions.jupiter
     });
 
     // hullName = 'tug';
@@ -61,7 +63,7 @@ export default class SimpleTestMission {
     //     hull: hullName,
     //     angle: Math.PI,
     //     engine: 3,
-    //     faction: 1
+    //     faction: Math.pow(2, 1)
     // });
     //
     // game.addShip({
@@ -73,7 +75,7 @@ export default class SimpleTestMission {
     //     hull: hullName,
     //     angle: Math.PI,
     //     engine: 5,
-    //     faction: 2
+    //     faction: Math.pow(2, 2)
     // });
     //
     // game.addShip({
@@ -85,7 +87,7 @@ export default class SimpleTestMission {
     //     hull: hullName,
     //     angle: Math.PI,
     //     engine: 2,
-    //     faction: 3
+    //     faction: Math.pow(2, 3)
     // });
     //
     // game.addShip({
@@ -97,7 +99,7 @@ export default class SimpleTestMission {
     //     hull: hullName,
     //     angle: Math.PI/2,
     //     engine: 4,
-    //     faction: 4
+    //     faction: Math.pow(2, 4)
     // });
     //
     // game.addShip({
@@ -109,7 +111,7 @@ export default class SimpleTestMission {
     //     hull: hullName,
     //     angle: Math.PI/2,
     //     engine: 3,
-    //     faction: 5
+    //     faction: Math.pow(2, 5)
     // });
     //
     // game.addShip({
@@ -121,7 +123,7 @@ export default class SimpleTestMission {
     //     hull: hullName,
     //     angle: Math.PI/2,
     //     engine: 5,
-    //     faction: 9
+    //     faction: Math.pow(2, 9)
     // });
     game.addShip({
         name: "Target 7",
@@ -132,7 +134,7 @@ export default class SimpleTestMission {
         hull: hullName,
         angle: Math.PI*0.66,
         engine: 5,
-        faction: 7
+        faction: Math.pow(2, 7)
     });
 
   }

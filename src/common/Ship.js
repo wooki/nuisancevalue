@@ -28,7 +28,7 @@ export default class Ship extends PhysicalObject2D {
             dockedId: { type: BaseTypes.TYPES.INT16 },
             aiScript: { type: BaseTypes.TYPES.UINT8 },
             aiPlan: { type: BaseTypes.TYPES.UINT8 },
-            faction: { type: BaseTypes.TYPES.UINT8 },
+            faction: { type: BaseTypes.TYPES.INT16 },
             sensed: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
             scanned: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
             docked: {
@@ -77,7 +77,6 @@ export default class Ship extends PhysicalObject2D {
     }
 
     scannedBy(factionId) {
-console.log("Ship scannedBy "+factionId+" "+this.name);
       this.scanned = this.scanned | factionId;
     }
 
@@ -86,11 +85,6 @@ console.log("Ship scannedBy "+factionId+" "+this.name);
     }
 
     isScannedBy(factionId) {
-console.log("isScannedBy "+factionId+" "+this.name);
-console.log("scanned: "+this.scanned);
-if ((this.scanned & factionId) > 0) {
-  console.log("RESULT: "+(this.scanned & factionId));
-}
       return (this.scanned & factionId) > 0;
     }
 

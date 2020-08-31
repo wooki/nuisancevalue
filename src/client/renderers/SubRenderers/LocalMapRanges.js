@@ -238,6 +238,11 @@ export default class LocalMapRanges {
 
     let actualPlayerShip = this.dockedShip || this.playerShip;
     if (actualPlayerShip && obj instanceof Ship) {
+      if (actualPlayerShip.faction == 0) {
+        console.log("faction = 0 - how?");
+        console.dir(this.playerShip);
+        console.dir(this.dockedShip);
+      }
       if (obj.isFriend(actualPlayerShip.faction)) {
         this.sameFactionShips[obj.id] = obj;
       }

@@ -1,4 +1,5 @@
 import Hulls from '../../common/Hulls';
+import Factions from '../../common/Factions';
 import SolarObjects from '../../common/SolarObjects';
 import Victor from 'victor';
 import Mission from './Mission';
@@ -7,6 +8,7 @@ export default class SolarSystem extends Mission {
 
   constructor(gameEngine) {
     super(gameEngine);
+    this.factions = new Factions();
   }
 
   build() {
@@ -35,7 +37,7 @@ export default class SolarSystem extends Mission {
           commsScript: 1,
           dockedCommsScript: 2,
           angle: 2,
-          faction: 2,
+          faction: this.factions.spaceForce,
           fixedgravity: planets.Earth.id.toString()
       });
 
@@ -56,7 +58,7 @@ export default class SolarSystem extends Mission {
           hull: hullName,
           angle: Math.PI,
           playable: 1,
-          faction: 2,
+          faction: this.factions.spaceForce,
           fuel: 2500
       });
 
@@ -85,7 +87,7 @@ export default class SolarSystem extends Mission {
             hull: hullName2,
             angle: Math.PI,
             playable: 1,
-            faction: 2,
+            faction: this.factions.spaceForce,
             aiScript: 2, // Traveller
             targetId: i+1//planets.Earth.id
         });
@@ -110,7 +112,7 @@ export default class SolarSystem extends Mission {
           commsScript: 1,
           dockedCommsScript: 2,
           angle: 0,
-          faction: 2,
+          faction: this.factions.spaceForce,
           fixedgravity: planets.Jupiter.id.toString()
       });
 
@@ -133,7 +135,7 @@ export default class SolarSystem extends Mission {
           commsScript: 1,
           dockedCommsScript: 2,
           angle: 30,
-          faction: 2,
+          faction: this.factions.spaceForce,
           fixedgravity: planets.Saturn.id.toString()
       });
 

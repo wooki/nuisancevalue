@@ -77,7 +77,6 @@ export default class SignalsData extends HudData {
 
       } else if (this.scanningId == targetObject.id) {
         // if we're scanning the current target then draw a scan image
-        console.log("Progress: "+this.timeToScan);
 
         let width = Math.round(100 * ((this.scanTotalTime - this.timeToScan) / this.scanTotalTime));
         activeScan = true;
