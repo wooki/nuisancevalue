@@ -174,8 +174,6 @@ export default {
 
 	addPDC(explosionSheet, pixiContainer, x, y, area, explosionSize, numberPerSecond, scale, minSize, zIndex) {
 
-		console.warn("DEPRICATED: UiUtils.addPDC");
-
 		let useSize = this.getUseSize(scale, explosionSize, explosionSize, 0.01, minSize);
 
 		// recuce below 1 per frame by statisticallyadjusting
@@ -234,9 +232,7 @@ export default {
 
   getUseSize(scale, width, height, minimumScale, minimumSize) {
 
-		console.warn("DEPRICATED: UiUtils.getUseSize");
-
-      let useScale = scale;
+		  let useScale = scale;
       if (useScale < minimumScale) {
           useScale = minimumScale;
       }
