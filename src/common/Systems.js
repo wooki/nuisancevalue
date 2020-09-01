@@ -268,35 +268,23 @@ export default class Systems {
     }
   }
 
+  countSystem(sys) {
+    let count = 0;
+    for (let i = 0; i < SYSTEMS.length; i++) {
+
+      // is this a start for the system?
+      if (SYSTEMS[i] == sys) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   // checks the system has required connections - some scale, some are binary
   getEfficiency(sys) {
     let currentPower = this.isPowered(sys);
-    switch (sys) {
-      case SYS_SENSORS:
-        return (currentPower / 4);
-      case SYS_ENGINE:
-        let engPercent = (currentPower / 5);
-        if (engPercent > 1) engPercent = 1;
-        return engPercent;
-      case SYS_MANEUVER:
-        let manPercent = (currentPower / 2);
-        if (manPercent > 1) manPercent = 1;
-        return manPercent;
-      case SYS_TORPS:
-        return (currentPower > 0 ? 1 : 0);
-      case SYS_PDC:
-        return (currentPower > 0 ? 1 : 0);
-      case SYS_LIFE:
-        return (currentPower > 0 ? 1 : 0);
-      case SYS_CONSOLES:
-        return (currentPower > 0 ? 1 : 0);
-      case SYS_NAV:
-        return (currentPower > 0 ? 1 : 0);
-      case SYS_RELOAD:
-        return (currentPower > 0 ? 1 : 0);
-      case SYS_FUEL:
-        return (currentPower > 0 ? 1 : 0);
-    }
+    let systemConnectors = this.countSystem(sys);
+    return (currentPower / systemConnectors);
   }
 
 }
