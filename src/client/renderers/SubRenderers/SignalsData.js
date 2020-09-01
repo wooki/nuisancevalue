@@ -31,7 +31,7 @@ export default class SignalsData extends HudData {
 
         // do the scan
         if (this.renderer.client) {
-          this.renderer.client.scan(actualPlayerShip.faction, this.scanningId);
+          this.renderer.client.scan(this.scanningId);
         }
 
         this.scanningId = null;
