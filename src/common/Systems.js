@@ -149,6 +149,11 @@ export default class Systems {
 
     // have we reached the reactor?
     if (position[0] < 0) {
+
+      // TODO: some reacor positions provide extra energy!
+      if (position[1] == 0) {
+        return 2;
+      }
       return 1;
     }
 

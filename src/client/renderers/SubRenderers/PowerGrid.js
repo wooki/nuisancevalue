@@ -128,6 +128,8 @@ export default class PowerGrid {
       reactorTexture.width = this.parameters.width;
       this.sprites.reactor.addChild(reactorTexture);
 
+      // ADD BOOST AREA
+
       let reactorLabel = new PIXI.Text("REACTOR", {dropShadow: true, dropShadowDistance: 0,dropShadowAlpha: 0.66, dropShadowBlur: 8, dropShadowColor: Assets.Colors.White, fontSize: this.parameters.reactorFontSize, fontFamily : Assets.Fonts.Mono, fill : Assets.Colors.Black, align : 'center' });
       reactorLabel.anchor.set(0.5);
       reactorLabel.x = this.centerX;
