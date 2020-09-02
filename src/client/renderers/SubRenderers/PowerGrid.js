@@ -19,6 +19,7 @@ export default class PowerGrid {
       reactorFontSize: 72,
       systemFontSize: 26,
       systemEfficiencyFontSize: 20,
+      boostFontSize: 12,
       internalZIndex: {
         background: 1,
         reactor: 5,
@@ -128,7 +129,16 @@ export default class PowerGrid {
       reactorTexture.width = this.parameters.width;
       this.sprites.reactor.addChild(reactorTexture);
 
-      // ADD BOOST AREA
+      // Draw boost multiplier on some sections
+      let boostCols = this.grid.getBoostCols();
+      let boostMultiplier = this.grid.getBoostMultiplier();
+      for (let i = 0; i < boostCols.length; i++) {
+        let boostLabel = new PIXI.Text("x"+boostMultiplier, {dropShadow: true, dropShadowDistance: 0,dropShadowAlpha: 0.66, dropShadowBlur: 3, dropShadowColor: Assets.Colors.White, fontSize: this.parameters.boostFontSize, fontFamily : Assets.Fonts.Mono, fill : Assets.Colors.Black, align : 'center' });
+        boostLabel.anchor.set(0.5, 1);
+        boostLabel.x = this.parameters.x + ((boostCols[i] + 0.5) * this.gridSquareSize);
+        boostLabel.y = this.parameters.y + reactorHeight;
+        this.sprites.reactor.addChild(boostLabel);
+      }
 
       let reactorLabel = new PIXI.Text("REACTOR", {dropShadow: true, dropShadowDistance: 0,dropShadowAlpha: 0.66, dropShadowBlur: 8, dropShadowColor: Assets.Colors.White, fontSize: this.parameters.reactorFontSize, fontFamily : Assets.Fonts.Mono, fill : Assets.Colors.Black, align : 'center' });
       reactorLabel.anchor.set(0.5);

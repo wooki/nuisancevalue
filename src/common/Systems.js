@@ -12,6 +12,10 @@ const CONNECTOR_NSEW = 7; // NORTH-SOUTH and EAST-WEST
 const COLS = 30;
 const ROWS = 8;
 
+// some cols provide extra energy
+const BOOST_COLS = [13, 14, 15, 16];
+const BOOST_MULTIPLIER = 2;
+
 // list of systems - can use mitmask to signal if they have power or not
 const SYS_SENSORS = Math.pow(2, 1);
 const SYS_ENGINE = Math.pow(2, 2);
@@ -26,16 +30,16 @@ const SYS_FUEL = Math.pow(2, 10);
 
 // systems take up space along row - which is where their connections start
 const SYSTEMS = [
-  SYS_SENSORS, SYS_SENSORS, SYS_SENSORS, SYS_SENSORS,
-  SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE,
   SYS_FUEL, SYS_FUEL,
+  SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE, SYS_ENGINE,
   SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER, SYS_MANEUVER,
-  SYS_TORPS, SYS_TORPS,
-  SYS_PDC, SYS_PDC,
-  SYS_RELOAD, SYS_RELOAD,
   SYS_LIFE, SYS_LIFE, SYS_LIFE, SYS_LIFE,
+  SYS_PDC, SYS_PDC,
+  SYS_SENSORS, SYS_SENSORS, SYS_SENSORS, SYS_SENSORS,
   SYS_CONSOLES, SYS_CONSOLES,
-  SYS_NAV, SYS_NAV
+  SYS_NAV, SYS_NAV,
+  SYS_TORPS, SYS_TORPS,
+  SYS_RELOAD, SYS_RELOAD,
 ]; // 30 total - to match ROWS
 
 // based on entry side and connector - get updated grid position
@@ -151,8 +155,8 @@ export default class Systems {
     if (position[0] < 0) {
 
       // TODO: some reacor positions provide extra energy!
-      if (position[1] == 0) {
-        return 2;
+      if (BOOST_COLS.includes(position[1])) {
+        return 1 * BOOST_MULTIPLIER;
       }
       return 1;
     }
@@ -271,6 +275,14 @@ export default class Systems {
       case SYS_FUEL:
         return "FUEL GEN";
     }
+  }
+
+  getBoostCols() {
+    return BOOST_COLS;
+  }
+
+  getBoostMultiplier() {
+    return BOOST_MULTIPLIER;
   }
 
   countSystem(sys) {

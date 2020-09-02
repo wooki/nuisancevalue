@@ -53,13 +53,13 @@ module.exports = {
 		},
 		Systems: {
 			2: 0xFF0000,
-			4: 0x00FF00,
-			8: 0x3333FF,
+			4: 0x3333FF,
+			8: 0x00FF00,
 			16: 0xCC3300,
 			32: 0x00CC33,
 			64: 0x6600FF,
-			128: 0xFF00CC,
-			256: 0xCCFF00,
+			128: 0xCCFF00,
+			256: 0xFF00CC,
 			512: 0x00CCFF,
 			1024: 0xFF9966,
 		}
