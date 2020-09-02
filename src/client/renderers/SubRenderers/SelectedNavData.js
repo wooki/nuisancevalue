@@ -23,6 +23,9 @@ export default class SelectedNavData {
     }, params);
 
     this.factions = new Factions();
+
+    this.targettingId = null;
+    this.targettingTotalTime = 1000 * 10; // load takes 10 seconds
   }
 
   // keep references and add to the html
@@ -107,6 +110,14 @@ export default class SelectedNavData {
     }
   }
 
+  // start setting a target - can be interupted by signals setting a target
+  // otherwise once complete, sets the target and resets timer
+  startSettingTarget(obj) {
+    this.targettingObj = obj;
+    this.targettingId = obj.id;
+    this.timeToTarget = this.targettingTotalTime;
+  }
+
   createItemActions(item) {
 
     let ourShip = this.playerShip;
@@ -135,6 +146,29 @@ export default class SelectedNavData {
 
     } else {
 
+      // see if we are actively targetting or not
+      let targetButton = null;
+      if ((ourShip.targetId == null || ourShip.targetId < 0) && !this.targettingObj) {
+        targetButton = h("button", {
+          key: "selectednav-action-target",
+          onclick: (event) => {
+            this.startSettingTarget(item.source)
+          }
+        }, [h("img", {
+          src: "./"+Assets.Images.target,
+          height: 26,
+          width: 26
+        }, [])]);
+      } else if (this.targettingObj) {
+        let progress = Math.round(this.timeToTarget / 1000);
+        targetButton = h("button", {
+          key: "selectednav-action-target",
+          onclick: (event) => {
+
+          }
+        }, [progress.toString()]);
+      }
+
       actions = [
         h("button", {
           key: "selectednav-action-focus",
@@ -157,7 +191,8 @@ export default class SelectedNavData {
           src: "./"+Assets.Images.waypoint,
           height: 26,
           width: 26
-        }, [])])
+        }, [])]),
+        targetButton
       ];
 
       if (item.source instanceof Planet) {
@@ -174,6 +209,10 @@ export default class SelectedNavData {
           }, [])])
         );
       }
+
+      // allow target button (works like signals scan but sets target FOR
+      // signals allowing for target to be set at long range)
+
 
     }
 
@@ -391,7 +430,7 @@ export default class SelectedNavData {
     }
   }
 
-  // watch the player ship and update
+  // watch the plathis.timeToTargetyer ship and update
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     if (isDocked) {
@@ -412,6 +451,28 @@ export default class SelectedNavData {
       this.selectedObject = this.objectSummary(isDocked);
       this.projector.scheduleRender();
 
+    }
+
+    // update the timer
+    if (this.targettingObj && this.selectedObject && this.targettingId == this.selected) {
+      this.timeToTarget = this.timeToTarget - dt;
+      this.projector.scheduleRender();
+
+      if (this.timeToTarget <= 0) {
+
+        // do the set target
+        if (this.renderer.client) {
+          this.renderer.client.setTarget(this.targettingId);
+        }
+
+        this.targettingObj = null;
+        this.targettingId = null;
+        this.timeToTarget = 0;
+      }
+    } else {
+      this.targettingObj = null;
+      this.targettingId = null;
+      this.timeToTarget = 0;
     }
 
 

@@ -353,6 +353,12 @@ export default class LocalMapHud {
         } else if (this.parameters.showSelection && this.dockedPlayerShip && this.dockedPlayerShip.id == this.selection.id) {
           this.plotObject(this.dockedPlayerShip, 'Selection', 'selection');
         }
+
+        // if target matches selection - remove selection
+        if (this.selection && this.currentTargetId && this.selection.id == this.currentTargetId) {
+          this.unsetDialMarker('dialSelection');
+          this.unsetMarker('markSelection');
+        }
       }
     }
   }
