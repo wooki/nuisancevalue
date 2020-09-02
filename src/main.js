@@ -26,7 +26,7 @@ const gameEngine = new NvGameEngine({ traceLevel: Lib.Trace.TRACE_WARN });
 const serverEngine = new NvServerEngine(io, gameEngine, {
 	updateRate: 12, // most movement is deterministic so allow for complex/slow server processing by slowing this
 	stepRate: 60,
-	fullSyncRate: 240, // we're getting everything frequently anyway so slow this
+	fullSyncRate: 120, // we're getting everything frequently anyway so slow this
 	// updateRate: 6,
 	// stepRate: 60,
 	// fullSyncRate: 20,
