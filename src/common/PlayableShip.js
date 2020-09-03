@@ -39,6 +39,56 @@ export default class PlayableShip extends Ship {
         }, super.netScheme);
     }
 
+    // updates the circle body used to watch for senssor hits
+    updateSenseorRange() {
+
+      if (this.shapeSensor) {
+        let hullData = this.getPowerAdjustedHullData();
+        this.shapeSensor.radius = hullData.scanRanges[1];        
+      }
+
+    }
+
+    getPowerAdjustedHullData() {
+
+      // start with standard hull data
+      let hullData = Object.assign({}, this.getHullData());
+
+      // adjust using systems power, gameEngine will
+      // have unpacked power into this.grid before anything else
+      // so we can use that
+      let updatedHullData = {};
+      let systems = hullData.systems;
+      let systemKeys = Object.keys(systems);
+      for (let i = 0; i < systemKeys.length; i++) {
+
+
+          let systemKey = systemKeys[i];
+          // console.log(systemKey);
+          let efficiency = this.grid.getEfficiency(systems[systemKey]);
+          if (systemKey == 'SYS_SENSORS') {
+            updatedHullData['scanRanges'] = [hullData['scanRanges'][0], hullData['scanRanges'][1] * efficiency];
+          } else if (systemKey == 'SYS_ENGINE') {
+            updatedHullData['thrust'] = hullData['thrust'] * efficiency;
+          } else if (systemKey == 'SYS_MANEUVER') {
+            updatedHullData['maneuver'] = hullData['maneuver'] * efficiency;
+          }
+          // SYS_SENSORS: SYS_SENSORS,
+          // SYS_ENGINE: SYS_ENGINE,
+          // SYS_MANEUVER: SYS_MANEUVER,
+          // SYS_TORPS: SYS_TORPS,
+          // SYS_PDC: SYS_PDC,
+          // SYS_LIFE: SYS_LIFE,
+          // SYS_CONSOLES: SYS_CONSOLES,
+          // SYS_NAV: SYS_NAV,
+          // SYS_RELOAD: SYS_RELOAD,
+          // SYS_FUEL: SYS_FUEL
+          // check if connected and adjust hull data
+      }
+
+      return Object.assign(hullData, updatedHullData);
+    }
+
     loadTorp(tube, torpType) {
 
       // check stock and only load if we have stock
@@ -71,7 +121,7 @@ export default class PlayableShip extends Ship {
     }
 
     removeWaypoint(objId) {
-      
+
       let currentWaypointIndex = this.waypoints.findIndex(function(wp) {
           return wp.objId == objId;
       });

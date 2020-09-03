@@ -58,7 +58,7 @@ export default class EngineeringDataControl {
 
     if (this.playerShip) {
 
-      let hullData = this.playerShip.getHullData();
+      let hullData = this.playerShip.getPowerAdjustedHullData();
       let torpTypes = Hulls['torpedo'].types;
 
       // hull damage

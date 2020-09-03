@@ -23,6 +23,30 @@ export default class TestMission {
         mass: 1, size: 500
     });
 
+    game.addAsteroid({
+        x: 210000,
+        y: 0,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 1500
+    });
+
+    game.addAsteroid({
+        x: 510000,
+        y: 0,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 2500
+    });
+
+    game.addAsteroid({
+        x: 310000,
+        y: 0,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 2200
+    });
+
     // let mars = game.addPlanet({
     //   x: 20000,
     //   y: 0,
@@ -65,7 +89,7 @@ export default class TestMission {
         commsScript: 1,
         dockedCommsScript: 2,
         angle: 2,
-        faction: this.factions.spaceForce,
+        faction: this.factions.russian,
     });
 
     // let hullName2 = 'tug';

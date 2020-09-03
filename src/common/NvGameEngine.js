@@ -144,10 +144,15 @@ export default class NvGameEngine extends GameEngine {
                 // apply current AI
                 this.ai.execute(obj);
 
-                // if this is a playable ship unpack it's power grid
+                // if this is a playable ship some additional things
                 if (obj instanceof PlayableShip) {
+
+                  // unpack it's power grid
                   obj.grid = new Systems();
                   obj.grid.unpack(obj.power);
+
+                  // update the ships sensor range
+                  obj.updateSenseorRange();
                 }
 
                 // only certain types have engines

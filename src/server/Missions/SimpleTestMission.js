@@ -32,6 +32,30 @@ export default class SimpleTestMission {
 
     game.addAsteroid({
         x: 0,
+        y: 6000,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 2000
+    });
+
+    game.addAsteroid({
+        x: 0,
+        y: 12000,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 3000
+    });
+
+    game.addAsteroid({
+        x: 0,
+        y: 50000,
+        dX: 0,
+        dY: 0,
+        mass: 1, size: 9000
+    });
+
+    game.addAsteroid({
+        x: 0,
         y: 0-3000,
         dX: 0-250,
         dY: 0-400,
@@ -134,7 +158,7 @@ export default class SimpleTestMission {
         hull: hullName,
         angle: Math.PI*0.66,
         engine: 5,
-        faction: Math.pow(2, 7)
+        faction: Math.pow(2, 2)
     });
 
   }

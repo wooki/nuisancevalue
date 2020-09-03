@@ -161,7 +161,7 @@ export default class LocalMapRanges {
 
     if (this.playerShip) {
 
-      let hullData = this.playerShip.getHullData();
+      let hullData = this.playerShip.getPowerAdjustedHullData();
       let p = this.relativeScreenCoord(this.playerShip.physicsObj.position[0], this.playerShip.physicsObj.position[1]);
 
       // sensor range

@@ -297,7 +297,7 @@ export default class Systems {
     return count;
   }
 
-  // checks the system has required connections - some scale, some are binary
+  // checks the system has required connections 
   getEfficiency(sys) {
     let currentPower = this.isPowered(sys);
     let systemConnectors = this.countSystem(sys);

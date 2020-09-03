@@ -58,6 +58,10 @@ export default class Ship extends PhysicalObject2D {
       return Hulls[this.hull];
     }
 
+    getPowerAdjustedHullData() {
+      return this.getHullData();
+    }
+
     // based on hull size
     getMaxDamage() {
       let hull = this.getHullData();
@@ -98,7 +102,7 @@ export default class Ship extends PhysicalObject2D {
 
     // if the ship has active engines then apply force
     applyEngine() {
-        let hullData = this.getHullData();
+        let hullData = this.getPowerAdjustedHullData();
 
         if (this.dockedId !== null && this.dockedId >= 0) {
             return; // can't do this while docked
@@ -116,7 +120,7 @@ export default class Ship extends PhysicalObject2D {
 
     // apply two forces opposite corners to create rotation
     applyManeuver(maneuver) {
-        let hullData = this.getHullData();
+        let hullData = this.getPowerAdjustedHullData();
 
 
         if (this.dockedId !== null && this.dockedId >= 0) {
