@@ -23,7 +23,7 @@ export default class LocalMapPaths {
       baseUrl: '/',
       mapSize: 10000, // how much to display across the width of the map
       zoom: 1,
-      predictTime: 60,
+      predictTime: 60, // redued by lack of power to nav
       trackObjects: true,
       relativeToGravity: true,
       focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
@@ -41,6 +41,20 @@ export default class LocalMapPaths {
     // are drawing we can calculate scale
     this.parameters.scale = this.parameters.height / (this.parameters.mapSize * this.parameters.zoom);
   }
+
+  // modify the parameters predictTime based on power
+  getPrecictTime(playerShip) {
+
+    let predictTime = this.parameters.predictTime;
+
+    if (this.actualPlayerShip) {
+      let efficiency = this.actualPlayerShip.getNavComEfficiency();
+      predictTime = predictTime * efficiency;
+    }
+
+    return predictTime;
+  }
+
 
   // keep reference and draw what we can
   init(el, pixiApp, pixiContainer, resources, renderer) {
@@ -165,7 +179,7 @@ export default class LocalMapPaths {
         if (obj instanceof Planet || distance < Math.min(100000, (this.parameters.mapSize / this.parameters.zoom)/2)) { // max 100000 range
 
           // predict object path and adjust to gravity path
-          let predictedPath = UiUtils.predictPath(obj, this.parameters.predictTime);
+          let predictedPath = UiUtils.predictPath(obj, this.getPrecictTime());
 
           // adjust our path to be relative to our gravity
           if (this.parameters.relativeToGravity && this.predictedPaths.gravity && this.predictedPaths.gravity.path) {
@@ -195,6 +209,7 @@ export default class LocalMapPaths {
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
+    this.actualPlayerShip = isDocked || playerShip;
 
     // plot the path of our gravity object if there is one
     let predictedGravityPath = null;
@@ -205,7 +220,7 @@ export default class LocalMapPaths {
           velocity: playerShip.gravityData.velocity,
           mass: playerShip.gravityData.mass
         }
-      }, this.parameters.predictTime);
+      }, this.getPrecictTime());
 
       this.predictedPaths.gravity = {
         color: this.parameters.colors.gravity,
@@ -217,7 +232,7 @@ export default class LocalMapPaths {
     }
 
     // always plot your own ships path and adjust to gravity path
-    let ourPredictedPath = UiUtils.predictPath(playerShip, this.parameters.predictTime);
+    let ourPredictedPath = UiUtils.predictPath(playerShip, this.getPrecictTime());
 
     // adjust our path to be relative to our gravity
     if (this.parameters.relativeToGravity && predictedGravityPath) {
