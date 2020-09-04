@@ -77,6 +77,18 @@ export default class PlayableShip extends Ship {
       return this.grid.getEfficiency(systems['SYS_RELOAD']);
     }
 
+    getLifeSupportEfficiency() {
+      let hullData = this.getHullData();
+      let systems = hullData.systems;
+      return this.grid.getEfficiency(systems['SYS_LIFE']);
+    }
+
+    getFuelProductionEfficiency() {
+      let hullData = this.getHullData();
+      let systems = hullData.systems;
+      return this.grid.getEfficiency(systems['SYS_FUEL']);
+    }
+
     getPowerAdjustedHullData() {
 
       // start with standard hull data

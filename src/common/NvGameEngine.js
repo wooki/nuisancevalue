@@ -169,8 +169,7 @@ export default class NvGameEngine extends GameEngine {
                   // increase/decrease oxgyen
                   let standardOxygenUse = 0.03;
                   let standardOxygenExtra = 0.003; // at 100% we want some extra
-                  let lifeSupportKey = obj.grid.getStandardSystems()['SYS_LIFE'];
-                  let lifeSupportEfficiency = obj.grid.getEfficiency(lifeSupportKey);
+                  let lifeSupportEfficiency = obj.getLifeSupportEfficiency();
                   let oxygenGen = standardOxygenUse * lifeSupportEfficiency;
                   obj.oxygen = obj.oxygen + standardOxygenExtra + (oxygenGen - standardOxygenUse);
                   if (obj.oxygen > 100) obj.oxygen = 100;
@@ -178,6 +177,11 @@ export default class NvGameEngine extends GameEngine {
                     obj.oxygen = 0;
                     // crew dead!!
                   };
+
+                  // fuel production
+                  let fuelProduction = 0.2;
+                  let fuelProductionEfficiency = obj.getFuelProductionEfficiency();
+                  obj.fuel = obj.fuel + (fuelProduction * fuelProductionEfficiency);
                 }
 
                 // only certain types have engines
