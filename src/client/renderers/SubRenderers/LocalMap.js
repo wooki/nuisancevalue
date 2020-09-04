@@ -7,6 +7,8 @@ import {BevelFilter} from '@pixi/filter-bevel';
 // import {ColorOverlayFilter} from '@pixi/filter-color-overlay';
 import {OutlineFilter} from '@pixi/filter-outline';
 // import {CRTFilter} from '@pixi/filter-crt';
+import {GlitchFilter} from '@pixi/filter-glitch';
+import {PixelateFilter} from '@pixi/filter-pixelate';
 
 import Assets from '../Utils/images.js';
 import Hulls from '../../../common/Hulls';
@@ -86,6 +88,10 @@ export default class LocalMap {
         //   seed: 0,
         //   time: 0
         // })
+        lowPower: [new PixelateFilter([2, 2])],
+        veryLowPower: [new PixelateFilter([4, 4]), new GlitchFilter({
+          offset: 30
+        })],
       }
     }, params);
 
@@ -368,6 +374,16 @@ export default class LocalMap {
 
       // add or update the player ship
       if (!isDestroyed) {
+
+        // set the low power effect
+        let consoleEfficiency = actualPlayerShip.getConsolesEfficiency();
+        if (consoleEfficiency < 0.5) {
+          this.mapContainer.filters = this.parameters.effects.veryLowPower;
+        } else if (consoleEfficiency < 1) {
+          this.mapContainer.filters = this.parameters.effects.lowPower;
+        } else {
+          this.mapContainer.filters = [];
+        }
 
         let coord = this.relativeScreenCoord(playerShip.physicsObj.position[0],
                                              playerShip.physicsObj.position[1]);

@@ -1,6 +1,8 @@
 const PIXI = require('pixi.js');
 import Assets from '../Utils/images.js';
 import UiUtils from '../Utils/UiUtils';
+import {GlitchFilter} from '@pixi/filter-glitch';
+import {PixelateFilter} from '@pixi/filter-pixelate';
 
 export default class LocalMapBackground {
 
@@ -35,6 +37,13 @@ export default class LocalMapBackground {
         waypoints: 60,
         explosion: 70,
         ui: 101
+      },
+      effects: {
+        lowPower: [new PixelateFilter([2, 2])],
+        veryLowPower: [new PixelateFilter([3, 3]), new GlitchFilter({
+          slices: 3,
+          offset: 20
+        })],
       }
     }, params);
 
@@ -170,6 +179,18 @@ export default class LocalMapBackground {
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
     this.playerShip = playerShip;
+
+    // set the low power effect
+    let actualPlayerShip = isDocked || playerShip;
+    let consoleEfficiency = actualPlayerShip.getConsolesEfficiency();
+    if (consoleEfficiency < 0.5) {
+      this.mapContainer.filters = this.parameters.effects.veryLowPower;
+    } else if (consoleEfficiency < 1) {
+      this.mapContainer.filters = this.parameters.effects.lowPower;
+    } else {
+      this.mapContainer.filters = [];
+    }
+
     // const position = playerShip.physicsObj.position;
     const position = this.getFocusCoord();
     if (position) {

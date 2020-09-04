@@ -4,6 +4,8 @@ import Assets from '../Utils/images.js';
 import Victor from 'victor';
 import UiUtils from '../Utils/UiUtils';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
+import {GlitchFilter} from '@pixi/filter-glitch';
+import {PixelateFilter} from '@pixi/filter-pixelate';
 // import UiUtils from '../Utils/UiUtils';
 
 // designed to be drawn above the LocalMap, shows the current
@@ -42,7 +44,11 @@ export default class LocalMapHud {
         heading: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
         waypoint: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
         target: new ColorReplaceFilter([0, 0, 0], [0, 1, 1], 0.1),
-        selection: new ColorReplaceFilter([0, 0, 0], [0.9, 0.9, 0.9], 0.1)
+        selection: new ColorReplaceFilter([0, 0, 0], [0.9, 0.9, 0.9], 0.1),
+        lowPower: [new PixelateFilter([2, 2])],
+        veryLowPower: [new PixelateFilter([4, 4]), new GlitchFilter({
+          offset: 30
+        })]
       },
       colors: {
         bearing: 0xFF0000,
@@ -315,6 +321,16 @@ export default class LocalMapHud {
 
     // add or update the player ship
     if (!isDestroyed) {
+
+      // set the low power effect
+      let consoleEfficiency = actualPlayerShip.getConsolesEfficiency();
+      if (consoleEfficiency < 0.5) {
+        this.hudContainer.filters = this.parameters.filters.veryLowPower;
+      } else if (consoleEfficiency < 1) {
+        this.hudContainer.filters = this.parameters.filters.lowPower;
+      } else {
+        this.hudContainer.filters = [];
+      }
 
       // gravity effecting us
       this.setGravity(playerShip);

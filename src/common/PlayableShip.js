@@ -59,6 +59,12 @@ export default class PlayableShip extends Ship {
         return Math.floor(max);
     }
 
+    getConsolesEfficiency() {
+      let hullData = this.getHullData();
+      let systems = hullData.systems;
+      return this.grid.getEfficiency(systems['SYS_CONSOLES']);
+    }
+
     getPowerAdjustedHullData() {
 
       // start with standard hull data
