@@ -148,7 +148,8 @@ export default class SelectedNavData {
 
       // see if we are actively targetting or not
       let targetButton = null;
-      if ((ourShip.targetId == null || ourShip.targetId < 0) && !this.targettingObj) {
+      if (!(item.source instanceof Planet) && (ourShip.targetId == null || ourShip.targetId < 0) && !this.targettingObj) {
+
         targetButton = h("button", {
           key: "selectednav-action-target",
           onclick: (event) => {
