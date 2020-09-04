@@ -71,6 +71,12 @@ export default class PlayableShip extends Ship {
       return this.grid.getEfficiency(systems['SYS_NAV']);
     }
 
+    getReloaderEfficiency() {
+      let hullData = this.getHullData();
+      let systems = hullData.systems;
+      return this.grid.getEfficiency(systems['SYS_RELOAD']);
+    }
+
     getPowerAdjustedHullData() {
 
       // start with standard hull data

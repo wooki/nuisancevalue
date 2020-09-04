@@ -52,11 +52,14 @@ export default class TorpedoLoadControl {
     } else {
       this.playerShip = playerShip;
     }
+    let efficiency = this.playerShip.getReloaderEfficiency();    
 
     if (this.playerShip.tubes) {
       for (let i = 0; i < this.playerShip.tubes.length; i++) {
         if (this.loadingState[i] && this.loadingState[i].timeToLoad > 0) {
-          this.loadingState[i].timeToLoad = this.loadingState[i].timeToLoad - dt;
+
+          this.loadingState[i].timeToLoad = this.loadingState[i].timeToLoad - (dt*efficiency);
+
         } else if (this.loadingState[i]) {
           // send to game engine
           if (this.renderer.client) {
