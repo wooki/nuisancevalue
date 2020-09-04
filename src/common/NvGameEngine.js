@@ -544,13 +544,14 @@ export default class NvGameEngine extends GameEngine {
 
             if (inputData.input == 'pdcangle') {
               let ship = this.getPlayerShip(playerId);
-              let hullData = ship.getHullData();
+              let hullData = ship.getPowerAdjustedHullData();
               if (hullData.pdc) {
+                console.log("hullData.pdc.rotationRate="+hullData.pdc.rotationRate);
                 let newAngle = ship.pdcAngle;
                 if (inputData.options.direction == '+') {
-                  newAngle = (newAngle + 0.02) % (Math.PI*2);
+                  newAngle = (newAngle + hullData.pdc.rotationRate) % (Math.PI*2);
                 } else if (inputData.options.direction == '-') {
-                  newAngle = (newAngle - 0.02) % (Math.PI*2);
+                  newAngle = (newAngle - hullData.pdc.rotationRate) % (Math.PI*2);
                 }
                 ship.pdcAngle = newAngle;
               }

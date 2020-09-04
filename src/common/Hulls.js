@@ -20,7 +20,8 @@ export default {
 		exhaustImage: 'exhaust',
 		pdc: {
 			range: 4000,
-			size: 1000
+			size: 1000,
+			rotationRate: 0.02
 		},
 		fuel: 10000,
 		tubes: 2,
@@ -97,7 +98,8 @@ export default {
 		exhaustImage: 'exhaust',
 		pdc: {
 			range: 4000,
-			size: 1000
+			size: 1000,
+			rotationRate: 0.02
 		},
 		fuel: 10000,
 		tubes: 4,
@@ -120,7 +122,8 @@ export default {
 		exhaustImage: 'exhaust', // or exhaustflame
 		pdc: {
 			range: 5000,
-			size: 800
+			size: 800,
+			rotationRate: 0.02
 		},
 		fuel: 10000,
 		tubes: 2,
