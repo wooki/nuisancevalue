@@ -77,6 +77,7 @@ export default class LocalMap {
         friendFilter: new OutlineFilter(1, 0x00FF00, 0.6),
         neutralFilter: new OutlineFilter(1, 0x0000FF, 0.6),
         enemyFilter: new OutlineFilter(1, 0xFF0000, 0.6),
+        unscannedFilter: new PixelateFilter([6, 6]),
         // crt: new CRTFilter({
         //   curvature: 8,
         //   lineWidth: 10,
@@ -290,7 +291,7 @@ export default class LocalMap {
       }
 
       // check if we have scanned - and if so, is it friend or foe?
-      if (obj.isScannedBy && obj.faction) {
+      if (obj.isScannedBy) {
 
         let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
         let isScanned = obj.isScannedBy(actualPlayerShip.faction);
@@ -302,30 +303,32 @@ export default class LocalMap {
 
         if (isScanned) {
 
-          // TODO: maybe only highlight enemy ships??
-          if (obj.isFriend(actualPlayerShip.faction)) {
-            hullSprite.filters = [ this.parameters.effects.friendFilter];
+          // maybe only highlight enemy ships??
+          if (obj.faction && obj.isFriend) {
+            if (obj.isFriend(actualPlayerShip.faction)) {
+              hullSprite.filters = [ this.parameters.effects.friendFilter];
 
-          } else if (obj.isHostile(actualPlayerShip.faction)) {
-            hullSprite.filters = [ this.parameters.effects.enemyFilter];
+            } else if (obj.isHostile(actualPlayerShip.faction)) {
+              hullSprite.filters = [ this.parameters.effects.enemyFilter];
 
-          } else {
-            // hullSprite.filters = [ this.parameters.effects.neutralFilter];
-            hullSprite.filters = [];
+            } else {
+              // hullSprite.filters = [ this.parameters.effects.neutralFilter];
+              hullSprite.filters = [];
+            }
+
+            // TODO: replace with color replace filter so we can have multi-color ships
+            let tint = this.factions.getFaction(obj.faction).color;
+            tint = PIXI.utils.hex2rgb(tint);
+            tint[0] = Math.min(1, tint[0] + 0.5);
+            tint[1] = Math.min(1, tint[1] + 0.5);
+            tint[2] = Math.min(1, tint[2] + 0.5);
+            tint = PIXI.utils.rgb2hex(tint);
+            hullSprite.tint = tint;
           }
 
-          // TODO: replace with color replace filter
-          let tint = this.factions.getFaction(obj.faction).color;
-          tint = PIXI.utils.hex2rgb(tint);
-          tint[0] = Math.min(1, tint[0] + 0.5);
-          tint[1] = Math.min(1, tint[1] + 0.5);
-          tint[2] = Math.min(1, tint[2] + 0.5);
-          tint = PIXI.utils.rgb2hex(tint);
-          hullSprite.tint = tint;
-
         } else {
-          // not scanned so remove any filter
-          hullSprite.filters = [];
+          // not scanned so set filter to obscure
+          hullSprite.filters = [ this.parameters.effects.unscannedFilter ];
           hullSprite.tint = 0xFFFFFF;
         }
       }
