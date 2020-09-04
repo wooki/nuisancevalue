@@ -35,7 +35,8 @@ export default class PlayableShip extends Ship {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.INT16 // 0=PDC, n-1=torp type - value = ammo
             },
-            fuel: { type: BaseTypes.TYPES.INT16 }
+            fuel: { type: BaseTypes.TYPES.INT16 },
+            oxygen: { type: BaseTypes.TYPES.UINT8 }
         }, super.netScheme);
     }
 
@@ -83,7 +84,7 @@ export default class PlayableShip extends Ship {
             updatedHullData['maneuver'] = hullData['maneuver'] * efficiency;
           } else if (systemKey == 'SYS_PDC') {
             updatedHullData['pdc'] = Object.assign({}, hullData['pdc']);
-            updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;            
+            updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;
           }
           // SYS_SENSORS: SYS_SENSORS,
           // SYS_ENGINE: SYS_ENGINE,
@@ -185,5 +186,6 @@ export default class PlayableShip extends Ship {
         this.fuel = other.fuel;
         this.power = other.power;
         this.weaponStock = other.weaponStock;
+        this.oxygen = other.oxygen;
     }
 }

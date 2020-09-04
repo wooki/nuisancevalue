@@ -72,6 +72,9 @@ export default class EngineeringDataControl {
       lines.push(this.createLine("Hull", hullData.name));
       lines.push(this.createLine("Hull_Damage", percentDamage + "%"));
 
+      // oxygen remaining
+      lines.push(this.createLine("Oxygen", Math.round(this.playerShip.oxygen) + "%"));
+
       // fuel remaining
       lines.push(this.createLine("Fuel", Math.round(this.playerShip.fuel) + "/" + hullData.fuel));
 

@@ -104,14 +104,26 @@ export default class NvGameEngine extends GameEngine {
 
               console.info("UNDEFINED OBJ FOUND IN WORLD");
 
+            } else if (obj.oxygen <= 0) {
+
+              // remove players
+              obj.helmPlayerId = -1;
+              obj.navPlayerId = -1;
+              obj.signalsPlayerId = -1;
+              obj.engineerPlayerId = -1;
+              obj.captainPlayerId = -1;
+
+              // make unplayable
+              obj.playable = 0;
+
             } else if (obj.damage && obj.damage >= obj.getMaxDamage()) {
 
               // remove players
-              this.helmPlayerId = -1;
-              this.navPlayerId = -1;
-              this.signalsPlayerId = -1;
-              this.engineerPlayerId = -1;
-              this.captainPlayerId = -1;
+              obj.helmPlayerId = -1;
+              obj.navPlayerId = -1;
+              obj.signalsPlayerId = -1;
+              obj.engineerPlayerId = -1;
+              obj.captainPlayerId = -1;
 
               // remove the object
               this.removeObjectFromWorld(obj);
@@ -153,6 +165,19 @@ export default class NvGameEngine extends GameEngine {
 
                   // update the ships sensor range
                   obj.updateSenseorRange();
+
+                  // increase/decrease oxgyen
+                  let standardOxygenUse = 0.03;
+                  let standardOxygenExtra = 0.003; // at 100% we want some extra
+                  let lifeSupportKey = obj.grid.getStandardSystems()['SYS_LIFE'];
+                  let lifeSupportEfficiency = obj.grid.getEfficiency(lifeSupportKey);
+                  let oxygenGen = standardOxygenUse * lifeSupportEfficiency;
+                  obj.oxygen = obj.oxygen + standardOxygenExtra + (oxygenGen - standardOxygenUse);
+                  if (obj.oxygen > 100) obj.oxygen = 100;
+                  if (obj.oxygen < 0) {
+                    obj.oxygen = 0;
+                    // crew dead!!
+                  };
                 }
 
                 // only certain types have engines
@@ -673,6 +698,7 @@ export default class NvGameEngine extends GameEngine {
               angle: params['angle']
           });
           s.weaponStock = hullData.defaultWeaponStock || [];
+          s.oxygen = params['oxygen'] || 100;
 
         } else {
           s = new Ship(this, {}, {
