@@ -125,7 +125,7 @@ body {
         background-color: #00cc00;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #00cc00;
       }
-      &.bearing {
+      &.bearing, &.green {
         background-color: #cc0000;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cc0000;
       }
@@ -133,7 +133,7 @@ body {
         background-color: #0000cc;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #0000cc;
       }
-      &.waypoint {
+      &.waypoint, &.yellow {
         background-color: #cccc00;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
       }
@@ -443,6 +443,13 @@ body {
         margin-bottom: 0;
       }
 
+      .LED {
+        margin: 0;
+        flex: 0 0 auto;
+        position: static;
+        top: 0;
+        left: 0;
+      }
       h4 {
         margin: 0;
         flex: 0 0 auto;

@@ -44,9 +44,18 @@ export default class PlayableShip extends Ship {
 
       if (this.shapeSensor) {
         let hullData = this.getPowerAdjustedHullData();
-        this.shapeSensor.radius = hullData.scanRanges[1];        
+        this.shapeSensor.radius = hullData.scanRanges[1];
       }
 
+    }
+
+    getActiveTubes() {
+        let hullData = this.getHullData();
+        let systems = hullData.systems;
+        let max = this.tubes.length;
+        let efficiency = this.grid.getEfficiency(systems['SYS_TORPS']);
+        max = max * efficiency;
+        return Math.floor(max);
     }
 
     getPowerAdjustedHullData() {

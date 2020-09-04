@@ -62,7 +62,7 @@ export default class TorpedoFireControl {
 
   }
 
-  createTube(tube, tubeIndex) {
+  createTube(tube, tubeIndex, isActive) {
       if (tube == null) return null;
 
       let title = h('h4', {key: 'title'}, ['#'+(tubeIndex+1)]);
@@ -76,35 +76,50 @@ export default class TorpedoFireControl {
 
       let haveTarget = (this.targetId >= 0);
 
+      // add warning light if not enough power
+      let led = null;
+      if (!isActive) {
+        led = h('div.LED.alert',[]);
+      } else if (currentTorp && haveTarget) {
+        led = h('div.LED.green',[]);
+      } else {
+        led = h('div.LED.yellow',[]);
+      }
+      
+      let fireButton = h('button.key', {
+          key: 'fire',
+          classes: {
+            shown: (currentTorp),
+            enabled: (currentTorp && haveTarget)
+          },
+          onclick: (event) => {
+
+            if (this.targetId >= 0) {
+              // fire the torp
+              if (this.renderer.client) {
+
+                // fire and unload
+                if (isActive) {
+                  this.renderer.client.fireTorp(this.targetId , tubeIndex);
+                }
+                this.renderer.client.loadTorp(tubeIndex, 0);
+
+                // redraw to update button state
+                this.projector.scheduleRender();
+              }
+            }
+          }
+        }, ['FIRE']);
+
       // build some html
       return h('div.nv.ui.row.tube', {
           key: 'tube'+tubeIndex
         },
         [
+          led,
           title,
           currentState,
-          h('button.key', {
-            key: 'fire',
-            classes: {
-              shown: (currentTorp),
-              enabled: (currentTorp && haveTarget)
-            },
-            onclick: (event) => {
-
-              if (this.targetId >= 0) {
-                // fire the torp
-                if (this.renderer.client) {
-
-                  // fire and unload
-                  this.renderer.client.fireTorp(this.targetId , tubeIndex);
-                  this.renderer.client.loadTorp(tubeIndex, 0);
-
-                  // redraw to update button state
-                  this.projector.scheduleRender();
-                }
-              }
-            }
-          }, ['FIRE'])
+          fireButton
         ]
       );
   }
@@ -119,9 +134,13 @@ export default class TorpedoFireControl {
 
     let rows = [];
 
-    if (this.playerShip && this.playerShip.tubes) {
+    if (this.playerShip) {
+
+      let activeTubes = this.playerShip.getActiveTubes();
+
       for (let i = 0; i < this.playerShip.tubes.length; i++) {
-        let tube = this.createTube(this.playerShip.tubes[i], i);
+        let isActive = activeTubes > i;
+        let tube = this.createTube(this.playerShip.tubes[i], i, isActive);
         rows.push(tube);
       }
     }
