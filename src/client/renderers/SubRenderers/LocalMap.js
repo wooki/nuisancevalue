@@ -315,6 +315,7 @@ export default class LocalMap {
               // hullSprite.filters = [ this.parameters.effects.neutralFilter];
               hullSprite.filters = [];
             }
+            sprite.filters = [];
 
             // TODO: replace with color replace filter so we can have multi-color ships
             let tint = this.factions.getFaction(obj.faction).color;
@@ -328,7 +329,8 @@ export default class LocalMap {
 
         } else {
           // not scanned so set filter to obscure
-          hullSprite.filters = [ this.parameters.effects.unscannedFilter ];
+          // hullSprite.filters = [ this.parameters.effects.unscannedFilter ];
+          sprite.filters = [ this.parameters.effects.unscannedFilter ];
           hullSprite.tint = 0xFFFFFF;
         }
       }

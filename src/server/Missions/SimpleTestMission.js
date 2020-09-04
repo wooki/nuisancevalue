@@ -76,79 +76,79 @@ export default class SimpleTestMission {
         faction: this.factions.jupiter
     });
 
-    // hullName = 'tug';
-    // hullData = Hulls[hullName];
-    // game.addShip({
-    //     name: "Target 1",
-    //     x: 1000,
-    //     y: 2000,
-    //     dX: 0,
-    //     dY: 0,
-    //     hull: hullName,
-    //     angle: Math.PI,
-    //     engine: 3,
-    //     faction: Math.pow(2, 1)
-    // });
-    //
-    // game.addShip({
-    //     name: "Target 2",
-    //     x: 0-1000,
-    //     y: 2000,
-    //     dX: 0,
-    //     dY: 0,
-    //     hull: hullName,
-    //     angle: Math.PI,
-    //     engine: 5,
-    //     faction: Math.pow(2, 2)
-    // });
-    //
-    // game.addShip({
-    //     name: "Target 3",
-    //     x: 0,
-    //     y: -500,
-    //     dX: 0,
-    //     dY: 0,
-    //     hull: hullName,
-    //     angle: Math.PI,
-    //     engine: 2,
-    //     faction: Math.pow(2, 3)
-    // });
-    //
-    // game.addShip({
-    //     name: "Target 4",
-    //     x: 20000,
-    //     y: -10000,
-    //     dX: 0,
-    //     dY: 0,
-    //     hull: hullName,
-    //     angle: Math.PI/2,
-    //     engine: 4,
-    //     faction: Math.pow(2, 4)
-    // });
-    //
-    // game.addShip({
-    //     name: "Target 5",
-    //     x: 20000,
-    //     y: -9000,
-    //     dX: 0,
-    //     dY: 0,
-    //     hull: hullName,
-    //     angle: Math.PI/2,
-    //     engine: 3,
-    //     faction: Math.pow(2, 5)
-    // });
-    //
-    // game.addShip({
-    //     name: "Target 6",
-    //     x: 20000,
-    //     y: -8000,
-    //     dX: 0,
-    //     dY: 0,
-    //     hull: hullName,
-    //     angle: Math.PI/2,
-    //     engine: 5,
-    //     faction: Math.pow(2, 9)
-    // });
+    hullName = 'tug';
+    hullData = Hulls[hullName];
+    game.addShip({
+        name: "Target 1",
+        x: 1000,
+        y: 2000,
+        dX: 0,
+        dY: 0,
+        hull: hullName,
+        angle: Math.PI,
+        engine: 3,
+        faction: Math.pow(2, 1)
+    });
+
+    game.addShip({
+        name: "Target 2",
+        x: 0-1000,
+        y: 2000,
+        dX: 0,
+        dY: 0,
+        hull: hullName,
+        angle: Math.PI,
+        engine: 5,
+        faction: Math.pow(2, 2)
+    });
+
+    game.addShip({
+        name: "Target 3",
+        x: 0,
+        y: -500,
+        dX: 0,
+        dY: 0,
+        hull: hullName,
+        angle: Math.PI,
+        engine: 2,
+        faction: Math.pow(2, 3)
+    });
+
+    game.addShip({
+        name: "Target 4",
+        x: 20000,
+        y: -10000,
+        dX: 0,
+        dY: 0,
+        hull: hullName,
+        angle: Math.PI/2,
+        engine: 4,
+        faction: Math.pow(2, 4)
+    });
+
+    game.addShip({
+        name: "Target 5",
+        x: 20000,
+        y: -9000,
+        dX: 0,
+        dY: 0,
+        hull: hullName,
+        angle: Math.PI/2,
+        engine: 3,
+        faction: Math.pow(2, 5)
+    });
+
+    game.addShip({
+        name: "Target 6",
+        x: 20000,
+        y: -8000,
+        dX: 0,
+        dY: 0,
+        hull: hullName,
+        angle: Math.PI/2,
+        engine: 5,
+        faction: Math.pow(2, 9)
+    });
     game.addShip({
         name: "Target 7",
         x: 20000,

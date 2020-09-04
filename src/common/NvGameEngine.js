@@ -181,7 +181,11 @@ export default class NvGameEngine extends GameEngine {
                   // fuel production
                   let fuelProduction = 0.2;
                   let fuelProductionEfficiency = obj.getFuelProductionEfficiency();
+                  let hullData = obj.getHullData();
                   obj.fuel = obj.fuel + (fuelProduction * fuelProductionEfficiency);
+                  if (obj.fuel > hullData.fuel) {
+                    obj.fuel = hullData.fuel;
+                  }
                 }
 
                 // only certain types have engines

@@ -167,6 +167,7 @@ export default class HudData {
         data.scanned = isScanned ? "Yes" : "No";
 
         if (!isScanned) {
+          delete data['label'];
           data.mass = "~" + (Math.round(obj.physicsObj.mass / 100) * 100).toPrecision(3) + SolarObjects.units.mass;
           data.radius = "~" + Math.round(Math.round((obj.size / 2) / 100) * 100) + SolarObjects.units.distance;
         } else {
