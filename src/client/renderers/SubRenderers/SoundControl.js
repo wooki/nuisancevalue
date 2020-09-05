@@ -8,7 +8,8 @@ export default class SoundControl {
     this.parameters = Object.assign({
       baseUrl: '/',
       volume: {
-        explosion: 1
+        explosion: 1,
+        theme: 0.2
       }
     }, params);
   }
@@ -20,6 +21,15 @@ export default class SoundControl {
     this.game = renderer.game;
 
     // prepare sounds
+
+    // while testing - ignore theme
+    // this.theme = new Howl({
+    //   src: Assets.Sounds.theme,
+    //   volume: this.parameters.volume.theme,
+    //   autoplay: true,
+    //   loop: true
+    // });
+
     this.explosion = new Howl({
       src: Assets.Sounds.explosion,
       volume: this.parameters.volume.explosion
@@ -31,7 +41,12 @@ export default class SoundControl {
   }
 
   playExplosion() {
-    this.explosion.play();
+    let i = this.explosion.play();
+    console.log("i:"+i);
+    if (Math.random() > 0.5) {
+      console.log("set pos");
+      this.explosion.pos(100, 0, 0, i);
+    }
   }
 
 
