@@ -1,4 +1,7 @@
 module.exports = {
+	Sounds: {
+		explosion: 'assets/sounds/explosion.mp3'
+	},
 	Images: {
 		asteroid: 'assets/asteroid.png',
 		sol: 'assets/sol.png',

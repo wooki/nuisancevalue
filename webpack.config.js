@@ -28,6 +28,7 @@ module.exports = {
         new MiniCssExtractPlugin(),
         new CopyPlugin([
           { from: './src/assets/*', to: 'assets', flatten: true },
+          { from: './src/assets/sounds/*', to: 'assets/sounds', flatten: true },
           { from: './src/html/*', to: '', flatten: true  }
         ])
     ]
