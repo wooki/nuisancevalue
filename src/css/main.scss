@@ -121,11 +121,11 @@ body {
       background-color: #cccc00;
       background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cccc00;
       box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2), 2px 2px rgba(0, 0, 0, 0.4);
-      &.heading {
+      &.heading, &.green {
         background-color: #00cc00;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #00cc00;
       }
-      &.bearing, &.green {
+      &.bearing {
         background-color: #cc0000;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.0) 100%) #cc0000;
       }

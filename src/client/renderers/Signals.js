@@ -132,7 +132,7 @@ export default class SignalsRenderer extends CompositeRenderer {
             height: fullHeight - marginFull,
             zIndex: 100
           }),
-          new SoundControl({            
+          new SoundControl({
           }),
         ]
       };

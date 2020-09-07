@@ -109,6 +109,7 @@ export default class CompositeRenderer {
     destroyPlayership(playerShip) {
       if (this.destroyed) return;
       this.destroyed = true;
+
       this.updatePlayerShip(playerShip, false, this.destroyed, 0);
 
       let message = "YOU WERE DESTROYED";
@@ -209,7 +210,7 @@ export default class CompositeRenderer {
       // notify subrenderers
       for (let i = 0; i < this.subRenderers.length; i++) {
         if (this.subRenderers[i].updatePlayerShip) {
-          this.subRenderers[i].updatePlayerShip(playerShip, isDocked, this.isDestroyed, this, dt);
+          this.subRenderers[i].updatePlayerShip(playerShip, isDocked, isDestroyed, this, dt);
         }
       }
     }

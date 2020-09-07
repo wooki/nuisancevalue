@@ -1,5 +1,10 @@
 module.exports = {
 	Sounds: {
+		cannon: 'assets/sounds/cannon.mp3',
+		click: 'assets/sounds/click.mp3',
+		collision: 'assets/sounds/collision.mp3',
+		engine: 'assets/sounds/engine.mp3',
+		torp: 'assets/sounds/torp.mp3',
 		explosion: 'assets/sounds/explosion.mp3',
 		theme: 'assets/sounds/theme.mp3'
 	},

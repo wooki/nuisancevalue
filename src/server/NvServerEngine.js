@@ -129,7 +129,7 @@ export default class NvServerEngine extends ServerEngine {
                 A.grid.unpack(A.power);
 
                 // add some damage
-                let powergridHits = Math.floor(payload / 33);
+                let powergridHits = Math.floor(payload / 66);
                 for (let i = 0; i < powergridHits; i++) {
                   let gridSize = A.grid.getGridSize();
                   let damageRow = Math.floor(gridSize[0] * Math.random());
