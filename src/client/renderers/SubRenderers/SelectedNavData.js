@@ -1,5 +1,5 @@
 import Victor from 'victor';
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import {h, createProjector} from 'maquette';
 import Torpedo from '../../../common/Torpedo';
 import Ship from '../../../common/Ship';

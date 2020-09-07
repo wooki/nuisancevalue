@@ -1,6 +1,6 @@
 import HudData from './HudData';
 import Victor from 'victor';
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import {h, createProjector} from 'maquette';
 
 export default class SignalsData extends HudData {

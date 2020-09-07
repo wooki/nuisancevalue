@@ -3,7 +3,7 @@
 const PIXI = require('pixi.js');
 
 import KeyboardControls from './Utils/KeyboardControls.js';
-import Assets from './Utils/images.js';
+import Assets from './Utils/assets.js';
 import UiUtils from './Utils/UiUtils';
 import Ship from './../../common/Ship';
 

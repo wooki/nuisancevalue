@@ -1,6 +1,6 @@
 const PIXI = require('pixi.js');
 
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import Victor from 'victor';
 import UiUtils from '../Utils/UiUtils';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';

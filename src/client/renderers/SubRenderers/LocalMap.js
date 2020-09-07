@@ -10,7 +10,7 @@ import {OutlineFilter} from '@pixi/filter-outline';
 import {GlitchFilter} from '@pixi/filter-glitch';
 import {PixelateFilter} from '@pixi/filter-pixelate';
 
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import Hulls from '../../../common/Hulls';
 import UiUtils from '../Utils/UiUtils';
 import Ship from '../../../common/Ship';

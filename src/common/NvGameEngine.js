@@ -681,7 +681,6 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 let obj = this.world.objects[inputData.options.objId];
                 if (obj && obj.scannedBy) {
-                  console.log("SET SCANNED");
                   obj.scannedBy(ship.faction);
                 }
             }

@@ -1,5 +1,5 @@
 const PIXI = require('pixi.js');
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import UiUtils from '../Utils/UiUtils';
 import {GlitchFilter} from '@pixi/filter-glitch';
 import {PixelateFilter} from '@pixi/filter-pixelate';

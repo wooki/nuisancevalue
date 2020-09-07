@@ -2,7 +2,7 @@ const PIXI = require('pixi.js');
 
 import MapSensorRangeUi from '../Utils/MapSensorRangeUi';
 import UiUtils from '../Utils/UiUtils';
-import Assets from '../Utils/images';
+import Assets from '../Utils/assets';
 import Ship from '../../../common/Ship';
 import Torpedo from '../../../common/Torpedo';
 import Asteroid from '../../../common/Asteroid';

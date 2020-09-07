@@ -2,7 +2,7 @@ import Victor from 'victor';
 import {h, createProjector} from 'maquette';
 import Ship from '../../../common/Ship';
 import Hulls from '../../../common/Hulls';
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 
 // Manage docking to stations
 // HTML for now

@@ -1,5 +1,5 @@
 const PIXI = require('pixi.js');
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import UiUtils from '../Utils/UiUtils';
 import Systems from '../../../common/Systems';
 

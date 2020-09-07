@@ -1,5 +1,5 @@
 import Victor from 'victor';
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import UiUtils from '../Utils/UiUtils';
 import {h, createProjector} from 'maquette';
 import SolarObjects from '../../../common/SolarObjects';

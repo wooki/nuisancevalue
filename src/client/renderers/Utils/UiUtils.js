@@ -1,6 +1,6 @@
 const PIXI = require('pixi.js');
 
-import Assets from './images.js';
+import Assets from './assets.js';
 import Hulls from '../../../common/Hulls';
 import Victor from 'victor';
 import SolarObjects from '../../../common/SolarObjects';

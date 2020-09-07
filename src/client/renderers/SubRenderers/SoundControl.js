@@ -1,5 +1,5 @@
 const PIXI = require('pixi.js');
-import Assets from '../Utils/images.js';
+import Assets from '../Utils/assets.js';
 import {Howl, Howler} from 'howler';
 
 export default class SoundControl {
@@ -7,6 +7,7 @@ export default class SoundControl {
   constructor(params) {
     this.parameters = Object.assign({
       baseUrl: '/',
+      spatialScale: 0.001,
       volume: {
         explosion: 1,
         theme: 0.2
@@ -40,13 +41,26 @@ export default class SoundControl {
     this.game.emitonoff.on('explosion', this.playExplosion.bind(this));
   }
 
-  playExplosion() {
+  playExplosion(obj) {
+
+    let x = obj.physicsObj.position[0] * this.parameters.spatialScale;
+    let y = obj.physicsObj.position[1] * this.parameters.spatialScale;
+    let z = 0;
+
     let i = this.explosion.play();
-    console.log("i:"+i);
-    if (Math.random() > 0.5) {
-      console.log("set pos");
-      this.explosion.pos(100, 0, 0, i);
-    }
+    this.explosion.pos(x, y, z, i);
+  }
+
+  updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
+
+    // this.playerShip = playerShip;
+
+    let x = playerShip.physicsObj.position[0] * this.parameters.spatialScale;
+    let y = playerShip.physicsObj.position[1] * this.parameters.spatialScale;
+    let z = 0;
+
+    // set the listener position
+    Howler.pos(x, y, z);
   }
 
 
