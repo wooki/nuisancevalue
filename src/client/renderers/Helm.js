@@ -9,6 +9,7 @@ import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import FuelGauge from './SubRenderers/FuelGauge';
+import SoundControl from './SubRenderers/SoundControl';
 
 // extend compsite with pre-set subrenderers
 export default class HelmRenderer extends CompositeRenderer {
@@ -63,7 +64,7 @@ export default class HelmRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 20,
-            predictTime: 120 // to match waypoint predicition with nav            
+            predictTime: 120 // to match waypoint predicition with nav
           }),
           new EngineControl({
             x: margin,
@@ -102,7 +103,9 @@ export default class HelmRenderer extends CompositeRenderer {
             width: Math.max(sideWidth, sideControlsMin),
             height: fullHeight - marginFull,
             zIndex: 30
-          })
+          }),
+          new SoundControl({
+          }),
         ]
       };
 

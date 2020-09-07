@@ -5,6 +5,7 @@ import LocalMapHud from './SubRenderers/LocalMapHud';
 import PowerGrid from './SubRenderers/PowerGrid';
 import TorpedoLoadControl from './SubRenderers/TorpedoLoadControl';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
+import SoundControl from './SubRenderers/SoundControl';
 
 // extend compsite with pre-set subrenderers
 export default class EngineerRenderer extends CompositeRenderer {
@@ -61,7 +62,7 @@ export default class EngineerRenderer extends CompositeRenderer {
             dialSmallDividerSize: 2,
             dialLargeDividerSize: 5,
             dialFontSize: 7,
-            predictTime: 120 // to match waypoint predicition with nav     
+            predictTime: 120 // to match waypoint predicition with nav
           }),
           new PowerGrid({
             x: margin,
@@ -83,6 +84,8 @@ export default class EngineerRenderer extends CompositeRenderer {
             width: rightColWidth,
             height: (fullHeight - rightColWidth) - marginFull,
             zIndex: 6
+          }),
+          new SoundControl({
           }),
         ]
       };

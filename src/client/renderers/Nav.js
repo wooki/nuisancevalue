@@ -8,6 +8,7 @@ import ZoomControl from './SubRenderers/ZoomControl';
 import NavData from './SubRenderers/NavData';
 import SelectedNavData from './SubRenderers/SelectedNavData';
 import LocalMapPanControl from './SubRenderers/LocalMapPanControl';
+import SoundControl from './SubRenderers/SoundControl';
 
 // extend compsite with pre-set subrenderers
 export default class NavRenderer extends CompositeRenderer {
@@ -110,6 +111,8 @@ export default class NavRenderer extends CompositeRenderer {
             width: sidebarWidth - marginFull,
             height: fullHeight - marginFull,
             zIndex: 30
+          }),
+          new SoundControl({
           }),
         ]
       };
