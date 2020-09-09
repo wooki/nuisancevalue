@@ -573,37 +573,39 @@ export default class NvGameEngine extends GameEngine {
                 ship.loadTorp(tube, torpType);
             }
 
-
-
             if (inputData.input == 'pdcangle') {
               let ship = this.getPlayerShip(playerId);
-              let hullData = ship.getPowerAdjustedHullData();
-              if (hullData.pdc) {
-                let newAngle = ship.pdcAngle;
-                if (inputData.options.direction == '+') {
-                  newAngle = (newAngle + hullData.pdc.rotationRate) % (Math.PI*2);
-                } else if (inputData.options.direction == '-') {
-                  newAngle = (newAngle - hullData.pdc.rotationRate) % (Math.PI*2);
+              if (ship) {
+                let hullData = ship.getPowerAdjustedHullData();
+                if (hullData.pdc) {
+                  let newAngle = ship.pdcAngle;
+                  if (inputData.options.direction == '+') {
+                    newAngle = (newAngle + hullData.pdc.rotationRate) % (Math.PI*2);
+                  } else if (inputData.options.direction == '-') {
+                    newAngle = (newAngle - hullData.pdc.rotationRate) % (Math.PI*2);
+                  }
+                  ship.pdcAngle = newAngle;
                 }
-                ship.pdcAngle = newAngle;
               }
             }
 
             if (inputData.input == 'pdcstate') {
               let ship = this.getPlayerShip(playerId);
-              let hullData = ship.getHullData();
-              if (hullData.pdc) {
-                let newState = ship.pdcState;
-                if (inputData.options.direction == '+') {
-                  newState = newState + 1;
-                } else if (inputData.options.direction == '-') {
-                  newState = newState - 1;
-                } else {
-                  newState = parseInt(inputData.options.direction);
+              if (ship) {
+                let hullData = ship.getHullData();
+                if (hullData.pdc) {
+                  let newState = ship.pdcState;
+                  if (inputData.options.direction == '+') {
+                    newState = newState + 1;
+                  } else if (inputData.options.direction == '-') {
+                    newState = newState - 1;
+                  } else {
+                    newState = parseInt(inputData.options.direction);
+                  }
+                  if (newState < 0) newState = 0;
+                  if (newState > 2) newState = 2;
+                  this.emit('pdc', { ship: ship, angle: ship.pdcAngle, state: newState });
                 }
-                if (newState < 0) newState = 0;
-                if (newState > 2) newState = 2;
-                this.emit('pdc', { ship: ship, angle: ship.pdcAngle, state: newState });
               }
             }
 

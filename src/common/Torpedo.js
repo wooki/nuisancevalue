@@ -115,6 +115,8 @@ export default class Torpedo extends PhysicalObject2D {
         });
         this.physicsObj.addShape(shape);
         game.physicsEngine.world.addBody(this.physicsObj);
+
+        this.gameEngine.emitonoff.emit('torp', this);
     }
 
     onRemoveFromWorld(gameEngine) {

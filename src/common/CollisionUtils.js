@@ -95,6 +95,8 @@ export default class CollisionUtils {
         const acceleration_b = Victor.fromArray(e.bodyB.vlambda).magnitude();
         this.assignDamageToObject(A, acceleration_a);
         this.assignDamageToObject(B, acceleration_b);
+
+        this.gameEngine.emitonoff.emit('collision', A); // either object should be fine to use
       }
     } // assignDamage
 
