@@ -85,7 +85,7 @@ export default class TorpedoFireControl {
       } else {
         led = h('div.LED.yellow',[]);
       }
-      
+
       let fireButton = h('button.key', {
           key: 'fire',
           classes: {
@@ -94,6 +94,8 @@ export default class TorpedoFireControl {
           },
           onclick: (event) => {
 
+            this.renderer.playSound('click');
+            
             if (this.targetId >= 0) {
               // fire the torp
               if (this.renderer.client) {

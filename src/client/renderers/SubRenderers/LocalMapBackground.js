@@ -118,6 +118,7 @@ export default class LocalMapBackground {
 
   canvasClick(event) {
       event.stopPropagation();
+      this.renderer.playSound('click');
       this.renderer.updateSharedState({
     		selection: null
     	});

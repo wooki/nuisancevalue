@@ -12,7 +12,8 @@ import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
 import LocalMapPdcHud from './SubRenderers/LocalMapPdcHud';
 import PdcFireControl from './SubRenderers/PdcFireControl';
 import SignalsData from './SubRenderers/SignalsData';
-import SoundControl from './SubRenderers/SoundControl';
+import GlobalSound from './SubRenderers/GlobalSound';
+import LocalSound from './SubRenderers/LocalSound';
 
 // extend compsite with pre-set subrenderers
 export default class SignalsRenderer extends CompositeRenderer {
@@ -132,7 +133,9 @@ export default class SignalsRenderer extends CompositeRenderer {
             height: fullHeight - marginFull,
             zIndex: 100
           }),
-          new SoundControl({
+          new GlobalSound({
+          }),
+          new LocalSound({
           }),
         ]
       };

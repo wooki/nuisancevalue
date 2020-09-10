@@ -15,6 +15,18 @@ export default class SignalsData extends HudData {
     this.scanObj = obj;
     this.scanningId = obj.id;
     this.timeToScan = this.scanTotalTime;
+
+    // TODO: start scanning sound
+    // this.renderer.playSound('click');
+  }
+
+  stopScan() {
+    this.scanningId = null;
+    this.timeToScan = 0;
+    this.scanObj = null;
+
+    // TODO: end scanning sound
+    // this.renderer.playSound('click');
   }
 
   // update progress per frame
@@ -34,9 +46,7 @@ export default class SignalsData extends HudData {
           this.renderer.client.scan(this.scanningId);
         }
 
-        this.scanningId = null;
-        this.timeToScan = 0;
-        this.scanObj = null;
+        this.stopScan();
       }
     }
 
@@ -53,20 +63,13 @@ export default class SignalsData extends HudData {
       // if we aren't currently scanning then add scan button
       if (this.scanningId == null || (this.scanningId != targetObject.id)) {
 
-        this.scanningId = null;
-        this.timeToScan = 0;
-        this.scanObj = null;
-
-        // // dummy placeholder for scan image
-        // content.push(h("img", {
-        //   src: "./"+Assets.Images.scanAnimation,
-        //   height: 30,
-        // }, []));
+        this.stopScan();
 
         // scan button
         content.push(h("button", {
           key: "signaldata-action-scan"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.startScan(targetObject);
           }
         }, [h("img", {

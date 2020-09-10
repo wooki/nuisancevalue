@@ -65,18 +65,22 @@ export default class PdcFireControl {
   }
 
   offPDC() {
+    this.renderer.playSound('click');
     this.renderer.client.pdcState(0);
   }
 
   onPDC() {
+    this.renderer.playSound('click');
     this.renderer.client.pdcState(1);
   }
 
   firePDC() {
+    this.renderer.playSound('click');
     this.renderer.client.pdcState(2);
   }
 
   leftPDC() {
+    this.renderer.playSound('click');
     this.renderer.client.pdcAngle('-'); this.renderer.client.pdcAngle('-');
     this.renderer.client.pdcAngle('-'); this.renderer.client.pdcAngle('-');
     this.renderer.client.pdcAngle('-'); this.renderer.client.pdcAngle('-');
@@ -85,6 +89,7 @@ export default class PdcFireControl {
   }
 
   rightPDC() {
+    this.renderer.playSound('click');
     this.renderer.client.pdcAngle('+'); this.renderer.client.pdcAngle('+');
     this.renderer.client.pdcAngle('+'); this.renderer.client.pdcAngle('+');
     this.renderer.client.pdcAngle('+'); this.renderer.client.pdcAngle('+');

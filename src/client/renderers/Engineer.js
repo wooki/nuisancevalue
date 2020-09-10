@@ -5,7 +5,8 @@ import LocalMapHud from './SubRenderers/LocalMapHud';
 import PowerGrid from './SubRenderers/PowerGrid';
 import TorpedoLoadControl from './SubRenderers/TorpedoLoadControl';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
-import SoundControl from './SubRenderers/SoundControl';
+import GlobalSound from './SubRenderers/GlobalSound';
+import LocalSound from './SubRenderers/LocalSound';
 
 // extend compsite with pre-set subrenderers
 export default class EngineerRenderer extends CompositeRenderer {
@@ -85,7 +86,9 @@ export default class EngineerRenderer extends CompositeRenderer {
             height: (fullHeight - rightColWidth) - marginFull,
             zIndex: 6
           }),
-          new SoundControl({
+          new GlobalSound({
+          }),
+          new LocalSound({
           }),
         ]
       };

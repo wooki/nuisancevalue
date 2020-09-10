@@ -9,7 +9,8 @@ import HudData from './SubRenderers/HudData';
 import LocalMapPaths from './SubRenderers/LocalMapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import FuelGauge from './SubRenderers/FuelGauge';
-import SoundControl from './SubRenderers/SoundControl';
+import GlobalSound from './SubRenderers/GlobalSound';
+import LocalSound from './SubRenderers/LocalSound';
 
 // extend compsite with pre-set subrenderers
 export default class HelmRenderer extends CompositeRenderer {
@@ -104,7 +105,9 @@ export default class HelmRenderer extends CompositeRenderer {
             height: fullHeight - marginFull,
             zIndex: 30
           }),
-          new SoundControl({
+          new GlobalSound({
+          }),
+          new LocalSound({
           }),
         ]
       };

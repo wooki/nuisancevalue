@@ -202,11 +202,13 @@ export default class PowerGrid {
   // toggle the cell state, updating server each time
   cellClick(row, col, event) {
 
-    let currentState =this.grid.getConnector(row, col);
+    let currentState = this.grid.getConnector(row, col);
     if (currentState != 0) {
       let newState = (currentState + 1) % 8;
       if (newState == 0) newState = 1;
 
+      this.renderer.playSound('click');
+      
       if (this.renderer.client) {
         this.renderer.client.setPowerCell(row, col, newState);
       }

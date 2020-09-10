@@ -52,7 +52,7 @@ export default class TorpedoLoadControl {
     } else {
       this.playerShip = playerShip;
     }
-    let efficiency = this.playerShip.getReloaderEfficiency();    
+    let efficiency = this.playerShip.getReloaderEfficiency();
 
     if (this.playerShip.tubes) {
       for (let i = 0; i < this.playerShip.tubes.length; i++) {
@@ -80,6 +80,8 @@ export default class TorpedoLoadControl {
         },
         key: 'btnLoad'+tubeIndex,
         onclick: (event) => {
+
+          this.renderer.playSound('click');
 
           // start loading/unloading
           this.loadingState[tubeIndex] = {

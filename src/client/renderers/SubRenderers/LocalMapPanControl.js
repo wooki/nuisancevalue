@@ -1,5 +1,3 @@
-import {h, createProjector} from 'maquette';
-
 // keyboard controls for panning around the map, via shared state (client side only)
 export default class LocalMapPanControl {
 
@@ -99,12 +97,7 @@ export default class LocalMapPanControl {
     if (typeof this.focusObjectCoord != 'number' && typeof this.focusObjectCoord != 'string' && this.focusObjectCoord.length == 2) {
 
       let panAmount = Math.round(this.parameters.speed / (this.zoom || 1));
-      let newFocus = this.focusObjectCoord;if (isNaN(newFocus[0]) || isNaN(newFocus[1])) {
-        console.log("newFocus="+newFocus.toString());
-        console.log("panAmount="+panAmount);
-        console.log("focusObjectCoord="+this.focusObjectCoord);
-      }
-
+      let newFocus = this.focusObjectCoord;
 
       if (direction == "N") {
         newFocus = [newFocus[0], newFocus[1] - panAmount];

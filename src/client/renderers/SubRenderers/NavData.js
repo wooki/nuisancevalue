@@ -19,6 +19,7 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-focus"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
           		focus: "player"
           	});
@@ -31,6 +32,7 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
             		selection: playerShip
           	});
@@ -48,6 +50,7 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-focus"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
           		focus: gravityObjectId
           	});
@@ -60,6 +63,7 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
             		selection: item.source
           	});
@@ -78,6 +82,7 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-focus"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
           		focus: item.source.id
           	});
@@ -90,6 +95,7 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
             		selection: item.source
           	});
@@ -120,6 +126,7 @@ export default class NavData extends HudData {
         h("button", {
           key: "navdata-action-select"+index,
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
                 selection: waypoint.obj
             });

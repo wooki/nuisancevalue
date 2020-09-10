@@ -57,6 +57,7 @@ export default class EngineControl {
 
   setEngine(engineLevel) {
     if (this.renderer.client) {
+      this.renderer.playSound('click');
       this.renderer.client.setEngine(engineLevel);
     }
   }

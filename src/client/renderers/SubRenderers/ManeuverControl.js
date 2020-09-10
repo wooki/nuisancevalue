@@ -42,6 +42,7 @@ export default class ManeuverControl {
 
   sendManeuver(direction) {
     if (this.renderer.client) {
+      this.renderer.playSound('click');
       this.renderer.client.setManeuver(direction);
     }
   }

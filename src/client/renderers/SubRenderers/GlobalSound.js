@@ -5,7 +5,10 @@ import UiUtils from '../Utils/UiUtils';
 import Assets from '../Utils/assets.js';
 import {Howl, Howler} from 'howler';
 
-export default class SoundControl {
+// play sounds for the ship as a whole - explosions for example, not just
+// console clicks. When playing in situ - only one station should handle this
+// checks URL param for sound=global or sound=on
+export default class GlobalSound {
 
   constructor(params) {
     this.parameters = Object.assign({
@@ -18,8 +21,8 @@ export default class SoundControl {
         collision: 1,
         torp: 0.5,
         engine: 0.05,
-        theme: 0,
-        // theme: 0.2
+        // theme: 0,
+        theme: 0.2
       }
     }, params);
   }
@@ -34,7 +37,7 @@ export default class SoundControl {
 
     // check if we want sound
     let params = new URLSearchParams(document.location.search.substring(1));
-    this.useSound = params.get("sound") == "on";
+    this.useSound = (params.get("sound") == "global" || params.get("sound") == "on");
 
     if (this.useSound) {
 

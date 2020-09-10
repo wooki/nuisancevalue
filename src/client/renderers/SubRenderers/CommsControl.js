@@ -88,6 +88,7 @@ export default class CommsControl {
         let key = "state-"+this.commsTarget.commsState+"-response-"+i;
         content.push(this.createButton(key, commsState.responses[i], (event) => {
           event.preventDefault();
+          this.renderer.playSound('click');
           this.comms.respond(this.playerShip, this.commsTarget, i);
         }));
       }
@@ -96,6 +97,7 @@ export default class CommsControl {
     // always add a close comms button
     content.push(this.createButton("closecomms", "Close Comms", (event) => {
       event.preventDefault();
+      this.renderer.playSound('click');
       this.comms.closeComms(this.playerShip, this.commsTarget);
     }));
 

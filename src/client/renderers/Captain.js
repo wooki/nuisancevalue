@@ -10,7 +10,8 @@ import ZoomControl from './SubRenderers/ZoomControl';
 import HudData from './SubRenderers/HudData';
 import LocalMapPanControl from './SubRenderers/LocalMapPanControl';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
-import SoundControl from './SubRenderers/SoundControl';
+import GlobalSound from './SubRenderers/GlobalSound';
+import LocalSound from './SubRenderers/LocalSound';
 
 // extend compsite with pre-set subrenderers
 export default class CaptainRenderer extends CompositeRenderer {
@@ -105,7 +106,9 @@ export default class CaptainRenderer extends CompositeRenderer {
             height: (fullHeight - marginFull),
             zIndex: 31
           }),
-          new SoundControl({
+          new GlobalSound({
+          }),
+          new LocalSound({
           }),
         ]
       };

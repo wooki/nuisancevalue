@@ -105,28 +105,19 @@ export default class PlayableShip extends Ship {
 
           let systemKey = systemKeys[i];
           // console.log(systemKey);
-          let efficiency = this.grid.getEfficiency(systems[systemKey]);
-          if (systemKey == 'SYS_SENSORS') {
-            updatedHullData['scanRanges'] = [hullData['scanRanges'][0], hullData['scanRanges'][1] * efficiency];
-          } else if (systemKey == 'SYS_ENGINE') {
-            updatedHullData['thrust'] = hullData['thrust'] * efficiency;
-          } else if (systemKey == 'SYS_MANEUVER') {
-            updatedHullData['maneuver'] = hullData['maneuver'] * efficiency;
-          } else if (systemKey == 'SYS_PDC') {
-            updatedHullData['pdc'] = Object.assign({}, hullData['pdc']);
-            updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;
-          }
-          // SYS_SENSORS: SYS_SENSORS,
-          // SYS_ENGINE: SYS_ENGINE,
-          // SYS_MANEUVER: SYS_MANEUVER,
-          // SYS_TORPS: SYS_TORPS,
-          // SYS_PDC: SYS_PDC,
-          // SYS_LIFE: SYS_LIFE,
-          // SYS_CONSOLES: SYS_CONSOLES,
-          // SYS_NAV: SYS_NAV,
-          // SYS_RELOAD: SYS_RELOAD,
-          // SYS_FUEL: SYS_FUEL
-          // check if connected and adjust hull data
+          if (this.grid) {
+            let efficiency = this.grid.getEfficiency(systems[systemKey]);
+            if (systemKey == 'SYS_SENSORS') {
+              updatedHullData['scanRanges'] = [hullData['scanRanges'][0], hullData['scanRanges'][1] * efficiency];
+            } else if (systemKey == 'SYS_ENGINE') {
+              updatedHullData['thrust'] = hullData['thrust'] * efficiency;
+            } else if (systemKey == 'SYS_MANEUVER') {
+              updatedHullData['maneuver'] = hullData['maneuver'] * efficiency;
+            } else if (systemKey == 'SYS_PDC') {
+              updatedHullData['pdc'] = Object.assign({}, hullData['pdc']);
+              updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;
+            }
+          }          
       }
 
       return Object.assign(hullData, updatedHullData);

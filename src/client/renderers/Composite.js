@@ -6,6 +6,7 @@ import KeyboardControls from './Utils/KeyboardControls.js';
 import Assets from './Utils/assets.js';
 import UiUtils from './Utils/UiUtils';
 import Ship from './../../common/Ship';
+import EmitOnOff from 'emitonoff';
 
 export default class CompositeRenderer {
 
@@ -25,7 +26,8 @@ export default class CompositeRenderer {
       }, config);
       this.subRenderers = this.stationConfig.subRenderers;
 
-      this.keyboardControls = new KeyboardControls(clientEngine);
+      this.emitonoff = EmitOnOff();
+      this.keyboardControls = new KeyboardControls(clientEngine, this);
       this.loadedSprites = false;
       this.resources = null;
       this.uiWidth = window.innerWidth;
@@ -97,6 +99,16 @@ export default class CompositeRenderer {
 
       // listen for explosion events
       gameEngine.emitonoff.on('explosion', this.addExplosion.bind(this));
+    }
+
+    playSound(name, action) {
+      this.emitonoff.emit('sound', name, action);
+    }
+    startSound(name) {
+      this.emitonoff.emit('startSound', name);
+    }
+    stopSound(name) {
+      this.emitonoff.emit('stopSound', name);
     }
 
     remove() {

@@ -537,6 +537,7 @@ export default class LocalMap {
       }
 
       if (obj) {
+        this.renderer.playSound('click');
         this.renderer.updateSharedState({
       		selection: obj
       	});

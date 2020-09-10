@@ -218,6 +218,7 @@ export default class DockingControl {
         key: 'start-dock',
         onclick: (event) => {
           event.preventDefault();
+          this.renderer.playSound('click');
           this.dockTarget.progress = 0;
           this.dockTarget.state = 1;
         }
@@ -228,6 +229,7 @@ export default class DockingControl {
         key: 'cancel-dock',
         onclick: (event) => {
           event.preventDefault();
+          this.renderer.playSound('click');
           this.dockTarget.progress = 0;
           this.dockTarget.state = 0;
         }
@@ -239,6 +241,7 @@ export default class DockingControl {
         key: 'undock',
         onclick: (event) => {
           event.preventDefault();
+          this.renderer.playSound('click');
           this.undock();
         }
       }, ['Launch']);

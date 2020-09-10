@@ -180,10 +180,11 @@ const keyCodeTable = {
  */
 class KeyboardControls {
 
-    constructor(clientEngine) {
+    constructor(clientEngine, renderer) {
 
         this.clientEngine = clientEngine;
         this.gameEngine = clientEngine.gameEngine;
+        this.renderer = renderer;
 
         this.setupListeners();
 
@@ -216,6 +217,9 @@ class KeyboardControls {
                             inputOptions.callback(this.boundKeys[keyName].actionName, inputOptions);
                         } else {
                             this.clientEngine.sendInput(this.boundKeys[keyName].actionName, inputOptions);
+                        }
+                        if (renderer && renderer.playSound && this.keyState[keyName].count == 0) {
+                          renderer.playSound('keyboard', this.boundKeys[keyName].actionName);
                         }
 
                         this.keyState[keyName].count++;

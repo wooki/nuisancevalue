@@ -133,6 +133,7 @@ export default class SelectedNavData {
         h("button", {
           key: "selectednav-action-focus",
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
           		focus: "player"
           	});
@@ -153,6 +154,7 @@ export default class SelectedNavData {
         targetButton = h("button", {
           key: "selectednav-action-target",
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.startSettingTarget(item.source)
           }
         }, [h("img", {
@@ -174,6 +176,7 @@ export default class SelectedNavData {
         h("button", {
           key: "selectednav-action-focus",
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.renderer.updateSharedState({
           		focus: item.source.id
           	});
@@ -186,6 +189,7 @@ export default class SelectedNavData {
         h("button", {
           key: "selectednav-action-wp",
           onclick: (event) => {
+            this.renderer.playSound('click');
             this.toggleInterceptWaypoint(item.source)
           }
         }, [h("img", {
@@ -201,6 +205,7 @@ export default class SelectedNavData {
           h("button", {
             key: "selectednav-action-orbit",
             onclick: (event) => {
+              this.renderer.playSound('click');
               this.toggleOrbitWaypoint(item.source)
             }
           }, [h("img", {
