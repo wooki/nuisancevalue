@@ -204,11 +204,21 @@ export default class PowerGrid {
 
     let currentState = this.grid.getConnector(row, col);
     if (currentState != 0) {
-      let newState = (currentState + 1) % 8;
+
+      let shiftKey = event.data.originalEvent.shiftKey;
+
+      let newState = currentState;
+
+      if (shiftKey) {
+        newState = (newState - 1);
+        if (newState == 0) newState = 7;
+      } else {
+        newState = (newState + 1) % 8;
       if (newState == 0) newState = 1;
+      }
 
       this.renderer.playSound('click');
-      
+
       if (this.renderer.client) {
         this.renderer.client.setPowerCell(row, col, newState);
       }

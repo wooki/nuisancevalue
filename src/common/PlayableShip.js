@@ -51,6 +51,7 @@ export default class PlayableShip extends Ship {
     }
 
     getActiveTubes() {
+        if (!this.grid) return 0;
         let hullData = this.getHullData();
         let systems = hullData.systems;
         let max = this.tubes.length;
@@ -60,30 +61,40 @@ export default class PlayableShip extends Ship {
     }
 
     getConsolesEfficiency() {
+      if (!this.grid) return 0;
+
       let hullData = this.getHullData();
       let systems = hullData.systems;
       return this.grid.getEfficiency(systems['SYS_CONSOLES']);
     }
 
     getNavComEfficiency() {
+      if (!this.grid) return 0;
+
       let hullData = this.getHullData();
       let systems = hullData.systems;
       return this.grid.getEfficiency(systems['SYS_NAV']);
     }
 
     getReloaderEfficiency() {
+      if (!this.grid) return 0;
+
       let hullData = this.getHullData();
       let systems = hullData.systems;
       return this.grid.getEfficiency(systems['SYS_RELOAD']);
     }
 
     getLifeSupportEfficiency() {
+      if (!this.grid) return 0;
+
       let hullData = this.getHullData();
       let systems = hullData.systems;
       return this.grid.getEfficiency(systems['SYS_LIFE']);
     }
 
     getFuelProductionEfficiency() {
+      if (!this.grid) return 0;
+
       let hullData = this.getHullData();
       let systems = hullData.systems;
       return this.grid.getEfficiency(systems['SYS_FUEL']);
@@ -93,6 +104,7 @@ export default class PlayableShip extends Ship {
 
       // start with standard hull data
       let hullData = Object.assign({}, this.getHullData());
+      if (!this.grid) return hullData;
 
       // adjust using systems power, gameEngine will
       // have unpacked power into this.grid before anything else
@@ -105,19 +117,18 @@ export default class PlayableShip extends Ship {
 
           let systemKey = systemKeys[i];
           // console.log(systemKey);
-          if (this.grid) {
-            let efficiency = this.grid.getEfficiency(systems[systemKey]);
-            if (systemKey == 'SYS_SENSORS') {
-              updatedHullData['scanRanges'] = [hullData['scanRanges'][0], hullData['scanRanges'][1] * efficiency];
-            } else if (systemKey == 'SYS_ENGINE') {
-              updatedHullData['thrust'] = hullData['thrust'] * efficiency;
-            } else if (systemKey == 'SYS_MANEUVER') {
-              updatedHullData['maneuver'] = hullData['maneuver'] * efficiency;
-            } else if (systemKey == 'SYS_PDC') {
-              updatedHullData['pdc'] = Object.assign({}, hullData['pdc']);
-              updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;
-            }
-          }          
+
+          let efficiency = this.grid.getEfficiency(systems[systemKey]);
+          if (systemKey == 'SYS_SENSORS') {
+            updatedHullData['scanRanges'] = [hullData['scanRanges'][0], hullData['scanRanges'][1] * efficiency];
+          } else if (systemKey == 'SYS_ENGINE') {
+            updatedHullData['thrust'] = hullData['thrust'] * efficiency;
+          } else if (systemKey == 'SYS_MANEUVER') {
+            updatedHullData['maneuver'] = hullData['maneuver'] * efficiency;
+          } else if (systemKey == 'SYS_PDC') {
+            updatedHullData['pdc'] = Object.assign({}, hullData['pdc']);
+            updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;
+          }
       }
 
       return Object.assign(hullData, updatedHullData);
