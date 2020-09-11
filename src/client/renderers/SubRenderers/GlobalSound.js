@@ -159,11 +159,6 @@ export default class GlobalSound {
     let hullData = playerShip.getPowerAdjustedHullData();
 
     // set the listener position
-    if (isNaN(playerShip.physicsObj.position[0])) {
-      console.log("a:"+playerShip.physicsObj.position[0]);
-      console.log("NaN");
-      console.dir(playerShip);
-    }
     let x = Math.round(playerShip.physicsObj.position[0] * this.parameters.spatialScale);
     let y = Math.round(playerShip.physicsObj.position[1] * this.parameters.spatialScale);
     let z = 0;

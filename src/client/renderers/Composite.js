@@ -282,6 +282,18 @@ export default class CompositeRenderer {
 
           if (playerShip) {
 
+            if (isNaN(playerShip.physicsObj.position[0])) {
+              console.log("ERROR: playerShip position is NaN");
+              console.dir(playerShip);
+              console.dir(this.game.world.objects);
+            } else if (this.isDocked) {
+              if (isNaN(this.isDocked.physicsObj.position[0])) {
+                console.log("ERROR: isDocked position is NaN");
+                console.dir(playerShip);
+                console.dir(this.game.world.objects);
+              }
+            }
+
             // keep track of our ship
             this.updatePlayerShip(playerShip, this.isDocked, false, dt);
 
