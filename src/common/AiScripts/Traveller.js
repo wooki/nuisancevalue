@@ -1,13 +1,14 @@
 import Victor from 'victor';
 import Utils from '../Utils/Utils';
 import SolarObjects from '../SolarObjects';
+import BaseShip from './BaseShip';
 
 // leaves orbit, travels then enter orbit at destination
-export default class Traveller {
+export default class Traveller extends BaseShip {
 
 	// check what phase we want to be in
 	plan(ship, mission, game) {
-
+		
 		// default to stabilise orbit
 		if (!ship.aiPlan) {
 			ship.aiPlan = 1;
@@ -59,8 +60,8 @@ export default class Traveller {
 						ship.orbitTime = 60 + (Math.random()*180); // count time to hang around
 
 						// upon arrival see what mission thinks we should do (if there is one)
-						if (mission && mission.aiTravellerArrival) {
-							mission.aiTravellerArrival(ship);
+						if (mission && mission.event) {
+							mission.event("AI.Traveller", {ship: ship} );
 						}
 					}
 				}
@@ -269,6 +270,7 @@ export default class Traveller {
 	}
 
 	execute(ship, game) {
+		super.execute(ship, game);
 
 		// travelSpeed depends on hull
 		let hullData = ship.getHullData();

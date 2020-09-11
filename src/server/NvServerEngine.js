@@ -56,6 +56,20 @@ export default class NvServerEngine extends ServerEngine {
           }
         });
 
+        this.gameEngine.on('scanned', e => {
+            // alert mission to this
+            if (this.mission && this.mission.event) {
+              this.mission.event("scanned", {scanned: e.scanned, scanner: e.scanner});
+            }
+        });
+
+        this.gameEngine.on('sensed', e => {
+            // alert mission to this
+            if (this.mission && this.mission.event) {
+              this.mission.event("sensed", {sensed: e.sensed, senser: e.senser});
+            }
+        });
+
         this.gameEngine.on('load-mission', e => {
           let missionId = e.missionId;
           if (missionId >= 0 && missionId < this.missions.length) {

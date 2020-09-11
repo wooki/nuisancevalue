@@ -193,9 +193,27 @@ export default class SolarSystem extends Mission {
       this.addTimedEvent(15, callNuisanceValue);
   }
 
-  step(seconds) {
-    super.step(seconds);
+  // step(seconds) {
+  //   super.step(seconds);
+  //
+  // }
 
+  // scanned(scanned, scannedBy) {
+  //   super.scanned(scanned, scannedBy);
+  //
+  // }
+  //
+  // sensed(sensed, sensedBy) {
+  //   super.sensed(sensed, sensedBy);
+  //
+  // }
+
+  event(name, data) {
+    super.event(name, data);
+
+    if (name == "AI.Traveller") {
+      this.aiTravellerArrival(data.ship);
+    }
   }
 
   // a ship with  traveller ai script has arrived - we can decide what

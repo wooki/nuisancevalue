@@ -412,17 +412,29 @@ export default class NvGameEngine extends GameEngine {
 
           B.scannedBy(A.faction);
 
+          // server-only event to notify mission script of scan
+          this.emit('scanned', { scanned: B, scanner: A });
+
         } else if (typeB == 'VisualScan') {
 
           A.scannedBy(B.faction);
+
+          // server-only event to notify mission script of scan
+          this.emit('scanned', { scanned: A, scanner: B });
 
         } else if (typeA == 'Sensor') {
 
           B.sensedBy(A.faction);
 
+          // server-only event to notify mission script of sensed
+          this.emit('sensed', { sensed: B, senser: A });
+
         } else if (typeB == 'Sensor') {
 
           A.sensedBy(B.faction);
+
+          // server-only event to notify mission script of sensed
+          this.emit('sensed', { sensed: A, senser: B });
 
         } else if (A instanceof PDC && !(B instanceof PDC)) {
           // PDC hit must be managed by the server because there is a % changce

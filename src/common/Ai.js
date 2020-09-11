@@ -35,4 +35,26 @@ export default class Ai {
 			}
 		}
 
+		scanned(ship, target, mission) {
+
+			// load the AI script for that ship
+			if (ship.aiScript) {
+				let script = scripts[ship.aiScript];
+				if (script && script.scanned) {
+					script.scanned(ship, target, mission, game);
+				}
+			}
+		}
+
+		sensed(ship, target, mission) {
+
+			// load the AI script for that ship
+			if (ship.aiScript) {
+				let script = scripts[ship.aiScript];
+				if (script && script.sensed) {
+					script.sensed(ship, target, mission, game);
+				}
+			}
+		}
+
 }
