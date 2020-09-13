@@ -1,5 +1,18 @@
 import TorpedoAi from './AiScripts/Torpedo';
+
+// AI Ships - which can switch between themselves as well
+
+// travel from one orbit to another then notify mission script on arrival
 import Traveller from './AiScripts/Traveller';
+
+// move to orbit the same object as an object and close with them
+// that works for attack/guard and escort
+// TODO: import Hunter from './AiScripts/Hunter';
+
+// possible suggestions
+// fighter, move differently in combat?
+// dock, move, dock (docking will be hard!)
+// one that will run away from a target
 
 // ai scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here

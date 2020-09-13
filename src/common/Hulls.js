@@ -29,7 +29,10 @@ export default {
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [3000, 20, 20],
 		defaultWeaponStock: [1000, 12, 6],
-		scanRanges: [6000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		scanRanges: [6000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		ai: { // variables for the AI to behave diferently by hull
+			refuel: 0.5,
+		}
 	},
 
 	"tug": {
@@ -48,7 +51,10 @@ export default {
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [0, 10, 10],
 		defaultWeaponStock: [0, 10, 10],
-		scanRanges: [6000, 60000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		scanRanges: [6000, 60000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		ai: { // variables for the AI to behave diferently by hull
+			refuel: 0.5,
+		}
 	},
 
 	"torpedo": {
@@ -107,7 +113,10 @@ export default {
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [3000, 20, 20],
 		defaultWeaponStock: [1000, 12, 6],
-		scanRanges: [6000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		scanRanges: [6000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		ai: { // variables for the AI to behave diferently by hull
+			refuel: 0.5,
+		}
 	},
 
 	"blockade-runner": {
@@ -131,7 +140,10 @@ export default {
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [2000, 12, 12],
 		defaultWeaponStock: [1000, 8, 4],
-		scanRanges: [5000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		scanRanges: [5000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		ai: { // variables for the AI to behave diferently by hull
+			refuel: 0.5,
+		}
 	},
 
 	"station": {
@@ -146,6 +158,9 @@ export default {
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		fuel: 10000,
 		dockable: true,
-		scanRanges: [10000, 100000] // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		scanRanges: [10000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		ai: { // variables for the AI to behave diferently by hull
+			refuel: 0,
+		}
 	}
 }

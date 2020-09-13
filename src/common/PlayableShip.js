@@ -127,7 +127,9 @@ export default class PlayableShip extends Ship {
             updatedHullData['maneuver'] = hullData['maneuver'] * efficiency;
           } else if (systemKey == 'SYS_PDC') {
             updatedHullData['pdc'] = Object.assign({}, hullData['pdc']);
-            updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;
+            if (hullData['pdc']) {
+              updatedHullData['pdc']['rotationRate'] = hullData['pdc']['rotationRate'] * efficiency;
+            }
           }
       }
 

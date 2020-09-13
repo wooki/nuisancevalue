@@ -65,9 +65,9 @@ export default class SolarSystem extends Mission {
 
       for (let i = 0; i < 9; i++) {
         let hullName2 = 'bushido';
-        // if (i % 2 == 0) hullName2 = 'blockade-runner';
-        // if (i > 5) hullName2 = 'spacebug';
-        // if (i > 6 && i % 2 == 0) hullName2 = 'tug';
+        if (i % 2 == 0) hullName2 = 'blockade-runner';
+        if (i > 5) hullName2 = 'spacebug';
+        if (i > 6 && i % 2 == 0) hullName2 = 'tug';
         let hullData2 = Hulls[hullName2];
         let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 4000;
         let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
@@ -221,6 +221,7 @@ export default class SolarSystem extends Mission {
   aiTravellerArrival(ship) {
 
     console.log("aiTravellerArrival "+ship.name);
+
     // pick a new planet to travel to, after a delay
     let currentPlanet = ship.targetId;
     while (currentPlanet == ship.targetId) {

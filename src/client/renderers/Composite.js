@@ -282,73 +282,68 @@ export default class CompositeRenderer {
 
           if (playerShip) {
 
-            if (isNaN(playerShip.physicsObj.position[0])) {
-              console.log("ERROR: playerShip position is NaN");
+            if (isNaN(actualPlayerShip.physicsObj.position[0])) {
+              console.log("ERROR: actualPlayerShip position is NaN");
               console.dir(playerShip);
               console.dir(this.game.world.objects);
-            } else if (this.isDocked) {
-              if (isNaN(this.isDocked.physicsObj.position[0])) {
-                console.log("ERROR: isDocked position is NaN");
-                console.dir(playerShip);
-                console.dir(this.game.world.objects);
-              }
-            }
+            } else {
 
-            // keep track of our ship
-            this.updatePlayerShip(playerShip, this.isDocked, false, dt);
+              // keep track of our ship
+              this.updatePlayerShip(playerShip, this.isDocked, false, dt);
 
-            // keep track so we know when something is gone
-            let allObjects = {};
-            let sensedObjects = {};
+              // keep track so we know when something is gone
+              let allObjects = {};
+              let sensedObjects = {};
 
-            // player has been excluded from this list already
-            gameObjects.forEach((obj) => {
+              // player has been excluded from this list already
+              gameObjects.forEach((obj) => {
 
-              // some stations require every object
-              this.everyObject(obj, this);
-              allObjects[obj.id] = true;
+                // some stations require every object
+                this.everyObject(obj, this);
+                allObjects[obj.id] = true;
 
-              // check if we have sensed (for types that need to be)
-              let sensed = false;
-              if (!obj.isSensedBy) {
-                sensed = true; // objects that don't have this are always visible (ie planets and PDCs)
-              } else if (obj.sensedBy && obj.isSensedBy(actualPlayerShip.faction)) {
-                sensed = true;
-              }
-
-              // check we have scanned (of possible)
-              let scanned = false;
-              if (obj.isScannedBy) {
-                scanned = obj.isScannedBy(actualPlayerShip.faction);
-              }
-
-              // show sensed or scanned objects only
-              if (sensed || scanned) {
-                // is this a new, or existing object?
-                if (this.serverObjects[obj.id]) {
-                  this.updateObject(obj);
-                } else {
-                  this.serverObjects[obj.id] = true;
-                  this.addObject(obj);
+                // check if we have sensed (for types that need to be)
+                let sensed = false;
+                if (!obj.isSensedBy) {
+                  sensed = true; // objects that don't have this are always visible (ie planets and PDCs)
+                } else if (obj.sensedBy && obj.isSensedBy(actualPlayerShip.faction)) {
+                  sensed = true;
                 }
 
-                // remember we had this one
-                sensedObjects[obj.id] = true;
-              }
-            });
+                // check we have scanned (of possible)
+                let scanned = false;
+                if (obj.isScannedBy) {
+                  scanned = obj.isScannedBy(actualPlayerShip.faction);
+                }
+
+                // show sensed or scanned objects only
+                if (sensed || scanned) {
+                  // is this a new, or existing object?
+                  if (this.serverObjects[obj.id]) {
+                    this.updateObject(obj);
+                  } else {
+                    this.serverObjects[obj.id] = true;
+                    this.addObject(obj);
+                  }
+
+                  // remember we had this one
+                  sensedObjects[obj.id] = true;
+                }
+              });
 
 
-            // remove any objects that we no-longer have
-            Object.keys(this.serverObjects).forEach((key) => {
-              if (!sensedObjects[key]) {
-                  delete this.serverObjects[key];
-                  this.removeObject(key);
-              }
-              if (!allObjects[key]) {
-                  // delete this.serverObjects[key];
-                  this.everyRemoveObject(key);
-              }
-            });
+              // remove any objects that we no-longer have
+              Object.keys(this.serverObjects).forEach((key) => {
+                if (!sensedObjects[key]) {
+                    delete this.serverObjects[key];
+                    this.removeObject(key);
+                }
+                if (!allObjects[key]) {
+                    // delete this.serverObjects[key];
+                    this.everyRemoveObject(key);
+                }
+              });
+            } // position isNaN
 
           } else {
             // must have been destroyed, keep original ship but flag as such

@@ -51,8 +51,6 @@ export default class Mission {
 
   event(name, data) {
 
-    console.log("event:"+name);
-    // console.dir(data);
     // process some standard events
     if (name == "scanned") {
       this.scanned(data.scanned, data.scanner);

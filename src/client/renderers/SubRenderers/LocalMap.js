@@ -303,6 +303,9 @@ export default class LocalMap {
 
         if (isScanned) {
 
+          // always un-blur
+          sprite.filters = [];
+
           // maybe only highlight enemy ships??
           if (obj.faction && obj.isFriend) {
             if (obj.isFriend(actualPlayerShip.faction)) {
@@ -315,7 +318,6 @@ export default class LocalMap {
               // hullSprite.filters = [ this.parameters.effects.neutralFilter];
               hullSprite.filters = [];
             }
-            sprite.filters = [];
 
             // TODO: replace with color replace filter so we can have multi-color ships
             let tint = this.factions.getFaction(obj.faction).color;
