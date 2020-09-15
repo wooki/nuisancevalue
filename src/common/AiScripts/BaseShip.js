@@ -64,7 +64,6 @@ export default class BaseShip {
 							if (target.isHostile && target.isHostile(ship.faction)) {
 
 								let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(target.physicsObj.position));
-
 								if (range <= hullData.ai.torpedo.range) {
 
 									// fire !
@@ -115,7 +114,8 @@ export default class BaseShip {
 						// only scan ourselves if not already scanned and within range
 						let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(ship.aiScanTargets[i].physicsObj.position));
 						if (hullData.ai && hullData.ai.scan && range <= hullData.scanRanges[1]) {
-							scanned = (Math.random() < hullData.ai.scan);
+							let rnd = Math.random();
+							scanned = (rnd < hullData.ai.scan);
 						} else {
 							// out of range so stop looking for scan
 							removeTargets.push(i);

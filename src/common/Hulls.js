@@ -32,7 +32,7 @@ export default {
 		scanRanges: [6000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5, // amount of fuel to add every step
-			scan: 0.05, // chance to scan a ship in range every plan (1/s)
+			scan: 0.15, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 100000, // range to fire at
 				reload: 14, // ms
@@ -60,48 +60,13 @@ export default {
 		scanRanges: [6000, 60000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5,
-			scan: 0.025, // chance to scan a ship in range every plan (1/s)
+			scan: 0.7, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 60000, // range to fire at
 				reload: 14, // ms
 				volley: 1 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
-	},
-
-	"torpedo": {
-		name: 'Torpedo',
-		image: 'assets/torpedo.png',
-		size: 30, // used for height (artificially big so they show up!!)
-		width: 0.1875, // ratio to height
-		mass: 0.0001,
-		thrust: 2,
-		enginePositions: [[2, 0.5, 1.0]],// [scale, %x, %y] // also artificially big
-		exhaustImage: 'exhaustflame', // or exhaust
-		damage: 0, // has no systems to damage (although should never get checked)
-		fuel: 100,
-		payload: 600, // equivalent acceleration for damage
-		maxClosing: 800,
-		scanRanges: [0, 10000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
-		types: [ // allow different torps to override any of these - image, size, exhaust
-      {
-        fuel: 100,
-        payload: 600,
-        thrust: 2,
-        maxClosing: 800,
-        name: "Type I",
-				desc: "Standard and reliable"
-      },
-      {
-        fuel: 80,
-        payload: 1000,
-        thrust: 3,
-        maxClosing: 1400,
-				name: "Type II",
-				desc: "Fast and powerful, but erratic",
-				exhaustImage: 'exhaust' // or exhaust
-      }
-		]
 	},
 
 	"bushido": {
@@ -128,7 +93,7 @@ export default {
 		scanRanges: [6000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5,
-			scan: 0.025, // chance to scan a ship in range every plan (1/s)
+			scan: 0.16, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 120000, // range to fire at
 				reload: 7, // ms
@@ -161,7 +126,7 @@ export default {
 		scanRanges: [5000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5,
-			scan: 0.05, // chance to scan a ship in range every plan (1/s)
+			scan: 0.17, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 120000, // range to fire at
 				reload: 12, // ms
@@ -187,5 +152,40 @@ export default {
 			refuel: 0,
 			scan: 0.05 // chance to scan a ship in range every plan (1/s)
 		}
-	}
+	},
+
+	"torpedo": {
+		name: 'Torpedo',
+		image: 'assets/torpedo.png',
+		size: 30, // used for height (artificially big so they show up!!)
+		width: 0.1875, // ratio to height
+		mass: 0.0001,
+		thrust: 1.5,
+		enginePositions: [[2, 0.5, 1.0]],// [scale, %x, %y] // also artificially big
+		exhaustImage: 'exhaustflame', // or exhaust
+		damage: 0, // has no systems to damage (although should never get checked)
+		fuel: 100,
+		payload: 600, // equivalent acceleration for damage
+		maxClosing: 800,
+		scanRanges: [0, 10000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		types: [ // allow different torps to override any of these - image, size, exhaust
+      {
+        fuel: 100,
+        payload: 600,
+        thrust: 2,
+        maxClosing: 600,
+        name: "Type I",
+				desc: "Standard and reliable"
+      },
+      {
+        fuel: 80,
+        payload: 1000,
+        thrust: 2.2,
+        maxClosing: 1000,
+				name: "Type II",
+				desc: "Fast and powerful, but erratic",
+				exhaustImage: 'exhaust' // or exhaust
+      }
+		]
+	},
 }

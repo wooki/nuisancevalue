@@ -121,13 +121,17 @@ export default class TorpedoAi {
 				torpedo.physicsObj.angularVelocity = torpedo.physicsObj.angularVelocity + (bearingChange);
 
 				// continue to fire engine if angle not too great
-				if (Math.abs(bearingDiffDeg) < 1) {
+				if (Math.abs(bearingDiffDeg) < 0.5) {
 					if (closing < torpTopSpeed) {
-						torpedo.engine = 0.66;
+						torpedo.engine = 1;
+					}
+				} else if (Math.abs(bearingDiffDeg) < 1) {
+					if (closing < torpTopSpeed) {
+						torpedo.engine = 0.5;
 					}
 				} else if (Math.abs(bearingDiffDeg) < 3) {
 					if (closing < torpTopSpeed) {
-						torpedo.engine = 0.33;
+						torpedo.engine = 0.25;
 					}
 				} else if (closing < 0 && Math.abs(currentBearingDiffDeg) < 90) {
 					torpedo.engine = 1;
