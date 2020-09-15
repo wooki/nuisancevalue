@@ -10,6 +10,10 @@ const TRAVELLER_PLAN_TRAVEL = 3;
 // leaves orbit, travels then enter orbit at destination
 export default class Traveller extends BaseShip {
 
+	constructor() {
+		super();
+	}
+
 	// check what phase we want to be in
 	plan(ship, mission, game) {
 		super.plan(ship, mission, game);

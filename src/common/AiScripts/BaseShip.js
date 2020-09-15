@@ -11,15 +11,22 @@ export default class BaseShip {
 	// start checking for enemy ship in range and firing
 	scanned(ship, target, mission, game) {
 		// console.log("TODO: BaseShip scanned");
+
+		if (!ship.aiTargets) ship.aiTargets = [];
+		ship.aiTargets.push(target);
 	}
 
 	// start attempting a scan
 	sensed(ship, target, mission, game) {
 		// console.log("TODO: BaseShip sensed");
+
+		// log this ship as a potential to scan
+		if (!ship.aiScanTargets) ship.aiScanTargets = [];
+		ship.aiScanTargets.push(target);
 	}
 
-	// better place to scan from as less frequent
-	// should be every 1s
+	// better place to scan/fire from as less frequent
+	// should be every 1s - plus server only
 	plan(ship, mission, game) {
 	}
 
