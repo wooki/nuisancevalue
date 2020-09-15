@@ -7,7 +7,7 @@ import Traveller from './AiScripts/Traveller';
 
 // move to orbit the same object as an object and close with them
 // that works for attack/guard and escort
-// TODO: import Hunter from './AiScripts/Hunter';
+import Hunter from './AiScripts/Hunter';
 
 // possible suggestions
 // fighter, move differently in combat?
@@ -16,7 +16,11 @@ import Traveller from './AiScripts/Traveller';
 
 // ai scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [null, new TorpedoAi(), new Traveller()];
+const scripts = [null,
+								 new TorpedoAi(),
+								 new Traveller(),
+								 new Hunter()
+							 ];
 
 let game = null;
 

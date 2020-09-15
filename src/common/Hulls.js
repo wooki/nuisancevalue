@@ -166,22 +166,22 @@ export default {
 		damage: 0, // has no systems to damage (although should never get checked)
 		fuel: 100,
 		payload: 600, // equivalent acceleration for damage
-		maxClosing: 800,
+		maxClosing: 400,
 		scanRanges: [0, 10000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		types: [ // allow different torps to override any of these - image, size, exhaust
       {
         fuel: 100,
         payload: 600,
-        thrust: 2,
-        maxClosing: 600,
+        thrust: 1.6,
+        maxClosing: 400,
         name: "Type I",
 				desc: "Standard and reliable"
       },
       {
         fuel: 80,
         payload: 1000,
-        thrust: 2.2,
-        maxClosing: 1000,
+        thrust: 2.5,
+        maxClosing: 800,
 				name: "Type II",
 				desc: "Fast and powerful, but erratic",
 				exhaustImage: 'exhaust' // or exhaust

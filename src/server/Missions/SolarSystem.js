@@ -88,9 +88,11 @@ export default class SolarSystem extends Mission {
             angle: Math.PI,
             playable: 1,
             faction: this.factions.russianWar,
-            aiScript: 2, // Traveller
+            // aiScript: 2, // Traveller
+            aiScript: 3, // Hunter
             // targetId: i+1//planets.Earth.id
-            targetId: planets.Earth.id
+            // targetId: planets.Earth.id
+            targetId: nv.id            
         });
       }
 

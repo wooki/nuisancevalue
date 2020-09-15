@@ -1,0 +1,131 @@
+import Victor from 'victor';
+import Utils from '../Utils/Utils';
+import SolarObjects from '../SolarObjects';
+import BaseShip from './BaseShip';
+
+const HUNTER_PLAN_ORBIT = 1;
+const HUNTER_PLAN_LEAVE = 2;
+const HUNTER_PLAN_TRAVEL = 3;
+
+// when not in orbit around same gravity body as target moves to that orbit
+// if target has no gravity then just move towards target
+export default class Hunter extends BaseShip {
+
+	constructor() {
+		super();
+	}
+
+	// check what phase we want to be in
+	plan(ship, mission, game) {
+		super.plan(ship, mission, game);
+
+		// default to stabilise orbit
+		if (!ship.aiPlan) {
+			ship.aiPlan = HUNTER_PLAN_ORBIT;
+		}
+
+		// in stable orbit - if we have a target that has a gravity source other than ours
+		// then leave orbit
+		if (ship.aiPlan == HUNTER_PLAN_ORBIT) {
+			if (ship.targetId > -1) {
+
+				// if we haven't got a gravity source just TRAVEL
+				// otherwise LEAVE
+				if (!ship.gravityData) {
+					ship.aiPlan = HUNTER_PLAN_TRAVEL;
+				} else {
+
+					ship.aiPlan = HUNTER_PLAN_LEAVE;
+				}
+			}
+		}
+
+		// leaving orbit
+		if (ship.aiPlan == HUNTER_PLAN_LEAVE) {
+
+			let ourPos = Victor.fromArray(ship.physicsObj.position);
+			if (ship.gravityData) {
+				let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
+
+				if (gravVector.magnitude() > 10000) {
+					ship.aiPlan = HUNTER_PLAN_TRAVEL; // travel to destination
+				}
+			}
+
+		} // plan leave
+
+		// in travel
+		if (ship.aiPlan == HUNTER_PLAN_TRAVEL) {
+
+			// start to orbit once some distance away from target
+			if (ship.targetId > -1) {
+
+				let target = game.world.objects[ship.targetId];
+				if (target && target.gravityData) {
+					target = game.world.objects[target.gravityData.id];
+				}
+
+				let ourPos = Victor.fromArray(ship.physicsObj.position);
+				// let target = game.world.queryObject({ id: parseInt(ship.targetId) });
+				if (target && target.physicsObj) {
+					let targetPos = Victor.fromArray(target.physicsObj.position);
+					let distance = ourPos.clone().subtract(targetPos);
+
+					// allow faster ships to transition to orbit later
+					let hullData = ship.getHullData();
+					const enterOrbitDistance = 20000 - (500 * (hullData.thrust / hullData.mass));
+
+					if (distance.magnitude() < (enterOrbitDistance + target.size)) {
+						ship.aiPlan = HUNTER_PLAN_ORBIT; // enter orbit
+					}
+				}
+			}
+		}
+
+	}
+
+
+	execute(ship, game) {
+		super.execute(ship, game);
+
+		// travelSpeed depends on hull
+		let hullData = ship.getHullData();
+
+		const favOrbitDistance = 4000;
+		const favTravelSpeed = 250 * (hullData.thrust / hullData.mass);
+
+		// process depending on our plan
+		if (ship.aiPlan == HUNTER_PLAN_LEAVE) {
+
+			if (ship.gravityData && ship.gravityData.direction) {
+
+				let target = game.world.objects[ship.targetId];
+				if (target && target.gravityData) {
+					target = game.world.objects[target.gravityData.id];
+				}
+				this.leaveOrbit(ship, target, favTravelSpeed, game);
+
+			} else {
+				// no gravity to start to travel
+				ship.aiPlan = HUNTER_PLAN_TRAVEL;
+			}
+
+
+		} else if (ship.aiPlan == HUNTER_PLAN_TRAVEL) {
+
+			if (ship.targetId > -1) {
+				let target = game.world.objects[ship.targetId];
+				if (target && target.gravityData) {
+					target = game.world.objects[target.gravityData.id];
+				}
+				this.travel(ship, target, favTravelSpeed, game);
+			}
+
+		} else { // plan 1 (or unknown)
+			// default plan is to stabilise orbit
+			this.stabiliseOrbit(ship, favOrbitDistance, game);
+		}
+
+	}
+
+};
