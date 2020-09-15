@@ -33,7 +33,8 @@ export default class LocalMapPaths {
         heading: 0x00FF00,
         // waypoint: 0xFFFF00,
         target: 0x00FFFF,
-        other: 0xCCCCCC
+        other: 0xCCCCCC,
+        torp: 0x999999
       }
     }, params);
 
@@ -186,8 +187,13 @@ export default class LocalMapPaths {
               predictedPath = this.makeRelativePath(predictedPath, this.predictedPaths.gravity.path);
           }
 
+          let color = this.parameters.colors.other;
+          if (obj instanceof Torpedo) {
+            color = this.parameters.colors.torp;
+          }
+
           this.predictedPaths['object'+obj.id] = {
-            color: this.parameters.colors.other,
+            color: color,
             points: this.relativeScreenCoords(predictedPath)
           };
         } else {
