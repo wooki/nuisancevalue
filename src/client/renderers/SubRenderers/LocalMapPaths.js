@@ -34,7 +34,7 @@ export default class LocalMapPaths {
         // waypoint: 0xFFFF00,
         target: 0x00FFFF,
         other: 0xCCCCCC,
-        torp: 0x999999
+        torp: 0x222222
       }
     }, params);
 

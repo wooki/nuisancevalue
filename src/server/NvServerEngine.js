@@ -232,7 +232,7 @@ export default class NvServerEngine extends ServerEngine {
             // e.ship
 
             // add ship back into game
-            if (e.ship.dockedId != null && e.ship.dockedId >= 0) {
+            if (e.ship && e.ship.dockedId != null && e.ship.dockedId >= 0) {
 
               let mothership = this.gameEngine.world.objects[e.ship.dockedId];
               if (mothership) {
@@ -246,9 +246,9 @@ export default class NvServerEngine extends ServerEngine {
         });
 
         this.gameEngine.on('settarget', e => {
-            if (e.ship.dockedId >= 0) {
+            if (e.ship && e.ship.dockedId >= 0) {
               e.ship.targetId = e.ship.dockedId;
-            } else {
+            } else if (e.ship) {
               e.ship.targetId = e.targetId;
             }
         });

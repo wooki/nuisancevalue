@@ -1,6 +1,8 @@
 import Victor from 'victor';
 import Utils from '../Utils/Utils';
 import SolarObjects from '../SolarObjects';
+import Ship from '../Ship';
+import Torpedo from '../Torpedo';
 
 // useful baseclass for ships - manages scanning, sensed objects and firing on
 // enemies if armed..
@@ -13,7 +15,9 @@ export default class BaseShip {
 		// console.log("TODO: BaseShip scanned");
 
 		if (!ship.aiTargets) ship.aiTargets = [];
-		ship.aiTargets.push(target);
+		if (target instanceof Ship) {
+			ship.aiTargets.push(target);
+		}
 	}
 
 	// start attempting a scan
@@ -28,6 +32,112 @@ export default class BaseShip {
 	// better place to scan/fire from as less frequent
 	// should be every 1s - plus server only
 	plan(ship, mission, game) {
+
+		this.scanTargets(ship, mission, game);
+		this.fireAtTargets(ship, mission, game);
+	}
+
+	fireAtTargets(ship, mission, game) {
+
+		// update the AI torpedo reload - if present
+		if (ship.aiTorpReload && ship.aiTorpReload > 0) {
+			ship.aiTorpReload = ship.aiTorpReload - 1;
+		}
+
+		// check if any ships we have scanned are in weapons range and we're ready to fire
+		if (ship.aiTargets) {
+			for (let i = 0; i < ship.aiTargets.length; i++) {
+
+				let target = ship.aiTargets[i];
+				let hullData = ship.getHullData();
+
+				// check if we can fire torps
+				if (hullData.ai && hullData.ai.torpedo) {
+
+					// are we not reloading
+					if (!ship.aiTorpReload || ship.aiTorpReload <= 0) {
+
+						// also check we haven't fired all of the volley
+						if (!ship.aiTorpVolley || ship.aiTorpVolley < hullData.ai.torpedo.volley) {
+
+							// check if enemy
+							if (target.isHostile && target.isHostile(ship.faction)) {
+
+								let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(target.physicsObj.position));
+
+								if (range <= hullData.ai.torpedo.range) {
+
+									// fire !
+									if (!ship.aiTorpVolley) ship.aiTorpVolley = 0;
+									let tube = ship.aiTorpVolley;
+									ship.aiTorpVolley = ship.aiTorpVolley + 1;
+									if (ship.aiTorpVolley >= hullData.ai.torpedo.volley) {
+										// start reload (but actually set what is in the tubes now)
+										ship.aiTorpReload = hullData.ai.torpedo.reload;
+										ship.aiTorpVolley = 0;
+
+										for (let t = 0; t < ship.tubes; t++) {
+											ship.loadTorp(t, 1);
+										}
+									}
+
+									// actually fire
+									game.emit('firetorp', { ship: ship, targetId: target.id, tube: tube });
+
+								} // not in range
+
+							}	// not hostile
+						} // volley fired
+					} // not reloading
+				} // no weapon ai
+
+			} // every target
+		} // has targets
+	}
+
+	scanTargets(ship, mission, game) {
+		// check for aiScanTargets and dependent on hull ai data
+		// give chance to scan
+		if (ship.aiScanTargets) {
+			let removeTargets = [];
+			for (let i = 0; i < ship.aiScanTargets.length; i++) {
+
+				if (ship.aiScanTargets[i] && ship.aiScanTargets[i].scannedBy) {
+
+					let hullData = ship.getHullData();
+
+					// has our faction already scanned?
+					let scanned = ship.aiScanTargets[i].isScannedBy(ship.faction);
+
+					// can we scan?
+					if (!scanned && hullData.ai && hullData.ai.scan) {
+
+						// only scan ourselves if not already scanned and within range
+						let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(ship.aiScanTargets[i].physicsObj.position));
+						if (hullData.ai && hullData.ai.scan && range <= hullData.scanRanges[1]) {
+							scanned = (Math.random() < hullData.ai.scan);
+						} else {
+							// out of range so stop looking for scan
+							removeTargets.push(i);
+						}
+					}
+
+					// if faction has already scanned, or our scanners scan - then scan
+					// as if just scanned, so AI can then start to target or mission
+					// can trigger other events etc.
+					if (scanned) {
+						ship.aiScanTargets[i].scannedBy(ship.faction);
+						this.scanned(ship, ship.aiScanTargets[i], mission, game);
+						removeTargets.push(i);
+					}
+				}
+			}
+			if (removeTargets.length > 0) {
+				ship.aiScanTargets = ship.aiScanTargets.filter(function(t, i) {
+					return !removeTargets.includes(i);
+				});
+			}
+		}
 	}
 
 	// check for scanned enemies and possibly fire

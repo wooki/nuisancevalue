@@ -297,6 +297,12 @@ export default class NvGameEngine extends GameEngine {
                                     let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
                                     let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
 
+                                    if (d == 0) {
+                                      console.log("Zero distance to gravity source - potential bug!");
+                                    }
+                                    if (g == Infinity) {
+                                      console.log("Infinite gravity - potential bug!");
+                                    }
                                     if (gravSourceAmount === null || gravSourceAmount < g) {
                                         gravDistance = d;
                                         gravSourceAmount = g;

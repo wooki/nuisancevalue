@@ -31,7 +31,13 @@ export default {
 		defaultWeaponStock: [1000, 12, 6],
 		scanRanges: [6000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
-			refuel: 0.5,
+			refuel: 0.5, // amount of fuel to add every step
+			scan: 0.05, // chance to scan a ship in range every plan (1/s)
+			torpedo: {
+				range: 100000, // range to fire at
+				reload: 14, // ms
+				volley: 2 // fire 2 of the 4 tubes, hence reload is half
+			}
 		}
 	},
 
@@ -54,6 +60,12 @@ export default {
 		scanRanges: [6000, 60000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5,
+			scan: 0.025, // chance to scan a ship in range every plan (1/s)
+			torpedo: {
+				range: 60000, // range to fire at
+				reload: 14, // ms
+				volley: 1 // fire 2 of the 4 tubes, hence reload is half
+			}
 		}
 	},
 
@@ -116,6 +128,12 @@ export default {
 		scanRanges: [6000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5,
+			scan: 0.025, // chance to scan a ship in range every plan (1/s)
+			torpedo: {
+				range: 120000, // range to fire at
+				reload: 7, // ms
+				volley: 2 // fire 2 of the 4 tubes, hence reload is half
+			}
 		}
 	},
 
@@ -143,6 +161,12 @@ export default {
 		scanRanges: [5000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5,
+			scan: 0.05, // chance to scan a ship in range every plan (1/s)
+			torpedo: {
+				range: 120000, // range to fire at
+				reload: 12, // ms
+				volley: 2 // fire 2 of the 4 tubes, hence reload is half
+			}
 		}
 	},
 
@@ -161,6 +185,7 @@ export default {
 		scanRanges: [10000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0,
+			scan: 0.05 // chance to scan a ship in range every plan (1/s)
 		}
 	}
 }
