@@ -341,7 +341,7 @@ export default class BaseShip {
 
 			// if our bearing is close to desired then fire engine
 			if (Math.abs(bearingChange) < 0.1 && correctionV.magnitude() > 20) { // only bother when drifting away from desired
-				ship.engine = 5;
+					ship.engine = 5;
 			} else {
 				ship.engine = 0;
 			}

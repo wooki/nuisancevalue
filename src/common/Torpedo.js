@@ -31,6 +31,36 @@ export default class Torpedo extends PhysicalObject2D {
     }
   };
 
+  // apply two forces opposite corners to create rotation
+  applyManeuver(maneuver) {
+      let hullData = this.torpData;
+
+      let height = hullData.size;
+      let width = hullData.size * hullData.width;
+      let halfWidth = Math.floor(width * 0.5);
+
+      if (maneuver == 'l') {
+
+          if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.5) {
+              this.physicsObj.angularVelocity = 0;
+          } else {
+              this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [halfWidth, 0]);
+              this.physicsObj.applyForceLocal([hullData.maneuver, 0], [halfWidth, height]);
+          }
+
+      } else if (maneuver == 'r') {
+
+          if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.5) {
+              this.physicsObj.angularVelocity = 0;
+          } else {
+              this.physicsObj.applyForceLocal([hullData.maneuver, 0], [halfWidth, 0]);
+              this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [halfWidth, height]);
+          }
+
+      }
+
+  }
+
   getHullData() {
     return this.torpData;
   }
@@ -87,6 +117,8 @@ export default class Torpedo extends PhysicalObject2D {
   applyEngine() {
       // let hullData = Hulls[this.hull];
 
+      console.log("Fuel:"+this.fuel);
+
       if (this.engine && this.engine > 0) {
         if (this.fuel > 0) {
           this.physicsObj.applyForceLocal([0, this.thrust]); // engine only fires 1
@@ -107,9 +139,12 @@ export default class Torpedo extends PhysicalObject2D {
             angularVelocity: this.angularVelocity
         });
 
+        let hullData = this.torpData;
+
          // Create bullet shape
-        let shape = new p2.Circle({
-            radius: (this.size/2),
+        let shape = new p2.Box({
+            height: hullData.size,
+            width: hullData.size * hullData.width,
             collisionGroup: game.TORPEDO,
             collisionMask: game.ASTEROID | game.SHIP | game.PLANET | game.TORPEDO | game.PDC | game.SCAN
         });

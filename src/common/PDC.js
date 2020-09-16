@@ -65,7 +65,7 @@ export default class PDC extends PhysicalObject2D {
         // handle depending on type
         if (obj instanceof Torpedo) {
 
-          if (Math.random() < 0.05) {
+          if (Math.random() < 0.8) {
             try {
               delete this.contacts[key];
               game.removeObjectFromWorld(obj);

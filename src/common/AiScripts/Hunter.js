@@ -27,14 +27,17 @@ export default class Hunter extends BaseShip {
 		// in stable orbit - if we have a target that has a gravity source other than ours
 		// then leave orbit
 		if (ship.aiPlan == HUNTER_PLAN_ORBIT) {
+			console.log("HUNTER_PLAN_ORBIT");
 			if (ship.targetId > -1) {
 
-				// if we haven't got a gravity source just TRAVEL
-				// otherwise LEAVE
-				if (!ship.gravityData) {
+				let target = game.world.objects[ship.targetId];
+				if (!target) {
+					// no target means stay in orbit
+				} else if (!ship.gravityData) {
+					// if we haven't got a gravity source just TRAVEL
 					ship.aiPlan = HUNTER_PLAN_TRAVEL;
 				} else {
-
+					// otherwise LEAVE
 					ship.aiPlan = HUNTER_PLAN_LEAVE;
 				}
 			}
@@ -42,6 +45,7 @@ export default class Hunter extends BaseShip {
 
 		// leaving orbit
 		if (ship.aiPlan == HUNTER_PLAN_LEAVE) {
+			console.log("HUNTER_PLAN_LEAVE");
 
 			let ourPos = Victor.fromArray(ship.physicsObj.position);
 			if (ship.gravityData) {
@@ -56,6 +60,7 @@ export default class Hunter extends BaseShip {
 
 		// in travel
 		if (ship.aiPlan == HUNTER_PLAN_TRAVEL) {
+			console.log("HUNTER_PLAN_TRAVEL");
 
 			// start to orbit once some distance away from target
 			if (ship.targetId > -1) {
@@ -78,7 +83,11 @@ export default class Hunter extends BaseShip {
 					if (distance.magnitude() < (enterOrbitDistance + target.size)) {
 						ship.aiPlan = HUNTER_PLAN_ORBIT; // enter orbit
 					}
+				} else {
+					ship.aiPlan = HUNTER_PLAN_ORBIT;
 				}
+			} else {
+				ship.aiPlan = HUNTER_PLAN_ORBIT;
 			}
 		}
 

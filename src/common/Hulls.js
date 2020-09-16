@@ -34,8 +34,8 @@ export default {
 			refuel: 0.5, // amount of fuel to add every step
 			scan: 0.15, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
-				range: 100000, // range to fire at
-				reload: 14, // ms
+				range: 60000, // range to fire at
+				reload: 16, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -62,8 +62,8 @@ export default {
 			refuel: 0.5,
 			scan: 0.7, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
-				range: 60000, // range to fire at
-				reload: 14, // ms
+				range: 40000, // range to fire at
+				reload: 24, // ms
 				volley: 1 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -95,8 +95,8 @@ export default {
 			refuel: 0.5,
 			scan: 0.16, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
-				range: 120000, // range to fire at
-				reload: 7, // ms
+				range: 60000, // range to fire at
+				reload: 14, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -128,8 +128,8 @@ export default {
 			refuel: 0.5,
 			scan: 0.17, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
-				range: 120000, // range to fire at
-				reload: 12, // ms
+				range: 70000, // range to fire at
+				reload: 20, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -160,28 +160,32 @@ export default {
 		size: 30, // used for height (artificially big so they show up!!)
 		width: 0.1875, // ratio to height
 		mass: 0.0001,
-		thrust: 1.5,
+		thrust: 1.6,
+		maneuver: 0.02,
 		enginePositions: [[2, 0.5, 1.0]],// [scale, %x, %y] // also artificially big
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
-		fuel: 100,
+		fuel: 50,
 		payload: 600, // equivalent acceleration for damage
-		maxClosing: 400,
-		scanRanges: [0, 10000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		maxClosing: 6000,
+		scanRanges: [0, 10000], // visual, sensor: visual=auto scan
 		types: [ // allow different torps to override any of these - image, size, exhaust
       {
-        fuel: 100,
+        fuel: 50,
         payload: 600,
+				mass: 0.0001,
         thrust: 1.6,
-        maxClosing: 400,
+				maneuver: 0.02,
+				maxClosing: 6000,
         name: "Type I",
 				desc: "Standard and reliable"
       },
       {
-        fuel: 80,
+        fuel: 30,
         payload: 1000,
         thrust: 2.5,
-        maxClosing: 800,
+				maneuver: 0.005,
+				maxClosing: 8000,
 				name: "Type II",
 				desc: "Fast and powerful, but erratic",
 				exhaustImage: 'exhaust' // or exhaust

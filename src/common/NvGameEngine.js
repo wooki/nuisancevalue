@@ -802,11 +802,10 @@ export default class NvGameEngine extends GameEngine {
         }
         let mass = td.mass;
         let size = td.size;
-
+        
         // x, y, dX, dY, mass, size, angle, angularVelocity
         let t = new Torpedo(this, {}, {
             mass: mass,
-            size: size,
             angularVelocity: params['angularVelocity'],
             position: new TwoVector(params['x'], params['y']),
             velocity: new TwoVector(params['dX'], params['dY']),
