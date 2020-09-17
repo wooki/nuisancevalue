@@ -115,7 +115,7 @@ export default class BaseShip {
 						let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(ship.aiScanTargets[i].physicsObj.position));
 						if (hullData.ai && hullData.ai.scan && range <= hullData.scanRanges[1]) {
 							let rnd = Math.random();
-							scanned = (rnd < hullData.ai.scan);
+							scanned = (rnd < hullData.ai.scan);							
 						} else {
 							// out of range so stop looking for scan
 							removeTargets.push(i);

@@ -92,7 +92,7 @@ export default class SolarSystem extends Mission {
             aiScript: 3, // Hunter
             // targetId: i+1//planets.Earth.id
             // targetId: planets.Earth.id
-            targetId: nv.id            
+            targetId: nv.id
         });
       }
 
@@ -214,8 +214,12 @@ export default class SolarSystem extends Mission {
   event(name, data) {
     super.event(name, data);
 
-    if (name == "AI.Traveller") {
+    if (name == "AI.Traveller.Arrived") {
       this.aiTravellerArrival(data.ship);
+    }
+
+    if (name == "AI.Hunter.NoTarget") {
+      console.log("AI.Hunter.NoTarget");
     }
   }
 

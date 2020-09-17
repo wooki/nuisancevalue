@@ -165,27 +165,21 @@ export default {
 		enginePositions: [[2, 0.5, 1.0]],// [scale, %x, %y] // also artificially big
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
-		fuel: 50,
-		payload: 600, // equivalent acceleration for damage
-		maxClosing: 6000,
+		fuel: 20,
+		payload: 400, // equivalent acceleration for damage
+		maxClosing: 4000,
 		scanRanges: [0, 10000], // visual, sensor: visual=auto scan
 		types: [ // allow different torps to override any of these - image, size, exhaust
       {
-        fuel: 50,
-        payload: 600,
-				mass: 0.0001,
-        thrust: 1.6,
-				maneuver: 0.02,
-				maxClosing: 6000,
         name: "Type I",
 				desc: "Standard and reliable"
       },
       {
-        fuel: 30,
-        payload: 1000,
+        fuel: 12,
+        payload: 800,
         thrust: 2.5,
 				maneuver: 0.005,
-				maxClosing: 8000,
+				maxClosing: 6000,
 				name: "Type II",
 				desc: "Fast and powerful, but erratic",
 				exhaustImage: 'exhaust' // or exhaust

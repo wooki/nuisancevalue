@@ -802,7 +802,7 @@ export default class NvGameEngine extends GameEngine {
         }
         let mass = td.mass;
         let size = td.size;
-        
+
         // x, y, dX, dY, mass, size, angle, angularVelocity
         let t = new Torpedo(this, {}, {
             mass: mass,
@@ -812,8 +812,8 @@ export default class NvGameEngine extends GameEngine {
             angle: params['angle']
         });
         t.targetId = params['targetId'];
-        t.fuel = params['fuel'];
-        t.engine = params['engine'];
+        t.fuel = params['fuel'] || td.fuel;
+        t.engine = params['engine'] || 0;
         t.torpType = params['torpType'];
         t.sensed = params['sensed'] || 0;
         t.scanned = params['scanned'] || 0;

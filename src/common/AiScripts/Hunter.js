@@ -15,6 +15,14 @@ export default class Hunter extends BaseShip {
 		super();
 	}
 
+	// check with mission what to do
+	reportNoTarget(ship, mission, game) {
+		if (mission && mission.event) {
+			mission.event("AI.Hunter.NoTarget", {ship: ship} );
+		}
+	}
+
+
 	// check what phase we want to be in
 	plan(ship, mission, game) {
 		super.plan(ship, mission, game);
@@ -27,7 +35,7 @@ export default class Hunter extends BaseShip {
 		// in stable orbit - if we have a target that has a gravity source other than ours
 		// then leave orbit
 		if (ship.aiPlan == HUNTER_PLAN_ORBIT) {
-			console.log("HUNTER_PLAN_ORBIT");
+
 			if (ship.targetId > -1) {
 
 				let target = game.world.objects[ship.targetId];
@@ -45,7 +53,6 @@ export default class Hunter extends BaseShip {
 
 		// leaving orbit
 		if (ship.aiPlan == HUNTER_PLAN_LEAVE) {
-			console.log("HUNTER_PLAN_LEAVE");
 
 			let ourPos = Victor.fromArray(ship.physicsObj.position);
 			if (ship.gravityData) {
@@ -60,7 +67,6 @@ export default class Hunter extends BaseShip {
 
 		// in travel
 		if (ship.aiPlan == HUNTER_PLAN_TRAVEL) {
-			console.log("HUNTER_PLAN_TRAVEL");
 
 			// start to orbit once some distance away from target
 			if (ship.targetId > -1) {
@@ -84,9 +90,11 @@ export default class Hunter extends BaseShip {
 						ship.aiPlan = HUNTER_PLAN_ORBIT; // enter orbit
 					}
 				} else {
+					this.reportNoTarget(ship, mission, game);
 					ship.aiPlan = HUNTER_PLAN_ORBIT;
 				}
 			} else {
+				this.reportNoTarget(ship, mission, game);
 				ship.aiPlan = HUNTER_PLAN_ORBIT;
 			}
 		}

@@ -73,7 +73,7 @@ export default class Traveller extends BaseShip {
 
 						// upon arrival see what mission thinks we should do (if there is one)
 						if (mission && mission.event) {
-							mission.event("AI.Traveller", {ship: ship} );
+							mission.event("AI.Traveller.Arrived", {ship: ship} );
 						}
 					}
 				}

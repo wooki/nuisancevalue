@@ -334,7 +334,6 @@ export default class NvServerEngine extends ServerEngine {
                   angle: torpAngle,
                   angularVelocity: 0,
                   targetId: e.targetId,
-                  fuel: 200,
                   engine: 1,
                   torpType: torpType
               });
