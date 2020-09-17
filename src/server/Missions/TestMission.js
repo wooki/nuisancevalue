@@ -2,20 +2,18 @@ import Hulls from '../../common/Hulls';
 import Factions from '../../common/Factions';
 import SolarObjects from '../../common/SolarObjects';
 import Victor from 'victor';
+import Mission from './Mission';
 
-// clear the game world and build map and objects
-let game = null;
-
-export default class TestMission {
+export default class TestMission extends Mission {
 
   constructor(gameEngine) {
-    game = gameEngine;
-    this.factions = new Factions();
+    super(gameEngine);
   }
 
   build() {
+    super.build();
 
-    game.addAsteroid({
+    this.game.addAsteroid({
         x: 110000,
         y: 0,
         dX: 0,
@@ -23,7 +21,7 @@ export default class TestMission {
         mass: 1, size: 500
     });
 
-    game.addAsteroid({
+    this.game.addAsteroid({
         x: 210000,
         y: 0,
         dX: 0,
@@ -31,7 +29,7 @@ export default class TestMission {
         mass: 1, size: 1500
     });
 
-    game.addAsteroid({
+    this.game.addAsteroid({
         x: 510000,
         y: 0,
         dX: 0,
@@ -39,7 +37,7 @@ export default class TestMission {
         mass: 1, size: 2500
     });
 
-    game.addAsteroid({
+    this.game.addAsteroid({
         x: 310000,
         y: 0,
         dX: 0,
@@ -47,7 +45,7 @@ export default class TestMission {
         mass: 1, size: 2200
     });
 
-    let mars = game.addPlanet({
+    let mars = this.game.addPlanet({
       x: 20000,
       y: 0,
       dX: 0,
@@ -62,7 +60,7 @@ export default class TestMission {
     for (let i = 0; i < 1; i++) {
       let hullName = 'spacebug';
       let hullData = Hulls[hullName];
-      let nv = game.addShip({
+      let nv = this.game.addShip({
           name: "Spacebug "+i,
           x: -3000 + (Math.random() * 6000),
           y: -3000 + (Math.random() * 6000),
@@ -78,7 +76,7 @@ export default class TestMission {
       });
     }
 
-    let earthStation1 = game.addShip({
+    let earthStation1 = this.game.addShip({
         name: "Earth Station 1",
         x: 60000,
         y: 0,
@@ -94,7 +92,7 @@ export default class TestMission {
 
     let hullName2 = 'tug';
     let hullData2 = Hulls[hullName2];
-    let tug = game.addShip({
+    let tug = this.game.addShip({
         name: "Target Practice",
         x: 5000,
         y: 0,
@@ -109,7 +107,7 @@ export default class TestMission {
 
     setTimeout(function() {
 
-      game.addTorpedo({
+      this.game.addTorpedo({
           x: -4000,
           y: 8000,
           dX: 0,
@@ -122,7 +120,7 @@ export default class TestMission {
       });
     }.bind(this), 5000);
 
-    game.addTorpedo({
+    this.game.addTorpedo({
         x: -3000,
         y: -3000,
         dX: 0,
@@ -156,7 +154,7 @@ export default class TestMission {
         let asteroidSize = 200 + (Math.random() * 500);
 
         // add an actual asteroid
-        game.addAsteroid({
+        this.game.addAsteroid({
             x: position.x,
             y: position.y,
             // dX: v.x,

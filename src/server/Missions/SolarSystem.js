@@ -1,5 +1,4 @@
 import Hulls from '../../common/Hulls';
-import Factions from '../../common/Factions';
 import SolarObjects from '../../common/SolarObjects';
 import Victor from 'victor';
 import Mission from './Mission';
@@ -8,7 +7,6 @@ export default class SolarSystem extends Mission {
 
   constructor(gameEngine) {
     super(gameEngine);
-    this.factions = new Factions();
   }
 
   build() {
@@ -63,11 +61,11 @@ export default class SolarSystem extends Mission {
       });
 
 
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 9; i++) {
         let hullName2 = 'bushido';
-        // if (i % 2 == 0) hullName2 = 'blockade-runner';
-        // if (i > 5) hullName2 = 'spacebug';
-        // if (i > 6 && i % 2 == 0) hullName2 = 'tug';
+        if (i % 2 == 0) hullName2 = 'blockade-runner';
+        if (i > 5) hullName2 = 'spacebug';
+        if (i > 6 && i % 2 == 0) hullName2 = 'tug';
         let hullData2 = Hulls[hullName2];
         let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 4000;
         let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
@@ -88,8 +86,8 @@ export default class SolarSystem extends Mission {
             angle: Math.PI,
             playable: 1,
             faction: this.factions.russianWar,
-            // aiScript: 2, // Traveller
-            aiScript: 3, // Hunter
+            // aiScript: 3, // Traveller
+            aiScript: 4, // Hunter
             // targetId: i+1//planets.Earth.id
             // targetId: planets.Earth.id
             targetId: nv.id

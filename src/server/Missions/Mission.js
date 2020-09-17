@@ -1,4 +1,5 @@
 import Ai from '../../common/Ai';
+import Factions from '../../common/Factions';
 
 // base class for missions that allows triggers to be added and executed in the future
 export default class Mission {
@@ -7,6 +8,7 @@ export default class Mission {
     this.game = gameEngine;
     this.timedEvents = [];
     this.ai = new Ai(gameEngine);
+    this.factions = new Factions();
   }
 
   build() {

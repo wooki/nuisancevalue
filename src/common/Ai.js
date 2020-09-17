@@ -2,6 +2,10 @@ import TorpedoAi from './AiScripts/Torpedo';
 
 // AI Ships - which can switch between themselves as well
 
+// maybe useful to give sensor and firing to ships - maybe their behaviour could
+// be static, or set by the mission
+import BaseShip from './AiScripts/BaseShip';
+
 // travel from one orbit to another then notify mission script on arrival
 import Traveller from './AiScripts/Traveller';
 
@@ -18,6 +22,7 @@ import Hunter from './AiScripts/Hunter';
 // which are named here
 const scripts = [null,
 								 new TorpedoAi(),
+								 new BaseShip(),
 								 new Traveller(),
 								 new Hunter()
 							 ];
@@ -32,7 +37,7 @@ export default class Ai {
 
 		execute(ship) {
 
-    	// load the AI script for that ship
+			// load the AI script for that ship
     	if (ship.aiScript) {
     		let script = scripts[ship.aiScript];
 				if (script && script.execute) {
