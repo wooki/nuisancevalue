@@ -440,13 +440,28 @@ export default class NvGameEngine extends GameEngine {
           this.emit('sensed', { sensed: A, senser: B });
 
         } else if (A instanceof PDC && !(B instanceof PDC)) {
+
           // PDC hit must be managed by the server because there is a % changce
           this.emit('pdchit', { obj: B, pdc: A, collision: e });
 
+          // PDC hit must ALWAYS destroy torpedo, so we can run on client, do that here
+          // other PDC hits can still go via server, so leave the above
+          if (B instanceof Torpedo) {
+            this.removeObjectFromWorld(B);
+            this.emitonoff.emit('explosion', B);
+          }
+
         } else if (B instanceof PDC && !(A instanceof PDC)) {
+
           // PDC hit must be managed by the server because there is a % changce
           this.emit('pdchit', { obj: A, pdc: B, collision: e });
 
+          // PDC hit must ALWAYS destroy torpedo, so we can run on client, do that here
+          // other PDC hits can still go via server, so leave the above
+          if (A instanceof Torpedo) {
+            this.removeObjectFromWorld(A);
+            this.emitonoff.emit('explosion', A);
+          }
         }
     }
 

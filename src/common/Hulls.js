@@ -35,7 +35,7 @@ export default {
 			scan: 0.15, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 60000, // range to fire at
-				reload: 16, // ms
+				reload: 10, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -63,7 +63,7 @@ export default {
 			scan: 0.7, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 40000, // range to fire at
-				reload: 24, // ms
+				reload: 16, // ms
 				volley: 1 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -96,7 +96,7 @@ export default {
 			scan: 0.16, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 60000, // range to fire at
-				reload: 14, // ms
+				reload: 7, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -129,7 +129,7 @@ export default {
 			scan: 0.17, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 70000, // range to fire at
-				reload: 20, // ms
+				reload: 10, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}

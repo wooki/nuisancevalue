@@ -117,8 +117,6 @@ export default class Torpedo extends PhysicalObject2D {
   applyEngine() {
       // let hullData = Hulls[this.hull];
 
-      console.log("Fuel:"+this.fuel);
-
       if (this.engine && this.engine > 0) {
         if (this.fuel > 0) {
           this.physicsObj.applyForceLocal([0, this.thrust]); // engine only fires 1
