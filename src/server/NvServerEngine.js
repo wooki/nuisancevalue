@@ -66,14 +66,14 @@ export default class NvServerEngine extends ServerEngine {
         this.gameEngine.on('scanned', e => {
             // alert mission to this
             if (this.mission && this.mission.scanned) {
-              this.mission.scanned({scanned: e.scanned, scanner: e.scanner});
+              this.mission.scanned(e.scanned, e.scanner);
             }
         });
 
         this.gameEngine.on('sensed', e => {
             // alert mission to this
             if (this.mission && this.mission.sensed) {
-              this.mission.sensed({sensed: e.sensed, senser: e.senser});              
+              this.mission.sensed(e.sensed, e.senser);              
             }
         });
 

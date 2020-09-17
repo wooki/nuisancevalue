@@ -165,7 +165,7 @@ export default {
 		enginePositions: [[2, 0.5, 1.0]],// [scale, %x, %y] // also artificially big
 		exhaustImage: 'exhaustflame', // or exhaust
 		damage: 0, // has no systems to damage (although should never get checked)
-		fuel: 20,
+		fuel: 40,
 		payload: 400, // equivalent acceleration for damage
 		maxClosing: 4000,
 		scanRanges: [0, 10000], // visual, sensor: visual=auto scan
@@ -175,7 +175,7 @@ export default {
 				desc: "Standard and reliable"
       },
       {
-        fuel: 12,
+        fuel: 24,
         payload: 800,
         thrust: 2.5,
 				maneuver: 0.005,

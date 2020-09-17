@@ -118,7 +118,7 @@ module.exports = {
 	addSolarSystem: function(gameEngine, rotations) {
 
 		// use default rotations (or passed in)
-		rotations = Object.assign(rotations, {
+		rotations = Object.assign({
 			Mercury: 135,
 			Venus: 240,
 			Earth: 175,
@@ -128,7 +128,7 @@ module.exports = {
 			Uranus: 340,
 			Neptune: 20,
 			Pluto: 65,
-		});
+		}, rotations);
 
 		// add the sun
 		let sol = gameEngine.addPlanet({
@@ -140,7 +140,7 @@ module.exports = {
 				angularVelocity: 0,
 				texture: 'sol',
 				ignoregravity: 1
-		});
+		});		
 
 		// let mercuryOrbitSpeed = Math.sqrt((this.constants.G * this.Sol.mass) / this.Mercury.orbit);
 

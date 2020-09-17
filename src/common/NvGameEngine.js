@@ -766,8 +766,8 @@ export default class NvGameEngine extends GameEngine {
         s.commsScript = params['commsScript'] || 0;
         s.dockedCommsScript = params['dockedCommsScript'] || 0;
         s.commsState = params['commsState'] || 0;
-        s.commsTargetId = params['commsTargetId'] || -1;
-        s.targetId = params['targetId'] || -1;
+        s.commsTargetId = (params['commsTargetId'] || params['commsTargetId'] === 0) ? params['commsTargetId'] : -1;
+        s.targetId = (params['targetId'] || params['targetId'] === 0) ? params['targetId'] : -1;
         s.aiScript = params['aiScript'] || 0;
         s.aiPlan = params['aiPlan'] || 0;
         s.faction = params['faction'] || this.factions.defaultFaction;

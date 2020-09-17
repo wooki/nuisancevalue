@@ -67,10 +67,10 @@ export default class SolarSystem extends Mission {
         let hullData = Hulls[hullName];
         let playerPosition = new Victor(stationOrbitDistance, 0);
         let playerVelocity = new Victor(0, 0 - stationOrbitSpeed);
-        playerPosition = playerPosition.rotateDeg(55);
-        playerVelocity = playerVelocity.rotateDeg(55);
-        playerPosition = playerPosition.add(position);
-        playerVelocity = playerVelocity.add(velocity);
+        playerPosition = playerPosition.rotateDeg(rotation + 10);
+        playerVelocity = playerVelocity.rotateDeg(rotation + 10);
+        playerPosition = playerPosition.add(Victor.fromArray(planet.physicsObj.position));
+        playerVelocity = playerVelocity.add(Victor.fromArray(planet.physicsObj.velocity));
         this.playerShip = this.game.addShip({
             name: "Nuisance Value",
             x: playerPosition.x,
@@ -90,39 +90,40 @@ export default class SolarSystem extends Mission {
 
 
 
-
-      // for (let i = 0; i < 9; i++) {
-      //   let hullName2 = 'bushido';
-      //   if (i % 2 == 0) hullName2 = 'blockade-runner';
-      //   if (i > 5) hullName2 = 'spacebug';
-      //   if (i > 6 && i % 2 == 0) hullName2 = 'tug';
-      //   let hullData2 = Hulls[hullName2];
-      //   let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 4000;
-      //   let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
-      //   position = new Victor(ship2OrbitDistance, 0);
-      //   velocity = new Victor(0, 0 - ship2OrbitSpeed);
-      //   let rotation = Math.round(i * 40);
-      //   position = position.rotateDeg(rotation);
-      //   velocity = velocity.rotateDeg(rotation);
-      //   position = position.add(new Victor(planets.Mars.position.x, planets.Mars.position.y));
-      //   velocity = velocity.add(new Victor(planets.Mars.velocity.x, planets.Mars.velocity.y));
-      //   this.game.addShip({
-      //       name: "Profit Margin "+i,
-      //       x: position.x,
-      //       y: position.y,
-      //       dX: velocity.x,
-      //       dY: velocity.y,
-      //       hull: hullName2,
-      //       angle: Math.PI,
-      //       playable: 1,
-      //       faction: this.factions.russianWar,
-      //       // aiScript: 3, // Traveller
-      //       aiScript: 4, // Hunter
-      //       // targetId: i+1//planets.Earth.id
-      //       // targetId: planets.Earth.id
-      //       targetId: nv.id
-      //   });
-      // }
+    this.enemyShips = [];
+      for (let j = 0; j < 9; j++) {
+        let hullName2 = 'bushido';
+        if (j % 2 == 0) hullName2 = 'blockade-runner';
+        if (j > 5) hullName2 = 'spacebug';
+        if (j > 6 && j % 2 == 0) hullName2 = 'tug';
+        let hullData2 = Hulls[hullName2];
+        let ship2OrbitDistance = this.planets.Pluto.size + 4000;
+        let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * this.planets.Pluto.physicsObj.mass) / ship2OrbitDistance);
+        let position = new Victor(ship2OrbitDistance, 0);
+        let velocity = new Victor(0, 0 - ship2OrbitSpeed);
+        let rotation = Math.round(j * 40);
+        position = position.rotateDeg(rotation);
+        velocity = velocity.rotateDeg(rotation);
+        position = position.add(Victor.fromArray(this.planets.Pluto.physicsObj.position));
+        velocity = velocity.add(Victor.fromArray(this.planets.Pluto.physicsObj.velocity));
+        let enemyShip = this.game.addShip({
+            name: "Profit Margin "+j,
+            x: position.x,
+            y: position.y,
+            dX: velocity.x,
+            dY: velocity.y,
+            hull: hullName2,
+            angle: Math.PI,
+            playable: 1,
+            faction: this.enemyFaction,
+            aiScript: 3, // Traveller
+            // aiScript: 4, // Hunter
+            targetId: j
+            // targetId: planets.Earth.id
+            // targetId: this.playerShip.id
+        });
+        this.enemyShips.push(enemyShip);
+      }
 
       // asteroids between mars and jupiter
       let asteroidDistance = SolarObjects.Mars.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mars.orbit) / 2);

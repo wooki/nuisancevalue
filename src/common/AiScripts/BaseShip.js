@@ -113,7 +113,7 @@ export default class BaseShip {
 						let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(ship.aiScanTargets[i].physicsObj.position));
 						if (hullData.ai && hullData.ai.scan && range <= hullData.scanRanges[1]) {
 							let rnd = Math.random();
-							scanned = (rnd < hullData.ai.scan);							
+							scanned = (rnd < hullData.ai.scan);
 						} else {
 							// out of range so stop looking for scan
 							removeTargets.push(i);
@@ -234,12 +234,20 @@ export default class BaseShip {
 
 			//  calculate linear deceleration from 2 mins
 			let hullData = ship.getHullData(); // calculate based on thrust/weight
-			const deccelrationRatio = 12 / (hullData.thrust / hullData.mass);
-			const startDeceleration = ourSpeed * 60 * deccelrationRatio; // start 2 mins out
+			const deccelrationRatio = 1 / (hullData.thrust / hullData.mass);
+
+			// scale depending on gravity of destination
+			const earthMassRatio = Math.sqrt(target.physicsObj.mass / SolarObjects.Earth.mass);
+
+			// hard-coded time before arrival
+			const secondsBeforeArrival = earthMassRatio * 1200;
+			const startDeceleration = ourSpeed * secondsBeforeArrival * deccelrationRatio;
 
 			if (distance < startDeceleration) {
 				let percentageThroughDecel = (distance / startDeceleration);
-				maxSpeed = 200 + (ourSpeed * percentageThroughDecel);
+				// maxSpeed = 300 + (ourSpeed * percentageThroughDecel);
+				maxSpeed = 300 + (maxSpeed * percentageThroughDecel);
+				// console.log(`decel: ${percentageThroughDecel} ${Math.round(maxSpeed)} ${target.texture}`);
 			}
 
 			// normalise then set to our desired speed
