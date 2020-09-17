@@ -118,11 +118,18 @@ export default class NvGameEngine extends GameEngine {
             } else if (obj.damage && obj.damage >= obj.getMaxDamage()) {
 
               // remove players
-              obj.helmPlayerId = -1;
-              obj.navPlayerId = -1;
-              obj.signalsPlayerId = -1;
-              obj.engineerPlayerId = -1;
-              obj.captainPlayerId = -1;
+              if (obj instanceof PlayableShip) {
+                obj.helmPlayerId = -1;
+                obj.navPlayerId = -1;
+                obj.signalsPlayerId = -1;
+                obj.engineerPlayerId = -1;
+                obj.captainPlayerId = -1;
+              }
+
+              // alert the mission, server only via event
+              if (obj instanceof Ship) {
+                this.emit('destroyed', { obj: obj });
+              }
 
               // remove the object
               this.removeObjectFromWorld(obj);

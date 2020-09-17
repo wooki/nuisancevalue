@@ -12,133 +12,117 @@ export default class SolarSystem extends Mission {
   build() {
     super.build();
 
-    let planets = SolarObjects.addSolarSystem(this.game, {});
+    this.planets = SolarObjects.addSolarSystem(this.game, {});
 
-      // create a station around earth
-      let stationOrbitDistance = Math.floor(SolarObjects.Earth.diameter/2) + 2500;
-      let stationOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Earth.mass) / stationOrbitDistance);
+    // player faction
+    this.playerFaction = this.factions.ferrous;
+    this.enemyFaction = this.factions.mikkei;
+
+    // create friendly stations around a number of planets
+    let stationPlanets = [
+      this.planets.Earth,
+      this.planets.Jupiter,
+      this.planets.Saturn,
+      this.planets.Neptune,
+      this.planets.Uranus
+    ];
+
+    this.friendlyStations = [];
+    this.friendlyStationsByName = {};
+    for (let i = 0; i < stationPlanets.length; i++) {
+
+      let planet = stationPlanets[i];
+      let stationOrbitDistance = planet.size * 2.5; // size is diameter so bigger planets have slightly larger orbit
+      let stationOrbitSpeed = Math.sqrt((SolarObjects.constants.G * planet.physicsObj.mass) / stationOrbitDistance);
       let position = new Victor(stationOrbitDistance, 0);
       let velocity = new Victor(0, 0 - stationOrbitSpeed);
-      position = position.rotateDeg(45);
-      velocity = velocity.rotateDeg(45);
-      position = position.add(new Victor(planets.Earth.position.x, planets.Earth.position.y));
-      velocity = velocity.add(new Victor(planets.Earth.velocity.x, planets.Earth.velocity.y));
+      let rotation = 360 * Math.random();
+      position = position.rotateDeg(rotation);
+      velocity = velocity.rotateDeg(rotation);
+      position = position.add(Victor.fromArray(planet.physicsObj.position));
+      velocity = velocity.add(Victor.fromArray(planet.physicsObj.velocity));
 
-      let earthStation1 = this.game.addShip({
-          name: "Earth Station 1",
+      let station = this.game.addShip({
+          name: planet.texture + " Station".toUpperCase(),
           x: position.x,
           y: position.y,
           dX: velocity.x,
           dY: velocity.y,
-          size: 560, // need to read mass and size from hull
+          size: 200 + (Math.random() * 300), // need to read mass and size from hull
           hull: 'station',
           commsScript: 1,
           dockedCommsScript: 2,
-          angle: 2,
-          faction: this.factions.spaceForce,
-          fixedgravity: planets.Earth.id.toString()
+          angle: (Math.random() * 2),
+          faction: this.playerFaction,
+          fixedgravity: planet.id.toString()
       });
 
-      let hullName = 'bushido';
-      let hullData = Hulls[hullName];
-      position = new Victor(stationOrbitDistance, 0);
-      velocity = new Victor(0, 0 - stationOrbitSpeed);
-      position = position.rotateDeg(55);
-      velocity = velocity.rotateDeg(55);
-      position = position.add(new Victor(planets.Earth.position.x, planets.Earth.position.y));
-      velocity = velocity.add(new Victor(planets.Earth.velocity.x, planets.Earth.velocity.y));
-      let nv = this.game.addShip({
-          name: "Nuisance Value",
-          x: position.x,
-          y: position.y,
-          dX: velocity.x,
-          dY: velocity.y,
-          hull: hullName,
-          angle: Math.PI,
-          playable: 1,
-          faction: this.factions.spaceForce,
-          fuel: 2500
-      });
+      this.friendlyStations.push(station);
+      this.friendlyStationsByName[planet.texture] = station;
 
+      // create player ship around earth
+      if (i == 0) {
 
-      for (let i = 0; i < 9; i++) {
-        let hullName2 = 'bushido';
-        if (i % 2 == 0) hullName2 = 'blockade-runner';
-        if (i > 5) hullName2 = 'spacebug';
-        if (i > 6 && i % 2 == 0) hullName2 = 'tug';
-        let hullData2 = Hulls[hullName2];
-        let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 4000;
-        let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
-        position = new Victor(ship2OrbitDistance, 0);
-        velocity = new Victor(0, 0 - ship2OrbitSpeed);
-        let rotation = Math.round(i * 40);
-        position = position.rotateDeg(rotation);
-        velocity = velocity.rotateDeg(rotation);
-        position = position.add(new Victor(planets.Mars.position.x, planets.Mars.position.y));
-        velocity = velocity.add(new Victor(planets.Mars.velocity.x, planets.Mars.velocity.y));
-        this.game.addShip({
-            name: "Profit Margin "+i,
-            x: position.x,
-            y: position.y,
-            dX: velocity.x,
-            dY: velocity.y,
-            hull: hullName2,
+        let hullName = 'bushido';
+        let hullData = Hulls[hullName];
+        let playerPosition = new Victor(stationOrbitDistance, 0);
+        let playerVelocity = new Victor(0, 0 - stationOrbitSpeed);
+        playerPosition = playerPosition.rotateDeg(55);
+        playerVelocity = playerVelocity.rotateDeg(55);
+        playerPosition = playerPosition.add(position);
+        playerVelocity = playerVelocity.add(velocity);
+        this.playerShip = this.game.addShip({
+            name: "Nuisance Value",
+            x: playerPosition.x,
+            y: playerPosition.y,
+            dX: playerVelocity.x,
+            dY: playerVelocity.y,
+            hull: hullName,
             angle: Math.PI,
             playable: 1,
-            faction: this.factions.russianWar,
-            // aiScript: 3, // Traveller
-            aiScript: 4, // Hunter
-            // targetId: i+1//planets.Earth.id
-            // targetId: planets.Earth.id
-            targetId: nv.id
+            faction: this.playerFaction,
+            fuel: 2500
         });
       }
 
-      let jupiterstationOrbitDistance = Math.floor(SolarObjects.Jupiter.diameter/2) + 5000;
-      let jupiterOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Jupiter.mass) / jupiterstationOrbitDistance);
-      position = new Victor(jupiterstationOrbitDistance, 0);
-      velocity = new Victor(0, 0 - jupiterOrbitSpeed);
-      position = position.rotateDeg(320);
-      velocity = velocity.rotateDeg(320);
-      position = position.add(new Victor(planets.Jupiter.position.x, planets.Jupiter.position.y));
-      velocity = velocity.add(new Victor(planets.Jupiter.velocity.x, planets.Jupiter.velocity.y));
-      this.game.addShip({
-          name: "Jupiter Station",
-          x: position.x,
-          y: position.y,
-          dX: velocity.x,
-          dY: velocity.y,
-          mass: 0.03, size: 180, // need to read mass and size from hull
-          hull: 'station',
-          commsScript: 1,
-          dockedCommsScript: 2,
-          angle: 0,
-          faction: this.factions.spaceForce,
-          fixedgravity: planets.Jupiter.id.toString()
-      });
 
-      let saturnStationOrbitDistance = Math.floor(SolarObjects.Saturn.diameter/2) + 5000;
-      let saturnOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Saturn.mass) / saturnStationOrbitDistance);
-      position = new Victor(saturnStationOrbitDistance, 0);
-      velocity = new Victor(0, 0 - saturnOrbitSpeed);
-      position = position.rotateDeg(30);
-      velocity = velocity.rotateDeg(30);
-      position = position.add(new Victor(planets.Saturn.position.x, planets.Saturn.position.y));
-      velocity = velocity.add(new Victor(planets.Saturn.velocity.x, planets.Saturn.velocity.y));
-      this.game.addShip({
-          name: "Saturn Station",
-          x: position.x,
-          y: position.y,
-          dX: velocity.x,
-          dY: velocity.y,
-          mass: 0.07, size: 320, // need to read mass and size from hull
-          hull: 'station',
-          commsScript: 1,
-          dockedCommsScript: 2,
-          angle: 30,
-          faction: this.factions.spaceForce,
-          fixedgravity: planets.Saturn.id.toString()
-      });
+    }
+
+
+
+
+      // for (let i = 0; i < 9; i++) {
+      //   let hullName2 = 'bushido';
+      //   if (i % 2 == 0) hullName2 = 'blockade-runner';
+      //   if (i > 5) hullName2 = 'spacebug';
+      //   if (i > 6 && i % 2 == 0) hullName2 = 'tug';
+      //   let hullData2 = Hulls[hullName2];
+      //   let ship2OrbitDistance = Math.floor(SolarObjects.Mars.diameter/2) + 4000;
+      //   let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Mars.mass) / ship2OrbitDistance);
+      //   position = new Victor(ship2OrbitDistance, 0);
+      //   velocity = new Victor(0, 0 - ship2OrbitSpeed);
+      //   let rotation = Math.round(i * 40);
+      //   position = position.rotateDeg(rotation);
+      //   velocity = velocity.rotateDeg(rotation);
+      //   position = position.add(new Victor(planets.Mars.position.x, planets.Mars.position.y));
+      //   velocity = velocity.add(new Victor(planets.Mars.velocity.x, planets.Mars.velocity.y));
+      //   this.game.addShip({
+      //       name: "Profit Margin "+i,
+      //       x: position.x,
+      //       y: position.y,
+      //       dX: velocity.x,
+      //       dY: velocity.y,
+      //       hull: hullName2,
+      //       angle: Math.PI,
+      //       playable: 1,
+      //       faction: this.factions.russianWar,
+      //       // aiScript: 3, // Traveller
+      //       aiScript: 4, // Hunter
+      //       // targetId: i+1//planets.Earth.id
+      //       // targetId: planets.Earth.id
+      //       targetId: nv.id
+      //   });
+      // }
 
       // asteroids between mars and jupiter
       let asteroidDistance = SolarObjects.Mars.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mars.orbit) / 2);
@@ -173,25 +157,26 @@ export default class SolarSystem extends Mission {
       // set-up some events
 
       // if NV comms closed then call from Earth Station 1
-      let callNuisanceValue = function(game, seconds) {
+      this.missionIntro = function(game, seconds) {
 
         // both still in game
-        if (earthStation1 && nv) {
+        let earthStation = this.friendlyStationsByName['earth'];
+        if (earthStation && this.playerShip) {
 
-          if (nv.commsState == 0 && earthStation1.commsTargetId < 0) {
+          if (this.playerShip.commsState == 0 && earthStation.commsTargetId < 0) {
 
             // suggest call
-            nv.commsTargetId = earthStation1.id;
+            this.playerShip.commsTargetId = earthStation.id;
 
           } else {
             // try again later
-            this.addTimedEvent(seconds+10, callNuisanceValue);
+            this.addTimedEvent(seconds+10, this.missionIntro);
           }
         }
 
       }.bind(this);
 
-      this.addTimedEvent(15, callNuisanceValue);
+      this.addTimedEvent(15, this.missionIntro);
   }
 
   // step(seconds) {
@@ -203,11 +188,25 @@ export default class SolarSystem extends Mission {
   //   super.scanned(scanned, scannedBy);
   //
   // }
-  //
-  // sensed(sensed, sensedBy) {
-  //   super.sensed(sensed, sensedBy);
-  //
-  // }
+
+  sensed(sensed, sensedBy) {
+    super.sensed(sensed, sensedBy);
+
+    // don't wait for scan - if sensed enemy message the player with an under attack message
+
+    // set comms script to under attack (when closed, this reverts to default)
+
+    // start call
+  }
+
+  // if an enemy ship is destroyed, spawn 1-2 new ones
+  // if a friendly station is destroyed remove it from
+  // the array - fail mission when last one destroyed
+  destroyed(obj) {
+
+    console.log("OBJECT DESTROYED:"+obj.name);
+
+  }
 
   event(name, data) {
     super.event(name, data);
