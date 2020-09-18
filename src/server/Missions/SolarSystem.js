@@ -93,6 +93,7 @@ export default class SolarSystem extends Mission {
     this.enemyShips = [];
       for (let j = 0; j < 9; j++) {
         let hullName2 = 'bushido';
+        // let hullName2 = 'blockade-runner';
         if (j % 2 == 0) hullName2 = 'blockade-runner';
         if (j > 5) hullName2 = 'spacebug';
         if (j > 6 && j % 2 == 0) hullName2 = 'tug';
@@ -119,7 +120,7 @@ export default class SolarSystem extends Mission {
             aiScript: 3, // Traveller
             // aiScript: 4, // Hunter
             targetId: j
-            // targetId: planets.Earth.id
+            // targetId: this.planets.Venus.id
             // targetId: this.playerShip.id
         });
         this.enemyShips.push(enemyShip);

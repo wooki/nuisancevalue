@@ -21,14 +21,14 @@ export default class Traveller extends BaseShip {
 		// default to stabilise orbit
 		if (!ship.aiPlan) {
 			ship.aiPlan = TRAVELLER_PLAN_ORBIT;
-			ship.orbitTime = 0 + (Math.random()*120);
+			ship.aiOrbitTime = 0 + (Math.random()*1);
 		}
 
 		// in stable orbit
 		if (ship.aiPlan == TRAVELLER_PLAN_ORBIT) {
-			ship.orbitTime = ship.orbitTime - TRAVELLER_PLAN_ORBIT;
+			ship.aiOrbitTime = ship.aiOrbitTime - 1;
 
-			if (ship.orbitTime <= 0 && ship.targetId > -1) {
+			if (ship.aiOrbitTime <= 0 && ship.targetId > -1) {
 				ship.aiPlan = TRAVELLER_PLAN_LEAVE; // leave orbit once orbit for some time
 			}
 		}
@@ -64,12 +64,16 @@ export default class Traveller extends BaseShip {
 
 					// allow faster ships to transition to orbit later
 					let hullData = ship.getHullData();
-					const enterOrbitDistance = 20000 - (500 * (hullData.thrust / hullData.mass));
+					let enterOrbitDistance = 20000 - (500 * (hullData.thrust / hullData.mass));
+					ship.aiOrbitRange = target.size * 1.5;					
+					if (enterOrbitDistance < ship.aiOrbitRange) {
+						enterOrbitDistance = ship.aiOrbitRange;
+					}
 
 					if (distance.magnitude() < (enterOrbitDistance + target.size)) {
 
 						ship.aiPlan = TRAVELLER_PLAN_ORBIT; // enter orbit
-						ship.orbitTime = 60 + (Math.random()*120); // count time to hang around
+						ship.aiOrbitTime = 60 + (Math.random()*120); // count time to hang around
 
 						// upon arrival see what mission thinks we should do (if there is one)
 						if (mission && mission.event) {
@@ -89,8 +93,8 @@ export default class Traveller extends BaseShip {
 		// travelSpeed depends on hull
 		let hullData = ship.getHullData();
 
-		const favOrbitDistance = 4000;
-		const favTravelSpeed = 250 * (hullData.thrust / hullData.mass);
+		const favOrbitDistance = 4000 || ship.aiOrbitRange;
+		const favTravelSpeed = 500 * (hullData.thrust / hullData.mass);
 
 		// process depending on our plan
 		if (ship.aiPlan == TRAVELLER_PLAN_LEAVE) {

@@ -237,17 +237,25 @@ export default class BaseShip {
 			const deccelrationRatio = 1 / (hullData.thrust / hullData.mass);
 
 			// scale depending on gravity of destination
-			const earthMassRatio = Math.sqrt(target.physicsObj.mass / SolarObjects.Earth.mass);
+			// const earthMassRatio = Math.sqrt(target.physicsObj.mass / SolarObjects.Earth.mass);
+			// // hard-coded time before arrival
+			// const secondsBeforeArrival = earthMassRatio * 1200;
+			// const startDeceleration = ourSpeed * secondsBeforeArrival * deccelrationRatio;
+			// if (distance < startDeceleration) {
+			// 	let percentageThroughDecel = (distance / startDeceleration);
+			// 	// maxSpeed = 300 + (ourSpeed * percentageThroughDecel);
+			// 	maxSpeed = 300 + (maxSpeed * percentageThroughDecel);
+			// 	// console.log(`decel: ${percentageThroughDecel} ${Math.round(maxSpeed)} ${target.texture}`);
+			// }
 
-			// hard-coded time before arrival
-			const secondsBeforeArrival = earthMassRatio * 1200;
-			const startDeceleration = ourSpeed * secondsBeforeArrival * deccelrationRatio;
-
-			if (distance < startDeceleration) {
-				let percentageThroughDecel = (distance / startDeceleration);
-				// maxSpeed = 300 + (ourSpeed * percentageThroughDecel);
-				maxSpeed = 300 + (maxSpeed * percentageThroughDecel);
-				// console.log(`decel: ${percentageThroughDecel} ${Math.round(maxSpeed)} ${target.texture}`);
+			// calculate how long we need to slow to 200 on arrival
+			const engineUseEfficiency = 0.66; // because engine only fires when bearing is correct the ai can't fire continuously
+			const deccelration = (hullData.thrust / hullData.mass) * engineUseEfficiency;
+			const deltaVelocity = ourSpeed - 200;
+			const deccelrationTime = deltaVelocity / deccelration;
+			const arrivalTime = distance / ourSpeed;
+			if (deccelrationTime >= arrivalTime) {
+				maxSpeed = 200;
 			}
 
 			// normalise then set to our desired speed
