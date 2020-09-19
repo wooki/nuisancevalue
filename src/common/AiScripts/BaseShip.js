@@ -236,26 +236,20 @@ export default class BaseShip {
 			let hullData = ship.getHullData(); // calculate based on thrust/weight
 			const deccelrationRatio = 1 / (hullData.thrust / hullData.mass);
 
-			// scale depending on gravity of destination
-			// const earthMassRatio = Math.sqrt(target.physicsObj.mass / SolarObjects.Earth.mass);
-			// // hard-coded time before arrival
-			// const secondsBeforeArrival = earthMassRatio * 1200;
-			// const startDeceleration = ourSpeed * secondsBeforeArrival * deccelrationRatio;
-			// if (distance < startDeceleration) {
-			// 	let percentageThroughDecel = (distance / startDeceleration);
-			// 	// maxSpeed = 300 + (ourSpeed * percentageThroughDecel);
-			// 	maxSpeed = 300 + (maxSpeed * percentageThroughDecel);
-			// 	// console.log(`decel: ${percentageThroughDecel} ${Math.round(maxSpeed)} ${target.texture}`);
-			// }
-
 			// calculate how long we need to slow to 200 on arrival
-			const engineUseEfficiency = 0.66; // because engine only fires when bearing is correct the ai can't fire continuously
+			const engineUseEfficiency = 0.8; // because engine only fires when bearing is correct the ai can't fire continuously
 			const deccelration = (hullData.thrust / hullData.mass) * engineUseEfficiency;
 			const deltaVelocity = ourSpeed - 200;
 			const deccelrationTime = deltaVelocity / deccelration;
 			const arrivalTime = distance / ourSpeed;
 			if (deccelrationTime >= arrivalTime) {
-				maxSpeed = 200;
+
+				// deccelrate as much as possible
+				// maxSpeed = 200;
+
+				// better, decelerate only down to speed that allows for deceleration required
+				let requiredSpeed = 200 + (deccelration * arrivalTime);
+				maxSpeed = requiredSpeed;				
 			}
 
 			// normalise then set to our desired speed
@@ -271,24 +265,25 @@ export default class BaseShip {
 			if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
 			if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
 
-			if (bearingChange < 0.1) {
-					ship.engine = 0;
-					if (ship.physicsObj.angularVelocity >= -0.1) {
-						ship.applyManeuver('l');
-					}
-
-			} else if (bearingChange > -0.1) {
-					ship.engine = 0;
-					if (ship.physicsObj.angularVelocity <= 0.1) {
-						ship.applyManeuver('r');
-					}
-			}
-
 			// if our bearing is close to desired then fire engine
-			if (Math.abs(bearingChange) < 0.1 && correctionV.magnitude() > 20) { // only bother when drifting away from desired
+			if (Math.abs(bearingChange) < 0.1) {
+				if (Math.abs(bearingChange) < 0.035) {
+					ship.physicsObj.angularVelocity = 0;
+				}
 				ship.engine = 5;
 			} else {
 				ship.engine = 0;
+
+				if (bearingChange < 0) {
+						if (ship.physicsObj.angularVelocity >= -0.1) {
+							ship.applyManeuver('l');
+						}
+
+				} else if (bearingChange > 0) {
+						if (ship.physicsObj.angularVelocity <= 0.1) {
+							ship.applyManeuver('r');
+						}
+				}
 			}
 		}
 	}

@@ -764,7 +764,6 @@ export default class NvGameEngine extends GameEngine {
         s.signalsPlayerId = 0;
         s.waypoints = [];
         s.commsScript = params['commsScript'] || 0;
-        s.dockedCommsScript = params['dockedCommsScript'] || 0;
         s.commsState = params['commsState'] || 0;
         s.commsTargetId = (params['commsTargetId'] || params['commsTargetId'] === 0) ? params['commsTargetId'] : -1;
         s.targetId = (params['targetId'] || params['targetId'] === 0) ? params['targetId'] : -1;
@@ -808,6 +807,7 @@ export default class NvGameEngine extends GameEngine {
             velocity: new TwoVector(params['dX'], params['dY']),
             angle: params['angle']
         });
+        a.fixedgravity = params['fixedgravity'] || '';
         a.size = params['size'];
         a.sensed = params['sensed'] || 0;
         a.scanned = params['scanned'] || 0;

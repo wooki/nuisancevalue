@@ -14,7 +14,7 @@ export default {
 		size: 300, // used for height
 		width: 0.78313253, // ratio to height
 		mass: 0.012,
-		thrust: 0.05,
+		thrust: 0.07,
 		maneuver: 1.2,
 		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
@@ -47,7 +47,7 @@ export default {
 		size: 280, // used for height
 		width: 1, // ratio to height
 		mass: 0.014,
-		thrust: 0.045,
+		thrust: 0.05,
 		maneuver: 1.4,
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
@@ -75,7 +75,7 @@ export default {
 		size: 300, // used for height
 		width: 0.93, // ratio to height
 		mass: 0.012,
-		thrust: 0.05,
+		thrust: 0.07,
 		maneuver: 1.2,
 		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
@@ -140,8 +140,8 @@ export default {
 		image: 'assets/station.png',
 		size: 560, // used for height
 		width: 1.07, // ratio to height
-		thrust: 0,
-		maneuver: 0,
+		thrust: 0.1,
+		maneuver: 0.4,
 		mass: 0.1,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
@@ -149,7 +149,7 @@ export default {
 		dockable: true,
 		scanRanges: [10000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
-			refuel: 0,
+			refuel: 0.1,
 			scan: 0.05 // chance to scan a ship in range every plan (1/s)
 		}
 	},

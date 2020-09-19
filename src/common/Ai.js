@@ -6,6 +6,9 @@ import TorpedoAi from './AiScripts/Torpedo';
 // be static, or set by the mission
 import BaseShip from './AiScripts/BaseShip';
 
+// just stay in orbit - used for stations
+import Orbiter from './AiScripts/Orbiter';
+
 // travel from one orbit to another then notify mission script on arrival
 import Traveller from './AiScripts/Traveller';
 
@@ -24,7 +27,8 @@ const scripts = [null,
 								 new TorpedoAi(),
 								 new BaseShip(),
 								 new Traveller(),
-								 new Hunter()
+								 new Hunter(),
+								 new Orbiter()
 							 ];
 
 let game = null;

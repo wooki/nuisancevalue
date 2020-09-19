@@ -21,7 +21,6 @@ export default class Ship extends PhysicalObject2D {
             hull: { type: BaseTypes.TYPES.STRING },
             engine: { type: BaseTypes.TYPES.UINT8 },
             commsScript: { type: BaseTypes.TYPES.UINT8 },
-            dockedCommsScript: { type: BaseTypes.TYPES.UINT8 },
             commsState: { type: BaseTypes.TYPES.UINT8 },
             commsTargetId: { type: BaseTypes.TYPES.INT16 }, // currently talking to
             targetId: { type: BaseTypes.TYPES.INT16 },
@@ -119,8 +118,15 @@ export default class Ship extends PhysicalObject2D {
     }
 
     // apply two forces opposite corners to create rotation
-    applyManeuver(maneuver) {
+    applyManeuver(maneuver, overrideManeuver) {
         let hullData = this.getPowerAdjustedHullData();
+
+        let maneuverForce = hullData.maneuver;
+
+        // allow ai to turn much more slowly
+        if (overrideManeuver) {
+          maneuverForce = overrideManeuver;
+        }
 
 
         if (this.dockedId !== null && this.dockedId >= 0) {
@@ -135,8 +141,8 @@ export default class Ship extends PhysicalObject2D {
             if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.5) {
                 this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.applyForceLocal([0 - maneuverForce, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([maneuverForce, 0], [Math.floor(this.size/2), this.size]);
             }
 
         } else if (maneuver == 'r') {
@@ -144,8 +150,8 @@ export default class Ship extends PhysicalObject2D {
             if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.5) {
                 this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([hullData.maneuver, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [Math.floor(this.size/2), this.size]);
+                this.physicsObj.applyForceLocal([maneuverForce, 0], [Math.floor(this.size/2), 0]);
+                this.physicsObj.applyForceLocal([0 - maneuverForce, 0], [Math.floor(this.size/2), this.size]);
             }
 
         } else if (maneuver == 'f') {
@@ -281,7 +287,6 @@ export default class Ship extends PhysicalObject2D {
         this.hull = other.hull;
         this.engine = other.engine;
         this.commsScript = other.commsScript;
-        this.dockedCommsScript = other.dockedCommsScript;
         this.commsState = other.commsState;
         this.commsTargetId = other.commsTargetId;
         this.dockedId = other.dockedId;

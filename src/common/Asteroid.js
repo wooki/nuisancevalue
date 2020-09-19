@@ -13,6 +13,7 @@ export default class Asteroid extends PhysicalObject2D {
     static get netScheme() {
         return Object.assign({
             size: { type: BaseTypes.TYPES.INT16 },
+            fixedgravity: { type: BaseTypes.TYPES.STRING },
             sensed: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
             scanned: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
         }, super.netScheme);
@@ -85,6 +86,7 @@ export default class Asteroid extends PhysicalObject2D {
     syncTo(other) {
         super.syncTo(other);
         this.size = other.size;
+        this.fixedgravity = other.fixedgravity;
         this.scanned = other.scanned;
         this.sensed = other.sensed;
     }

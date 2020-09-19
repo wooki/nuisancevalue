@@ -84,8 +84,8 @@ export default class Hunter extends BaseShip {
 
 					// allow faster ships to transition to orbit later
 					let hullData = ship.getHullData();
-					const enterOrbitDistance = 20000 - (500 * (hullData.thrust / hullData.mass));
-					ship.aiOrbitRange = target.size * 1.5;
+					let enterOrbitDistance = (10 * target.size) - (500 * (hullData.thrust / hullData.mass));
+					ship.aiOrbitRange = target.size * 2.0;
 					if (enterOrbitDistance < ship.aiOrbitRange) {
 						enterOrbitDistance = ship.aiOrbitRange;
 					}
@@ -113,8 +113,8 @@ export default class Hunter extends BaseShip {
 		let hullData = ship.getHullData();
 
 		const favOrbitDistance = 4000 || ship.aiOrbitRange;
-		const favTravelSpeed = 500 * (hullData.thrust / hullData.mass);
-		
+		const favTravelSpeed = 1000 * (hullData.thrust / hullData.mass);
+
 		// process depending on our plan
 		if (ship.aiPlan == HUNTER_PLAN_LEAVE) {
 

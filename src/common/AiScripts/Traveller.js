@@ -43,7 +43,7 @@ export default class Traveller extends BaseShip {
 				if (ship.gravityData) {
 					let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 
-					if (gravVector.magnitude() > 10000) {
+					if (gravVector.magnitude() > (4000 + (ship.gravityData.size * 4))) {
 						ship.aiPlan = TRAVELLER_PLAN_TRAVEL; // travel to destination
 					}
 				}
@@ -64,13 +64,17 @@ export default class Traveller extends BaseShip {
 
 					// allow faster ships to transition to orbit later
 					let hullData = ship.getHullData();
-					let enterOrbitDistance = 20000 - (500 * (hullData.thrust / hullData.mass));
-					ship.aiOrbitRange = target.size * 1.5;					
+					let enterOrbitDistance = (12 * target.size) - (500 * (hullData.thrust / hullData.mass));
+					ship.aiOrbitRange = target.size * 2.0;
 					if (enterOrbitDistance < ship.aiOrbitRange) {
 						enterOrbitDistance = ship.aiOrbitRange;
 					}
 
-					if (distance.magnitude() < (enterOrbitDistance + target.size)) {
+					// this check for the ids matching allows wide area orbiting of say the sun, where
+					// the enterOrbitDistance is bigger than some planet orbits
+					let currentGravityId = ship?.gravityData?.id;
+					if ((!currentGravityId || currentGravityId == target.id) &&
+							distance.magnitude() < (enterOrbitDistance + target.size)) {
 
 						ship.aiPlan = TRAVELLER_PLAN_ORBIT; // enter orbit
 						ship.aiOrbitTime = 60 + (Math.random()*120); // count time to hang around
@@ -94,7 +98,7 @@ export default class Traveller extends BaseShip {
 		let hullData = ship.getHullData();
 
 		const favOrbitDistance = 4000 || ship.aiOrbitRange;
-		const favTravelSpeed = 500 * (hullData.thrust / hullData.mass);
+		const favTravelSpeed = 1000 * (hullData.thrust / hullData.mass);
 
 		// process depending on our plan
 		if (ship.aiPlan == TRAVELLER_PLAN_LEAVE) {

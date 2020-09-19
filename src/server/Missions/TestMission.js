@@ -85,7 +85,6 @@ export default class TestMission extends Mission {
         size: 560, // need to read mass and size from hull
         hull: 'station',
         commsScript: 1,
-        dockedCommsScript: 2,
         angle: 2,
         faction: this.factions.russian,
     });
