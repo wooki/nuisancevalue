@@ -166,8 +166,7 @@ export default class NvGameEngine extends GameEngine {
                 if (obj instanceof PlayableShip) {
 
                   // unpack it's power grid
-                  obj.grid = new Systems();
-                  obj.grid.unpack(obj.power);
+                  obj.unpackPowerGrid();
 
                   // update the ships sensor range
                   obj.updateSenseorRange();

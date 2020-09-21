@@ -40,6 +40,10 @@ export default class PlayableShip extends Ship {
         }, super.netScheme);
     }
 
+    unpackPowerGrid() {
+      this.grid = new Systems();
+      this.grid.unpack(this.power);
+    }
     // updates the circle body used to watch for senssor hits
     updateSenseorRange() {
 
@@ -51,7 +55,8 @@ export default class PlayableShip extends Ship {
     }
 
     getActiveTubes() {
-        if (!this.grid) return 0;
+        if (!this.grid) this.unpackPowerGrid();
+
         let hullData = this.getHullData();
         let systems = hullData.systems;
         let max = this.tubes.length;
@@ -61,7 +66,7 @@ export default class PlayableShip extends Ship {
     }
 
     getConsolesEfficiency() {
-      if (!this.grid) return 0;
+      if (!this.grid) this.unpackPowerGrid();
 
       let hullData = this.getHullData();
       let systems = hullData.systems;
@@ -69,7 +74,7 @@ export default class PlayableShip extends Ship {
     }
 
     getNavComEfficiency() {
-      if (!this.grid) return 0;
+      if (!this.grid) this.unpackPowerGrid();
 
       let hullData = this.getHullData();
       let systems = hullData.systems;
@@ -77,7 +82,7 @@ export default class PlayableShip extends Ship {
     }
 
     getReloaderEfficiency() {
-      if (!this.grid) return 0;
+      if (!this.grid) this.unpackPowerGrid();
 
       let hullData = this.getHullData();
       let systems = hullData.systems;
@@ -85,7 +90,7 @@ export default class PlayableShip extends Ship {
     }
 
     getLifeSupportEfficiency() {
-      if (!this.grid) return 0;
+      if (!this.grid) this.unpackPowerGrid();
 
       let hullData = this.getHullData();
       let systems = hullData.systems;
@@ -93,7 +98,7 @@ export default class PlayableShip extends Ship {
     }
 
     getFuelProductionEfficiency() {
-      if (!this.grid) return 0;
+      if (!this.grid) this.unpackPowerGrid();
 
       let hullData = this.getHullData();
       let systems = hullData.systems;
@@ -104,7 +109,7 @@ export default class PlayableShip extends Ship {
 
       // start with standard hull data
       let hullData = Object.assign({}, this.getHullData());
-      if (!this.grid) return hullData;
+      if (!this.grid) this.unpackPowerGrid();
 
       // adjust using systems power, gameEngine will
       // have unpacked power into this.grid before anything else
