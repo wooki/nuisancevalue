@@ -282,7 +282,7 @@ export default class CompositeRenderer {
 
           if (playerShip) {
 
-            if (isNaN(actualPlayerShip.physicsObj.position[0])) {
+            if (actualPlayerShip.physicsObj && isNaN(actualPlayerShip.physicsObj.position[0])) {
               // Force a reload - something has gone wrong with sending the
               // player ship but a reload usually fixes it.
               if (window.confirm("Problem connecting to your ship, reload?")) {
