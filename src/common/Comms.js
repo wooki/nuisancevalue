@@ -17,7 +17,7 @@ export default class Comms {
 
     closeComms(playerShip, selectedObj) {
 
-    	if (selectedObj.playable != 1 && selectedObj.commsTargetId == playerShip.id) {
+			if (selectedObj.playable != 1 && selectedObj.commsTargetId == playerShip.id) {
 
 				this.client.updateShipComms({
 					id: selectedObj.id,
@@ -37,7 +37,7 @@ export default class Comms {
 	openComms(playerShip, selectedObj) {
 
 		// update ship with commsTargetId
-		if (selectedObj.commsTargetId != playerShip.id) {
+	if (selectedObj.playable != 1 && selectedObj.commsTargetId != playerShip.id) {
 			this.client.updateShipComms({
 				id: selectedObj.id,
 				target: playerShip.id

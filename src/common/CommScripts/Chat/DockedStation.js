@@ -76,7 +76,6 @@ export default class DockedStationChat extends Chat {
 			],
 			onEnter: function(ship, playerShip, game) {
         if (playerShip.getHullData().pdc) {
-          console.log("Loading:"+playerShip.getHullData().maxWeaponStock[0]);
           playerShip.weaponStock[0] = playerShip.getHullData().maxWeaponStock[0];
         }
 			}
@@ -104,7 +103,6 @@ export default class DockedStationChat extends Chat {
   			],
   			onEnter: function(ship, playerShip, game) {
           if (playerShip.getHullData().tubes) {
-            console.log("Loading:"+playerShip.getHullData().maxWeaponStock[torpJ + 1]);
             playerShip.weaponStock[torpJ + 1] = playerShip.getHullData().maxWeaponStock[torpJ + 1];
           }
   			}
