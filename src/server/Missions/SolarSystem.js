@@ -63,9 +63,12 @@ export default class SolarSystem extends Mission {
           fixedgravity: planet.id.toString()
       });
 
-      this.friendlyStations.push(station);
-      this.friendlyStationsByName[planet.texture] = station;
-      this.friendlyStationsById[station.id] = station;
+      // don't store the earth station - the enemy ships won't hunt it
+      if (i != 0) {
+        this.friendlyStations.push(station);
+        this.friendlyStationsByName[planet.texture] = station;
+        this.friendlyStationsById[station.id] = station;
+      }
 
       // create player ship around earth
       if (i == 0) {
@@ -95,14 +98,11 @@ export default class SolarSystem extends Mission {
 
     // create some friendly freighters
     let friendlyFreighters = [
-      this.planets.Mercury,
       this.planets.Venus,
       this.planets.Earth,
-      this.planets.Mars,
       this.planets.Saturn,
       this.planets.Uranus,
-      this.planets.Neptune,
-      this.planets.Pluto,
+      this.planets.Neptune
     ];
 
     this.friendlyFreighters = [];
@@ -145,41 +145,8 @@ export default class SolarSystem extends Mission {
     // spawn 1-2 enemy ships around pluto and set random targets
 
 
-    // this.enemyShips = [];
-    //   for (let j = 0; j < 9; j++) {
-    //     let hullName2 = 'bushido';
-    //     // let hullName2 = 'blockade-runner';
-    //     if (j % 2 == 0) hullName2 = 'blockade-runner';
-    //     if (j > 5) hullName2 = 'spacebug';
-    //     if (j > 6 && j % 2 == 0) hullName2 = 'tug';
-    //     let hullData2 = Hulls[hullName2];
-    //     let ship2OrbitDistance = this.planets.Pluto.size + 4000;
-    //     let ship2OrbitSpeed = Math.sqrt((SolarObjects.constants.G * this.planets.Pluto.physicsObj.mass) / ship2OrbitDistance);
-    //     let position = new Victor(ship2OrbitDistance, 0);
-    //     let velocity = new Victor(0, 0 - ship2OrbitSpeed);
-    //     let rotation = Math.round(j * 40);
-    //     position = position.rotateDeg(rotation);
-    //     velocity = velocity.rotateDeg(rotation);
-    //     position = position.add(Victor.fromArray(this.planets.Pluto.physicsObj.position));
-    //     velocity = velocity.add(Victor.fromArray(this.planets.Pluto.physicsObj.velocity));
-    //     let enemyShip = this.game.addShip({
-    //         name: "Profit Margin "+j,
-    //         x: position.x,
-    //         y: position.y,
-    //         dX: velocity.x,
-    //         dY: velocity.y,
-    //         hull: hullName2,
-    //         angle: Math.PI,
-    //         playable: 1,
-    //         faction: this.enemyFaction,
-    //         aiScript: 3, // Traveller
-    //         // aiScript: 4, // Hunter
-    //         targetId: j
-    //         // targetId: this.planets.Venus.id
-    //         // targetId: this.playerShip.id
-    //     });
-    //     this.enemyShips.push(enemyShip);
-    //   }
+    this.enemyShips = [];
+    this.spawnEnemyShips(2, ['blockade-runner', 'bushido']);
 
 
 
@@ -245,8 +212,69 @@ export default class SolarSystem extends Mission {
     }
 
     if (name == "AI.Hunter.NoTarget") {
-      console.log("AI.Hunter.NoTarget");
+      // pick a random target
+      let targets = this.friendlyFreighters.concat(this.friendlyStations);
+      if (targets.length > 0) {
+        let target = targets[Math.floor(Math.random()*targets.length)];
+        data.ship.targetId = target.id;
+      }
     }
+  }
+
+  // spawn enemy ships
+  spawnEnemyShips(number, hulls) {
+
+    const enemyPlanet = this.planets.Mars;
+    let rotation = Math.random() * 180;
+
+    // create and add ships
+    for (let j = 0; j < number; j++) {
+
+      // pick a random target
+      let targetId = -1;
+      let targets = this.friendlyFreighters.concat(this.friendlyStations);
+      if (targets.length > 0) {
+        let target = targets[Math.floor(Math.random()*targets.length)];
+        targetId = target.id;
+      }
+
+      let hullName = hulls[j];
+      let hullData = Hulls[hullName];
+      let shipOrbitDistance = enemyPlanet.size + 4000;
+      let shipOrbitSpeed = Math.sqrt((SolarObjects.constants.G * enemyPlanet.physicsObj.mass) / shipOrbitDistance);
+      let position = new Victor(shipOrbitDistance, 0);
+      let velocity = new Victor(0, 0 - shipOrbitSpeed);
+      rotation = rotation + (180 / number);
+      position = position.rotateDeg(rotation);
+      velocity = velocity.rotateDeg(rotation);
+      position = position.add(Victor.fromArray(enemyPlanet.physicsObj.position));
+      velocity = velocity.add(Victor.fromArray(enemyPlanet.physicsObj.velocity));
+
+      // if (isNaN(position.x)) {
+      //   console.log("enemyPlanet:");
+      //   console.dir({
+      //     rotation: rotation,
+      //     mass: enemyPlanet.physicsObj.mass,
+      //     position: enemyPlanet.physicsObj.position,
+      //     velocity: enemyPlanet.physicsObj.velocity,
+      //   });
+      // }
+      let enemyShip = this.game.addShip({
+          name: "Mikkei "+hullName+" "+j,
+          x: position.x,
+          y: position.y,
+          dX: velocity.x,
+          dY: velocity.y,
+          hull: hullName,
+          angle: Math.PI,
+          playable: 1,
+          faction: this.enemyFaction,
+          aiScript: 4,
+          targetId: targetId
+      });
+      this.enemyShips.push(enemyShip);
+    }
+
   }
 
   // a ship with  traveller ai script has arrived - we can decide what

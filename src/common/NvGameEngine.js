@@ -738,7 +738,7 @@ export default class NvGameEngine extends GameEngine {
               mass: params['mass'] || hullData.mass, angularVelocity: 0,
               position: new TwoVector(params['x'], params['y']),
               velocity: new TwoVector(params['dX'], params['dY']),
-              angle: params['angle']
+              angle: params['angle'] || 0
           });
           s.weaponStock = hullData.defaultWeaponStock || [];
           s.oxygen = params['oxygen'] || 100;
@@ -748,7 +748,7 @@ export default class NvGameEngine extends GameEngine {
               mass: params['mass'] || hullData.mass, angularVelocity: 0,
               position: new TwoVector(params['x'], params['y']),
               velocity: new TwoVector(params['dX'], params['dY']),
-              angle: params['angle']
+              angle: params['angle'] || 0
           });
         }
 
