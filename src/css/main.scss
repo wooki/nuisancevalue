@@ -425,7 +425,11 @@ body {
       .text {
         display: block;
         text-align: center;
-        margin-bottom: auto;
+        max-width: 35em;
+        margin: 1em 0 auto 0;
+        p {
+          margin: 0 0 1em 0;
+        }
       }
     } // .comms
 

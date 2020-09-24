@@ -2,10 +2,18 @@
 // const DockedStation = require('./CommScripts/DockedStation');
 import Factions from './Factions';
 import Station from './CommScripts/Station';
+import SolarSystemMissionIntro from './CommScripts/SolarSystemMissionIntro';
 
 // comms scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
-const scripts = [null, Station];
+const scripts = [];
+scripts.fill(null, 0, 255);
+
+// generic scripts
+scripts[1] = Station;
+
+// mission scripts reserved from 100 onwards
+scripts[100] = SolarSystemMissionIntro;
 
 export default class Comms {
 
@@ -87,8 +95,8 @@ export default class Comms {
 
 	// replace names and factions of ships in the text
 	replaceKeywords(text, playerShip, selectedObj) {
-		text = text.replace('[player]', playerShip.name);
-		text = text.replace('[obj]', selectedObj.name || selectedObj.hull || selectedObj.texture);
+		text = text.replaceAll('[player]', playerShip.name);
+		text = text.replaceAll('[obj]', selectedObj.name || selectedObj.hull || selectedObj.texture);
 		return text;
 	}
 
@@ -127,7 +135,7 @@ export default class Comms {
 
 		} else {
 			return {
-				text: "No answer. (in response)",
+				text: "No answer.",
 				responses: []
 			};
 		}
@@ -157,7 +165,7 @@ export default class Comms {
 		// chance for script to send commands to ship
 		let state = this.getState(selectedObj, playerShip);
 		if (state && state.onEnter) {
-			state.onEnter(selectedObj, playerShip, this.game);
+			state.onEnter(selectedObj, playerShip, this, this.game);
 		}
 
 	}

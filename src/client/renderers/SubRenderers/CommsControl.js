@@ -83,7 +83,10 @@ export default class CommsControl {
 
       content.push(h('div.title', {}, [this.commsTarget.name || this.commsTarget.hull || this.commsTarget.texture]));
 
-      content.push(h('div.text', {}, [commsState.text]));
+      let lines = commsState.text.split("[br]").map(function(line, lineIndex) {
+        return h('p', {key: 'line'+lineIndex}, [line]);
+      });
+      content.push(h('div.text', {}, lines));
       for (let i = 0; i < commsState.responses.length; i++) {
         let key = "state-"+this.commsTarget.commsState+"-response-"+i;
         content.push(this.createButton(key, commsState.responses[i], (event) => {

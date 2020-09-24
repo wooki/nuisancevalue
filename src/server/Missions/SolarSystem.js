@@ -44,6 +44,10 @@ export default class SolarSystem extends Mission {
       position = position.add(Victor.fromArray(planet.physicsObj.position));
       velocity = velocity.add(Victor.fromArray(planet.physicsObj.velocity));
 
+      let stationCommsScript = 1;
+      if (i == 0) {
+        stationCommsScript = 100; // mission start message
+      }
       let station = this.game.addShip({
           name: planet.texture + " Station".toUpperCase(),
           x: position.x,
@@ -52,7 +56,7 @@ export default class SolarSystem extends Mission {
           dY: velocity.y,
           size: 200 + (Math.random() * 300), // need to read mass and size from hull
           hull: 'station',
-          commsScript: 1,
+          commsScript: stationCommsScript,
           angle: (Math.random() * 2),
           faction: this.playerFaction,
           aiScript: 5, // Orbiter
