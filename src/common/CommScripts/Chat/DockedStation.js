@@ -25,8 +25,12 @@ export default class DockedStationChat extends Chat {
 					nextState: this.offset + 3
 				},
         { // response 3
-					text: "Who's paying for all this?",
+					text: "Repair",
 					nextState: this.offset + 4
+				},
+        { // response 4
+					text: "Who's paying for all this?",
+					nextState: this.offset + 5
 				}
 			],
 			// onEnter: function(ship, playerShip, game) {
@@ -82,6 +86,34 @@ export default class DockedStationChat extends Chat {
 		};
 
     this.states[this.offset + 4] = { // state 4
+      text: "I'll get the Chief Engineer to take a look.",
+			responses: [
+				{ // response 0
+					text: "Back to the Dockmaster",
+					nextState: this.offset + 0
+				}
+			],
+			onEnter: function(ship, playerShip, game) {
+
+        // remove hull damage
+        playerShip.damage = 0;
+
+        // fix grid damage
+        playerShip.unpackPowerGrid();
+        let gridSize = playerShip.grid.getGridSize();
+        for (let i = 0; i < gridSize[0].length; i++) {
+          for (let j = 0; j < gridSize[1].length; j++) {
+            if (playerShip.grid[i][j] == 0) {
+              playerShip.grid[i][j] = 1 + Math.floor(Math.random() * 6);
+            }
+          }
+        }
+        playerShip.power = playerShip.grid.pack();
+
+			}
+		};
+
+    this.states[this.offset + 5] = { // state 4
 			text: "The company of course, just don't ask too many questions.",
 			responses: [
 				{ // response 0

@@ -63,7 +63,7 @@ export default {
 			scan: 0.7, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
 				range: 40000, // range to fire at
-				reload: 16, // ms
+				reload: 36, // ms
 				volley: 1 // fire 2 of the 4 tubes, hence reload is half
 			}
 		}
@@ -90,7 +90,7 @@ export default {
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [3000, 20, 20],
 		defaultWeaponStock: [1000, 12, 6],
-		scanRanges: [6000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		scanRanges: [6000, 140000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.5,
 			scan: 0.16, // chance to scan a ship in range every plan (1/s)
@@ -146,11 +146,17 @@ export default {
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		fuel: 10000,
+		tubes: 1,
 		dockable: true,
 		scanRanges: [10000, 100000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 		ai: { // variables for the AI to behave diferently by hull
 			refuel: 0.1,
-			scan: 0.05 // chance to scan a ship in range every plan (1/s)
+			scan: 0.05, // chance to scan a ship in range every plan (1/s)
+			torpedo: {
+				range: 30000, // range to fire at
+				reload: 36, // ms
+				volley: 1 // fire 2 of the 4 tubes, hence reload is half
+			}
 		}
 	},
 

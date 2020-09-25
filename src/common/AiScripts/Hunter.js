@@ -22,7 +22,6 @@ export default class Hunter extends BaseShip {
 		}
 	}
 
-
 	// check what phase we want to be in
 	plan(ship, mission, game) {
 		super.plan(ship, mission, game);

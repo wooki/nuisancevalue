@@ -2,6 +2,7 @@
 // const DockedStation = require('./CommScripts/DockedStation');
 import Factions from './Factions';
 import Station from './CommScripts/Station';
+import MissionSuccess from './CommScripts/MissionSuccess';
 import SolarSystemMissionIntro from './CommScripts/SolarSystemMissionIntro';
 
 // comms scripts are stored an UINT8 so we have 0-255 possible scripts,
@@ -11,6 +12,7 @@ scripts.fill(null, 0, 255);
 
 // generic scripts
 scripts[1] = Station;
+scripts[99] = MissionSuccess;
 
 // mission scripts reserved from 100 onwards
 scripts[100] = SolarSystemMissionIntro;

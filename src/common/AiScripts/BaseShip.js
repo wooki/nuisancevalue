@@ -112,7 +112,7 @@ export default class BaseShip {
 						// only scan ourselves if not already scanned and within range
 						let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(ship.aiScanTargets[i].physicsObj.position));
 						if (hullData.ai && hullData.ai.scan && range <= hullData.scanRanges[1]) {
-							let rnd = Math.random();
+							let rnd = Math.random();							
 							scanned = (rnd < hullData.ai.scan);
 						} else {
 							// out of range so stop looking for scan
@@ -249,7 +249,7 @@ export default class BaseShip {
 
 				// better, decelerate only down to speed that allows for deceleration required
 				let requiredSpeed = 200 + (deccelration * arrivalTime);
-				maxSpeed = requiredSpeed;				
+				maxSpeed = requiredSpeed;
 			}
 
 			// normalise then set to our desired speed

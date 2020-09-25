@@ -73,7 +73,7 @@ export default class NvServerEngine extends ServerEngine {
         this.gameEngine.on('sensed', e => {
             // alert mission to this
             if (this.mission && this.mission.sensed) {
-              this.mission.sensed(e.sensed, e.senser);              
+              this.mission.sensed(e.sensed, e.senser);
             }
         });
 
@@ -150,7 +150,7 @@ export default class NvServerEngine extends ServerEngine {
                 A.grid.unpack(A.power);
 
                 // add some damage
-                let powergridHits = Math.floor(payload / 66);
+                let powergridHits = Math.floor(payload / 120);
                 for (let i = 0; i < powergridHits; i++) {
                   let gridSize = A.grid.getGridSize();
                   let damageRow = Math.floor(gridSize[0] * Math.random());

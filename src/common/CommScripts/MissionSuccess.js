@@ -1,7 +1,7 @@
 import CommsScript from './CommsScript';
 
 // Station
-export default class SolarSystemMissionIntro extends CommsScript {
+export default class MissionSuccess extends CommsScript {
 
   constructor(obj, game) {
     super(obj, game);
@@ -11,11 +11,8 @@ export default class SolarSystemMissionIntro extends CommsScript {
 
     let message = `[br]PRIORITY MESSAGE[br]
 FROM Ferrous Corp Security TO [player][br]
-We have reports that Mikkei Combine is planning a major assault on
-our outer-system assets.[br]
-Intelligence suggests our orbital around Saturn is likely to be their first target.[br]
-You are tasked with protecting all friendly assets and eliminating this
-threat.[br]
+Thank you [player] our fleet has arrived and we no longer require your assistance.[br]
+You may return to base.[br]
 MESSAGE END
 `;
     this.states[0] =  { // state 0

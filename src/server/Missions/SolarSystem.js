@@ -13,7 +13,10 @@ export default class SolarSystem extends Mission {
     super.build();
 
     this.planets = SolarObjects.addSolarSystem(this.game, {});
-    this.addAsteroids(50);
+    this.addAsteroids(25);
+
+    // count player kills
+    this.playerKills = 0;
 
     // player faction
     this.playerFaction = this.factions.ferrous;
@@ -91,7 +94,7 @@ export default class SolarSystem extends Mission {
             angle: Math.PI,
             playable: 1,
             faction: this.playerFaction,
-            fuel: 2500
+            fuel: 4000
         });
       }
     } // stationPlanets
@@ -126,16 +129,12 @@ export default class SolarSystem extends Mission {
           y: position.y,
           dX: velocity.x,
           dY: velocity.y,
-          // hull: 'tug',
-          hull: 'blockade-runner',
+          hull: 'tug',
           commsScript: 0, // none
           angle: (Math.random() * 2),
           faction: this.playerFaction,
-          playable: 1,
           aiScript: 3, // Traveller
-          // targetId: this.planets.Jupiter.id
-          targetId: this.planets.Sol.id
-          // targetId: 1 + Math.round(Math.random() * 7)
+          targetId: 1 + Math.round(Math.random() * 7)
       });
 
       this.friendlyFreighters.push(freighter);
@@ -146,7 +145,8 @@ export default class SolarSystem extends Mission {
 
 
     this.enemyShips = [];
-    this.spawnEnemyShips(2, ['blockade-runner', 'bushido']);
+    let saturnStation = this.friendlyStationsByName['saturn'];
+    this.spawnEnemyShips(1, ['blockade-runner'], saturnStation.id);
 
 
 
@@ -195,12 +195,71 @@ export default class SolarSystem extends Mission {
     // start call
   }
 
+  missionComplete(game, seconds) {
+
+    // look for earthStation - or any friendly
+    let earthStation = this.friendlyStationsByName['earth'];
+    if (!earthStation) {
+      earthStation = this.friendlyStations[0];
+    }
+
+    if (earthStation && this.playerShip) {
+
+      earthStation.commsScript = 2;
+
+      if (this.playerShip.commsState == 0 && earthStation.commsTargetId < 0) {
+
+        // suggest call
+        this.playerShip.commsTargetId = earthStation.id;
+
+      } else {
+        // try again later
+        this.addTimedEvent(seconds+10, this.missionComplete.bind(this));
+      }
+    }
+
+  }
+
   // if an enemy ship is destroyed, spawn 1-2 new ones
   // if a friendly station is destroyed remove it from
   // the array - fail mission when last one destroyed
   destroyed(obj) {
 
-    console.log("OBJECT DESTROYED:"+obj.name);
+    let id = obj.id;
+
+    // check for, remove and replace enemy ships - and check for victory
+    for (let i = 0; i < this.enemyShips.length; i++) {
+        if (this.enemyShips[i] && this.enemyShips[i].id == id) {
+          delete this.enemyShips[i];
+          this.playerKills = this.playerKills + 1;
+          console.log("Player Kills:"+this.playerKills);
+
+          // spawn 2 replacements
+          if (this.playerKills < 6 && this.enemyShips.length < 3) {
+            this.spawnEnemyShips(2, ["blockade-runner", "blockade-runner"]);
+          } else if (this.playerKills == 6) {
+
+            // send end-game mission message
+            this.addTimedEvent(5, this.missionComplete.bind(this));
+          }
+        }
+    }
+
+    // check for and remove friendly stations
+    for (let j = 0; j < this.friendlyStations.length; j++) {
+      if (this.friendlyStations[j] && this.friendlyStations[j].id == id) {
+        delete this.friendlyStations[j];
+        delete this.friendlyStationsById[id];
+      }
+    }
+
+    // check for and remove friendly freighters
+    for (let k = 0; k < this.friendlyFreighters.length; k++) {
+      if (this.friendlyFreighters[k] && this.friendlyFreighters[k].id == id) {
+        delete this.friendlyFreighters[k];
+        delete this.friendlyFreightersById[id];
+      }
+    }
 
   }
 
@@ -222,9 +281,9 @@ export default class SolarSystem extends Mission {
   }
 
   // spawn enemy ships
-  spawnEnemyShips(number, hulls) {
+  spawnEnemyShips(number, hulls, fixedTargetId) {
 
-    const enemyPlanet = this.planets.Mars;
+    const enemyPlanet = this.planets.Pluto;
     let rotation = Math.random() * 180;
 
     // create and add ships
@@ -232,10 +291,15 @@ export default class SolarSystem extends Mission {
 
       // pick a random target
       let targetId = -1;
-      let targets = this.friendlyFreighters.concat(this.friendlyStations);
-      if (targets.length > 0) {
-        let target = targets[Math.floor(Math.random()*targets.length)];
-        targetId = target.id;
+      if (fixedTargetId) {
+        targetId = fixedTargetId;
+      } else {
+        let targets = this.friendlyFreighters.concat(this.friendlyStations);
+        if (targets.length > 0) {
+          let target = targets[Math.floor(Math.random()*targets.length)];
+          console.log("Target:"+target.name);
+          targetId = target.id;
+        }
       }
 
       let hullName = hulls[j];
@@ -250,24 +314,14 @@ export default class SolarSystem extends Mission {
       position = position.add(Victor.fromArray(enemyPlanet.physicsObj.position));
       velocity = velocity.add(Victor.fromArray(enemyPlanet.physicsObj.velocity));
 
-      // if (isNaN(position.x)) {
-      //   console.log("enemyPlanet:");
-      //   console.dir({
-      //     rotation: rotation,
-      //     mass: enemyPlanet.physicsObj.mass,
-      //     position: enemyPlanet.physicsObj.position,
-      //     velocity: enemyPlanet.physicsObj.velocity,
-      //   });
-      // }
       let enemyShip = this.game.addShip({
-          name: "Mikkei "+hullName+" "+j,
+          name: "Mikkei "+j,
           x: position.x,
           y: position.y,
           dX: velocity.x,
           dY: velocity.y,
           hull: hullName,
           angle: Math.PI,
-          playable: 1,
           faction: this.enemyFaction,
           aiScript: 4,
           targetId: targetId
@@ -286,7 +340,7 @@ export default class SolarSystem extends Mission {
     // pick a new planet to travel to, after a delay
     let currentPlanet = ship.targetId;
     while (currentPlanet == ship.targetId) {
-      ship.targetId = Math.round(1 + (Math.random()*8));
+      ship.targetId = Math.round(1 + (Math.random()*7));
     }
     console.log("ship.targetId="+ship.targetId);
 
