@@ -1,14 +1,14 @@
 import CompositeRenderer from './Composite';
-import LocalMapBackground from './SubRenderers/LocalMapBackground';
-import LocalMapRanges from './SubRenderers/LocalMapRanges';
-import LocalMap from './SubRenderers/LocalMap';
-import LocalMapHud from './SubRenderers/LocalMapHud';
-import LocalMapPaths from './SubRenderers/LocalMapPaths';
+import MapBackground from './SubRenderers/MapBackground';
+import MapRanges from './SubRenderers/MapRanges';
+import Map from './SubRenderers/Map';
+import MapHud from './SubRenderers/MapHud';
+import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 // import OpenCommsControl from './SubRenderers/OpenCommsControl';
 // import CommsControl from './SubRenderers/CommsControl';
 import HudData from './SubRenderers/HudData';
-import LocalMapPanControl from './SubRenderers/LocalMapPanControl';
+import MapPanControl from './SubRenderers/MapPanControl';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
 import GlobalSound from './SubRenderers/GlobalSound';
 import LocalSound from './SubRenderers/LocalSound';
@@ -40,7 +40,7 @@ export default class CaptainRenderer extends CompositeRenderer {
         baseUrl: '/',
         dashboardColor: 0x990000,
         subRenderers: [
-          new LocalMapBackground({
+          new MapBackground({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -48,7 +48,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 5,
             mapSize: mapSize
           }),
-          new LocalMapRanges({
+          new MapRanges({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -56,7 +56,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 9,
             mapSize: mapSize
           }),
-          new LocalMapPaths({
+          new MapPaths({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -66,7 +66,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             trackObjects: true,
             mapSize: mapSize
           }),
-          new LocalMap({
+          new Map({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -74,7 +74,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             zIndex: 15,
             mapSize: mapSize
           }),
-          new LocalMapHud({
+          new MapHud({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -88,7 +88,7 @@ export default class CaptainRenderer extends CompositeRenderer {
             keyboardControls: true,
             onScreenControls: false
           }),
-          new LocalMapPanControl({
+          new MapPanControl({
             wasd: true,
             arrows: true,
           }),

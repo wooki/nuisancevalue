@@ -1,7 +1,7 @@
 import CompositeRenderer from './Composite';
-import LocalMapBackground from './SubRenderers/LocalMapBackground';
-import LocalMap from './SubRenderers/LocalMap';
-import LocalMapHud from './SubRenderers/LocalMapHud';
+import MapBackground from './SubRenderers/MapBackground';
+import Map from './SubRenderers/Map';
+import MapHud from './SubRenderers/MapHud';
 import PowerGrid from './SubRenderers/PowerGrid';
 import TorpedoLoadControl from './SubRenderers/TorpedoLoadControl';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
@@ -35,7 +35,7 @@ export default class EngineerRenderer extends CompositeRenderer {
         baseUrl: '/',
         dashboardColor: 0x990000,
         subRenderers: [
-          new LocalMapBackground({
+          new MapBackground({
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,
@@ -43,7 +43,7 @@ export default class EngineerRenderer extends CompositeRenderer {
             zIndex: 1,
             mapSize: 6000
           }),
-          new LocalMap({
+          new Map({
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,
@@ -51,7 +51,7 @@ export default class EngineerRenderer extends CompositeRenderer {
             zIndex: 2,
             mapSize: 6000
           }),
-          new LocalMapHud({
+          new MapHud({
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,

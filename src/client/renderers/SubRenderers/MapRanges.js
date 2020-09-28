@@ -9,7 +9,7 @@ import Asteroid from '../../../common/Asteroid';
 import Planet from '../../../common/Planet';
 import Victor from 'victor';
 
-export default class LocalMapRanges {
+export default class MapRanges {
 
   // keep track of where the renderer wants us to draw this
   constructor(params) {

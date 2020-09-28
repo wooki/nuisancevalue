@@ -1,12 +1,12 @@
 import CompositeRenderer from './Composite';
-import LocalMapBackground from './SubRenderers/LocalMapBackground';
-import LocalMap from './SubRenderers/LocalMap';
-import LocalMapHud from './SubRenderers/LocalMapHud';
+import MapBackground from './SubRenderers/MapBackground';
+import Map from './SubRenderers/Map';
+import MapHud from './SubRenderers/MapHud';
 import EngineControl from './SubRenderers/EngineControl';
 import ManeuverControl from './SubRenderers/ManeuverControl';
 import DockingControl from './SubRenderers/DockingControl';
 import HudData from './SubRenderers/HudData';
-import LocalMapPaths from './SubRenderers/LocalMapPaths';
+import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import FuelGauge from './SubRenderers/FuelGauge';
 import GlobalSound from './SubRenderers/GlobalSound';
@@ -38,28 +38,28 @@ export default class HelmRenderer extends CompositeRenderer {
         baseUrl: '/',
         dashboardColor: 0x2c332c,
         subRenderers: [
-          new LocalMapBackground({
+          new MapBackground({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 5
           }),
-          new LocalMapPaths({
+          new MapPaths({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 12
           }),
-          new LocalMap({
+          new Map({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 15
           }),
-          new LocalMapHud({
+          new MapHud({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,

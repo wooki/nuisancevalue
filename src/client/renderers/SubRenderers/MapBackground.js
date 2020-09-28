@@ -4,7 +4,7 @@ import UiUtils from '../Utils/UiUtils';
 import {GlitchFilter} from '@pixi/filter-glitch';
 import {PixelateFilter} from '@pixi/filter-pixelate';
 
-export default class LocalMapBackground {
+export default class MapBackground {
 
   // keep track of where the renderer wants us to draw this
   constructor(params) {

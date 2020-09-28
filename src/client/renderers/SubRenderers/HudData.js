@@ -6,7 +6,7 @@ import SolarObjects from '../../../common/SolarObjects';
 import Factions from '../../../common/Factions';
 import Asteroid from '../../../common/Asteroid';
 
-// Info panels for the data drawn on LocalMapHud
+// Info panels for the data drawn on MapHud
 export default class HudData {
 
   constructor(params) {

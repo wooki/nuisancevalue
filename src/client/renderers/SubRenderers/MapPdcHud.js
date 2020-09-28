@@ -9,9 +9,9 @@ const effects = {
   pdcHudColor: new ColorReplaceFilter([0, 0, 0], [0.2, 1, 0.2], 0.2)
 };
 
-// designed to be drawn above the LocalMap, shows the current
+// designed to be drawn above the Map, shows the current
 // state of the PDC
-export default class LocalMapPdcHud {
+export default class MapPdcHud {
 
   // keep track of where the renderer wants us to draw this
   constructor(params) {

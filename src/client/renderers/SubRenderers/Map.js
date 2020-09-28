@@ -3,7 +3,7 @@ const PIXI = require('pixi.js');
 import Victor from 'victor';
 import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import {BevelFilter} from '@pixi/filter-bevel';
-// import {GlowFilter} from '@pixi/filter-glow'; // produced odd bugs with color replace filter used on LocalMapHud
+// import {GlowFilter} from '@pixi/filter-glow'; // produced odd bugs with color replace filter used on MapHud
 // import {ColorOverlayFilter} from '@pixi/filter-color-overlay';
 import {OutlineFilter} from '@pixi/filter-outline';
 // import {CRTFilter} from '@pixi/filter-crt';
@@ -20,7 +20,7 @@ import Asteroid from '../../../common/Asteroid';
 import Planet from '../../../common/Planet';
 import Factions from '../../../common/Factions';
 
-export default class LocalMap {
+export default class Map {
 
   // keep track of where the renderer wants us to draw this
   constructor(params) {

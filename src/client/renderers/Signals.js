@@ -1,15 +1,15 @@
 import CompositeRenderer from './Composite';
-import LocalMapBackground from './SubRenderers/LocalMapBackground';
-import LocalMapRanges from './SubRenderers/LocalMapRanges';
-import LocalMap from './SubRenderers/LocalMap';
-import LocalMapHud from './SubRenderers/LocalMapHud';
-import LocalMapPaths from './SubRenderers/LocalMapPaths';
+import MapBackground from './SubRenderers/MapBackground';
+import MapRanges from './SubRenderers/MapRanges';
+import Map from './SubRenderers/Map';
+import MapHud from './SubRenderers/MapHud';
+import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import TargetSelection from './SubRenderers/TargetSelection';
 import OpenCommsControl from './SubRenderers/OpenCommsControl';
 import CommsControl from './SubRenderers/CommsControl';
 import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
-import LocalMapPdcHud from './SubRenderers/LocalMapPdcHud';
+import MapPdcHud from './SubRenderers/MapPdcHud';
 import PdcFireControl from './SubRenderers/PdcFireControl';
 import SignalsData from './SubRenderers/SignalsData';
 import GlobalSound from './SubRenderers/GlobalSound';
@@ -41,7 +41,7 @@ export default class SignalsRenderer extends CompositeRenderer {
         baseUrl: '/',
         dashboardColor: 0x003366,
         subRenderers: [
-          new LocalMapBackground({
+          new MapBackground({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -49,7 +49,7 @@ export default class SignalsRenderer extends CompositeRenderer {
             zIndex: 5,
             mapSize: 30000
           }),
-          new LocalMapRanges({
+          new MapRanges({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -57,7 +57,7 @@ export default class SignalsRenderer extends CompositeRenderer {
             zIndex: 9,
             mapSize: 30000
           }),
-          new LocalMapPaths({
+          new MapPaths({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -67,7 +67,7 @@ export default class SignalsRenderer extends CompositeRenderer {
             trackObjects: true,
             mapSize: 30000
           }),
-          new LocalMap({
+          new Map({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -75,7 +75,7 @@ export default class SignalsRenderer extends CompositeRenderer {
             zIndex: 15,
             mapSize: 30000
           }),
-          new LocalMapHud({
+          new MapHud({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,
@@ -84,7 +84,7 @@ export default class SignalsRenderer extends CompositeRenderer {
             mapSize: 30000,
             predictTime: 120 // to match waypoint predicition with nav
           }),
-          new LocalMapPdcHud({
+          new MapPdcHud({
             x: halfWidth - (halfHeight - margin),
             y: margin,
             width: fullHeight - marginFull,

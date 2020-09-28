@@ -9,7 +9,7 @@ import Hulls from '../../../common/Hulls';
 import Factions from '../../../common/Factions';
 import SolarObjects from '../../../common/SolarObjects';
 
-// Info panels for the data drawn on LocalMapHud
+// Info panels for the data drawn on MapHud
 export default class SelectedNavData {
 
   constructor(params) {

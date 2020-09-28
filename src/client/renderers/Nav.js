@@ -1,13 +1,13 @@
 import CompositeRenderer from './Composite';
-import LocalMapBackground from './SubRenderers/LocalMapBackground';
-import LocalMapRanges from './SubRenderers/LocalMapRanges';
-import LocalMap from './SubRenderers/LocalMap';
-import LocalMapHud from './SubRenderers/LocalMapHud';
-import LocalMapPaths from './SubRenderers/LocalMapPaths';
+import MapBackground from './SubRenderers/MapBackground';
+import MapRanges from './SubRenderers/MapRanges';
+import Map from './SubRenderers/Map';
+import MapHud from './SubRenderers/MapHud';
+import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
 import NavData from './SubRenderers/NavData';
 import SelectedNavData from './SubRenderers/SelectedNavData';
-import LocalMapPanControl from './SubRenderers/LocalMapPanControl';
+import MapPanControl from './SubRenderers/MapPanControl';
 import GlobalSound from './SubRenderers/GlobalSound';
 import LocalSound from './SubRenderers/LocalSound';
 
@@ -35,7 +35,7 @@ export default class NavRenderer extends CompositeRenderer {
         baseUrl: '/',
         dashboardColor: 0x996633,
         subRenderers: [
-          new LocalMapBackground({
+          new MapBackground({
             x: 0,
             y: 0,
             width: fullWidth,
@@ -46,7 +46,7 @@ export default class NavRenderer extends CompositeRenderer {
             borderWidth: 0,
             backgroundAsset: 'black'
           }),
-          new LocalMapRanges({
+          new MapRanges({
             x: 0,
             y: 0,
             width: fullWidth,
@@ -55,7 +55,7 @@ export default class NavRenderer extends CompositeRenderer {
             mapSize: mapSize,
             shape: "rectangle"
           }),
-          new LocalMapPaths({
+          new MapPaths({
             x: 0,
             y: 0,
             width: fullWidth,
@@ -67,7 +67,7 @@ export default class NavRenderer extends CompositeRenderer {
             mapSize: mapSize,
             shape: "rectangle"
           }),
-          new LocalMap({
+          new Map({
             x: 0,
             y: 0,
             width: fullWidth,
@@ -76,7 +76,7 @@ export default class NavRenderer extends CompositeRenderer {
             mapSize: mapSize,
             shape: "rectangle"
           }),
-          new LocalMapHud({
+          new MapHud({
             x: 0,
             y: 0,
             width: fullWidth,
@@ -95,7 +95,7 @@ export default class NavRenderer extends CompositeRenderer {
             maxZoom: 8,
             zoomStep: 0.05,
           }),
-          new LocalMapPanControl({
+          new MapPanControl({
             wasd: true,
             arrows: false,
           }),

@@ -1,5 +1,5 @@
 // keyboard controls for panning around the map, via shared state (client side only)
-export default class LocalMapPanControl {
+export default class MapPanControl {
 
   constructor(params) {
     this.parameters = Object.assign({

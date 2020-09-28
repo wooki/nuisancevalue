@@ -8,9 +8,9 @@ import {GlitchFilter} from '@pixi/filter-glitch';
 import {PixelateFilter} from '@pixi/filter-pixelate';
 // import UiUtils from '../Utils/UiUtils';
 
-// designed to be drawn above the LocalMap, shows the current
+// designed to be drawn above the Map, shows the current
 // bearing/heading/waypoints etc. around the end
-export default class LocalMapHud {
+export default class MapHud {
 
   // keep track of where the renderer wants us to draw this
   constructor(params) {
