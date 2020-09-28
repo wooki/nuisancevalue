@@ -22,6 +22,8 @@ export default class BaseShip {
 	// start attempting a scan
 	sensed(ship, target, mission, game) {
 
+		if (ship.hull == "blockade-runner") console.log("sensed:"+(target.name || target.texture));
+
 		// log this ship as a potential to scan
 		if (!ship.aiScanTargets) ship.aiScanTargets = [];
 		ship.aiScanTargets.push(target);
@@ -44,10 +46,19 @@ export default class BaseShip {
 
 		// check if any ships we have scanned are in weapons range and we're ready to fire
 		if (ship.aiTargets) {
+			let removeTargets = [];
+
 			for (let i = 0; i < ship.aiTargets.length; i++) {
 
 				let target = ship.aiTargets[i];
 				let hullData = ship.getHullData();
+
+				if (target.damage >= target.getMaxDamage()) {
+					console.log("remove target: "+target.name+" ("+target.id+")");
+					console.log("   damage: "+target.damage);
+					console.log("   getMaxDamage: "+target.getMaxDamage());
+					removeTargets.push(i);
+				}
 
 				// check if we can fire torps
 				if (hullData.ai && hullData.ai.torpedo) {
@@ -89,6 +100,12 @@ export default class BaseShip {
 				} // no weapon ai
 
 			} // every target
+
+			if (removeTargets.length > 0) {
+				ship.aiTargets = ship.aiTargets.filter(function(t, i) {
+					return !removeTargets.includes(i);
+				});
+			}
 		} // has targets
 	}
 
@@ -112,10 +129,11 @@ export default class BaseShip {
 						// only scan ourselves if not already scanned and within range
 						let range = Victor.fromArray(ship.physicsObj.position).distance(Victor.fromArray(ship.aiScanTargets[i].physicsObj.position));
 						if (hullData.ai && hullData.ai.scan && range <= hullData.scanRanges[1]) {
-							let rnd = Math.random();							
+							let rnd = Math.random();
 							scanned = (rnd < hullData.ai.scan);
-						} else {
-							// out of range so stop looking for scan
+						} else if (range > 1.5 * hullData.scanRanges[1]) {
+							// out of range so stop looking for scan - if really out of range (this has a fuzzy edge)
+							if (ship.hull == "blockade-runner") console.log("remove scan target (out of range): "+ship.aiScanTargets[i].name);
 							removeTargets.push(i);
 						}
 					}

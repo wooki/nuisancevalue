@@ -16,6 +16,7 @@ export default {
 		mass: 0.012,
 		thrust: 0.07,
 		maneuver: 1.2,
+		damage: 1600,
 		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
 		pdc: {
@@ -49,6 +50,7 @@ export default {
 		mass: 0.014,
 		thrust: 0.05,
 		maneuver: 1.4,
+		damage: 1300,
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		fuel: 10000,
@@ -77,6 +79,7 @@ export default {
 		mass: 0.012,
 		thrust: 0.07,
 		maneuver: 1.2,
+		damage: 1800,
 		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
 		pdc: {
@@ -110,6 +113,7 @@ export default {
 		mass: 0.008,
 		thrust: 0.07,
 		maneuver: 0.8,
+		damage: 1600,
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		pdc: {
@@ -143,6 +147,7 @@ export default {
 		thrust: 0.1,
 		maneuver: 0.4,
 		mass: 0.1,
+		damage: 2500,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		fuel: 10000,

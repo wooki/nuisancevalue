@@ -13,49 +13,49 @@ export default class TestMission extends Mission {
   build() {
     super.build();
 
-    this.game.addAsteroid({
-        x: 110000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        mass: 1, size: 500
-    });
-
-    this.game.addAsteroid({
-        x: 210000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        mass: 1, size: 1500
-    });
-
-    this.game.addAsteroid({
-        x: 510000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        mass: 1, size: 2500
-    });
-
-    this.game.addAsteroid({
-        x: 310000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        mass: 1, size: 2200
-    });
-
-    let mars = this.game.addPlanet({
-      x: 20000,
-      y: 0,
-      dX: 0,
-      dY: 0,
-      mass: SolarObjects.Mars.mass,
-      size: SolarObjects.Mars.diameter,
-      texture: 'mars',
-      angle: Math.random() * 2 * Math.PI,
-      angularVelocity: Math.random()
-    });
+    // this.game.addAsteroid({
+    //     x: 110000,
+    //     y: 0,
+    //     dX: 0,
+    //     dY: 0,
+    //     mass: 1, size: 500
+    // });
+    //
+    // this.game.addAsteroid({
+    //     x: 210000,
+    //     y: 0,
+    //     dX: 0,
+    //     dY: 0,
+    //     mass: 1, size: 1500
+    // });
+    //
+    // this.game.addAsteroid({
+    //     x: 510000,
+    //     y: 0,
+    //     dX: 0,
+    //     dY: 0,
+    //     mass: 1, size: 2500
+    // });
+    //
+    // this.game.addAsteroid({
+    //     x: 310000,
+    //     y: 0,
+    //     dX: 0,
+    //     dY: 0,
+    //     mass: 1, size: 2200
+    // });
+    //
+    // let mars = this.game.addPlanet({
+    //   x: 20000,
+    //   y: 0,
+    //   dX: 0,
+    //   dY: 0,
+    //   mass: SolarObjects.Mars.mass,
+    //   size: SolarObjects.Mars.diameter,
+    //   texture: 'mars',
+    //   angle: Math.random() * 2 * Math.PI,
+    //   angularVelocity: Math.random()
+    // });
 
     for (let i = 0; i < 1; i++) {
       let hullName = 'spacebug';
@@ -76,18 +76,18 @@ export default class TestMission extends Mission {
       });
     }
 
-    let earthStation1 = this.game.addShip({
-        name: "Earth Station 1",
-        x: 60000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        size: 560, // need to read mass and size from hull
-        hull: 'station',
-        commsScript: 1,
-        angle: 2,
-        faction: this.factions.russian,
-    });
+    // let earthStation1 = this.game.addShip({
+    //     name: "Earth Station 1",
+    //     x: 60000,
+    //     y: 0,
+    //     dX: 0,
+    //     dY: 0,
+    //     size: 560, // need to read mass and size from hull
+    //     hull: 'station',
+    //     commsScript: 1,
+    //     angle: 2,
+    //     faction: this.factions.russian,
+    // });
 
     let hullName2 = 'tug';
     let hullData2 = Hulls[hullName2];
@@ -98,6 +98,7 @@ export default class TestMission extends Mission {
         dX: 0,
         dY: 0,
         hull: hullName2,
+        faction: this.factions.spaceForce,
         angle: Math.PI*0.5,
         // angle: Math.PI*0.5,
         playable: 0,
@@ -130,12 +131,36 @@ export default class TestMission extends Mission {
         fuel: 100,
         engine: 0
     });
+
+    this.game.addTorpedo({
+        x: -4000,
+        y: -3500,
+        dX: 0,
+        dY: 0,
+        mass: 0.0005,
+        angle: Math.PI,
+        targetId: tug.id,
+        fuel: 100,
+        engine: 0
+    });
+
+    this.game.addTorpedo({
+        x: -4000,
+        y: -5000,
+        dX: 0,
+        dY: 0,
+        mass: 0.0005,
+        angle: Math.PI,
+        targetId: tug.id,
+        fuel: 100,
+        engine: 0
+    });
     //
     // random asteroids
     let asteroidDistance = 20000;
     let asteroidDistanceVariance = 5000;
 
-    for (let asteroidIndex = 0; asteroidIndex < 100; asteroidIndex++) {
+    for (let asteroidIndex = 0; asteroidIndex < 0; asteroidIndex++) {
 
         // create a point and vector then rotate to a random position
         let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);

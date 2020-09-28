@@ -74,7 +74,7 @@ export default class LocalMapRanges {
   // now handles two ranges
   createMapSensorRangeUi() {
 
-    // snesor range
+    // sensor range
     if (this.mapSensorRangeUi) {
       this.mapContainer.removeChild(this.mapSensorRangeUi);
       this.mapSensorRangeUi.destroy();
@@ -221,13 +221,8 @@ export default class LocalMapRanges {
     this.mapVisualRangeUi.update(this.getVisualRangesArray());
   }
 
-  everyRemoveObject(obj, renderer) {
-    let actualPlayerShip = this.dockedShip || this.playerShip;
-    if (actualPlayerShip && obj instanceof Ship) {
-      if (obj.isFriend(actualPlayerShip.faction)) {
-        delete this.sameFactionShips[obj.id];
-      }
-    }
+  everyRemoveObject(key, renderer) {
+    delete this.sameFactionShips[key];
   }
 
   everyObject(obj, renderer) {
@@ -238,11 +233,6 @@ export default class LocalMapRanges {
 
     let actualPlayerShip = this.dockedShip || this.playerShip;
     if (actualPlayerShip && obj instanceof Ship) {
-      if (actualPlayerShip.faction == 0) {
-        console.log("faction = 0 - how?");
-        console.dir(this.playerShip);
-        console.dir(this.dockedShip);
-      }
       if (obj.isFriend(actualPlayerShip.faction)) {
         this.sameFactionShips[obj.id] = obj;
       }

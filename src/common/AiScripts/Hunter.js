@@ -40,6 +40,8 @@ export default class Hunter extends BaseShip {
 				let target = game.world.objects[ship.targetId];
 				if (!target) {
 					// no target means stay in orbit
+					this.reportNoTarget(ship, mission, game);
+					
 				} else if (!ship.gravityData) {
 					// if we haven't got a gravity source just TRAVEL
 					ship.aiPlan = HUNTER_PLAN_TRAVEL;
@@ -47,6 +49,8 @@ export default class Hunter extends BaseShip {
 					// otherwise LEAVE
 					ship.aiPlan = HUNTER_PLAN_LEAVE;
 				}
+			} else {
+				this.reportNoTarget(ship, mission, game);
 			}
 		}
 

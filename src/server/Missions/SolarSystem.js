@@ -230,7 +230,7 @@ export default class SolarSystem extends Mission {
     // check for, remove and replace enemy ships - and check for victory
     for (let i = 0; i < this.enemyShips.length; i++) {
         if (this.enemyShips[i] && this.enemyShips[i].id == id) {
-          delete this.enemyShips[i];
+          this.enemyShips.splice(i, 1);
           this.playerKills = this.playerKills + 1;
           console.log("Player Kills:"+this.playerKills);
 
@@ -248,7 +248,7 @@ export default class SolarSystem extends Mission {
     // check for and remove friendly stations
     for (let j = 0; j < this.friendlyStations.length; j++) {
       if (this.friendlyStations[j] && this.friendlyStations[j].id == id) {
-        delete this.friendlyStations[j];
+        this.friendlyStations.splice(j, 1);
         delete this.friendlyStationsById[id];
       }
     }
@@ -256,8 +256,7 @@ export default class SolarSystem extends Mission {
     // check for and remove friendly freighters
     for (let k = 0; k < this.friendlyFreighters.length; k++) {
       if (this.friendlyFreighters[k] && this.friendlyFreighters[k].id == id) {
-        delete this.friendlyFreighters[k];
-        delete this.friendlyFreightersById[id];
+        this.friendlyFreighters.splice(k, 1);
       }
     }
 
@@ -271,10 +270,17 @@ export default class SolarSystem extends Mission {
     }
 
     if (name == "AI.Hunter.NoTarget") {
+
+      console.log("AI.Hunter.NoTarget");
+      console.log("id = "+data.ship.targetId);
       // pick a random target
       let targets = this.friendlyFreighters.concat(this.friendlyStations);
       if (targets.length > 0) {
         let target = targets[Math.floor(Math.random()*targets.length)];
+        if (!target) {
+          console.log("Random Target Is Null "+targets.length);
+          console.dir(Object.keys(targets));
+        }
         data.ship.targetId = target.id;
       }
     }
@@ -284,7 +290,7 @@ export default class SolarSystem extends Mission {
   spawnEnemyShips(number, hulls, fixedTargetId) {
 
     const enemyPlanet = this.planets.Pluto;
-    let rotation = Math.random() * 180;
+    let rotation = -180;
 
     // create and add ships
     for (let j = 0; j < number; j++) {

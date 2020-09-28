@@ -33,6 +33,7 @@ export default class CompositeRenderer {
       this.uiWidth = window.innerWidth;
       this.uiHeight = window.innerHeight;
       this.serverObjects = {}; // list of in-game object keys that we keep track of
+      this.allServerObjects = {}; // list of ALL in-game object keys that we keep track of, this includes out of range ones
       this.sprites = {};  // keep track of any sprites we add
       this.sharedState = {}; // state that can be shared between subRenderers so one renderer can effect another
 
@@ -305,6 +306,7 @@ export default class CompositeRenderer {
 
                 // some stations require every object
                 this.everyObject(obj, this);
+                this.allServerObjects[obj.id] = true;
                 allObjects[obj.id] = true;
 
                 // check if we have sensed (for types that need to be)
@@ -334,6 +336,7 @@ export default class CompositeRenderer {
                   // remember we had this one
                   sensedObjects[obj.id] = true;
                 }
+
               });
 
 
@@ -343,8 +346,11 @@ export default class CompositeRenderer {
                     delete this.serverObjects[key];
                     this.removeObject(key);
                 }
+              });
+
+              Object.keys(this.allServerObjects).forEach((key) => {
                 if (!allObjects[key]) {
-                    // delete this.serverObjects[key];
+                    delete this.allServerObjects[key];
                     this.everyRemoveObject(key);
                 }
               });

@@ -64,7 +64,8 @@ export default class Ship extends PhysicalObject2D {
     // based on hull size
     getMaxDamage() {
       let hull = this.getHullData();
-      return Math.floor((hull.size * hull.size * hull.width) / 50);
+      // return Math.floor((hull.size * hull.size * hull.width) / 50);
+      return hull['damage'] || Math.floor((hull.size * hull.size * hull.width) / 100);
     }
 
     loadTorp(tube, torpType) {
