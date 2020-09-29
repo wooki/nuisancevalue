@@ -317,7 +317,7 @@ export default class NvGameEngine extends GameEngine {
                     }
 
                     // apply force towards source
-                    if (gravSourceAmount && gravSource) {
+                    if (gravSourceAmount && gravSource && gravSourceAmount > 0.02) {
 
                         // flip x coord of obj because our 0,0 is top left
                         // let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
@@ -747,7 +747,7 @@ export default class NvGameEngine extends GameEngine {
         } else {
           s = new Ship(this, {}, {
               mass: params['mass'] || hullData.mass,
-              angularVelocity: params['angularVelocity'] || 0,              
+              angularVelocity: params['angularVelocity'] || 0,
               position: new TwoVector(params['x'], params['y']),
               velocity: new TwoVector(params['dX'], params['dY']),
               angle: params['angle'] || 0

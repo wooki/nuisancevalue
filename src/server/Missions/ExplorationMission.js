@@ -63,28 +63,37 @@ export default class ExplorationMission extends Mission {
         fuel: 10000
     });
 
+    // add mothership ship
+    this.mothership = this.game.addShip({
+        name: "Irregular Apocalyse",
+        x: 0 - (SolarObjects.Neptune.orbit + 1000),
+        y: 0 - ((SolarObjects.Neptune.orbit/2) + 1000),
+        dX: 0,
+        dY: 25,
+        engine: 0,
+        hull: 'frigate',
+        angle: 0 - (Math.PI * 0.5),
+        faction: this.playerFaction,
+        fuel: 40000
+    });
+
     // add wreckage to investigate
-    let wreckageOrbitDistance = 1000;
-    // let wreckageOrbitDistance = distanceApart*5;
+    let wreckageOrbitDistance = distanceApart*5;
     let wreckageOrbitSpeed = Math.sqrt((SolarObjects.constants.G * star1Mass) / wreckageOrbitDistance);
     let position = new Victor(wreckageOrbitDistance, 0);
     let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
     let rotation = 120 * Math.random();
     position = position.rotateDeg(rotation);
     velocity = velocity.rotateDeg(rotation);
-    // position = position.add(Victor.fromArray(this.star1.physicsObj.position));
-    // velocity = velocity.add(Victor.fromArray(this.star1.physicsObj.velocity));
-    position = position.add(Victor.fromArray(this.playerShip.physicsObj.position));
-    velocity = velocity.add(Victor.fromArray(this.playerShip.physicsObj.velocity));
+    position = position.add(Victor.fromArray(this.star1.physicsObj.position));
+    velocity = velocity.add(Victor.fromArray(this.star1.physicsObj.velocity));
 
     let wreckage = this.game.addShip({
         name: "Wreckage",
         x: position.x,
         y: position.y,
-        // dX: velocity.x,
-        // dY: velocity.y,
-        dX: 0,
-        dY: 0,
+        dX: velocity.x,
+        dY: velocity.y,
         hull: 'corvette-wreckage',
         angle: (Math.random() * 2),
         angularVelocity: Math.random(),
