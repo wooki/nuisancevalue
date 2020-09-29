@@ -10,9 +10,10 @@ import Hulls from '../common/Hulls';
 import SolarObjects from '../common/SolarObjects';
 import Victor from 'victor';
 import CollisionUtils from '../common/CollisionUtils';
+
 import SolarSystem from './Missions/SolarSystem';
-import TestMission from './Missions/TestMission';
-import SimpleTestMission from './Missions/SimpleTestMission';
+import ExplorationMission from './Missions/ExplorationMission';
+import TargetTestMission from './Missions/TargetTestMission';
 
 export default class NvServerEngine extends ServerEngine {
 
@@ -22,7 +23,7 @@ export default class NvServerEngine extends ServerEngine {
         this.mission = null;
         this.lastMissionSeconds = 0;
         this.missionSecondsOffset = 0;
-        this.missions = [TestMission, SimpleTestMission, SolarSystem];
+        this.missions = [SolarSystem, ExplorationMission, TargetTestMission];
     }
 
     // remove everything from the game

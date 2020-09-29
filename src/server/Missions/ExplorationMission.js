@@ -4,7 +4,7 @@ import SolarObjects from '../../common/SolarObjects';
 import Victor from 'victor';
 import Mission from './Mission';
 
-export default class TestMission extends Mission {
+export default class ExplorationMission extends Mission {
 
   constructor(gameEngine) {
     super(gameEngine);

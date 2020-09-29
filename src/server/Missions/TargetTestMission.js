@@ -3,7 +3,7 @@ import Hulls from '../../common/Hulls';
 import Victor from 'victor';
 import Mission from './Mission';
 
-export default class SimpleTestMission extends Mission {
+export default class TargetTestMission extends Mission {
 
   constructor(gameEngine) {
     super(gameEngine);
