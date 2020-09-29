@@ -8,6 +8,41 @@ const STANDARD_SYSTEMS_LAYOUT = systems.getSystemLayout();
 // some reference data for ships we can use in game
 export default {
 
+	"frigate": {
+		name: 'Frigate',
+		image: 'assets/frigate.png',
+		size: 800, // used for height
+		width: 0.4823, // ratio to height
+		mass: 0.08,
+		thrust: 0.5,
+		maneuver: 3,
+		damage: 2600,
+		enginePositions: [[0.15, 0.21, 1.4], [0.15, 0.79, 1.4]],// [scale, %x, %y]
+		exhaustImage: 'exhaust',
+		pdc: {
+			range: 6000,
+			size: 1400,
+			rotationRate: 0.015
+		},
+		dockable: true,
+		fuel: 40000,
+		tubes: 8,
+		systems: STANDARD_SYSTEMS, // this is a bit encoded set of valid systems that CAN BE damaged
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
+		maxWeaponStock: [6000, 80, 40],
+		defaultWeaponStock: [4000, 60, 20],
+		scanRanges: [8000, 120000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		ai: { // variables for the AI to behave diferently by hull
+			refuel: 0.3, // amount of fuel to add every step
+			scan: 0.15, // chance to scan a ship in range every plan (1/s)
+			torpedo: {
+				range: 70000, // range to fire at
+				reload: 16, // ms
+				volley: 4 // fire 2 of the 4 tubes, hence reload is half
+			}
+		}
+	},
+
 	"spacebug": {
 		name: 'Spacebug',
 		image: 'assets/spacebug.png',

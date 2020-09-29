@@ -35,7 +35,7 @@ export default class PlayableShip extends Ship {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.INT16 // 0=PDC, n-1=torp type - value = ammo
             },
-            fuel: { type: BaseTypes.TYPES.INT16 },
+            fuel: { type: BaseTypes.TYPES.INT32 },
             oxygen: { type: BaseTypes.TYPES.UINT8 }
         }, super.netScheme);
     }

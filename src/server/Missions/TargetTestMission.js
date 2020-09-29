@@ -60,7 +60,7 @@ export default class TargetTestMission extends Mission {
         mass: 1, size: 2000
     });
 
-    let hullName = 'bushido';
+    let hullName = 'frigate';
     let hullData = Hulls[hullName];
     let nv = this.game.addShip({
         name: "Nuisance Value",
@@ -71,6 +71,7 @@ export default class TargetTestMission extends Mission {
         hull: hullName,
         angle: Math.PI,
         playable: 1,
+        fuel: 40000,
         faction: this.factions.jupiter
     });
 
