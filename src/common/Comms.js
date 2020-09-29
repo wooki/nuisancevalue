@@ -4,6 +4,8 @@ import Factions from './Factions';
 import Station from './CommScripts/Station';
 import MissionSuccess from './CommScripts/MissionSuccess';
 import SolarSystemMissionIntro from './CommScripts/SolarSystemMissionIntro';
+import ExplorationMissionIntro from './CommScripts/ExplorationMissionIntro';
+import ExplorationMissionWreckage from './CommScripts/ExplorationMissionWreckage';
 
 // comms scripts are stored an UINT8 so we have 0-255 possible scripts,
 // which are named here
@@ -16,6 +18,8 @@ scripts[99] = MissionSuccess;
 
 // mission scripts reserved from 100 onwards
 scripts[100] = SolarSystemMissionIntro;
+scripts[101] = ExplorationMissionIntro;
+scripts[102] = ExplorationMissionWreckage;
 
 export default class Comms {
 

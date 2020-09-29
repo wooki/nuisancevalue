@@ -68,21 +68,22 @@ export default class ExplorationMission extends Mission {
         name: "Irregular Apocalyse",
         x: 0 - (SolarObjects.Neptune.orbit + 1000),
         y: 0 - ((SolarObjects.Neptune.orbit/2) + 1000),
-        dX: 0,
-        dY: 25,
+        dX: 25,
+        dY: 0,
         engine: 0,
         hull: 'frigate',
         angle: 0 - (Math.PI * 0.5),
         faction: this.playerFaction,
+        commsScript: 101,
         fuel: 40000
     });
 
     // add wreckage to investigate
-    let wreckageOrbitDistance = distanceApart*5;
+    let wreckageOrbitDistance = distanceApart*(4 + (Math.random() * 1.5));
     let wreckageOrbitSpeed = Math.sqrt((SolarObjects.constants.G * star1Mass) / wreckageOrbitDistance);
     let position = new Victor(wreckageOrbitDistance, 0);
     let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
-    let rotation = 120 * Math.random();
+    let rotation = -90 + (270 * Math.random());
     position = position.rotateDeg(rotation);
     velocity = velocity.rotateDeg(rotation);
     position = position.add(Victor.fromArray(this.star1.physicsObj.position));
@@ -97,10 +98,29 @@ export default class ExplorationMission extends Mission {
         hull: 'corvette-wreckage',
         angle: (Math.random() * 2),
         angularVelocity: Math.random(),
-        // aiScript: 5, // Orbiter
-        fixedgravity: this.star1
+        // faction: this.playerFaction, // useful for testing so I can see where it is immediately
+        commsScript: 102
     });
 
+    this.missionIntro = function(game, seconds) {
+
+      // both still in game
+      if (this.mothership && this.playerShip) {
+
+        if (this.playerShip.commsState == 0 && this.mothership.commsTargetId < 0) {
+
+          // suggest call
+          this.playerShip.commsTargetId = this.mothership.id;
+
+        } else {
+          // try again later
+          this.addTimedEvent(seconds+10, this.missionIntro);
+        }
+      }
+
+    }.bind(this);
+
+    this.addTimedEvent(15, this.missionIntro);
   }
 
 
