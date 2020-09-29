@@ -63,7 +63,7 @@ export default class SolarSystem extends Mission {
           angle: (Math.random() * 2),
           faction: this.playerFaction,
           aiScript: 5, // Orbiter
-          fixedgravity: planet.id.toString()
+          fixedgravity: planet.id
       });
 
       // don't store the earth station - the enemy ships won't hunt it

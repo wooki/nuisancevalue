@@ -62,6 +62,31 @@ export default class ExplorationMission extends Mission {
         faction: this.playerFaction,
         fuel: 10000
     });
+
+    // add wreckage to investigate
+    let wreckageOrbitDistance = distanceApart*5;
+    let wreckageOrbitSpeed = Math.sqrt((SolarObjects.constants.G * star1Mass) / wreckageOrbitDistance);
+    let position = new Victor(wreckageOrbitDistance, 0);
+    let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
+    let rotation = 120 * Math.random();
+    position = position.rotateDeg(rotation);
+    velocity = velocity.rotateDeg(rotation);
+    position = position.add(Victor.fromArray(this.star1.physicsObj.position));
+    velocity = velocity.add(Victor.fromArray(this.star1.physicsObj.velocity));
+
+    let wreckage = this.game.addShip({
+        name: "Wreckage",
+        x: position.x,
+        y: position.y,
+        dX: velocity.x,
+        dY: velocity.y,
+        hull: 'wreckage',
+        angle: (Math.random() * 2),
+        angularVelocity: Math.random(),
+        // aiScript: 5, // Orbiter
+        fixedgravity: this.star1
+    });
+
   }
 
 

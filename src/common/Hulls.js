@@ -43,6 +43,27 @@ export default {
 		}
 	},
 
+	"wreckage": {
+		name: 'Corvette Wreckage',
+		image: 'assets/wreckage.png',
+		size: 600, // used for height
+		width: 1.093, // ratio to height
+		mass: 0.06,
+		thrust: 0,
+		maneuver: 0,
+		damage: 1600,
+		enginePositions: [],// [scale, %x, %y]
+		exhaustImage: 'exhaust',
+		dockable: true,
+		fuel: 10000,
+		tubes: 6,
+		systems: STANDARD_SYSTEMS, // this is a bit encoded set of valid systems that CAN BE damaged
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
+		maxWeaponStock: [6000, 40, 20],
+		defaultWeaponStock: [4000, 10, 4],
+		scanRanges: [0, 0], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)		
+	},
+
 	"spacebug": {
 		name: 'Spacebug',
 		image: 'assets/spacebug.png',
