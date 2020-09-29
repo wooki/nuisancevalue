@@ -6,167 +6,111 @@ import Mission from './Mission';
 
 export default class ExplorationMission extends Mission {
 
-  constructor(gameEngine) {
-    super(gameEngine);
+  constructor(game) {
+    super(game);
   }
 
   build() {
     super.build();
 
-    this.game.addAsteroid({
-        x: 110000,
-        y: 0,
+    // add two stars
+    let star1Mass = SolarObjects.Sol.mass * 2.5;
+    let star2Mass = SolarObjects.Sol.mass * 0.6;
+    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 2;
+    let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
+
+    this.star1 = this.game.addPlanet({
+				x: 1, y: 0,
+				dX: 0, dY: 0,
+				mass: star1Mass,
+				size: SolarObjects.Sol.diameter * 0.5,
+				angle: Math.random() * 2 * Math.PI,
+				angularVelocity: Math.random(),
+				texture: 'sol'
+		});
+
+    this.star2 = this.game.addPlanet({
+				x: distanceApart, y: 0,
+				dX: 0, dY: star2OrbitSpeed,
+				mass: star2Mass,
+				size: SolarObjects.Sol.diameter * 1.6,
+				angle: Math.random() * 2 * Math.PI,
+				angularVelocity: 0 - Math.random(),
+				texture: 'sol',
+        fixedgravity: this.star1.id
+		});
+
+    this.star1.fixedgravity = this.star2.id;
+
+    // add asteroid belt
+    this.addAsteroids(12, true);
+    this.addAsteroids(58, false);
+
+    // player faction
+    this.playerFaction = this.factions.ferrous;
+
+    // add player ship
+    this.playerShip = this.game.addShip({
+        name: "Nuisance Value",
+        x: 0 - SolarObjects.Neptune.orbit,
+        y: 0 - (SolarObjects.Neptune.orbit / 2),
         dX: 0,
         dY: 0,
-        mass: 1, size: 500
+        hull: 'bushido',
+        angle: 0 - (Math.PI * 0.25),
+        playable: 1,
+        faction: this.playerFaction,
+        fuel: 10000
     });
+  }
 
-    this.game.addAsteroid({
-        x: 210000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        mass: 1, size: 1500
-    });
 
-    this.game.addAsteroid({
-        x: 510000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        mass: 1, size: 2500
-    });
+  // asteroids between mars and jupiter
+  addAsteroids(asteroidCount, big) {
 
-    this.game.addAsteroid({
-        x: 310000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        mass: 1, size: 2200
-    });
-
-    let mars = this.game.addPlanet({
-      x: 20000,
-      y: 0,
-      dX: 0,
-      dY: 0,
-      mass: SolarObjects.Mars.mass,
-      size: SolarObjects.Mars.diameter,
-      texture: 'mars',
-      angle: Math.random() * 2 * Math.PI,
-      angularVelocity: Math.random()
-    });
-
-    for (let i = 0; i < 1; i++) {
-      let hullName = 'spacebug';
-      let hullData = Hulls[hullName];
-      let nv = this.game.addShip({
-          name: "Spacebug "+i,
-          x: -3000 + (Math.random() * 6000),
-          y: -3000 + (Math.random() * 6000),
-          dX: 0,
-          dY: 0,
-          hull: hullName,
-          angle: Math.PI,
-          faction: this.factions.spaceForce,
-          playable: (i == 0 ? 1 : 0),
-          aiScript: (i == 0 ? 0 : 2),
-          // targetId: mars.id
-          // damage: this.damage.getRandomDamage(1, 0, hullData.damage) // do some dummy damage for testing
-      });
+    let asteroidDistance = SolarObjects.Mercury.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mercury.orbit) / 2);
+    let asteroidDistanceVariance = SolarObjects.Earth.orbit;
+    let addFunc = this.game.addAsteroid.bind(this.game);
+    if (big) {
+      addFunc = this.game.addPlanet.bind(this.game);
     }
+    let bigHalfSize = SolarObjects.Mercury.diameter;
+    let bigHalfMass = SolarObjects.Mercury.mass;
+    let bigDensity = bigHalfSize / bigHalfMass;
 
-    let earthStation1 = this.game.addShip({
-        name: "Earth Station 1",
-        x: 60000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        size: 560, // need to read mass and size from hull
-        hull: 'station',
-        commsScript: 1,
-        angle: 2,
-        faction: this.factions.russian,
-    });
-
-    let hullName2 = 'tug';
-    let hullData2 = Hulls[hullName2];
-    let tug = this.game.addShip({
-        name: "Target Practice",
-        x: 5000,
-        y: 0,
-        dX: 0,
-        dY: 0,
-        hull: hullName2,
-        angle: Math.PI*0.5,
-        // angle: Math.PI*0.5,
-        playable: 0,
-        aiScript: 2
-    });
-
-    setTimeout(function() {
-
-      this.game.addTorpedo({
-          x: -4000,
-          y: 8000,
-          dX: 0,
-          dY: 0,
-          mass: 0.0005,
-          angle: 0,
-          targetId: tug.id,
-          fuel: 100,
-          engine: 0
-      });
-    }.bind(this), 5000);
-
-    this.game.addTorpedo({
-        x: -3000,
-        y: -3000,
-        dX: 0,
-        dY: 0,
-        mass: 0.0005,
-        angle: Math.PI,
-        targetId: tug.id,
-        fuel: 100,
-        engine: 0
-    });
-    //
-    // random asteroids
-    let asteroidDistance = 20000;
-    let asteroidDistanceVariance = 5000;
-
-    for (let asteroidIndex = 0; asteroidIndex < 100; asteroidIndex++) {
+    for (let asteroidIndex = 0; asteroidIndex < asteroidCount; asteroidIndex++) {
 
         // create a point and vector then rotate to a random position
         let x = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
         let position = new Victor(x, 0);
-        let asteroidOrbitSpeed = Math.sqrt((SolarObjects.constants.G * 100) / x);
+        let asteroidOrbitSpeed = Math.sqrt((SolarObjects.constants.G * SolarObjects.Sol.mass) / x);
         let v = new Victor(0, 0 - asteroidOrbitSpeed);
 
         // rotate degrees
         let r = Math.random() * 359;
         position = position.rotateDeg(r);
-        r = Math.random() * 359; // random vector
         v = v.rotateDeg(r);
 
-        // mass
-        let asteroidSize = 200 + (Math.random() * 500);
+        let mass = (bigHalfMass/8) + (Math.random() * (bigHalfMass/4));
+        if (big) {
+          mass = bigHalfMass + (Math.random() * bigHalfMass);
+        }
+        let size = mass * bigDensity;
 
-        // add an actual asteroid
-        this.game.addAsteroid({
+        // this.game.addAsteroid({
+        addFunc({
+            texture: 'asteroid',
             x: position.x,
             y: position.y,
-            // dX: v.x,
-            // dY: v.y,
-            dX: 0,
-            dY: 0,
-            mass: (asteroidSize/300), size: asteroidSize,
+            dX: v.x,
+            dY: v.y,
+            mass: mass,
+            size: size,
             angle: Math.random() * 2 * Math.PI,
-            // angularVelocity: Math.random() * Math.PI
+            angularVelocity: Math.random()
         });
     }
   }
-
 
 
 }

@@ -18,11 +18,11 @@ export default class PlayableShip extends Ship {
 
     static get netScheme() {
         return Object.assign({
-            helmPlayerId: { type: BaseTypes.TYPES.UINT8 },
-            navPlayerId: { type: BaseTypes.TYPES.UINT8 },
-            signalsPlayerId: { type: BaseTypes.TYPES.UINT8 },
-            captainPlayerId: { type: BaseTypes.TYPES.UINT8 },
-            engineerPlayerId: { type: BaseTypes.TYPES.UINT8 },
+            helmPlayerId: { type: BaseTypes.TYPES.INT16 },
+            navPlayerId: { type: BaseTypes.TYPES.INT16 },
+            signalsPlayerId: { type: BaseTypes.TYPES.INT16 },
+            captainPlayerId: { type: BaseTypes.TYPES.INT16 },
+            engineerPlayerId: { type: BaseTypes.TYPES.INT16 },
             waypoints: {
                 type: BaseTypes.TYPES.LIST,
                 itemType: BaseTypes.TYPES.CLASSINSTANCE

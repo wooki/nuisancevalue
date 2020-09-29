@@ -9,11 +9,11 @@ export default class Planet extends PhysicalObject2D {
         return Object.assign({
             size: { type: BaseTypes.TYPES.INT32 },
             texture: { type: BaseTypes.TYPES.STRING },
-            fixedgravity: { type: BaseTypes.TYPES.STRING },
+            fixedgravity: { type: BaseTypes.TYPES.INT32 },
             ignoregravity: { type: BaseTypes.TYPES.UINT8 },
             commsScript: { type: BaseTypes.TYPES.UINT8 },
             commsState: { type: BaseTypes.TYPES.UINT8 },
-            commsTargetId: { type: BaseTypes.TYPES.INT16 } // currently talking to
+            commsTargetId: { type: BaseTypes.TYPES.INT32 } // currently talking to
         }, super.netScheme);
     }
 

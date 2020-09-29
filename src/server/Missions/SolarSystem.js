@@ -381,7 +381,7 @@ export default class SolarSystem extends Mission {
             size: 200 + (Math.random() * 400),
             angle: Math.random() * 2 * Math.PI,
             angularVelocity: Math.random(),
-            fixedgravity: this.planets.Sol.id.toString()
+            fixedgravity: this.planets.Sol.id
         });
     }
   }

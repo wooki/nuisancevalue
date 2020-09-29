@@ -13,7 +13,7 @@ export default class Asteroid extends PhysicalObject2D {
     static get netScheme() {
         return Object.assign({
             size: { type: BaseTypes.TYPES.INT16 },
-            fixedgravity: { type: BaseTypes.TYPES.STRING },
+            fixedgravity: { type: BaseTypes.TYPES.INT32 },
             sensed: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
             scanned: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
         }, super.netScheme);

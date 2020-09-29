@@ -13,7 +13,7 @@ export default class Torpedo extends PhysicalObject2D {
 
   static get netScheme() {
       return Object.assign({
-        targetId: { type: BaseTypes.TYPES.INT16 },
+        targetId: { type: BaseTypes.TYPES.INT32 },
         fuel: { type: BaseTypes.TYPES.INT16 },
         engine: { type: BaseTypes.TYPES.UINT8 },
         torpType: { type: BaseTypes.TYPES.UINT8 },

@@ -140,20 +140,20 @@ module.exports = {
 				angularVelocity: 0,
 				texture: 'sol',
 				ignoregravity: 1
-		});		
+		});
 
 		// let mercuryOrbitSpeed = Math.sqrt((this.constants.G * this.Sol.mass) / this.Mercury.orbit);
 
 		// add the planets
-		let mercury = this.addStandardPlanet(gameEngine, 'Mercury', 'mercury', rotations.Mercury, sol.id.toString());
-		let venus = this.addStandardPlanet(gameEngine, 'Venus', 'venus', rotations.Venus, sol.id.toString());
-		let earth = this.addStandardPlanet(gameEngine, 'Earth', 'earth', rotations.Earth, sol.id.toString());
-		let mars = this.addStandardPlanet(gameEngine, 'Mars', 'mars', rotations.Mars, sol.id.toString());
-		let jupiter = this.addStandardPlanet(gameEngine, 'Jupiter', 'jupiter', rotations.Jupiter, sol.id.toString());
-		let saturn = this.addStandardPlanet(gameEngine, 'Saturn', 'saturn', rotations.Saturn, sol.id.toString());
-		let uranus = this.addStandardPlanet(gameEngine, 'Uranus', 'uranus', rotations.Uranus, sol.id.toString());
-		let neptune = this.addStandardPlanet(gameEngine, 'Neptune', 'neptune', rotations.Neptune, sol.id.toString());
-		let pluto = this.addStandardPlanet(gameEngine, 'Pluto', 'pluto', rotations.Pluto, sol.id.toString());
+		let mercury = this.addStandardPlanet(gameEngine, 'Mercury', 'mercury', rotations.Mercury, sol.id);
+		let venus = this.addStandardPlanet(gameEngine, 'Venus', 'venus', rotations.Venus, sol.id);
+		let earth = this.addStandardPlanet(gameEngine, 'Earth', 'earth', rotations.Earth, sol.id);
+		let mars = this.addStandardPlanet(gameEngine, 'Mars', 'mars', rotations.Mars, sol.id);
+		let jupiter = this.addStandardPlanet(gameEngine, 'Jupiter', 'jupiter', rotations.Jupiter, sol.id);
+		let saturn = this.addStandardPlanet(gameEngine, 'Saturn', 'saturn', rotations.Saturn, sol.id);
+		let uranus = this.addStandardPlanet(gameEngine, 'Uranus', 'uranus', rotations.Uranus, sol.id);
+		let neptune = this.addStandardPlanet(gameEngine, 'Neptune', 'neptune', rotations.Neptune, sol.id);
+		let pluto = this.addStandardPlanet(gameEngine, 'Pluto', 'pluto', rotations.Pluto, sol.id);
 
 		// add some asteroids between mars and jupiter
 
