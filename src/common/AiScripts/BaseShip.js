@@ -22,8 +22,6 @@ export default class BaseShip {
 	// start attempting a scan
 	sensed(ship, target, mission, game) {
 
-		if (ship.hull == "blockade-runner") console.log("sensed:"+(target.name || target.texture));
-
 		// log this ship as a potential to scan
 		if (!ship.aiScanTargets) ship.aiScanTargets = [];
 		ship.aiScanTargets.push(target);
@@ -54,9 +52,6 @@ export default class BaseShip {
 				let hullData = ship.getHullData();
 
 				if (target.damage >= target.getMaxDamage()) {
-					console.log("remove target: "+target.name+" ("+target.id+")");
-					console.log("   damage: "+target.damage);
-					console.log("   getMaxDamage: "+target.getMaxDamage());
 					removeTargets.push(i);
 				}
 

@@ -44,7 +44,8 @@ export default class NavRenderer extends CompositeRenderer {
             mapSize: mapSize,
             shape: "rectangle",
             borderWidth: 0,
-            backgroundAsset: 'black'
+            backgroundAsset: 'black',
+            grid: "dots"
           }),
           new MapRanges({
             x: 0,

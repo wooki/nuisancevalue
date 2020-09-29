@@ -22,9 +22,10 @@ export default class MapBackground {
       subdivisions: 10,
       mimimumSpriteSize: 10,
       borderWidth: 4,
-      backgroundAsset: 'space',
+      backgroundAsset: 'black',
       focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
+      grid: "dots",
       internalZIndex: {
         background: 1,
         grid :2,
@@ -199,6 +200,34 @@ export default class MapBackground {
     }
   }
 
+  drawCross(g, x, y, maxX, maxY, length) {
+
+    if ((x == 0 && y == 0) || (x == maxX && maxY == 0)) {
+      return;
+    }
+    if (y > 0 && x < maxX) {
+      g.moveTo(x, y);
+      g.lineTo(x, y - length);
+    }
+
+    if (y < maxY && x < maxX) {
+      g.moveTo(x, y);
+      g.lineTo(x, y + length);
+    }
+
+    if (x > 0 && y < maxY) {
+      g.moveTo(x, y);
+      g.lineTo(x - length, y);
+    }
+
+    if (x < maxX && y < maxY) {
+      g.moveTo(x, y);
+      g.lineTo(x + length, y);
+    }
+
+    g.moveTo();
+  }
+
   createGrid() {
       // remove old one
       if (this.gridSprite) {
@@ -234,27 +263,60 @@ export default class MapBackground {
       // draw small grid (if there is one)
       if (smallDivSize > 0) {
         gridGraphics.lineStyle(lineWidth, smallDivColor);
-        for (let iX = 0; iX < (smallGridDivisions-1); iX++) {
-          gridGraphics.moveTo(smallDivSize*iX, lineWidth); gridGraphics.lineTo(smallDivSize*iX, largeDivSize - lineWidth);
+
+        if (this.parameters.grid == "dots") {
+          let smallCrossSize = 1;
+          let maxXY = Math.round(smallDivSize*(smallGridDivisions));
+          for (let iX = 0; iX <= (smallGridDivisions); iX++) {
+            for (let iY = 0; iY <= (smallGridDivisions); iY++) {
+              this.drawCross(gridGraphics, Math.round(smallDivSize*iX), Math.round(smallDivSize*iY), maxXY, maxXY, smallCrossSize);
+            }
+          }
+        } else {
+          for (let iX = 0; iX < (smallGridDivisions-1); iX++) {
+            gridGraphics.moveTo(smallDivSize*iX, lineWidth); gridGraphics.lineTo(smallDivSize*iX, largeDivSize - lineWidth);
+          }
+          gridGraphics.moveTo(largeDivSize - smallDivSize, lineWidth); gridGraphics.lineTo(largeDivSize - smallDivSize, largeDivSize - lineWidth);
+          for (let iY = 0; iY < (smallGridDivisions-1); iY++) {
+            gridGraphics.moveTo(lineWidth, smallDivSize*iY); gridGraphics.lineTo(largeDivSize - lineWidth, smallDivSize*iY);
+          }
+          gridGraphics.moveTo(lineWidth, largeDivSize - smallDivSize); gridGraphics.lineTo(largeDivSize - lineWidth, largeDivSize - smallDivSize);
         }
-        gridGraphics.moveTo(largeDivSize - smallDivSize, lineWidth); gridGraphics.lineTo(largeDivSize - smallDivSize, largeDivSize - lineWidth);
-        for (let iY = 0; iY < (smallGridDivisions-1); iY++) {
-          gridGraphics.moveTo(lineWidth, smallDivSize*iY); gridGraphics.lineTo(largeDivSize - lineWidth, smallDivSize*iY);
-        }
-        gridGraphics.moveTo(lineWidth, largeDivSize - smallDivSize); gridGraphics.lineTo(largeDivSize - lineWidth, largeDivSize - smallDivSize);
       }
 
-      // add large grid (outline box)
+      // draw the large grid
       gridGraphics.lineStyle(lineWidth, largeDivColor);
-      gridGraphics.drawRect(0, 0, largeDivSize, largeDivSize);
+      if (this.parameters.grid == "dots") {
+        // draw a cross at the corners
+        let lineLength = Math.min(7, Math.floor(largeDivSize*0.05));
+        let xOrigin = -0.5;
+        let yOrigin = -0.5;
+        let xMax = Math.floor(largeDivSize+1);
+        let yMax = xMax;
+
+        gridGraphics.moveTo(xOrigin, yOrigin); gridGraphics.lineTo(xOrigin, yOrigin+lineLength);
+        gridGraphics.moveTo(xOrigin, yOrigin); gridGraphics.lineTo(xOrigin+lineLength, yOrigin);
+
+        gridGraphics.moveTo(xMax, yOrigin); gridGraphics.lineTo(xMax, yOrigin+lineLength);
+        gridGraphics.moveTo(xMax, yOrigin); gridGraphics.lineTo(xMax-lineLength, yOrigin);
+
+        gridGraphics.moveTo(xOrigin, yMax); gridGraphics.lineTo(xOrigin, yMax-lineLength);
+        gridGraphics.moveTo(xOrigin, yMax); gridGraphics.lineTo(xOrigin+lineLength, yMax);
+
+        gridGraphics.moveTo(xMax, yMax); gridGraphics.lineTo(xMax, yMax-lineLength);
+        gridGraphics.moveTo(xMax, yMax); gridGraphics.lineTo(xMax-lineLength, yMax);
+      } else {
+        gridGraphics.drawRect(-0.5, -0.5, largeDivSize+1, largeDivSize+1);
+      }
 
       // draw to texture and tile
       let gridTexture = this.pixiApp.renderer.generateTexture(gridGraphics);
       gridGraphics.destroy();
       this.gridSprite = new PIXI.TilingSprite(gridTexture, largeDivSize, largeDivSize);
+      this.gridSprite.clampMargin = -1;
       this.gridSprite.anchor.set(0.5);
-      this.gridSprite.x = this.centerX;
-      this.gridSprite.y = this.centerY;
+      this.gridSprite.x = Math.floor(this.centerX);
+      this.gridSprite.y = Math.floor(this.centerY);
       this.gridSprite.width = this.parameters.width;
       this.gridSprite.height = this.parameters.height;
       this.gridSprite.zIndex = this.parameters.internalZIndex.grid;
@@ -265,8 +327,8 @@ export default class MapBackground {
   updateGrid(x, y) {
 			if (this.gridSprite) {
         this.focus = new PIXI.Point(x * this.parameters.scale, y * this.parameters.scale);
-        this.gridSprite.tilePosition.x = (0 - this.focus.x) + (this.gridSprite.width / 2);
-				this.gridSprite.tilePosition.y = (0 - this.focus.y) + (this.gridSprite.height / 2);
+        this.gridSprite.tilePosition.x = Math.floor((0 - this.focus.x) + (this.gridSprite.width / 2));
+				this.gridSprite.tilePosition.y = Math.floor((0 - this.focus.y) + (this.gridSprite.height / 2));
 			}
 	}
 
