@@ -64,23 +64,28 @@ export default class ExplorationMission extends Mission {
     });
 
     // add wreckage to investigate
-    let wreckageOrbitDistance = distanceApart*5;
+    let wreckageOrbitDistance = 1000;
+    // let wreckageOrbitDistance = distanceApart*5;
     let wreckageOrbitSpeed = Math.sqrt((SolarObjects.constants.G * star1Mass) / wreckageOrbitDistance);
     let position = new Victor(wreckageOrbitDistance, 0);
     let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
     let rotation = 120 * Math.random();
     position = position.rotateDeg(rotation);
     velocity = velocity.rotateDeg(rotation);
-    position = position.add(Victor.fromArray(this.star1.physicsObj.position));
-    velocity = velocity.add(Victor.fromArray(this.star1.physicsObj.velocity));
+    // position = position.add(Victor.fromArray(this.star1.physicsObj.position));
+    // velocity = velocity.add(Victor.fromArray(this.star1.physicsObj.velocity));
+    position = position.add(Victor.fromArray(this.playerShip.physicsObj.position));
+    velocity = velocity.add(Victor.fromArray(this.playerShip.physicsObj.velocity));
 
     let wreckage = this.game.addShip({
         name: "Wreckage",
         x: position.x,
         y: position.y,
-        dX: velocity.x,
-        dY: velocity.y,
-        hull: 'wreckage',
+        // dX: velocity.x,
+        // dY: velocity.y,
+        dX: 0,
+        dY: 0,
+        hull: 'corvette-wreckage',
         angle: (Math.random() * 2),
         angularVelocity: Math.random(),
         // aiScript: 5, // Orbiter

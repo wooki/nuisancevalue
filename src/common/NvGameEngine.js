@@ -735,7 +735,8 @@ export default class NvGameEngine extends GameEngine {
 
         if (params['playable']) {
           s = new PlayableShip(this, {}, {
-              mass: params['mass'] || hullData.mass, angularVelocity: 0,
+              mass: params['mass'] || hullData.mass,
+              angularVelocity: params['angularVelocity'] || 0,
               position: new TwoVector(params['x'], params['y']),
               velocity: new TwoVector(params['dX'], params['dY']),
               angle: params['angle'] || 0
@@ -745,7 +746,8 @@ export default class NvGameEngine extends GameEngine {
 
         } else {
           s = new Ship(this, {}, {
-              mass: params['mass'] || hullData.mass, angularVelocity: 0,
+              mass: params['mass'] || hullData.mass,
+              angularVelocity: params['angularVelocity'] || 0,              
               position: new TwoVector(params['x'], params['y']),
               velocity: new TwoVector(params['dX'], params['dY']),
               angle: params['angle'] || 0

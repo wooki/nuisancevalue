@@ -43,11 +43,11 @@ export default {
 		}
 	},
 
-	"wreckage": {
+	"corvette-wreckage": {
 		name: 'Corvette Wreckage',
-		image: 'assets/wreckage.png',
+		image: 'assets/corvette-wreckage.png',
 		size: 600, // used for height
-		width: 1.093, // ratio to height
+		width: 0.566, // ratio to height
 		mass: 0.06,
 		thrust: 0,
 		maneuver: 0,
@@ -61,7 +61,7 @@ export default {
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,
 		maxWeaponStock: [6000, 40, 20],
 		defaultWeaponStock: [4000, 10, 4],
-		scanRanges: [0, 0], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)		
+		scanRanges: [0, 0], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
 	},
 
 	"spacebug": {
