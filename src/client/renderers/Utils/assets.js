@@ -21,7 +21,7 @@ module.exports = {
 		neptune: 'assets/neptune.png',
 		pluto: 'assets/pluto.png',
 		explosion: 'assets/explosion.json',
-		dashboard: 'assets/dashboard.jpg',
+		dashboard: 'assets/bg.png',
 		arrow: 'assets/arrow.png',
 		target: 'assets/target.png',
 		selection: 'assets/selection.png',

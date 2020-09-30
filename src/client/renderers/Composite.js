@@ -147,10 +147,17 @@ export default class CompositeRenderer {
 
         // UI create a texture to overlay on top of the background
         let dashboardGraphics = new PIXI.Graphics();
+        let background = resources[this.stationConfig.baseUrl+Assets.Images.dashboard].texture;
+        let backgroundScale = this.uiHeight / background.height;
+        let newBackgroundWidth = background.width * backgroundScale;
+        let backgroundOffsetX = (this.uiWidth/2) - (newBackgroundWidth/2);
+        let backgroundMatrix = new PIXI.Matrix(backgroundScale, 0, 0, backgroundScale, backgroundOffsetX, 0);
+
         dashboardGraphics.beginTextureFill({
-            texture: resources[this.stationConfig.baseUrl+Assets.Images.dashboard].texture,
+            texture: background,
             color: this.stationConfig.dashboardColor,
-            alpha: 1
+            alpha: 1,
+            matrix: backgroundMatrix
         });
         dashboardGraphics.drawRect(0, 0, this.uiWidth, this.uiHeight);
         dashboardGraphics.endFill();
