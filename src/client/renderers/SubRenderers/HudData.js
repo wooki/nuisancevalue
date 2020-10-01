@@ -19,11 +19,11 @@ export default class HudData {
       baseUrl: '/',
       predictTime: 60,
       colors: {
-        bearing: '#FF0000', //0xFF0000,
-        gravity: '#3333FF', //0x3333FF,
-        heading: '#00FF00', //0x00FF00,
-        waypoint: '#CCCC00', //0xCCCC00,
-        target: '#00FFFF', //0x00FFFF
+        bearing: Assets.Colors.Paths.BearingHex,
+        gravity: Assets.Colors.Paths.GravityHex,
+        heading: Assets.Colors.Paths.HeadingHex,
+        waypoint: Assets.Colors.Paths.WaypointHex,
+        target: Assets.Colors.Paths.TargetHex,
       },
       itemOrder: {
         bearing: 1,

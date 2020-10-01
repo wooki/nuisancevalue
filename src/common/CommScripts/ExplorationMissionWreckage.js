@@ -32,12 +32,14 @@ MESSAGE END
   };
 
   this.states[1] =  { // state 1
-    text: "You conduct the search in time to return to the ship for a a light lunchon.",
+    text: `You conduct the search in time to return to the ship for a a light lunchon.[br]
+Return to the Irregular Apocalyse.`,
     responses: []
   };
 
   this.states[2] =  { // state 1
-    text: "Your search is uneventful.",
+    text: `Your search is uneventful and slow.[br]
+Return to the Irregular Apocalyse.`,
     responses: []
   };
 

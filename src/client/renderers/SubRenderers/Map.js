@@ -74,9 +74,9 @@ export default class Map {
         // friendGlow: new ColorOverlayFilter(0x00FF00),
         // neutralGlow: new ColorOverlayFilter(0x0000FF),
         // enemyGlow: new ColorOverlayFilter(0xFF0000),
-        friendFilter: new OutlineFilter(1, 0x00FF00, 0.6),
-        neutralFilter: new OutlineFilter(1, 0x0000FF, 0.6),
-        enemyFilter: new OutlineFilter(1, 0xFF0000, 0.6),
+        friendFilter: new OutlineFilter(1, Assets.Colors.Friend, 0.6),
+        neutralFilter: new OutlineFilter(1, Assets.Colors.Neutral, 0.6),
+        enemyFilter: new OutlineFilter(1, Assets.Colors.Enemy, 0.6),
         unscannedFilter: new PixelateFilter([6, 6]),
         // crt: new CRTFilter({
         //   curvature: 8,
@@ -211,6 +211,7 @@ export default class Map {
           // instead of drawing - always create a load of random small explosions
           isPDC = true;
       } else if (obj instanceof Planet) {
+        if (obj.texture == "sol") console.log("addObject");
         texture = this.resources[this.parameters.baseUrl+Assets.Images[obj.texture]].texture;
         zIndex = this.parameters.internalZIndex.planet;
         alias = obj.texture;
@@ -278,11 +279,6 @@ export default class Map {
         }
       }
       sprite.rotation = spriteAngle;
-
-      // if (this.sprites[obj.id + '-label'] && this.sprites[obj.id]) {
-      //     this.sprites[obj.id + '-label'].x = coord.x + (3 + Math.floor(this.sprites[obj.id].width/2));
-      //     this.sprites[obj.id + '-label'].y = coord.y - (3 + Math.floor(this.sprites[obj.id].height/2));
-      // }
 
       if (obj instanceof Ship || obj instanceof Torpedo) {
         if (obj.engine || obj.engine == 0) {

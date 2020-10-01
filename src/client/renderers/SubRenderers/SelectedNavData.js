@@ -25,7 +25,7 @@ export default class SelectedNavData {
     this.factions = new Factions();
 
     this.targettingId = null;
-    this.targettingTotalTime = 1000 * 10; // load takes 10 seconds
+    this.targettingTotalTime = 1000 * 4; // load takes x seconds
   }
 
   // keep references and add to the html

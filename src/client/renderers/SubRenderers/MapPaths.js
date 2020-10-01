@@ -29,12 +29,11 @@ export default class MapPaths {
       focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       colors: {
-        gravity: 0x3333FF,
-        heading: 0x00FF00,
-        // waypoint: 0xFFFF00,
-        target: 0x00FFFF,
-        other: 0xCCCCCC,
-        torp: 0x222222
+        gravity: Assets.Colors.Paths.Gravity,
+        heading: Assets.Colors.Paths.Heading,
+        target: Assets.Colors.Paths.Target,
+        other: Assets.Colors.Paths.Other,
+        torp: Assets.Colors.Paths.Torp,
       }
     }, params);
 

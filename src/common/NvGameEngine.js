@@ -275,20 +275,24 @@ export default class NvGameEngine extends GameEngine {
                     let gravSourceAmount = 0;
 
                     // allow for objects with fixed gravity source - planets in orbit around sun
-                    if (obj.fixedgravity !== undefined && obj.fixedgravity !== null && obj.fixedgravity !== '') {
-
-                        let gravObj = this.world.queryObject({ id: parseInt(obj.fixedgravity) });
-                        if (gravObj) {
-                            let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
-                            let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
-                            gravDistance = d;
-                            gravSourceAmount = g;
-                            gravSource = gravObj;
-                        }
-                    } else if (obj.ignoregravity) {
+                    if (obj.ignoregravity) {
 
                         // allow a planet to ignore gravity (the sun doesn't get attracted to other planets)
 
+                    } else if (obj.fixedgravity !== undefined && obj.fixedgravity !== null && obj.fixedgravity !== '') {
+
+                        let gravObj = this.world.queryObject({ id: parseInt(obj.fixedgravity) });
+                        if (gravObj && gravObj.id != obj.id && gravObj.physicsObj) {
+                            let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
+                            let g = (SolarObjects.constants.G * obj.physicsObj.mass * gravObj.physicsObj.mass) / (d*d);
+
+                            // hopefully this just makes sure we don't get the odd NaN bug when this maths overflows
+                            if (d > 0 && g < Infinity) {
+                              gravDistance = d;
+                              gravSourceAmount = g;
+                              gravSource = gravObj;
+                            }
+                        }
                     } else {
 
                         // find biggest gravity effect, only apply gravity on smaller objects
@@ -297,7 +301,7 @@ export default class NvGameEngine extends GameEngine {
                             // let gravObj = gravityObjects[gravObjId];
                             let gravObj = this.world.queryObject({ id: gravityObjects[gravObjId] });
 
-                            if (gravObj && gravObj.id != objId && gravObj.physicsObj) {
+                            if (gravObj && gravObj.id != obj.id && gravObj.physicsObj) {
                                 if (gravObj.physicsObj.mass > obj.physicsObj.mass) {
 
                                     let d = Victor.fromArray(obj.physicsObj.position).distance(Victor.fromArray(gravObj.physicsObj.position));
@@ -317,7 +321,7 @@ export default class NvGameEngine extends GameEngine {
                     }
 
                     // apply force towards source
-                    if (gravSourceAmount && gravSource && gravSourceAmount > 0.02) {
+                    if (gravSourceAmount && gravSource && gravSourceAmount > 0.02 && gravSourceAmount < Infinity) {
 
                         // flip x coord of obj because our 0,0 is top left
                         // let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
@@ -856,7 +860,7 @@ export default class NvGameEngine extends GameEngine {
         });
         p.size = params['size'];
         p.texture = params['texture'];
-        p.fixedgravity = params['fixedgravity'] || '';
+        p.fixedgravity = params['fixedgravity'] || null;
         p.ignoregravity = params['ignoregravity'] || 0;
         p.commsScript = params['commsScript'] || 0;
         p.commsState = params['commsState'] || 0;

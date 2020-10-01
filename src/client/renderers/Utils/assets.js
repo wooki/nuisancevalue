@@ -31,7 +31,8 @@ module.exports = {
 		orbitwaypoint: 'assets/orbitwaypoint.png',
 		pdchud: 'assets/pdchud.png',
 		// space: 'assets/space.png',
-		black: 'assets/black.png',
+		// black: 'assets/black.png',
+		spaceblack: 'assets/spaceblack.png',
 		exhaust: 'assets/exhaust.json',
 		exhaustflame: 'assets/exhaustflame.json',
 		powergridBackground: 'assets/powergrid.jpg',
@@ -41,13 +42,36 @@ module.exports = {
 	},
 	Colors: {
 		Black: 0x000000,
-		Grid: 0x163516,
-		GridSmall: 0x2c332c,
-		Dial: 0x666666,
+		SpaceBlack: 0x392d37,
+		Grid: 0x4B1E44,
+		GridSmall: 0x392d37,
+		Dial: 0xbcbdad,
+		DialRGB: [0.74, 0.74, 0.68],
 		White: 0xFFFFFF,
 		Red: 0xFF0000,
-		Dashboard: 0x2c332c,
-		Waypoint: 0xFFFF00,
+		Dashboard: 0x392d37,
+		Friend: 0x75EE10,
+		Neutral: 0x1499C5,
+		Enemy: 0xEF1053,
+		Paths: {
+			Other: 0xEF1053,
+			Gravity: 0x2966C0,
+			Heading: 0x1DD634,
+			Target: 0xF8004B,
+			Torp: 0x222222,
+			Waypoint: 0xFFAE22,
+			Bearing: 0xFF8300,
+			GravityRGB: [0.16, 0.40, 0.75],
+			BearingRGB: [1, 0.54, 0],
+			HeadingRGB: [0.11, 0.84, 0.20],
+			WaypointRGB: [1, 0.68, 0.13],
+			TargetRGB: [0.97, 0, 0.29],
+			BearingHex: '#FF8300',
+			GravityHex: '#2966C0',
+			HeadingHex: '#1DD634',
+			WaypointHex: '#FFAE22',
+			TargetHex: '#F8004B'
+		},
 		ForTexture: {
 			sol: 0xfed25b,
 			mercury: 0x46436d,
@@ -74,7 +98,8 @@ module.exports = {
 		}
 	},
 	Fonts: {
-		Mono: "\"Lucida Console\",\"Lucida Sans Typewriter\",\"Bitstream Vera Sans Mono\",monospace"
+		Mono: "\"Electrolize\",\"Lucida Console\",\"Lucida Sans Typewriter\",\"Bitstream Vera Sans Mono\",monospace",
+		Regular: "\"Oswald\",\"Lucida Console\",\"Lucida Sans Typewriter\",\"Bitstream Vera Sans Mono\",sans-serif"
 	},
 	Units: {
 		speed: ' Mm/s',

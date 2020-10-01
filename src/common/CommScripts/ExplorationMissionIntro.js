@@ -11,7 +11,7 @@ export default class ExplorationMissionIntro extends CommsScript {
 
     let message = `[br]PRIORITY MESSAGE[br]
 FROM Irregular Apocalyse TO [player][br]
-We sent a Corvette class vessel to chart this system but it never checked-in.[br]
+We sent a Corvette class vessel to chart this binary system but it never checked-in.[br]
 Find the vessel, establish contact and return with your findings.[br]
 MESSAGE END
 `;

@@ -2,6 +2,7 @@ import CompositeRenderer from './Composite';
 import MapBackground from './SubRenderers/MapBackground';
 import MapRanges from './SubRenderers/MapRanges';
 import Map from './SubRenderers/Map';
+import MapGrid from './SubRenderers/MapGrid';
 import MapHud from './SubRenderers/MapHud';
 import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
@@ -33,7 +34,7 @@ export default class NavRenderer extends CompositeRenderer {
         station: 'nav',
         stationProperty: 'navPlayerId',
         baseUrl: '/',
-        dashboardColor: 0x996633,
+        // dashboardColor: 0x996633,
         subRenderers: [
           new MapBackground({
             x: 0,
@@ -44,8 +45,7 @@ export default class NavRenderer extends CompositeRenderer {
             mapSize: mapSize,
             shape: "rectangle",
             borderWidth: 0,
-            backgroundAsset: 'black',
-            grid: "dots"
+            // backgroundAsset: 'black',
           }),
           new MapRanges({
             x: 0,
@@ -55,6 +55,16 @@ export default class NavRenderer extends CompositeRenderer {
             zIndex: 9,
             mapSize: mapSize,
             shape: "rectangle"
+          }),
+          new MapGrid({
+            x: 0,
+            y: 0,
+            width: fullWidth,
+            height: fullHeight,
+            zIndex: 5,
+            mapSize: mapSize,
+            shape: "rectangle",
+            // grid: "dots"
           }),
           new MapPaths({
             x: 0,

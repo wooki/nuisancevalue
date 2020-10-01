@@ -21,7 +21,7 @@ export default class CompositeRenderer {
         station: 'captain',
         stationProperty: 'captainPlayerId',
         baseUrl: '/',
-        dashboardColor: 0xCCCCCC,
+        dashboardColor: Assets.Colors.Dashboard,
         subRenderers: []
       }, config);
       this.subRenderers = this.stationConfig.subRenderers;

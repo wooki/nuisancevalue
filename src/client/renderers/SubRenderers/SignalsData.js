@@ -8,7 +8,7 @@ export default class SignalsData extends HudData {
   constructor(params) {
     super(params);
     this.scanningId = null;
-    this.scanTotalTime = 1000 * 10; // load takes 10 seconds
+    this.scanTotalTime = 1000 * 4; // load takes 6 seconds
   }
 
   startScan(obj) {

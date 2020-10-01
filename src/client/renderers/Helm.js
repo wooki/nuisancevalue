@@ -1,5 +1,6 @@
 import CompositeRenderer from './Composite';
 import MapBackground from './SubRenderers/MapBackground';
+import MapGrid from './SubRenderers/MapGrid';
 import Map from './SubRenderers/Map';
 import MapHud from './SubRenderers/MapHud';
 import EngineControl from './SubRenderers/EngineControl';
@@ -36,7 +37,7 @@ export default class HelmRenderer extends CompositeRenderer {
         station: 'helm',
         stationProperty: 'helmPlayerId',
         baseUrl: '/',
-        dashboardColor: 0x2c332c,
+        // dashboardColor: 0x2c332c,
         subRenderers: [
           new MapBackground({
             x: halfWidth - (halfHeight - margin),
@@ -44,6 +45,13 @@ export default class HelmRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 5
+          }),
+          new MapGrid({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 8
           }),
           new MapPaths({
             x: halfWidth - (halfHeight - margin),
@@ -75,7 +83,7 @@ export default class HelmRenderer extends CompositeRenderer {
           }),
           new ManeuverControl({
             x: margin + margin + 60, // engine control + 2 margins
-            y: fullHeight - (margin + 63),
+            y: fullHeight - (margin + 44),
             zIndex: 30,
             keyboardControls: true
           }),
@@ -93,9 +101,9 @@ export default class HelmRenderer extends CompositeRenderer {
           }),
           new FuelGauge({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
-            y: fullHeight - (margin + 63),
+            y: fullHeight - (margin + 44),
             width: Math.max(sideWidth, sideControlsMin),
-            height: 63,
+            height: 44,
             zIndex: 25
           }),
           new HudData({

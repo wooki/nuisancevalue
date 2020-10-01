@@ -8,7 +8,7 @@ export default class ZoomControl {
       x: 0,
       y: 0,
       width: 126,
-      height: 63,
+      height: 44,
       zIndex: 1,
       baseUrl: '/',
       keyboardControls: true,

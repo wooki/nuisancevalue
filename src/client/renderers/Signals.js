@@ -1,5 +1,6 @@
 import CompositeRenderer from './Composite';
 import MapBackground from './SubRenderers/MapBackground';
+import MapGrid from './SubRenderers/MapGrid';
 import MapRanges from './SubRenderers/MapRanges';
 import Map from './SubRenderers/Map';
 import MapHud from './SubRenderers/MapHud';
@@ -39,7 +40,7 @@ export default class SignalsRenderer extends CompositeRenderer {
         station: 'signals',
         stationProperty: 'signalsPlayerId',
         baseUrl: '/',
-        dashboardColor: 0x003366,
+        // dashboardColor: 0x003366,
         subRenderers: [
           new MapBackground({
             x: halfWidth - (halfHeight - margin),
@@ -55,6 +56,14 @@ export default class SignalsRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 9,
+            mapSize: 30000
+          }),
+          new MapGrid({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 11,
             mapSize: 30000
           }),
           new MapPaths({

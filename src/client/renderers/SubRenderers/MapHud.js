@@ -39,24 +39,26 @@ export default class MapHud {
         heading: 50
       },
       filters: {
-        bearing: new ColorReplaceFilter([0, 0, 0], [1, 0, 0], 0.1),
-        gravity: new ColorReplaceFilter([0, 0, 0], [0.2, 0.2, 1], 0.1),
-        heading: new ColorReplaceFilter([0, 0, 0], [0, 1, 0], 0.1),
-        waypoint: new ColorReplaceFilter([0, 0, 0], [1, 1, 0], 0.1),
-        target: new ColorReplaceFilter([0, 0, 0], [0, 1, 1], 0.1),
-        selection: new ColorReplaceFilter([0, 0, 0], [0.9, 0.9, 0.9], 0.1),
+        bearing: new ColorReplaceFilter([0, 0, 0], Assets.Colors.Paths.BearingRGB, 0.1),
+        gravity: new ColorReplaceFilter([0, 0, 0], Assets.Colors.Paths.GravityRGB, 0.1),
+        heading: new ColorReplaceFilter([0, 0, 0], Assets.Colors.Paths.HeadingRGB, 0.1),
+        waypoint: new ColorReplaceFilter([0, 0, 0], Assets.Colors.Paths.WaypointRGB, 0.1),
+        target: new ColorReplaceFilter([0, 0, 0], Assets.Colors.Paths.TargetRGB, 0.1),
+        selection: new ColorReplaceFilter([0, 0, 0], Assets.Colors.DialRGB, 0.1),
         lowPower: [new PixelateFilter([2, 2])],
         veryLowPower: [new PixelateFilter([4, 4]), new GlitchFilter({
           offset: 30
         })]
       },
       colors: {
-        bearing: 0xFF0000,
-        gravity: 0x3333FF,
-        heading: 0x00FF00,
-        waypoint: 0xFFFF00,
-        target: 0x00FFFF,
-        selection: 0xDEDEDE
+        gravity: Assets.Colors.Paths.Gravity,
+        heading: Assets.Colors.Paths.Heading,
+        target: Assets.Colors.Paths.Target,
+        other: Assets.Colors.Paths.Other,
+        torp: Assets.Colors.Paths.Torp,
+        bearing: Assets.Colors.Paths.Bearing,
+        selection: Assets.Colors.Dial,
+        waypoint: Assets.Colors.Paths.Waypoint
       },
       arrowSize: 15,
       margin: 4,

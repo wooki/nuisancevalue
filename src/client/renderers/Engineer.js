@@ -1,5 +1,6 @@
 import CompositeRenderer from './Composite';
 import MapBackground from './SubRenderers/MapBackground';
+import MapGrid from './SubRenderers/MapGrid';
 import Map from './SubRenderers/Map';
 import MapHud from './SubRenderers/MapHud';
 import PowerGrid from './SubRenderers/PowerGrid';
@@ -33,7 +34,7 @@ export default class EngineerRenderer extends CompositeRenderer {
         station: 'engineer',
         stationProperty: 'engineerPlayerId',
         baseUrl: '/',
-        dashboardColor: 0x990000,
+        // dashboardColor: 0x990000,
         subRenderers: [
           new MapBackground({
             x: fullWidth - (rightColWidth + margin),
@@ -43,12 +44,20 @@ export default class EngineerRenderer extends CompositeRenderer {
             zIndex: 1,
             mapSize: 6000
           }),
+          new MapGrid({
+            x: fullWidth - (rightColWidth + margin),
+            y: margin,
+            width: rightColWidth,
+            height: rightColWidth,
+            zIndex: 5,
+            mapSize: 6000
+          }),
           new Map({
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,
             height: rightColWidth,
-            zIndex: 2,
+            zIndex: 10,
             mapSize: 6000
           }),
           new MapHud({
@@ -56,7 +65,7 @@ export default class EngineerRenderer extends CompositeRenderer {
             y: margin,
             width: rightColWidth,
             height: rightColWidth,
-            zIndex: 3,
+            zIndex: 15,
             mapSize: 6000,
             arrowSize: 10,
             arrowMargin: 6,
@@ -70,21 +79,21 @@ export default class EngineerRenderer extends CompositeRenderer {
             y: margin,
             width: fullWidth - (rightColWidth + marginFull + margin),
             height: (fullHeight*0.66) - marginFull,
-            zIndex: 4
+            zIndex: 20
           }),
           new TorpedoLoadControl({
             x: margin,
             y: marginFull + ((fullHeight*0.66) - marginFull),
             width: fullWidth - (rightColWidth + marginFull + margin),
             height: (fullHeight*0.33) - margin,
-            zIndex: 5
+            zIndex: 25
           }),
           new EngineeringDataControl({
             x: fullWidth - (rightColWidth + margin),
             y: marginFull + rightColWidth,
             width: rightColWidth,
             height: (fullHeight - rightColWidth) - marginFull,
-            zIndex: 6
+            zIndex: 30
           }),
           new GlobalSound({
           }),

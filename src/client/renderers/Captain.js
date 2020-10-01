@@ -3,10 +3,9 @@ import MapBackground from './SubRenderers/MapBackground';
 import MapRanges from './SubRenderers/MapRanges';
 import Map from './SubRenderers/Map';
 import MapHud from './SubRenderers/MapHud';
+import MapGrid from './SubRenderers/MapGrid';
 import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
-// import OpenCommsControl from './SubRenderers/OpenCommsControl';
-// import CommsControl from './SubRenderers/CommsControl';
 import HudData from './SubRenderers/HudData';
 import MapPanControl from './SubRenderers/MapPanControl';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
@@ -38,7 +37,7 @@ export default class CaptainRenderer extends CompositeRenderer {
         station: 'captain',
         stationProperty: 'captainPlayerId',
         baseUrl: '/',
-        dashboardColor: 0x990000,
+        // dashboardColor: 0x333333,
         subRenderers: [
           new MapBackground({
             x: halfWidth - (halfHeight - margin),
@@ -54,6 +53,14 @@ export default class CaptainRenderer extends CompositeRenderer {
             width: fullHeight - marginFull,
             height: fullHeight - marginFull,
             zIndex: 9,
+            mapSize: mapSize
+          }),
+          new MapGrid({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 10,
             mapSize: mapSize
           }),
           new MapPaths({

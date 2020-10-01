@@ -26,12 +26,12 @@ export default class MapRanges {
       focus: "player", // "player", [0,0], 0 = "the players ship, a coord, an object id"
       shape: "circle", // or "rectangle"
       colors: {
-        visual: 0xFFFFFF,
-        sensors: 0xFFFFFF
+        visual: Assets.Colors.Black,
+        sensors: Assets.Colors.Black
       },
       alphas: {
-        visual: 0.025,
-        sensors: 0.025
+        visual: 0.2,
+        sensors: 0.2
       }
     }, params);
 

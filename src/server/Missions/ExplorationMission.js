@@ -16,7 +16,7 @@ export default class ExplorationMission extends Mission {
     // add two stars
     let star1Mass = SolarObjects.Sol.mass * 2.5;
     let star2Mass = SolarObjects.Sol.mass * 0.6;
-    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 2;
+    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 4;
     let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
 
     this.star1 = this.game.addPlanet({
@@ -26,7 +26,8 @@ export default class ExplorationMission extends Mission {
 				size: SolarObjects.Sol.diameter * 0.5,
 				angle: Math.random() * 2 * Math.PI,
 				angularVelocity: Math.random(),
-				texture: 'sol'
+				texture: 'sol',
+        ignoregravity: 1 // otherwise the whole map loses coherence
 		});
 
     this.star2 = this.game.addPlanet({
@@ -40,7 +41,7 @@ export default class ExplorationMission extends Mission {
         fixedgravity: this.star1.id
 		});
 
-    this.star1.fixedgravity = this.star2.id;
+    // this.star1.fixedgravity = this.star2.id;
 
     // add asteroid belt
     this.addAsteroids(12, true);
@@ -68,7 +69,7 @@ export default class ExplorationMission extends Mission {
         name: "Irregular Apocalyse",
         x: 0 - (SolarObjects.Neptune.orbit + 1000),
         y: 0 - ((SolarObjects.Neptune.orbit/2) + 1000),
-        dX: 25,
+        dX: 75,
         dY: 0,
         engine: 0,
         hull: 'frigate',
@@ -79,28 +80,7 @@ export default class ExplorationMission extends Mission {
     });
 
     // add wreckage to investigate
-    let wreckageOrbitDistance = distanceApart*(4 + (Math.random() * 1.5));
-    let wreckageOrbitSpeed = Math.sqrt((SolarObjects.constants.G * star1Mass) / wreckageOrbitDistance);
-    let position = new Victor(wreckageOrbitDistance, 0);
-    let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
-    let rotation = -90 + (270 * Math.random());
-    position = position.rotateDeg(rotation);
-    velocity = velocity.rotateDeg(rotation);
-    position = position.add(Victor.fromArray(this.star1.physicsObj.position));
-    velocity = velocity.add(Victor.fromArray(this.star1.physicsObj.velocity));
-
-    let wreckage = this.game.addShip({
-        name: "Wreckage",
-        x: position.x,
-        y: position.y,
-        dX: velocity.x,
-        dY: velocity.y,
-        hull: 'corvette-wreckage',
-        angle: (Math.random() * 2),
-        angularVelocity: Math.random(),
-        // faction: this.playerFaction, // useful for testing so I can see where it is immediately
-        commsScript: 102
-    });
+    this.wreckage = this.createWreckage();
 
     this.missionIntro = function(game, seconds) {
 
@@ -123,7 +103,47 @@ export default class ExplorationMission extends Mission {
     this.addTimedEvent(15, this.missionIntro);
   }
 
+  destroyed(obj) {
 
+    // recreate wreckage if it is ever destroyed
+    if (!this.wreckage || obj.id == this.wreckage.id) {
+      console.log("RECREATING Wreckage");
+      this.wreckage = this.createWreckage();
+    }
+
+  }
+
+  createWreckage() {
+
+    let star1Mass = SolarObjects.Sol.mass * 2.5;
+    let star2Mass = SolarObjects.Sol.mass * 0.6;
+    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 4;
+    let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
+
+    let wreckageOrbitDistance = distanceApart*(4 + (Math.random() * 1.5));
+    let wreckageOrbitSpeed = Math.sqrt((SolarObjects.constants.G * star1Mass) / wreckageOrbitDistance);
+    let position = new Victor(wreckageOrbitDistance, 0);
+    let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
+    let rotation = -90 + (270 * Math.random());
+    console.log("rotation: "+rotation);
+    position = position.rotateDeg(rotation);
+    velocity = velocity.rotateDeg(rotation);
+    position = position.add(Victor.fromArray(this.star1.physicsObj.position));
+    velocity = velocity.add(Victor.fromArray(this.star1.physicsObj.velocity));
+
+    return this.game.addShip({
+        name: "Wreckage",
+        x: position.x,
+        y: position.y,
+        dX: velocity.x,
+        dY: velocity.y,
+        hull: 'corvette-wreckage',
+        angle: (Math.random() * 2),
+        angularVelocity: Math.random(),
+        // faction: this.playerFaction, // useful for testing so I can see where it is immediately
+        commsScript: 102
+    });
+  }
   // asteroids between mars and jupiter
   addAsteroids(asteroidCount, big) {
 
