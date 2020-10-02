@@ -6,7 +6,7 @@ import {ColorReplaceFilter} from '@pixi/filter-color-replace';
 import UiUtils from '../Utils/UiUtils';
 
 const effects = {
-  pdcHudColor: new ColorReplaceFilter([0, 0, 0], [0.2, 1, 0.2], 0.2)
+  pdcHudColor: new ColorReplaceFilter([0, 0, 0], Assets.Colors.EnemyRGB, 0.2)
 };
 
 // designed to be drawn above the Map, shows the current

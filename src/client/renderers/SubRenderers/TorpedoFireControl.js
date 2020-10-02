@@ -95,13 +95,13 @@ export default class TorpedoFireControl {
           onclick: (event) => {
 
             this.renderer.playSound('click');
-            
-            if (this.targetId >= 0) {
+
+            if (haveTarget) {
               // fire the torp
               if (this.renderer.client) {
 
                 // fire and unload
-                if (isActive) {
+                if (isActive && currentTorp) {
                   this.renderer.client.fireTorp(this.targetId , tubeIndex);
                 }
                 this.renderer.client.loadTorp(tubeIndex, 0);

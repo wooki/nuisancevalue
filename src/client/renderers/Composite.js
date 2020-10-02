@@ -55,9 +55,9 @@ export default class CompositeRenderer {
     	this.el = document.createElement('div');
       this.el.classList.add('renderer');
       this.el.classList.add('composite')
-      this.el.addEventListener('contextmenu', (e) => {
-        e.preventDefault(); // prevent context menu
-      });
+      // this.el.addEventListener('contextmenu', (e) => {
+      //   e.preventDefault(); // prevent context menu
+      // });
       root.append(this.el);
 
       // create pixie app and container

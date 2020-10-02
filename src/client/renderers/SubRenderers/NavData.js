@@ -3,6 +3,8 @@ import Victor from 'victor';
 import Assets from '../Utils/assets.js';
 import {h, createProjector} from 'maquette';
 
+const actionImageHeight = 18;
+
 // extends a HudData SubRenderer to provide
 // actions for various for data items
 export default class NavData extends HudData {
@@ -26,8 +28,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.focus,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]),
         h("button", {
           key: "navdata-action-select"+index,
@@ -39,8 +41,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.select,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])])
       ];
 
@@ -57,8 +59,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.focus,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]),
         h("button", {
           key: "navdata-action-select"+index,
@@ -70,8 +72,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.select,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])])
       ];
 
@@ -89,8 +91,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.focus,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]),
         h("button", {
           key: "navdata-action-select"+index,
@@ -102,8 +104,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.select,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])])
       ];
 
@@ -120,8 +122,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.focus,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]),
         h("button", {
           key: "navdata-action-select"+index,
@@ -133,8 +135,8 @@ export default class NavData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.select,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])])
       ];
 

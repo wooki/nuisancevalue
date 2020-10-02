@@ -53,6 +53,7 @@ module.exports = {
 		Friend: 0x75EE10,
 		Neutral: 0x1499C5,
 		Enemy: 0xEF1053,
+		EnemyRGB: [0.94, 0.06, 0.33],
 		Paths: {
 			Other: 0xEF1053,
 			Gravity: 0x2966C0,

@@ -9,6 +9,8 @@ import Hulls from '../../../common/Hulls';
 import Factions from '../../../common/Factions';
 import SolarObjects from '../../../common/SolarObjects';
 
+const actionImageHeight = 18;
+
 // Info panels for the data drawn on MapHud
 export default class SelectedNavData {
 
@@ -140,8 +142,8 @@ export default class SelectedNavData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.focus,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])])
       ];
 
@@ -159,8 +161,8 @@ export default class SelectedNavData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.target,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]);
       } else if (this.targettingObj) {
         let progress = Math.round(this.timeToTarget / 1000);
@@ -183,8 +185,8 @@ export default class SelectedNavData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.focus,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]),
         h("button", {
           key: "selectednav-action-wp",
@@ -194,8 +196,8 @@ export default class SelectedNavData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.waypoint,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]),
         targetButton
       ];
@@ -210,8 +212,8 @@ export default class SelectedNavData {
             }
           }, [h("img", {
             src: "./"+Assets.Images.orbitwaypoint,
-            height: 26,
-            width: 26
+            height: actionImageHeight,
+            width: actionImageHeight
           }, [])])
         );
       }

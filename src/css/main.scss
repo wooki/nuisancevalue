@@ -27,6 +27,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--NV-Text-Font);
+    background: #121216;
 }
 
 .nv.ui.lobby {
@@ -48,7 +49,13 @@ body {
 
 .lobby h1 {
   font-family: var(--NV-Title-Font);
+  text-shadow: 0 0 12px var(--NV-ElectricBlue);
   margin: 50px 0 15vh 0;
+}
+.lobby h2 {
+  font-family: var(--NV-Title-Font);
+  text-shadow: 0 0 12px var(--NV-ElectricBlue);
+  margin: 30px 0;
 }
 
 .ui-leaving, .ui-loading {
@@ -191,13 +198,17 @@ body {
       margin: 3px;
       color: white;
       text-shadow: 0 0 4px var(--NV-ElectricBlue);
-      box-shadow: 0 0 var(--NV-ElectricBlue);
+      box-shadow: none;
       cursor: pointer;
 
       &:active {
         outline: none;
         box-shadow: inset 0 0 var(--NV-ElectricBlue);
         transform: translate(1px, 1px);
+      }
+
+      &:hover {
+        box-shadow: inset 0 0 4px var(--NV-ElectricBlue), 0 0 4px var(--NV-ElectricBlue);
       }
 
       &:focus {
@@ -215,6 +226,17 @@ body {
           box-shadow: none;
       }
 
+      &.active {
+        opacity: 1;
+        color: var(--NV-SpaceBlack);
+        border-color: var(--NV-SpaceBlack);
+        text-shadow: none;
+        box-shadow: none;
+        &:hover {
+          text-shadow: none;
+          box-shadow: none;
+        }
+      }
       &.key {
         min-width: 44px;
       }
@@ -369,7 +391,7 @@ body {
         padding: 0 5px;
       }
       .actions {
-        margin: 0 -6px;
+        margin: 12px -4px 0 -4px;
         order: 999;
         button {
           flex: 1 1 auto;
@@ -380,7 +402,8 @@ body {
           color: #000000;
           font-weight: normal;
           font-size: 12px;
-          line-height: 18px;
+          line-height: 12px;
+          text-shadow: 0 0 2px var(--NV-ElectricBlue);
           margin: 0 2px;
           img {
             margin: -3px 0;
@@ -416,8 +439,9 @@ body {
     // specialised comms ui
     &.comms {
       display: none;
-      border: 4px solid var(--NV-SpaceBlack);
-      background-color: rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--NV-Dial);
+      box-shadow: 0 0 4px var(--NV-ElectricBlue), inset 0 0 2px var(--NV-ElectricBlue);
+      background-color: rgba(0, 0, 0, 0.9);
       box-sizing: border-box;
       padding: 30px;
       &.open {
@@ -427,10 +451,12 @@ body {
         align-items: center;
       }
       .title {
+        font-family: var(--NV-Title-Font);
         display: block;
         text-align: center;
         text-align: center;
         text-transform: uppercase;
+        text-shadow: 0 0 4px var(--NV-ElectricBlue);
         &:before {
           content: "### "
         }
@@ -439,6 +465,8 @@ body {
         }
       }
       .text {
+        font-family: var(--NV-Title-Font);
+        text-shadow: 0 0 4px var(--NV-ElectricBlue);
         display: block;
         text-align: center;
         max-width: 35em;

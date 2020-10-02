@@ -35,7 +35,7 @@ export default class LobbyRenderer {
 
     render() {
 
-      let missions = [h('label.mission', ["Missions:"])];
+      let missions = [];
       for (let i = 0; i < this.missions.length; i++) {
         missions.push(
           h('button.mission', {
@@ -53,6 +53,10 @@ export default class LobbyRenderer {
         ships.push(this.createShip(this.playableShips[j]));
       }
 
+      if (ships.length > 0) {
+        ships.unshift(h('h2', ["Select Station"]));
+      }
+
       return h('div.nv.ui.col.lobby', {
         key: 'lobby',
         styles: {
@@ -60,6 +64,7 @@ export default class LobbyRenderer {
       },
       [
         h('h1', ["Nuisance Value Lobby"]),
+        h('h2', ["Load Mission"]),
         h('div.nv.ui.row', {
           key: 'missions'
           },

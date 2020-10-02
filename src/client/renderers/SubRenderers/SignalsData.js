@@ -3,6 +3,8 @@ import Victor from 'victor';
 import Assets from '../Utils/assets.js';
 import {h, createProjector} from 'maquette';
 
+const actionImageHeight = 18;
+
 export default class SignalsData extends HudData {
 
   constructor(params) {
@@ -74,8 +76,8 @@ export default class SignalsData extends HudData {
           }
         }, [h("img", {
           src: "./"+Assets.Images.scan,
-          height: 26,
-          width: 26
+          height: actionImageHeight,
+          width: actionImageHeight
         }, [])]));
 
       } else if (this.scanningId == targetObject.id) {
