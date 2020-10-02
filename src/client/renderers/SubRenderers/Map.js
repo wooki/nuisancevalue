@@ -210,8 +210,7 @@ export default class Map {
       } else if (obj instanceof PDC) {
           // instead of drawing - always create a load of random small explosions
           isPDC = true;
-      } else if (obj instanceof Planet) {
-        if (obj.texture == "sol") console.log("addObject");
+      } else if (obj instanceof Planet) {        
         texture = this.resources[this.parameters.baseUrl+Assets.Images[obj.texture]].texture;
         zIndex = this.parameters.internalZIndex.planet;
         alias = obj.texture;

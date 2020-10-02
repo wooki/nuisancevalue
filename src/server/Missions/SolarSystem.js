@@ -34,6 +34,7 @@ export default class SolarSystem extends Mission {
     this.friendlyStations = [];
     this.friendlyStationsByName = {};
     this.friendlyStationsById = {};
+
   for (let i = 0; i < stationPlanets.length; i++) {
 
       let planet = stationPlanets[i];
@@ -71,6 +72,8 @@ export default class SolarSystem extends Mission {
         this.friendlyStations.push(station);
         this.friendlyStationsByName[planet.texture] = station;
         this.friendlyStationsById[station.id] = station;
+      } else {
+        this.earthStation = station;
       }
 
       // create player ship around earth
@@ -148,21 +151,18 @@ export default class SolarSystem extends Mission {
     let saturnStation = this.friendlyStationsByName['saturn'];
     this.spawnEnemyShips(1, ['blockade-runner'], saturnStation.id);
 
-
-
       // set-up some events
 
       // if NV comms closed then call from Earth Station 1
       this.missionIntro = function(game, seconds) {
 
         // both still in game
-        let earthStation = this.friendlyStationsByName['earth'];
-        if (earthStation && this.playerShip) {
+        if (this.earthStation && this.playerShip) {
 
-          if (this.playerShip.commsState == 0 && earthStation.commsTargetId < 0) {
+          if (this.playerShip.commsState == 0 && this.earthStation.commsTargetId < 0) {
 
             // suggest call
-            this.playerShip.commsTargetId = earthStation.id;
+            this.playerShip.commsTargetId = this.earthStation.id;
 
           } else {
             // try again later
@@ -198,19 +198,19 @@ export default class SolarSystem extends Mission {
   missionComplete(game, seconds) {
 
     // look for earthStation - or any friendly
-    let earthStation = this.friendlyStationsByName['earth'];
-    if (!earthStation) {
-      earthStation = this.friendlyStations[0];
+    let station = this.earthStation;
+    if (!station) {
+      station = this.friendlyStations[0];
     }
 
-    if (earthStation && this.playerShip) {
+    if (station && this.playerShip) {
 
-      earthStation.commsScript = 2;
+      station.commsScript = 2;
 
-      if (this.playerShip.commsState == 0 && earthStation.commsTargetId < 0) {
+      if (this.playerShip.commsState == 0 && station.commsTargetId < 0) {
 
         // suggest call
-        this.playerShip.commsTargetId = earthStation.id;
+        this.playerShip.commsTargetId = station.id;
 
       } else {
         // try again later

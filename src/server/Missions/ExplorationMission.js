@@ -125,7 +125,7 @@ export default class ExplorationMission extends Mission {
     let position = new Victor(wreckageOrbitDistance, 0);
     let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
     let rotation = -90 + (270 * Math.random());
-    console.log("rotation: "+rotation);
+    
     position = position.rotateDeg(rotation);
     velocity = velocity.rotateDeg(rotation);
     position = position.add(Victor.fromArray(this.star1.physicsObj.position));
