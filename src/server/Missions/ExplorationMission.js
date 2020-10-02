@@ -20,7 +20,7 @@ export default class ExplorationMission extends Mission {
     let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
 
     this.star1 = this.game.addPlanet({
-				x: 1, y: 0,
+				x: 0, y: 0,
 				dX: 0, dY: 0,
 				mass: star1Mass,
 				size: SolarObjects.Sol.diameter * 0.5,
@@ -107,7 +107,6 @@ export default class ExplorationMission extends Mission {
 
     // recreate wreckage if it is ever destroyed
     if (!this.wreckage || obj.id == this.wreckage.id) {
-      console.log("RECREATING Wreckage");
       this.wreckage = this.createWreckage();
     }
 
@@ -117,7 +116,7 @@ export default class ExplorationMission extends Mission {
 
     let star1Mass = SolarObjects.Sol.mass * 2.5;
     let star2Mass = SolarObjects.Sol.mass * 0.6;
-    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 4;
+    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 2.5;
     let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
 
     let wreckageOrbitDistance = distanceApart*(4 + (Math.random() * 1.5));
@@ -125,7 +124,7 @@ export default class ExplorationMission extends Mission {
     let position = new Victor(wreckageOrbitDistance, 0);
     let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
     let rotation = -90 + (270 * Math.random());
-    
+
     position = position.rotateDeg(rotation);
     velocity = velocity.rotateDeg(rotation);
     position = position.add(Victor.fromArray(this.star1.physicsObj.position));
@@ -140,7 +139,7 @@ export default class ExplorationMission extends Mission {
         hull: 'corvette-wreckage',
         angle: (Math.random() * 2),
         angularVelocity: Math.random(),
-        // faction: this.playerFaction, // useful for testing so I can see where it is immediately
+        faction: this.playerFaction, // useful for testing so I can see where it is immediately
         commsScript: 102
     });
   }

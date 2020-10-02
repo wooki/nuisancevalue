@@ -321,7 +321,7 @@ export default class NvGameEngine extends GameEngine {
                     }
 
                     // apply force towards source
-                    if (gravSourceAmount && gravSource && gravSourceAmount > 0.02 && gravSourceAmount < Infinity) {
+                    if (gravSourceAmount && gravSource && gravSourceAmount > 0.0002 && gravSourceAmount < Infinity) {
 
                         // flip x coord of obj because our 0,0 is top left
                         // let objV = new Victor(obj.physicsObj.position[0], 0 - obj.physicsObj.position[1]);
