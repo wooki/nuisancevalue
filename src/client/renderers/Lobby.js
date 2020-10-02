@@ -82,16 +82,17 @@ export default class LobbyRenderer {
     createShip(obj) {
 
       let hullData = obj.getHullData();
-      let content = [];
-      content.push(h('img', {
+      let columns = [];
+      let text = [];
+      let buttons = [];
+      columns.push(h('img', {
         src: hullData.image,
-        height: '32px',
-        width: '32px'
+        height: '100px',
+        width: 'auto'
       }, []));
-      content.push(h('label', [obj.name + ", "+hullData.name+' Class:']));
 
       if (obj.helmPlayerId == 0) {
-        content.push(h('button.join', {
+        buttons.push(h('button.join', {
           key: 'helm',
           onclick: (event) => {
             this.joinShip(obj.id, 'helm');
@@ -99,7 +100,7 @@ export default class LobbyRenderer {
         }, ["Helm"]));
       }
       if (obj.navPlayerId == 0) {
-        content.push(h('button.join', {
+        buttons.push(h('button.join', {
           key: 'nav',
           onclick: (event) => {
             this.joinShip(obj.id, 'nav');
@@ -107,7 +108,7 @@ export default class LobbyRenderer {
         }, ["Nav"]));
       }
       if (obj.signalsPlayerId == 0) {
-        content.push(h('button.join', {
+        buttons.push(h('button.join', {
           key: 'signals',
           onclick: (event) => {
             this.joinShip(obj.id, 'signals');
@@ -115,7 +116,7 @@ export default class LobbyRenderer {
         }, ["Signals"]));
       }
       if (obj.engineerPlayerId == 0) {
-        content.push(h('button.join', {
+        buttons.push(h('button.join', {
           key: 'engineer',
           onclick: (event) => {
             this.joinShip(obj.id, 'engineer');
@@ -123,7 +124,7 @@ export default class LobbyRenderer {
         }, ["Engineer"]));
       }
       if (obj.captainPlayerId == 0) {
-        content.push(h('button.join', {
+        buttons.push(h('button.join', {
           key: 'captain',
           onclick: (event) => {
             this.joinShip(obj.id, 'captain');
@@ -131,10 +132,15 @@ export default class LobbyRenderer {
         }, ["Captain"]));
       }
 
+      text.push(h('label', [obj.name + ", "+hullData.name+' Class']));
+      text.push(h('div.nv.ui.row', buttons));
+
+      columns.push(h('div.nv.ui.col.align-start', text));
+
       return h('div.nv.ui.row.ship', {
         key: 'ship-'+obj.id
         },
-        content
+        columns
       );
 
     }

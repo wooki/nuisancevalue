@@ -45,17 +45,34 @@ body {
   // background-image: url('/assets/bg.png');
   color: white;
   text-shadow: 0 0 5px var(--NV-ElectricBlue);
+  box-sizing: border-box;
+  padding: 0 15px;
 }
 
 .lobby h1 {
   font-family: var(--NV-Title-Font);
   text-shadow: 0 0 12px var(--NV-ElectricBlue);
   margin: 50px 0 15vh 0;
+  line-height: 1.6em;
 }
 .lobby h2 {
   font-family: var(--NV-Title-Font);
   text-shadow: 0 0 12px var(--NV-ElectricBlue);
   margin: 30px 0;
+}
+
+.lobby {
+  .ship {
+    img {
+      transform: rotate(90deg);
+    }
+    .col {
+      margin-left: 50px;
+    }
+    .row {
+        flex-wrap: wrap;
+    }
+  }
 }
 
 .ui-leaving, .ui-loading {
@@ -89,6 +106,9 @@ body {
   // ui styles
   &.ui {
 
+    max-width: 100%;
+    box-sizing: border-box;
+
     // some theming
     color: white;
     line-height: 30px;
@@ -113,6 +133,7 @@ body {
 
     // column
     &.col {
+
       &.stretch {
         & > * {
           width: 100%;
@@ -139,6 +160,10 @@ body {
 
     &.justify-end {
       justify-content: flex-end;
+    }
+
+    &.align-start {
+      align-items: flex-start;
     }
 
     &.col > .row {
