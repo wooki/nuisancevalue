@@ -294,8 +294,6 @@ export default class NvGameEngine extends GameEngine {
                             }
                         }
 
-                        if (gravSource && obj.texture == "saturn") console.log("Saturn:"+gravSource.texture);
-
                     } else {
 
                         // find biggest gravity effect, only apply gravity on smaller objects
