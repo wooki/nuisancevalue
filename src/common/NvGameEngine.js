@@ -764,7 +764,6 @@ export default class NvGameEngine extends GameEngine {
         s.engine = params['engine'];
         s.name = params['name'];
         s.hull = params['hull'];
-        s.size = params['size'] || hullData.size;
         s.helmPlayerId = 0;
         s.navPlayerId = 0;
         s.captainPlayerId = 0;

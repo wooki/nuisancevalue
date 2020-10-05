@@ -17,7 +17,6 @@ export default class Ship extends PhysicalObject2D {
     static get netScheme() {
         return Object.assign({
             name: { type: BaseTypes.TYPES.STRING },
-            size: { type: BaseTypes.TYPES.INT16 },
             hull: { type: BaseTypes.TYPES.STRING },
             engine: { type: BaseTypes.TYPES.UINT8 },
             commsScript: { type: BaseTypes.TYPES.UINT8 },
@@ -55,6 +54,11 @@ export default class Ship extends PhysicalObject2D {
 
     getHullData() {
       return Hulls[this.hull];
+    }
+
+    // used to be a netScheme property but now we always use hull
+    get size() {
+        return this.getHullData().size;
     }
 
     getPowerAdjustedHullData() {
@@ -284,7 +288,6 @@ export default class Ship extends PhysicalObject2D {
     syncTo(other) {
         super.syncTo(other);
         this.name = other.name;
-        this.size = other.size;
         this.hull = other.hull;
         this.engine = other.engine;
         this.commsScript = other.commsScript;

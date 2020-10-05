@@ -70,7 +70,6 @@ export default class SolarSystem extends Mission {
           y: position.y,
           dX: velocity.x,
           dY: velocity.y,
-          size: 200 + (Math.random() * 300), // need to read mass and size from hull
           hull: 'station',
           commsScript: stationCommsScript,
           angle: (Math.random() * 2),
