@@ -15,6 +15,18 @@ export default class SolarSystem extends Mission {
     this.planets = SolarObjects.addSolarSystem(this.game, {});
     this.addAsteroids(25);
 
+    this.enemyShipNames = [
+      "Enemy 1",
+      "Enemy 2",
+      "Enemy 3",
+      "Enemy 4",
+      "Enemy 5",
+      "Enemy 6",
+      "Enemy 7",
+      "Enemy 8",
+      "Enemy 9"
+    ];
+
     // count player kills
     this.playerKills = 0;
 
@@ -282,6 +294,8 @@ export default class SolarSystem extends Mission {
           console.dir(Object.keys(targets));
         }
         data.ship.targetId = target.id;
+      } else {
+        data.ship.targetId = -1;
       }
     }
   }
@@ -308,9 +322,11 @@ export default class SolarSystem extends Mission {
         }
       }
 
+      let name = this.enemyShipNames.shift();
+      console.log("Enemy:"+name);
       let hullName = hulls[j];
       let hullData = Hulls[hullName];
-      let shipOrbitDistance = enemyPlanet.size + 4000;
+      let shipOrbitDistance = enemyPlanet.size + 10000;
       let shipOrbitSpeed = Math.sqrt((SolarObjects.constants.G * enemyPlanet.physicsObj.mass) / shipOrbitDistance);
       let position = new Victor(shipOrbitDistance, 0);
       let velocity = new Victor(0, 0 - shipOrbitSpeed);
@@ -321,7 +337,7 @@ export default class SolarSystem extends Mission {
       velocity = velocity.add(Victor.fromArray(enemyPlanet.physicsObj.velocity));
 
       let enemyShip = this.game.addShip({
-          name: "Mikkei "+j,
+          name: name,
           x: position.x,
           y: position.y,
           dX: velocity.x,
@@ -330,6 +346,7 @@ export default class SolarSystem extends Mission {
           angle: Math.PI,
           faction: this.enemyFaction,
           aiScript: 4,
+          playable: 1,
           targetId: targetId
       });
       this.enemyShips.push(enemyShip);

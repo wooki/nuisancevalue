@@ -142,7 +142,7 @@ export default class NvGameEngine extends GameEngine {
 
                 // docked objects not on the map so ignore (although this should never happen)
 
-            } else if (obj instanceof Torpedo && obj.fuel <= -20) {
+            } else if (obj instanceof Torpedo && obj.fuel <= -120) {
 
               // torps with no fuel just explode
               this.removeObjectFromWorld(obj);
@@ -293,6 +293,9 @@ export default class NvGameEngine extends GameEngine {
                               gravSource = gravObj;
                             }
                         }
+
+                        if (gravSource && obj.texture == "saturn") console.log("Saturn:"+gravSource.texture);
+
                     } else {
 
                         // find biggest gravity effect, only apply gravity on smaller objects
