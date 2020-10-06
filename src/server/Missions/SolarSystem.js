@@ -9,6 +9,13 @@ export default class SolarSystem extends Mission {
     super(gameEngine);
   }
 
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
   build() {
     super.build();
 
@@ -16,16 +23,30 @@ export default class SolarSystem extends Mission {
     this.addAsteroids(25);
 
     this.enemyShipNames = [
-      "Enemy 1",
-      "Enemy 2",
-      "Enemy 3",
-      "Enemy 4",
-      "Enemy 5",
-      "Enemy 6",
-      "Enemy 7",
-      "Enemy 8",
-      "Enemy 9"
+      "Nervous Energy",
+      "Prosthetic Conscience",
+      "Determinist",
+      "Zealot",
+      "Revisionist",
+      "Screw Loose",
+      "Flexible Demeanour",
+      "Limiting Factor",
+      "Ethics Gradient"
     ];
+    this.shuffleArray(this.enemyShipNames);
+
+    this.friendlyShipNames = [
+      "Break Even",
+      "Cargo Cult",
+      "Trade Surplus",
+      "Prime Mover",
+      "Congenital Optimist",
+      "Size Isn't Everything",
+      "Sleeper Service",
+      "Zero Gravitas",
+      "Youthful Indiscretion"
+    ];
+    this.shuffleArray(this.friendlyShipNames);
 
     // count player kills
     this.playerKills = 0;
@@ -136,9 +157,10 @@ export default class SolarSystem extends Mission {
       velocity = velocity.rotateDeg(rotation);
       position = position.add(Victor.fromArray(planet.physicsObj.position));
       velocity = velocity.add(Victor.fromArray(planet.physicsObj.velocity));
+      let name = this.friendlyShipNames.shift();
 
       let freighter = this.game.addShip({
-          name: "Freighter "+i,
+          name: name,
           x: position.x,
           y: position.y,
           dX: velocity.x,
@@ -345,7 +367,6 @@ export default class SolarSystem extends Mission {
           angle: Math.PI,
           faction: this.enemyFaction,
           aiScript: 4,
-          playable: 1,
           targetId: targetId
       });
       this.enemyShips.push(enemyShip);

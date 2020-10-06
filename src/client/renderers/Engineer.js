@@ -1,8 +1,13 @@
 import CompositeRenderer from './Composite';
+
 import MapBackground from './SubRenderers/MapBackground';
 import MapGrid from './SubRenderers/MapGrid';
 import Map from './SubRenderers/Map';
 import MapHud from './SubRenderers/MapHud';
+import MapRanges from './SubRenderers/MapRanges';
+import MapPaths from './SubRenderers/MapPaths';
+import ZoomControl from './SubRenderers/ZoomControl';
+import MapPanControl from './SubRenderers/MapPanControl';
 import PowerGrid from './SubRenderers/PowerGrid';
 import TorpedoLoadControl from './SubRenderers/TorpedoLoadControl';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
@@ -25,10 +30,18 @@ export default class EngineerRenderer extends CompositeRenderer {
         spaceWidth = 0;
         margin = 15;
       }
-      const sideWidth = Math.round((spaceWidth/2) - margin);
-      const marginFull = margin * 2;
-      const sideControlsMin = 200;
-      const rightColWidth = 400;
+      let marginFull = margin * 2;
+
+      let rightColWidth = Math.floor(fullWidth*0.5) - margin;
+      if ((fullHeight+marginFull) < rightColWidth) {
+        rightColWidth = fullHeight - marginFull;
+      }
+      let leftColWidth = fullWidth - (rightColWidth + marginFull + margin);
+      let bottomLeftColWidth = 400;
+      let bottomRightColWidth = leftColWidth - (margin + bottomLeftColWidth);
+      let bottomHeight = 400;
+      let topHeight = fullHeight - (bottomHeight + margin + margin);
+      let mapSize = 60000;
 
       let config = {
         station: 'engineer',
@@ -40,33 +53,51 @@ export default class EngineerRenderer extends CompositeRenderer {
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,
-            height: rightColWidth,
+            height: fullHeight - marginFull,
             zIndex: 1,
-            mapSize: 6000
+            mapSize: mapSize
+          }),
+          new MapRanges({
+            x: fullWidth - (rightColWidth + margin),
+            y: margin,
+            width: rightColWidth,
+            height: fullHeight - marginFull,
+            zIndex: 1,
+            mapSize: mapSize
           }),
           new MapGrid({
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,
-            height: rightColWidth,
+            height: fullHeight - marginFull,
             zIndex: 5,
-            mapSize: 6000
+            mapSize: mapSize
+          }),
+          new MapPaths({
+            x: fullWidth - (rightColWidth + margin),
+            y: margin,
+            width: rightColWidth,
+            height: fullHeight - marginFull,
+            zIndex: 8,
+            predictTime: 30,
+            trackObjects: true,
+            mapSize: mapSize
           }),
           new Map({
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,
-            height: rightColWidth,
+            height: fullHeight - marginFull,
             zIndex: 10,
-            mapSize: 6000
+            mapSize: mapSize
           }),
           new MapHud({
             x: fullWidth - (rightColWidth + margin),
             y: margin,
             width: rightColWidth,
-            height: rightColWidth,
+            height: fullHeight - marginFull,
             zIndex: 15,
-            mapSize: 6000,
+            mapSize: mapSize,
             arrowSize: 10,
             arrowMargin: 6,
             dialSmallDividerSize: 2,
@@ -74,25 +105,33 @@ export default class EngineerRenderer extends CompositeRenderer {
             dialFontSize: 7,
             predictTime: 120 // to match waypoint predicition with nav
           }),
+          new ZoomControl({
+            keyboardControls: true,
+            onScreenControls: false
+          }),
+          new MapPanControl({
+            wasd: false,
+            arrows: true,
+          }),
           new PowerGrid({
             x: margin,
             y: margin,
-            width: fullWidth - (rightColWidth + marginFull + margin),
-            height: (fullHeight*0.66) - marginFull,
+            width: leftColWidth,
+            height: topHeight,
             zIndex: 20
           }),
           new TorpedoLoadControl({
-            x: margin,
-            y: marginFull + ((fullHeight*0.66) - marginFull),
-            width: fullWidth - (rightColWidth + marginFull + margin),
-            height: (fullHeight*0.33) - margin,
+            x: bottomLeftColWidth + marginFull,
+            y: marginFull + topHeight,
+            width: bottomRightColWidth,
+            height: bottomHeight,
             zIndex: 25
           }),
           new EngineeringDataControl({
-            x: fullWidth - (rightColWidth + margin),
-            y: marginFull + rightColWidth,
-            width: rightColWidth,
-            height: (fullHeight - rightColWidth) - marginFull,
+            x: margin,
+            y: marginFull + topHeight,
+            width: bottomLeftColWidth,
+            height: bottomHeight,
             zIndex: 30
           }),
           new GlobalSound({

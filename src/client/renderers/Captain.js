@@ -6,8 +6,8 @@ import MapHud from './SubRenderers/MapHud';
 import MapGrid from './SubRenderers/MapGrid';
 import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
-import HudData from './SubRenderers/HudData';
 import MapPanControl from './SubRenderers/MapPanControl';
+import HudData from './SubRenderers/HudData';
 import EngineeringDataControl from './SubRenderers/EngineeringDataControl';
 import GlobalSound from './SubRenderers/GlobalSound';
 import LocalSound from './SubRenderers/LocalSound';
@@ -31,7 +31,7 @@ export default class CaptainRenderer extends CompositeRenderer {
       const sideWidth = Math.round((spaceWidth/2) - margin);
       const marginFull = margin * 2;
       const sideControlsMin = 200;
-      const mapSize = 30000;
+      const mapSize = 60000;
 
       let config = {
         station: 'captain',
