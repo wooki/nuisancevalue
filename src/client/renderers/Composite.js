@@ -291,14 +291,18 @@ export default class CompositeRenderer {
           if (playerShip) {
 
             if (actualPlayerShip.physicsObj && isNaN(actualPlayerShip.physicsObj.position[0])) {
+
+              console.log("PLAYERSHIP NAN BUG");
+              console.dir(playerShip.physicsObj.position);
+
               // Force a reload - something has gone wrong with sending the
               // player ship but a reload usually fixes it.
-              if (window.confirm("Problem connecting to your ship, reload?")) {
-                window.location.reload(true);
-                this.backToLobby = true;
-                this.loadedSprites = false;
-                return this.backToLobby;
-              }
+              // if (window.confirm("Problem connecting to your ship, reload?")) {
+              //   window.location.reload(true);
+              //   this.backToLobby = true;
+              //   this.loadedSprites = false;
+              //   return this.backToLobby;
+              // }
             } else {
 
               // keep track of our ship

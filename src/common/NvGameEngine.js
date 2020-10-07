@@ -90,6 +90,7 @@ export default class NvGameEngine extends GameEngine {
         let step = params.step;
         let isReenact = params.isReenact;
         let dt = params.dt;
+        // console.log(`step:${step} dt:${dt}`);
 
         // every 60 steps (every second)
         if ((step % 60) == 0) {
@@ -98,6 +99,12 @@ export default class NvGameEngine extends GameEngine {
 
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
+
+            if (obj) {
+              if (obj.physicsObj && isNaN(obj.physicsObj.position[0])) {
+                console.log("Obj NAN:"+" "+obj.physicsObj.position[0]+" "+obj.toString());
+              }
+            }
 
             if (obj === undefined) {
 

@@ -89,10 +89,31 @@ export default class NvRenderer extends Renderer {
       }
     }
 
+    addObject(obj) {
+      console.log("addObject:"+(obj.name || obj.texture));
+      if (obj.playable) {
+        this.playable = obj;
+      }
+    }
+
+    removeObject(obj) {
+      console.log("removeObject:"+(obj.name || obj.texture));
+      if (obj.playable) {
+        console.log("PLAYABLE REMOVED!");
+      }
+    }
+
     // defer draw to specific renderer
     draw(t, dt) {
+      if (this.playable && this.playable.physicsObj && isNaN(this.playable.physicsObj.position[0])) {
+        console.error("A this.playable:"+this.playable.physicsObj.position.toString());
+      }
+        // console.log(`t:${t} dt:${dt}`);
         super.draw(t, dt);
 
+        if (this.playable && this.playable.physicsObj && isNaN(this.playable.physicsObj.position[0])) {
+          console.error("B this.playable:"+this.playable.physicsObj.position.toString());
+        }
         if (renderer) {
             let backToLobby = renderer.draw(t, dt);
             if (backToLobby) {

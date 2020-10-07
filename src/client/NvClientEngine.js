@@ -7,12 +7,75 @@ export default class NvClientEngine extends ClientEngine {
         super(gameEngine, options, NvRenderer);
     }
 
-    start() {
-      super.start();
+    // start() {
+    //   super.start();
+    //
+    //   // this.networkMonitor.on('RTTUpdate', (e) => {
+    //   //   console.log(e);
+    //   // });
+    // }
 
-      // this.networkMonitor.on('RTTUpdate', (e) => {
-      //   console.log(e);
-      // });
+    start() {
+        this.stopped = false;
+        this.resolved = false;
+        // initialize the renderer
+        // the render loop waits for next animation frame
+        if (!this.renderer) alert('ERROR: game has not defined a renderer');
+        let renderLoop = (timestamp) => {
+            if (this.stopped) {
+                this.renderer.stop();
+                return;
+            }
+            this.lastTimestamp = this.lastTimestamp || timestamp;
+            let dt = timestamp - this.lastTimestamp;
+            if (dt <= 0) {
+              console.error("dt:"+dt);
+            }
+            if (dt >= 100) {
+              console.error("dt:"+dt);
+            }
+            this.renderer.draw(timestamp, timestamp - this.lastTimestamp);
+            this.lastTimestamp = timestamp;
+            window.requestAnimationFrame(renderLoop);
+        };
+
+        return this.renderer.init().then(() => {
+            this.gameEngine.start();
+
+            if (this.options.scheduler === 'fixed') {
+                // schedule and start the game loop
+                this.scheduler = new Scheduler({
+                    period: this.options.stepPeriod,
+                    tick: this.step.bind(this),
+                    delay: STEP_DELAY_MSEC
+                });
+                this.scheduler.start();
+            }
+
+            if (typeof window !== 'undefined')
+                window.requestAnimationFrame(renderLoop);
+            if (this.options.autoConnect && this.options.standaloneMode !== true) {
+                return this.connect()
+                    .catch((error) => {
+                        this.stopped = true;
+                        throw error;
+                    });
+            }
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                this.resolveGame = resolve;
+                if (this.socket) {
+                    this.socket.on('disconnect', () => {
+                        if (!this.resolved && !this.stopped) {
+                            if (this.options.verbose)
+                                console.log('disconnected by server...');
+                            this.stopped = true;
+                            reject();
+                        }
+                    });
+                }
+            });
+        });
     }
 
     scan(targetId) {
