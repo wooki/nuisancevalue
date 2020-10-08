@@ -78,6 +78,58 @@ export default class NvClientEngine extends ClientEngine {
         });
     }
 
+    step(t, dt, physicsOnly) {
+
+        if (dt < 0) console.error("NvClientEngine step:"+dt);
+
+        if (!this.resolved) {
+            const result = this.gameEngine.getPlayerGameOverResult();
+            if (result) {
+                this.resolved = true;
+                this.resolveGame(result);
+                // simulation can continue...
+                // call disconnect to quit
+            }
+        }
+
+        // physics only case
+        if (physicsOnly) {
+            this.gameEngine.step(false, t, dt, physicsOnly);
+            return;
+        }
+
+        // first update the trace state
+        this.gameEngine.trace.setStep(this.gameEngine.world.stepCount + 1);
+
+        // skip one step if requested
+        if (this.skipOneStep === true) {
+            this.skipOneStep = false;
+            return;
+        }
+
+        this.gameEngine.emit('client__preStep');
+        while (this.inboundMessages.length > 0) {
+            this.handleInboundMessage(this.inboundMessages.pop());
+            this.checkDrift('onServerSync');
+        }
+
+        // check for server/client step drift without update
+        this.checkDrift('onEveryStep');
+
+        // perform game engine step
+        if (this.options.standaloneMode !== true) {
+            this.handleOutboundInput();
+        }
+        this.applyDelayedInputs();
+        this.gameEngine.step(false, t, dt);
+        this.gameEngine.emit('client__postStep', { dt });
+
+        if (this.options.standaloneMode !== true && this.gameEngine.trace.length && this.socket) {
+            // socket might not have been initialized at this point
+            this.socket.emit('trace', JSON.stringify(this.gameEngine.trace.rotate()));
+        }
+    }
+
     scan(targetId) {
       this.sendInput("scan", { objId: targetId })
     }

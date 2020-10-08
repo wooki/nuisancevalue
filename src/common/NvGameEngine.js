@@ -86,13 +86,13 @@ export default class NvGameEngine extends GameEngine {
 
     step(isReenact, t, dt, physicsOnly) {
 
-      this.debugNaN("step");
+      this.debugNaN("step "+dt+":");
 
         // physics-only step
         if (physicsOnly) {
             if (dt) dt /= 1000; // physics engines work in seconds
             this.physicsEngine.step(dt, objectFilter);
-            this.debugNaN("step physicsOnly");
+            this.debugNaN("step physicsOnly"+dt+":");
             return;
         }
 
