@@ -139,7 +139,7 @@ export default class NvRenderer extends Renderer {
         while (t > this.clientEngine.lastStepTime + p) {
 
             if (p + this.clientEngine.correction < 0) {
-              console.log("JIM:");
+              console.log("Negative dt:");
               console.dir({
                 t: t,
                 p: p,
