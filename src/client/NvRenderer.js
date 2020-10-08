@@ -14,6 +14,8 @@ let canvas = null;
 let renderer = null;
 let client = null;
 
+const TIME_RESET_THRESHOLD = 100;
+
 export default class NvRenderer extends Renderer {
 
     constructor(gameEngine, clientEngine) {
