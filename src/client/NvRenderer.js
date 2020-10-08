@@ -142,6 +142,18 @@ export default class NvRenderer extends Renderer {
 
         // catch-up missed steps
         while (t > this.clientEngine.lastStepTime + p) {
+
+            if (p + this.clientEngine.correction < 0) {
+              console.log("JIM:");
+              console.dir({
+                t: t,
+                p: p,
+                lastStepTime: this.clientEngine.lastStepTime,
+                correction: this.clientEngine.correction,
+                new_t: (this.clientEngine.lastStepTime + p),
+                dt: (p + this.clientEngine.correction)
+              });
+            }
             this.clientEngine.step(this.clientEngine.lastStepTime + p, p + this.clientEngine.correction);
             this.clientEngine.lastStepTime += p;
             this.clientEngine.correction = 0;
