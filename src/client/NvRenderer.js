@@ -149,10 +149,9 @@ export default class NvRenderer extends Renderer {
                 dt: (p + this.clientEngine.correction)
               });
             }
-            if (this.clientEngine.correction < 0) {
-              this.clientEngine.correction = 0;
-            }
-            this.clientEngine.step(this.clientEngine.lastStepTime + p, p + this.clientEngine.correction);
+            let dt = p + this.clientEngine.correction;
+            if (dt < 0) dt = 0;
+            this.clientEngine.step(this.clientEngine.lastStepTime + p, dt);
             this.clientEngine.lastStepTime += p;
             this.clientEngine.correction = 0;
         }
