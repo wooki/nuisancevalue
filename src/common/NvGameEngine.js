@@ -116,7 +116,7 @@ export default class NvGameEngine extends GameEngine {
             this.physicsEngine.step(dt, objectFilter);
         }
 
-        this.debugNaN("step physics step");
+        this.debugNaN("step physics step "+dt+":");
 
         // for each object
         // - apply incremental bending
