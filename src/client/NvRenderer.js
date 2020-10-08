@@ -107,15 +107,9 @@ export default class NvRenderer extends Renderer {
 
     // defer draw to specific renderer
     draw(t, dt) {
-      if (this.playable && this.playable.physicsObj && isNaN(this.playable.physicsObj.position[0])) {
-        console.error("A this.playable:"+this.playable.physicsObj.position.toString());
-      }
-        // console.log(`t:${t} dt:${dt}`);
+
         super.draw(t, dt);
 
-        if (this.playable && this.playable.physicsObj && isNaN(this.playable.physicsObj.position[0])) {
-          console.error("B this.playable:"+this.playable.physicsObj.position.toString());
-        }
         if (renderer) {
             let backToLobby = renderer.draw(t, dt);
             if (backToLobby) {
@@ -128,6 +122,7 @@ export default class NvRenderer extends Renderer {
         }
 
     }
+
 
     runClientStep(t) {
         let p = this.clientEngine.options.stepPeriod;
@@ -163,7 +158,7 @@ export default class NvRenderer extends Renderer {
         // this might happen after catch up above
         if (t < this.clientEngine.lastStepTime) {
             dt = t - this.clientEngine.lastStepTime + this.clientEngine.correction;
-            console.log("NvRenderer dt:"+dt+" (set to zero)");
+            if (dt < 0) console.log("NvRenderer dt:"+dt+" (set to zero)");
             if (dt < 0) dt = 0;
             this.clientEngine.correction = this.clientEngine.lastStepTime - t;
             this.clientEngine.step(t, dt, true);
@@ -172,7 +167,7 @@ export default class NvRenderer extends Renderer {
 
         // render-controlled step
         dt = t - this.clientEngine.lastStepTime + this.clientEngine.correction;
-        console.log("NvRenderer dt:"+dt);
+        if (dt < 0) console.log("NvRenderer dt:"+dt);
         this.clientEngine.lastStepTime += p;
         this.clientEngine.correction = this.clientEngine.lastStepTime - t;
         if (this.clientEngine.correction < 0) {
@@ -182,5 +177,7 @@ export default class NvRenderer extends Renderer {
         }
         this.clientEngine.step(t, dt);
     }
+
+
 
 }
