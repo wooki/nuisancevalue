@@ -175,6 +175,11 @@ export default class NvRenderer extends Renderer {
         console.log("NvRenderer dt:"+dt);
         this.clientEngine.lastStepTime += p;
         this.clientEngine.correction = this.clientEngine.lastStepTime - t;
+        if (this.clientEngine.correction < 0) {
+          console.error("RESET");
+            this.doReset = true;
+            return;
+        }
         this.clientEngine.step(t, dt);
     }
 
