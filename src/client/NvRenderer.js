@@ -149,6 +149,9 @@ export default class NvRenderer extends Renderer {
                 dt: (p + this.clientEngine.correction)
               });
             }
+            if (this.clientEngine.correction < 0) {
+              this.clientEngine.correction = 0;
+            }
             this.clientEngine.step(this.clientEngine.lastStepTime + p, p + this.clientEngine.correction);
             this.clientEngine.lastStepTime += p;
             this.clientEngine.correction = 0;
@@ -170,11 +173,6 @@ export default class NvRenderer extends Renderer {
         if (dt < 0) console.log("NvRenderer dt:"+dt);
         this.clientEngine.lastStepTime += p;
         this.clientEngine.correction = this.clientEngine.lastStepTime - t;
-        if (this.clientEngine.correction < 0) {
-          console.error("RESET");
-            this.doReset = true;
-            return;
-        }
         this.clientEngine.step(t, dt);
     }
 
