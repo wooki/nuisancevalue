@@ -84,6 +84,65 @@ export default class NvGameEngine extends GameEngine {
       // console.timeEnd("step");
     // }
 
+    step(isReenact, t, dt, physicsOnly) {
+
+      this.debugNaN("step");
+
+        // physics-only step
+        if (physicsOnly) {
+            if (dt) dt /= 1000; // physics engines work in seconds
+            this.physicsEngine.step(dt, objectFilter);
+            this.debugNaN("step physicsOnly");
+            return;
+        }
+
+        // emit preStep event
+        if (isReenact === undefined)
+            throw new Error('game engine does not forward argument isReenact to super class');
+
+        isReenact = Boolean(isReenact);
+        let step = ++this.world.stepCount;
+        let clientIDSpace = this.options.clientIDSpace;
+        this.emit('preStep', { step, isReenact, dt });
+
+        // skip physics for shadow objects during re-enactment
+        function objectFilter(o) {
+            return !isReenact || o.id < clientIDSpace;
+        }
+
+        // physics step
+        if (this.physicsEngine && !this.ignorePhysics) {
+            if (dt) dt /= 1000; // physics engines work in seconds
+            this.physicsEngine.step(dt, objectFilter);
+        }
+
+        this.debugNaN("step physics step");
+
+        // for each object
+        // - apply incremental bending
+        // - refresh object positions after physics
+        this.world.forEachObject((id, o) => {
+            if (typeof o.refreshFromPhysics === 'function')
+                o.refreshFromPhysics();
+            this.trace.trace(() => `object[${id}] after ${isReenact ? 'reenact' : 'step'} : ${o.toString()}`);
+        });
+
+        this.debugNaN("step refreshFromPhysics");
+
+        // emit postStep event
+        this.emit('postStep', { step, isReenact });
+    }
+
+    debugNaN(src) {
+
+      this.world.forEachObject((objId, obj) => {
+      if (obj) {
+        if (obj.physicsObj && isNaN(obj.physicsObj.position[0])) {
+          console.log(src+" NAN :"+" "+obj.physicsObj.position[0]+" "+obj.toString());
+        }
+      }
+    }
+
     // update world objects for engines/gravity etc
     preStep(params) {
 
@@ -92,6 +151,8 @@ export default class NvGameEngine extends GameEngine {
         let dt = params.dt;
         // console.log(`step:${step} dt:${dt}`);
 
+        this.debugNaN("preStep 1");
+
         // every 60 steps (every second)
         if ((step % 60) == 0) {
           this.emit('mission-step', { seconds: step/60, step: step });
@@ -99,12 +160,6 @@ export default class NvGameEngine extends GameEngine {
 
         // loop world objects once here instead of looping in specific functions
         this.world.forEachObject((objId, obj) => {
-
-            if (obj) {
-              if (obj.physicsObj && isNaN(obj.physicsObj.position[0])) {
-                console.log("Obj NAN:"+" "+obj.physicsObj.position[0]+" "+obj.toString());
-              }
-            }
 
             if (obj === undefined) {
 
@@ -360,6 +415,8 @@ export default class NvGameEngine extends GameEngine {
             } // not docked or destroyed
 
         });
+
+        this.debugNaN("preStep 2");
     }
 
     registerClasses(serializer) {
