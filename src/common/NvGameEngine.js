@@ -136,11 +136,12 @@ export default class NvGameEngine extends GameEngine {
     debugNaN(src) {
 
       this.world.forEachObject((objId, obj) => {
-      if (obj) {
-        if (obj.physicsObj && isNaN(obj.physicsObj.position[0])) {
-          console.log(src+" NAN :"+" "+obj.physicsObj.position[0]+" "+obj.toString());
+        if (obj) {
+          if (obj.physicsObj && isNaN(obj.physicsObj.position[0])) {
+            console.log(src+" NAN :"+" "+obj.physicsObj.position[0]+" "+obj.toString());
+          }
         }
-      }
+      });
     }
 
     // update world objects for engines/gravity etc
