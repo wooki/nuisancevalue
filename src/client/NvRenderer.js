@@ -91,19 +91,17 @@ export default class NvRenderer extends Renderer {
       }
     }
 
-    addObject(obj) {
-      console.log("addObject:"+(obj.name || obj.texture));
-      if (obj.playable) {
-        this.playable = obj;
-      }
-    }
-
-    removeObject(obj) {
-      console.log("removeObject:"+(obj.name || obj.texture));
-      if (obj.playable) {
-        console.log("PLAYABLE REMOVED!");
-      }
-    }
+    // addObject(obj) {
+    //   if (obj.playable) {
+    //     this.playable = obj;
+    //   }
+    // }
+    //
+    // removeObject(obj) {
+    //   if (obj.playable) {
+    //     console.log("PLAYABLE REMOVED!");
+    //   }
+    // }
 
     // defer draw to specific renderer
     draw(t, dt) {

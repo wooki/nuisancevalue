@@ -49,6 +49,7 @@ export default class ExplorationMission extends Mission {
 
     // player faction
     this.playerFaction = this.factions.ferrous;
+    this.wreckageFaction = this.factions.independent;
 
     // add player ship
     this.playerShip = this.game.addShip({
@@ -139,7 +140,7 @@ export default class ExplorationMission extends Mission {
         hull: 'corvette-wreckage',
         angle: (Math.random() * 2),
         angularVelocity: Math.random(),
-        faction: this.playerFaction, // useful for testing so I can see where it is immediately
+        faction: this.wreckageFaction, 
         commsScript: 102
     });
   }

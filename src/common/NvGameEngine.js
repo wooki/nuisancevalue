@@ -368,7 +368,7 @@ export default class NvGameEngine extends GameEngine {
 
         });
 
-        this.debugNaN("preStep 2");
+        // this.debugNaN("preStep 2");
     }
 
     registerClasses(serializer) {

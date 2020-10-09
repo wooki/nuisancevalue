@@ -17,7 +17,7 @@ const defaults = {
       localObjBending: 0.0,
       remoteObjBending: 0.6,
     },
-    verbose: true
+    verbose: false
 };
 let options = Object.assign(defaults, qsOptions);
 

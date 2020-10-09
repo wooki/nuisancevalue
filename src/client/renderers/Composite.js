@@ -66,7 +66,8 @@ export default class CompositeRenderer {
           height: this.uiHeight,
           backgroundColor: Assets.Colors.Black,
           resolution: window.devicePixelRatio || 1,
-          autoDensity: true
+          autoDensity: true,
+          antialias: true
       });
       this.pixiApp.stage.sortableChildren = true;
       this.pixiContainer = new PIXI.Container();
