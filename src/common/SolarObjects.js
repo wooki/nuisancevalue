@@ -1,4 +1,7 @@
 const Victor = require('victor');
+const DIAMETER_ADJUSTMENT =  10;
+const DIAMETER_ADJUSTMENT_SMALL =  4;
+const DIAMETER_ADJUSTMENT_BIG =  25;
 
 // some reference data for objects we can use in game
 // units are...
@@ -24,19 +27,19 @@ module.exports = {
 		// diameter: 1391000,
 		// mass: 1989100 * Math.pow(10, 24),
 		// orbit: 0
-		diameter: Math.sqrt(1391000) * 10,
+		diameter: Math.sqrt(1391000) * DIAMETER_ADJUSTMENT,
 		mass: Math.sqrt(1989100 / 1000) * Math.pow(10, 18),
 		orbit: 0
 	},
 
 	Mercury: {
-		diameter: Math.sqrt(4879) * 10,
+		diameter: Math.sqrt(4879) * DIAMETER_ADJUSTMENT_SMALL,
 		mass: Math.sqrt(0.33) * Math.pow(10, 18),
 		orbit: Math.sqrt(57.9 * Math.pow(10, 6)) * 10
 	},
 
 	Venus: {
-		diameter: Math.sqrt(12104) * 10,
+		diameter: Math.sqrt(12104) * DIAMETER_ADJUSTMENT,
 		mass: Math.sqrt(4.87) * Math.pow(10, 18),
 		orbit: Math.sqrt(108.8 * Math.pow(10, 6)) * 10
 	},
@@ -45,7 +48,7 @@ module.exports = {
 		// diameter: 12756,
 		// mass: 5.97 * Math.pow(10, 24),
 		// orbit: 149.6 * Math.pow(10, 6)
-		diameter: Math.sqrt(12756) * 10,
+		diameter: Math.sqrt(12756) * DIAMETER_ADJUSTMENT,
 		mass: Math.sqrt(5.97) * Math.pow(10, 18),
 		orbit: Math.sqrt(149.6 * Math.pow(10, 6)) * 10
 	},
@@ -54,7 +57,7 @@ module.exports = {
 		// diameter: 12756,
 		// mass: 5.97 * Math.pow(10, 24),
 		// orbit: 149.6 * Math.pow(10, 6)
-		diameter: Math.sqrt(6792) * 10,
+		diameter: Math.sqrt(6792) * DIAMETER_ADJUSTMENT,
 		mass: Math.sqrt(0.642) * Math.pow(10, 18),
 		orbit: Math.sqrt(227.9 * Math.pow(10, 6)) * 10
 	},
@@ -63,31 +66,31 @@ module.exports = {
 		// diameter: 142984,
 		// mass: 1898 * Math.pow(10, 8),
 		// orbit: 778.6 * Math.pow(10, 6)
-		diameter: Math.sqrt(142984) * 10,
+		diameter: Math.sqrt(142984) * DIAMETER_ADJUSTMENT_BIG,
 		mass: Math.sqrt(1898) * Math.pow(10, 18),
 		orbit: Math.sqrt(778.6 * Math.pow(10, 6)) * 10
 	},
 
 	Saturn: {
-		diameter: Math.sqrt(268000) * 10,
+		diameter: Math.sqrt(268000) * DIAMETER_ADJUSTMENT_BIG,
 		mass: Math.sqrt(568) * Math.pow(10, 18),
 		orbit: Math.sqrt(1433.5 * Math.pow(10, 6)) * 10
 	},
 
 	Uranus: {
-		diameter: Math.sqrt(51118) * 10,
+		diameter: Math.sqrt(51118) * DIAMETER_ADJUSTMENT_BIG,
 		mass: Math.sqrt(86.8) * Math.pow(10, 18),
 		orbit: Math.sqrt(2872.5 * Math.pow(10, 6)) * 10
 	},
 
 	Neptune: {
-		diameter: Math.sqrt(49528) * 10,
+		diameter: Math.sqrt(49528) * DIAMETER_ADJUSTMENT_BIG,
 		mass: Math.sqrt(102) * Math.pow(10, 18),
 		orbit: Math.sqrt(4495.1 * Math.pow(10, 6)) * 10
 	},
 
 	Pluto: {
-		diameter: Math.sqrt(2370) * 10,
+		diameter: Math.sqrt(2370) * DIAMETER_ADJUSTMENT_SMALL,
 		mass: Math.sqrt(0.015) * Math.pow(10, 18),
 		orbit: Math.sqrt(5906.4 * Math.pow(10, 6)) * 10
 	},
