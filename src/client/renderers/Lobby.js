@@ -108,46 +108,61 @@ export default class LobbyRenderer {
         width: 'auto'
       }, []));
 
-      if (obj.helmPlayerId == 0) {
-        buttons.push(h('button.join', {
-          key: 'helm',
-          onclick: (event) => {
-            this.joinShip(obj.id, 'helm');
-          }
-        }, ["Helm"]));
-      }
-      if (obj.navPlayerId == 0) {
-        buttons.push(h('button.join', {
-          key: 'nav',
-          onclick: (event) => {
-            this.joinShip(obj.id, 'nav');
-          }
-        }, ["Nav"]));
-      }
-      if (obj.signalsPlayerId == 0) {
-        buttons.push(h('button.join', {
-          key: 'signals',
-          onclick: (event) => {
-            this.joinShip(obj.id, 'signals');
-          }
-        }, ["Signals"]));
-      }
-      if (obj.engineerPlayerId == 0) {
-        buttons.push(h('button.join', {
-          key: 'engineer',
-          onclick: (event) => {
-            this.joinShip(obj.id, 'engineer');
-          }
-        }, ["Engineer"]));
-      }
-      if (obj.captainPlayerId == 0) {
-        buttons.push(h('button.join', {
-          key: 'captain',
-          onclick: (event) => {
-            this.joinShip(obj.id, 'captain');
-          }
-        }, ["Captain"]));
-      }
+      buttons.push(h('button.join', {
+        key: 'helm',
+        classes: {
+          disabled: (obj.helmPlayerId != 0)
+        },
+        onclick: (event) => {
+          if (obj.helmPlayerId != 0) return;
+          this.joinShip(obj.id, 'helm');
+        }
+      }, ["Helm"]));
+
+      buttons.push(h('button.join', {
+        key: 'signals',
+        classes: {
+          disabled: (obj.signalsPlayerId != 0)
+        },
+        onclick: (event) => {
+          if (obj.signalsPlayerId != 0) return;
+          this.joinShip(obj.id, 'signals');
+        }
+      }, ["Signals"]));
+
+      buttons.push(h('button.join', {
+        key: 'nav',
+        classes: {
+          disabled: (obj.navPlayerId != 0)
+        },
+        onclick: (event) => {
+          if (obj.navPlayerId != 0) return;
+          this.joinShip(obj.id, 'nav');
+        }
+      }, ["Nav"]));
+
+      buttons.push(h('button.join', {
+        key: 'engineer',
+        classes: {
+          disabled: (obj.engineerPlayerId != 0)
+        },
+        onclick: (event) => {
+          if (obj.engineerPlayerId != 0) return;
+          this.joinShip(obj.id, 'engineer');
+        }
+      }, ["Engineer"]));
+
+      buttons.push(h('button.join', {
+        key: 'captain',
+        classes: {
+          disabled: (obj.captainPlayerId != 0)
+        },
+        onclick: (event) => {
+          if (obj.captainPlayerId != 0) return;
+          this.joinShip(obj.id, 'captain');
+        }
+      }, ["Captain"]));
+
 
       text.push(h('label', [obj.name + ", "+hullData.name+' Class']));
       text.push(h('div.nv.ui.row', buttons));
