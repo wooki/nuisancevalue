@@ -41,7 +41,7 @@ export default class Hunter extends BaseShip {
 				if (!target) {
 					// no target means stay in orbit
 					this.reportNoTarget(ship, mission, game);
-					
+
 				} else if (!ship.gravityData) {
 					// if we haven't got a gravity source just TRAVEL
 					ship.aiPlan = HUNTER_PLAN_TRAVEL;
@@ -116,7 +116,7 @@ export default class Hunter extends BaseShip {
 		let hullData = ship.getHullData();
 
 		const favOrbitDistance = 4000 || ship.aiOrbitRange;
-		const favTravelSpeed = 1000 * (hullData.thrust / hullData.mass);
+		const favTravelSpeed = 3000 * (hullData.thrust / hullData.mass);
 
 		// process depending on our plan
 		if (ship.aiPlan == HUNTER_PLAN_LEAVE) {

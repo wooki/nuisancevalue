@@ -98,7 +98,7 @@ export default class Traveller extends BaseShip {
 		let hullData = ship.getHullData();
 
 		const favOrbitDistance = 4000 || ship.aiOrbitRange;
-		const favTravelSpeed = 1000 * (hullData.thrust / hullData.mass);
+		const favTravelSpeed = 3000 * (hullData.thrust / hullData.mass);
 
 		// process depending on our plan
 		if (ship.aiPlan == TRAVELLER_PLAN_LEAVE) {
