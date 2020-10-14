@@ -250,7 +250,7 @@ export default class BaseShip {
 			const deccelrationRatio = 1 / (hullData.thrust / hullData.mass);
 
 			// calculate how long we need to slow to 200 on arrival
-			const engineUseEfficiency = 1.0; // because engine only fires when bearing is correct the ai can't fire continuously
+			const engineUseEfficiency = 0.9; // because engine only fires when bearing is correct the ai can't fire continuously
 			const deccelration = (hullData.thrust / hullData.mass) * engineUseEfficiency;
 			const deltaVelocity = ourSpeed - 200;
 			const deccelrationTime = deltaVelocity / deccelration;

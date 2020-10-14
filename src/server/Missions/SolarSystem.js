@@ -367,8 +367,7 @@ export default class SolarSystem extends Mission {
           angle: Math.PI,
           faction: this.enemyFaction,
           aiScript: 4,
-          targetId: targetId,
-          playable: 1
+          targetId: targetId          
       });
       this.enemyShips.push(enemyShip);
     }
