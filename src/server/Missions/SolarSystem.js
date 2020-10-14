@@ -393,7 +393,7 @@ export default class SolarSystem extends Mission {
   addAsteroids(asteroidCount) {
 
     let asteroidDistance = SolarObjects.Mars.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mars.orbit) / 2);
-    let asteroidDistanceVariance = SolarObjects.Jupiter.diameter * 15;
+    let asteroidDistanceVariance = SolarObjects.Jupiter.diameter * 10;
 
     for (let asteroidIndex = 0; asteroidIndex < asteroidCount; asteroidIndex++) {
 

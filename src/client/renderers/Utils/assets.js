@@ -14,6 +14,7 @@ module.exports = {
 		mercury: 'assets/mercury.png',
 		venus: 'assets/venus.png',
 		earth: 'assets/earth.png',
+		moon: 'assets/moon.png',
 		mars: 'assets/mars.png',
 		jupiter: 'assets/jupiter.png',
 		saturn: 'assets/saturn.png',

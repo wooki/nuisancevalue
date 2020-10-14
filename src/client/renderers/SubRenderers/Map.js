@@ -210,7 +210,7 @@ export default class Map {
       } else if (obj instanceof PDC) {
           // instead of drawing - always create a load of random small explosions
           isPDC = true;
-      } else if (obj instanceof Planet) {        
+      } else if (obj instanceof Planet) {
         texture = this.resources[this.parameters.baseUrl+Assets.Images[obj.texture]].texture;
         zIndex = this.parameters.internalZIndex.planet;
         alias = obj.texture;
@@ -266,6 +266,13 @@ export default class Map {
       sprite.y = coord.y;
 
       let spriteAngle = UiUtils.adjustAngle(obj.physicsObj.angle);
+
+      // planets with fixedgravity can always rotate towards 0,0 (allowing for shadow on textures)
+      if (obj instanceof Planet && (obj.fixedgravity || obj.fixedgravity === 0)) {
+        let planetPos = Victor.fromArray(obj.physicsObj.position);
+        let sunDirection = new Victor(0 - planetPos.x, planetPos.y);
+        spriteAngle = sunDirection.verticalAngle();
+      }
 
       // cheat with the torp sprite - looks better if they simply always face their target
       if (obj instanceof Torpedo) {
