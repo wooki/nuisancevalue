@@ -35,17 +35,38 @@ export default class LobbyRenderer {
 
     render() {
 
+      // check if we want admin controls
+      let params = new URLSearchParams(document.location.search.substring(1));
+      let isAdmin = (params.get("admin") == "1");
+
       let missions = [];
-      for (let i = 0; i < this.missions.length; i++) {
-        missions.push(
-          h('button.mission', {
-            key: 'mission-'+i,
-            onclick: (event) => {
-              this.loadMission(i);
-            }
+      let missionTitle = null;
+      let missionSelect = null;
+      let missionSeparator = null;
+
+      if (isAdmin) {
+
+        missionTitle = h('h2', ["Load Mission"]);
+
+        for (let i = 0; i < this.missions.length; i++) {
+          missions.push(
+            h('button.mission', {
+              key: 'mission-'+i,
+              onclick: (event) => {
+                this.loadMission(i);
+              }
+            },
+              [this.missions[i]])
+          );
+        }
+
+        missionSelect = h('div.nv.ui.row', {
+          key: 'missions'
           },
-            [this.missions[i]])
+          missions
         );
+
+        missionSeparator = h('hr');
       }
 
       let ships = [];
@@ -64,13 +85,9 @@ export default class LobbyRenderer {
       },
       [
         h('h1', ["Nuisance Value Lobby"]),
-        h('h2', ["Load Mission"]),
-        h('div.nv.ui.row', {
-          key: 'missions'
-          },
-          missions
-        ),
-        h('hr'),
+        missionTitle,
+        missionSelect,
+        missionSeparator,
         h('div.nv.ui.col', {
           key: 'ships'
           },
