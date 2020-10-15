@@ -233,7 +233,9 @@ export default class SelectedNavData {
 
       // standard hud display of properties and type
       let lines = Object.keys(item).map(function(key) {
-        if (key == 'source') {
+        if (key == 'type') {
+          // never shown
+        } else if (key == 'source') {
           // ignore this is just for adding data/actions later
         } else if (key == 'image') {
           if (item[key]) {

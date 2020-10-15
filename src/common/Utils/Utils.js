@@ -5,6 +5,13 @@ import SolarObjects from '../SolarObjects';
 // common functions used across both client and server
 export default {
 
+	generateAsteroidName(id, size, mass) {
+		let prefix = (1850 + Math.round((size % 1) * 1000)).toString();
+		let name = String.fromCharCode(97 + (id % 26));
+		let suffix = (Math.round((mass % 1) * 1000).toString(16)).toString().split("").reverse().join("");
+		return `${prefix}/${name}${suffix}`.toUpperCase();
+	},
+
 	radiansToDegrees(radians) {
       if (radians < 0) {
         return this.radiansToDegrees((radians + (Math.PI*2)));

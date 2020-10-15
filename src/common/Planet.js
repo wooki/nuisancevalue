@@ -1,4 +1,5 @@
 import { PhysicalObject2D, BaseTypes } from 'lance-gg';
+import Utils from './Utils/Utils';
 
 let game = null;
 let p2 = null;
@@ -7,6 +8,7 @@ export default class Planet extends PhysicalObject2D {
 
     static get netScheme() {
         return Object.assign({
+            name: { type: BaseTypes.TYPES.STRING },
             size: { type: BaseTypes.TYPES.INT32 },
             texture: { type: BaseTypes.TYPES.STRING },
             fixedgravity: { type: BaseTypes.TYPES.INT32 },
@@ -56,11 +58,16 @@ export default class Planet extends PhysicalObject2D {
     syncTo(other) {
         super.syncTo(other);
         this.size = other.size;
+        this.name = other.name;
         this.texture = other.texture;
         this.fixedgravity = other.fixedgravity;
         this.ignoregravity = other.ignoregravity;
         this.commsScript = other.commsScript;
         this.commsState = other.commsState;
         this.commsTargetId = other.commsTargetId;
+
+        if (this.name == "Asteroid") {
+          this.name = Utils.generateAsteroidName(this.id, this.size, this.mass);
+        }
     }
 }

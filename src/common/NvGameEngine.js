@@ -874,6 +874,7 @@ export default class NvGameEngine extends GameEngine {
             velocity: new TwoVector(params['dX'], params['dY']),
             angle: params['angle']
         });
+        p.name = params['name'] || params['texture'].charAt(0).toUpperCase() + params['texture'].slice(1);
         p.size = params['size'];
         p.texture = params['texture'];
         p.fixedgravity = params['fixedgravity'] || null;

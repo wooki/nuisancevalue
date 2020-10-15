@@ -20,6 +20,7 @@ export default class ExplorationMission extends Mission {
     let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
 
     this.star1 = this.game.addPlanet({
+        name: "Primary",
 				x: 0, y: 0,
 				dX: 0, dY: 0,
 				mass: star1Mass,
@@ -31,7 +32,8 @@ export default class ExplorationMission extends Mission {
 		});
 
     this.star2 = this.game.addPlanet({
-				x: distanceApart, y: 0,
+        name: "Secondary",
+        x: distanceApart, y: 0,
 				dX: 0, dY: star2OrbitSpeed,
 				mass: star2Mass,
 				size: SolarObjects.Sol.diameter * 1.6,
@@ -140,7 +142,7 @@ export default class ExplorationMission extends Mission {
         hull: 'corvette-wreckage',
         angle: (Math.random() * 2),
         angularVelocity: Math.random(),
-        faction: this.wreckageFaction, 
+        faction: this.wreckageFaction,
         commsScript: 102
     });
   }

@@ -1,4 +1,5 @@
 import { PhysicalObject2D, BaseTypes } from 'lance-gg';
+import Utils from './Utils/Utils';
 
 let game = null;
 let p2 = null;
@@ -8,6 +9,7 @@ export default class Asteroid extends PhysicalObject2D {
     constructor(gameEngine, options, props) {
         super(gameEngine, options, props);
         this.texture = "Asteroid";
+        this.name = this.getName();
     }
 
     static get netScheme() {
@@ -49,6 +51,11 @@ export default class Asteroid extends PhysicalObject2D {
     //     };
     // }
 
+    getName(id, size, mass) {
+        return Utils.generateAsteroidName(this.id, this.size, this.mass);        
+    }
+
+
     onAddToWorld(gameEngine) {
         game = gameEngine;
         p2 = gameEngine.physicsEngine.p2;
@@ -89,5 +96,6 @@ export default class Asteroid extends PhysicalObject2D {
         this.fixedgravity = other.fixedgravity;
         this.scanned = other.scanned;
         this.sensed = other.sensed;
+        this.name = this.getName();
     }
 }
