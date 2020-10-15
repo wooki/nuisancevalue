@@ -34,14 +34,27 @@ export default {
 
 	createWaypointData(actualPlayerShip, obj, orbit, predictTime) {
 
+		// name is unidentified until scanned
+		let isScanned = false;
+		if (!obj.isScannedBy) {
+			isScanned = true;
+		} else if (obj.isScannedBy(actualPlayerShip.faction)) {
+			isScanned = true;
+		}
+
+		let name = "unidentified";
+		if (isScanned) {
+			name = (obj.name || obj.hull || obj.texture);
+		}
+
 		// get some data
 		let waypoint = {
 			objId: obj.id,
-			name: (obj.name || obj.hull || obj.texture) + " intercept",
+			name: name + " intercept",
 			obj: obj // useful to keep a ref for selection etc. since waypoint not select/clickable
 		};
-		if (orbit && orbit > 0) {
-			waypoint.name = (obj.name || obj.hull || obj.texture) + " orbit " + orbit + Assets.Units.distance;
+		if (isScanned && orbit && orbit > 0) {
+			waypoint.name = name + " orbit " + orbit + Assets.Units.distance;
 		}
 		waypoint.ourPos = Victor.fromArray(actualPlayerShip.physicsObj.position);
 		waypoint.waypointPos = Victor.fromArray(obj.physicsObj.position);
