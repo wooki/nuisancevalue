@@ -205,7 +205,8 @@ export default class Map {
     let zIndex = this.parameters.internalZIndex.asteroid;
     let widthRatio = 1;
     if (obj instanceof Asteroid) {
-        texture = this.resources[this.parameters.baseUrl+Assets.Images.asteroid].texture;
+      console.log(this.parameters.baseUrl+(Assets.Images[obj.texture] || Assets.Images.asteroid5));
+        texture = this.resources[this.parameters.baseUrl+(Assets.Images[obj.texture] || Assets.Images.asteroid5)].texture;
         alias = 'asteroid';
       } else if (obj instanceof PDC) {
           // instead of drawing - always create a load of random small explosions

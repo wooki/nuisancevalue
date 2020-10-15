@@ -9,7 +9,12 @@ module.exports = {
 		theme: 'assets/sounds/theme.mp3'
 	},
 	Images: {
-		asteroid: 'assets/asteroid.png',
+		asteroid0: 'assets/asteroid-0.png',
+		asteroid1: 'assets/asteroid-1.png',
+		asteroid2: 'assets/asteroid-2.png',
+		asteroid3: 'assets/asteroid-3.png',
+		asteroid4: 'assets/asteroid-4.png',
+		asteroid5: 'assets/asteroid-5.png',
 		sol: 'assets/sol.png',
 		mercury: 'assets/mercury.png',
 		venus: 'assets/venus.png',

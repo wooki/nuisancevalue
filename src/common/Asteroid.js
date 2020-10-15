@@ -8,7 +8,8 @@ export default class Asteroid extends PhysicalObject2D {
 
     constructor(gameEngine, options, props) {
         super(gameEngine, options, props);
-        this.texture = "Asteroid";
+        let texture_id = this.id % 6;
+        this.texture = "asteroid"+texture_id;
         this.name = this.getName();
     }
 
@@ -52,7 +53,7 @@ export default class Asteroid extends PhysicalObject2D {
     // }
 
     getName(id, size, mass) {
-        return Utils.generateAsteroidName(this.id, this.size, this.mass);        
+        return Utils.generateAsteroidName(this.id, this.size, this.mass);
     }
 
 

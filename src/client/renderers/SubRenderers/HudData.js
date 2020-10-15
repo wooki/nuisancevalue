@@ -194,7 +194,7 @@ export default class HudData {
 
             if (obj instanceof Asteroid) {
 
-              data.image = "./" + Assets.Images.asteroid;
+              data.image = "./" + (Assets.Images[obj.texture] || Assets.Images.asteroid5);
 
             } else if (obj.texture && Assets.Images[obj.texture]) {
               data.image = "./" + Assets.Images[obj.texture];

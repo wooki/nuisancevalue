@@ -390,7 +390,7 @@ export default class SelectedNavData {
     } else if (obj instanceof Asteroid) {
       if (showDetail) {
         summary.type = 'Asteroid';
-        summary.image = "./" + Assets.Images.asteroid;
+        summary.image = "./" + (Assets.Images[obj.texture] || Assets.Images.asteroid5);
       }
 
     } else if (obj instanceof Torpedo) {

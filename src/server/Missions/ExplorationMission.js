@@ -180,7 +180,7 @@ export default class ExplorationMission extends Mission {
 
         // this.game.addAsteroid({
         addFunc({
-            texture: 'asteroid',
+            texture: 'asteroid'+(asteroidIndex%6),
             x: position.x,
             y: position.y,
             dX: v.x,
