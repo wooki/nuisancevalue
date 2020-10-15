@@ -149,7 +149,7 @@ export default class HudData {
 
       let data = {
         type: 'target',
-        label: obj.name || obj.hull || obj.texture,
+        designation: obj.name || obj.hull || obj.texture,
         bearing: Math.round(degrees) + "°",
         distance: roundedDistance + Assets.Units.distance,
         closing: closing.toPrecision(3) + Assets.Units.speed,
@@ -217,7 +217,7 @@ export default class HudData {
 
           this.waypointDataItems['waypoint-'+obj.id] = {
             type: 'waypoint',
-            label: waypoint.name,
+            designation: waypoint.name,
             bearing: Math.round(waypoint.degrees) + "°",
             distance: waypoint.roundedDistance + Assets.Units.distance,
             closing: waypoint.closing.toPrecision(3) + Assets.Units.speed,
