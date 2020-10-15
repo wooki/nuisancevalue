@@ -315,7 +315,7 @@ export default class SelectedNavData {
     let speed = Math.round(v.magnitude()) + SolarObjects.units.speed;
     let radius = Math.round(obj.size / 2) + SolarObjects.units.distance;
     let surfaceG = null;
-    let label = obj.name || obj.hull || obj.texture;
+    let designation = obj.name || obj.hull || obj.texture;
 
     let summary = {};
 
@@ -354,7 +354,7 @@ export default class SelectedNavData {
     });
 
     if (showDetail) {
-      summary.label = label;
+      summary.designation = designation;
     }
 
     if (obj instanceof Ship) {
