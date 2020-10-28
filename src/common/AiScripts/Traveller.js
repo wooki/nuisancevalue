@@ -35,12 +35,21 @@ export default class Traveller extends BaseShip {
 
 				// check if we aren't going to crash into our current gravity source though!
 				if (ship.gravityData) {
-					let ourPos = Victor.fromArray(ship.physicsObj.position);
-					let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
-					let targetPos = Victor.fromArray(target.physicsObj.position);
-					let targetVector = targetPos.clone().subtract(ourPos);
-					if (Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
-						nextPlan = TRAVELLER_PLAN_ORBIT;
+
+					let target = game.world.queryObject({ id: parseInt(ship.targetId) });
+					if (target && target.physicsObj) {
+
+						if (target && target.gravityData) {
+							target = game.world.objects[target.gravityData.id];
+						}
+
+						let ourPos = Victor.fromArray(ship.physicsObj.position);
+						let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
+						let targetPos = Victor.fromArray(target.physicsObj.position);
+						let targetVector = targetPos.clone().subtract(ourPos);
+						if (ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+							nextPlan = TRAVELLER_PLAN_ORBIT;
+						}
 					}
 				}
 
@@ -79,10 +88,14 @@ export default class Traveller extends BaseShip {
 
 					// check for collision with current gravity source and switch to enter orbit
 					if (ship.gravityData) {
+
+						if (target && target.gravityData) {
+							target = game.world.objects[target.gravityData.id];
+						}
 						let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 						let targetVector = targetPos.clone().subtract(ourPos);
-						if (Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
-							nextPlan = HUNTER_PLAN_ORBIT;
+						if (ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+							ship.aiPlan = TRAVELLER_PLAN_ORBIT;
 						}
 					}
 

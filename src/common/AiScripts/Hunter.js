@@ -51,11 +51,16 @@ export default class Hunter extends BaseShip {
 
 					// check if we aren't going to crash into our current gravity source though!
 					if (ship.gravityData) {
+
+						if (target && target.gravityData) {
+							target = game.world.objects[target.gravityData.id];
+						}
+
 						let ourPos = Victor.fromArray(ship.physicsObj.position);
 						let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 						let targetPos = Victor.fromArray(target.physicsObj.position);
 						let targetVector = targetPos.clone().subtract(ourPos);
-						if (Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+						if (ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
 							nextPlan = HUNTER_PLAN_ORBIT;
 						}
 					}
@@ -103,8 +108,8 @@ export default class Hunter extends BaseShip {
 					if (ship.gravityData) {
 						let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 						let targetVector = targetPos.clone().subtract(ourPos);
-						if (Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
-							nextPlan = HUNTER_PLAN_ORBIT;
+						if (ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+							ship.aiPlan = HUNTER_PLAN_ORBIT;
 						}
 					}
 

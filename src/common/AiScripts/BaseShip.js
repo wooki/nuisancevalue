@@ -128,7 +128,7 @@ export default class BaseShip {
 							scanned = (rnd < hullData.ai.scan);
 						} else if (range > 1.5 * hullData.scanRanges[1]) {
 							// out of range so stop looking for scan - if really out of range (this has a fuzzy edge)
-							if (ship.hull == "blockade-runner") console.log("remove scan target (out of range): "+ship.aiScanTargets[i].name);
+							// if (ship.hull == "blockade-runner") console.log("remove scan target (out of range): "+ship.aiScanTargets[i].name);
 							removeTargets.push(i);
 						}
 					}
