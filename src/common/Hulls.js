@@ -36,7 +36,7 @@ export default {
 			refuel: 0.3, // amount of fuel to add every step
 			scan: 0.15, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
-				range: 70000, // range to fire at
+				range: 80000, // range to fire at
 				reload: 16, // ms
 				volley: 4 // fire 2 of the 4 tubes, hence reload is half
 			}
@@ -154,7 +154,7 @@ export default {
 			refuel: 0.5,
 			scan: 0.16, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
-				range: 60000, // range to fire at
+				range: 65000, // range to fire at
 				reload: 7, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}
@@ -188,7 +188,7 @@ export default {
 			refuel: 0.5,
 			scan: 0.17, // chance to scan a ship in range every plan (1/s)
 			torpedo: {
-				range: 70000, // range to fire at
+				range: 80000, // range to fire at
 				reload: 10, // ms
 				volley: 2 // fire 2 of the 4 tubes, hence reload is half
 			}

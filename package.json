@@ -47,7 +47,7 @@
     "start-debug": "node --inspect-brk dist-server/main.js",
     "start-dev": "nodemon dist-server/main.js",
     "install": "webpack && babel src --source-maps --out-dir dist-server",
-    "build": "rm client.*.trace -f && webpack && babel src --source-maps --out-dir dist-server",
+    "build": "rm -f client.*.trace && webpack && babel src --source-maps --out-dir dist-server",
     "stats": "webpack --env production --profile --json > stats.json",
     "dev": "webpack --watch"
   },
