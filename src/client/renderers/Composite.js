@@ -322,7 +322,8 @@ export default class CompositeRenderer {
                 allObjects[obj.id] = true;
 
                 // check if we have sensed (for types that need to be)
-                let sensed = false;                
+                // let sensed = false;
+                let sensed = true;                
                 if (!obj.isSensedBy) {
                   sensed = true; // objects that don't have this are always visible (ie planets and PDCs)
                 } else if (obj.sensedBy && obj.isSensedBy(actualPlayerShip.faction)) {

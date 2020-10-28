@@ -296,7 +296,8 @@ export default class Map {
       if (obj.isScannedBy) {
 
         let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
-        let isScanned = obj.isScannedBy(actualPlayerShip.faction);        
+        // let isScanned = obj.isScannedBy(actualPlayerShip.faction);
+        let isScanned = true;        
 
         let hullSprite = sprite.getChildByName('hull');
         if (!hullSprite) {

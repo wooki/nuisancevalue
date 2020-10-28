@@ -47,7 +47,18 @@ export default class Hunter extends BaseShip {
 					ship.aiPlan = HUNTER_PLAN_TRAVEL;
 				} else {
 					// otherwise LEAVE
-					ship.aiPlan = HUNTER_PLAN_LEAVE;
+					let nextPlan = HUNTER_PLAN_LEAVE;
+
+					// check if we aren't going to crash into our current gravity source though!
+					let ourPos = Victor.fromArray(ship.physicsObj.position);
+					let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
+					let targetPos = Victor.fromArray(target.physicsObj.position);
+					let targetVector = targetPos.clone().subtract(ourPos);
+					if (Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+						nextPlan = HUNTER_PLAN_ORBIT;
+					}
+
+					ship.aiPlan = nextPlan;
 				}
 			} else {
 				this.reportNoTarget(ship, mission, game);
@@ -59,9 +70,10 @@ export default class Hunter extends BaseShip {
 
 			let ourPos = Victor.fromArray(ship.physicsObj.position);
 			if (ship.gravityData) {
-				let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 
+				let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 				if (gravVector.magnitude() > 10000) {
+
 					ship.aiPlan = HUNTER_PLAN_TRAVEL; // travel to destination
 				}
 			}
@@ -84,6 +96,13 @@ export default class Hunter extends BaseShip {
 				if (target && target.physicsObj) {
 					let targetPos = Victor.fromArray(target.physicsObj.position);
 					let distance = ourPos.clone().subtract(targetPos);
+
+					// check for collision with current gravity source and switch to enter orbit
+					let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
+					let targetVector = targetPos.clone().subtract(ourPos);
+					if (Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+						nextPlan = HUNTER_PLAN_ORBIT;
+					}
 
 					// allow faster ships to transition to orbit later
 					let hullData = ship.getHullData();
