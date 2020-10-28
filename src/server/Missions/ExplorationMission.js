@@ -16,7 +16,7 @@ export default class ExplorationMission extends Mission {
     // add two stars
     let star1Mass = SolarObjects.Sol.mass * 2.5;
     let star2Mass = SolarObjects.Sol.mass * 0.6;
-    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 4;
+    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 0.8;
     let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
 
     this.star1 = this.game.addPlanet({
@@ -46,8 +46,8 @@ export default class ExplorationMission extends Mission {
     // this.star1.fixedgravity = this.star2.id;
 
     // add asteroid belt
-    this.addAsteroids(12, true);
-    this.addAsteroids(58, false);
+    this.addAsteroids(7, true);
+    this.addAsteroids(32, false);
 
     // player faction
     this.playerFaction = this.factions.ferrous;
@@ -119,11 +119,13 @@ export default class ExplorationMission extends Mission {
 
     let star1Mass = SolarObjects.Sol.mass * 2.5;
     let star2Mass = SolarObjects.Sol.mass * 0.6;
-    let distanceApart = (SolarObjects.Sol.diameter * 1.6) * 2.5;
-    let star2OrbitSpeed = 0 - Math.sqrt((SolarObjects.constants.G * star1Mass) / distanceApart);
 
-    let wreckageOrbitDistance = distanceApart*(4 + (Math.random() * 1.5));
+    let asteroidDistance = SolarObjects.Mercury.orbit + ((SolarObjects.Jupiter.orbit - SolarObjects.Mercury.orbit) / 2);
+    let asteroidDistanceVariance = SolarObjects.Earth.orbit;
+    let wreckageOrbitDistance = asteroidDistance - (asteroidDistanceVariance/2) + (Math.random() * asteroidDistanceVariance);
+
     let wreckageOrbitSpeed = Math.sqrt((SolarObjects.constants.G * star1Mass) / wreckageOrbitDistance);
+
     let position = new Victor(wreckageOrbitDistance, 0);
     let velocity = new Victor(0, 0 - wreckageOrbitSpeed);
     let rotation = -90 + (270 * Math.random());
@@ -143,6 +145,7 @@ export default class ExplorationMission extends Mission {
         angle: (Math.random() * 2),
         angularVelocity: Math.random(),
         faction: this.wreckageFaction,
+        // faction: this.playerFaction,
         commsScript: 102
     });
   }

@@ -136,17 +136,17 @@ export default class NvRenderer extends Renderer {
         // catch-up missed steps
         while (t > this.clientEngine.lastStepTime + p) {
 
-            if (p + this.clientEngine.correction < 0) {
-              console.log("Negative dt:");
-              console.dir({
-                t: t,
-                p: p,
-                lastStepTime: this.clientEngine.lastStepTime,
-                correction: this.clientEngine.correction,
-                new_t: (this.clientEngine.lastStepTime + p),
-                dt: (p + this.clientEngine.correction)
-              });
-            }
+            // if (p + this.clientEngine.correction < 0) {
+              // console.log("Negative dt:");
+              // console.dir({
+              //   t: t,
+              //   p: p,
+              //   lastStepTime: this.clientEngine.lastStepTime,
+              //   correction: this.clientEngine.correction,
+              //   new_t: (this.clientEngine.lastStepTime + p),
+              //   dt: (p + this.clientEngine.correction)
+              // });
+            // }
             let dt = p + this.clientEngine.correction;
             if (dt < 0) dt = 0;
             this.clientEngine.step(this.clientEngine.lastStepTime + p, dt);
@@ -158,7 +158,7 @@ export default class NvRenderer extends Renderer {
         // this might happen after catch up above
         if (t < this.clientEngine.lastStepTime) {
             dt = t - this.clientEngine.lastStepTime + this.clientEngine.correction;
-            if (dt < 0) console.log("NvRenderer dt:"+dt+" (set to zero)");
+            // if (dt < 0) console.log("NvRenderer dt:"+dt+" (set to zero)");
             if (dt < 0) dt = 0;
             this.clientEngine.correction = this.clientEngine.lastStepTime - t;
             this.clientEngine.step(t, dt, true);
@@ -167,7 +167,7 @@ export default class NvRenderer extends Renderer {
 
         // render-controlled step
         dt = t - this.clientEngine.lastStepTime + this.clientEngine.correction;
-        if (dt < 0) console.log("NvRenderer dt:"+dt);
+        // if (dt < 0) console.log("NvRenderer dt:"+dt);
         this.clientEngine.lastStepTime += p;
         this.clientEngine.correction = this.clientEngine.lastStepTime - t;
         this.clientEngine.step(t, dt);

@@ -367,6 +367,7 @@ export default class SelectedNavData {
       summary.type = 'Planet';
       summary.image = "./" + Assets.Images[obj.texture];
 
+
       surfaceG = Math.round(((SolarObjects.constants.G * obj.physicsObj.mass) / Math.pow((obj.size / 2), 2)) * 100) / 100;
       if (surfaceG) {
         summary.surface_gravity = surfaceG + SolarObjects.units.force;

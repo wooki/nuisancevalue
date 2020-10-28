@@ -205,7 +205,6 @@ export default class Map {
     let zIndex = this.parameters.internalZIndex.asteroid;
     let widthRatio = 1;
     if (obj instanceof Asteroid) {
-      console.log(this.parameters.baseUrl+(Assets.Images[obj.texture] || Assets.Images.asteroid5));
         texture = this.resources[this.parameters.baseUrl+(Assets.Images[obj.texture] || Assets.Images.asteroid5)].texture;
         alias = 'asteroid';
       } else if (obj instanceof PDC) {
@@ -297,7 +296,7 @@ export default class Map {
       if (obj.isScannedBy) {
 
         let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
-        let isScanned = obj.isScannedBy(actualPlayerShip.faction);
+        let isScanned = obj.isScannedBy(actualPlayerShip.faction);        
 
         let hullSprite = sprite.getChildByName('hull');
         if (!hullSprite) {
