@@ -209,7 +209,7 @@ export default class SolarSystem extends Mission {
 
 
       // add an extra enemy ship after 5 mins
-      this.addTimedEvent(300, function(game, seconds) {
+      this.addTimedEvent(360, function(game, seconds) {
         this.spawnEnemyShips(1, ["blockade-runner"]);
       }.bind(this));
   }
