@@ -103,8 +103,8 @@ export default class ExplorationMission extends Mission {
 
     }.bind(this);
 
-    this.addTimedEvent(15, this.missionIntro);
-    
+    this.addTimedEvent(60, this.missionIntro);
+
   }
 
   destroyed(obj) {

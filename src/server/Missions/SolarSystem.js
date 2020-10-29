@@ -170,8 +170,7 @@ export default class SolarSystem extends Mission {
           angle: (Math.random() * 2),
           faction: this.playerFaction,
           aiScript: 3, // Traveller
-          // targetId: 1 + Math.round(Math.random() * 7)
-          targetId: 6
+          targetId: 1 + Math.round(Math.random() * 7)
       });
 
       this.friendlyFreighters.push(freighter);
@@ -206,7 +205,7 @@ export default class SolarSystem extends Mission {
 
       }.bind(this);
 
-      this.addTimedEvent(15, this.missionIntro);
+      this.addTimedEvent(60, this.missionIntro);
 
 
       // add an extra enemy ship after 5 mins
