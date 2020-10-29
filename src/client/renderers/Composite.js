@@ -13,6 +13,10 @@ export default class CompositeRenderer {
     // create a PIXI app and add to the #game element, start load of resources
     constructor(gameEngine, clientEngine, config) {
 
+      // check if we want admin controls
+      let params = new URLSearchParams(document.location.search.substring(1));
+      this.isDebug = (params.get("debug") == "1");
+
       // remember params
       this.game = gameEngine;
       this.client = clientEngine;
@@ -291,83 +295,66 @@ export default class CompositeRenderer {
 
           if (playerShip) {
 
-            if (actualPlayerShip.physicsObj && isNaN(actualPlayerShip.physicsObj.position[0])) {
+            // keep track of our ship
+            this.updatePlayerShip(playerShip, this.isDocked, false, dt);
 
-              console.log("PLAYERSHIP NAN BUG");
-              console.dir(playerShip.physicsObj.position);
+            // keep track so we know when something is gone
+            let allObjects = {};
+            let sensedObjects = {};
 
-              // Force a reload - something has gone wrong with sending the
-              // player ship but a reload usually fixes it.
-              // if (window.confirm("Problem connecting to your ship, reload?")) {
-              //   window.location.reload(true);
-              //   this.backToLobby = true;
-              //   this.loadedSprites = false;
-              //   return this.backToLobby;
-              // }
-            } else {
+            // player has been excluded from this list already
+            gameObjects.forEach((obj) => {
 
-              // keep track of our ship
-              this.updatePlayerShip(playerShip, this.isDocked, false, dt);
+              // some stations require every object
+              this.everyObject(obj, this);
+              this.allServerObjects[obj.id] = true;
+              allObjects[obj.id] = true;
 
-              // keep track so we know when something is gone
-              let allObjects = {};
-              let sensedObjects = {};
+              // check if we have sensed (for types that need to be)
+              let sensed = this.isDebug;
+              if (!obj.isSensedBy) {
+                sensed = true; // objects that don't have this are always visible (ie planets and PDCs)
+              } else if (obj.sensedBy && obj.isSensedBy(actualPlayerShip.faction)) {
+                sensed = true;
+              }
 
-              // player has been excluded from this list already
-              gameObjects.forEach((obj) => {
+              // check we have scanned (of possible)
+              let scanned = false;
+              if (obj.isScannedBy) {
+                scanned = obj.isScannedBy(actualPlayerShip.faction);
+              }
 
-                // some stations require every object
-                this.everyObject(obj, this);
-                this.allServerObjects[obj.id] = true;
-                allObjects[obj.id] = true;
-
-                // check if we have sensed (for types that need to be)
-                let sensed = false;
-                // let sensed = true;
-                if (!obj.isSensedBy) {
-                  sensed = true; // objects that don't have this are always visible (ie planets and PDCs)
-                } else if (obj.sensedBy && obj.isSensedBy(actualPlayerShip.faction)) {
-                  sensed = true;
+              // show sensed or scanned objects only
+              if (sensed || scanned) {
+                // is this a new, or existing object?
+                if (this.serverObjects[obj.id]) {
+                  this.updateObject(obj);
+                } else {
+                  this.serverObjects[obj.id] = true;
+                  this.addObject(obj);
                 }
 
-                // check we have scanned (of possible)
-                let scanned = false;
-                if (obj.isScannedBy) {
-                  scanned = obj.isScannedBy(actualPlayerShip.faction);
-                }
+                // remember we had this one
+                sensedObjects[obj.id] = true;
+              }
 
-                // show sensed or scanned objects only
-                if (sensed || scanned) {
-                  // is this a new, or existing object?
-                  if (this.serverObjects[obj.id]) {
-                    this.updateObject(obj);
-                  } else {
-                    this.serverObjects[obj.id] = true;
-                    this.addObject(obj);
-                  }
-
-                  // remember we had this one
-                  sensedObjects[obj.id] = true;
-                }
-
-              });
+            });
 
 
-              // remove any objects that we no-longer have
-              Object.keys(this.serverObjects).forEach((key) => {
-                if (!sensedObjects[key]) {
-                    delete this.serverObjects[key];
-                    this.removeObject(key);
-                }
-              });
+            // remove any objects that we no-longer have
+            Object.keys(this.serverObjects).forEach((key) => {
+              if (!sensedObjects[key]) {
+                  delete this.serverObjects[key];
+                  this.removeObject(key);
+              }
+            });
 
-              Object.keys(this.allServerObjects).forEach((key) => {
-                if (!allObjects[key]) {
-                    delete this.allServerObjects[key];
-                    this.everyRemoveObject(key);
-                }
-              });
-            } // position isNaN
+            Object.keys(this.allServerObjects).forEach((key) => {
+              if (!allObjects[key]) {
+                  delete this.allServerObjects[key];
+                  this.everyRemoveObject(key);
+              }
+            });
 
           } else {
             // must have been destroyed, keep original ship but flag as such

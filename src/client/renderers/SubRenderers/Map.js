@@ -25,6 +25,10 @@ export default class Map {
   // keep track of where the renderer wants us to draw this
   constructor(params) {
 
+    // check if we want admin controls
+    let querystring = new URLSearchParams(document.location.search.substring(1));
+    this.isDebug = (querystring.get("debug") == "1");
+
     this.parameters = Object.assign({
       x: 0,
       y: 0,
@@ -296,8 +300,7 @@ export default class Map {
       if (obj.isScannedBy) {
 
         let actualPlayerShip = this.dockedPlayerShip || this.playerShip;
-        let isScanned = obj.isScannedBy(actualPlayerShip.faction);
-        // let isScanned = true;
+        let isScanned = this.isDebug || obj.isScannedBy(actualPlayerShip.faction);
 
         let hullSprite = sprite.getChildByName('hull');
         if (!hullSprite) {

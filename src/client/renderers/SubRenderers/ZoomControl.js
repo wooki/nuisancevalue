@@ -40,10 +40,10 @@ export default class ZoomControl {
 
     // attach shortcut keys
     if (this.parameters.keyboardControls && renderer.keyboardControls) {
-      renderer.keyboardControls.bindKey(['equal sign', 'add'], 'zoom', { repeat: true }, { callback: (action, params) => {
+      renderer.keyboardControls.bindKey(['equal sign', 'add', 'equals (firefox)'], 'zoom', { repeat: true }, { callback: (action, params) => {
       	this.setZoom('+');
       }});
-      renderer.keyboardControls.bindKey(['dash', 'subtract'], 'zoom', { repeat: true }, { callback: (action, params) => {
+      renderer.keyboardControls.bindKey(['dash', 'subtract', 'minus (firefox), mute/unmute'], 'zoom', { repeat: true }, { callback: (action, params) => {
       	this.setZoom('-');
       }});
 
