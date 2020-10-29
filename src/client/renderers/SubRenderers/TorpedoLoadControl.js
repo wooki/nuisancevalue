@@ -150,7 +150,7 @@ export default class TorpedoLoadControl {
         [
           title,
           currentState,
-          h('h4', {key: 'loader'}, ['LOADER']),
+          // h('h4', {key: 'loader'}, ['LOADE']),
           h('div.nv.ui.row.loadoptions', {key: 'loadoptions'}, loadOptions)
         ]
       );

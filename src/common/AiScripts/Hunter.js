@@ -108,7 +108,7 @@ export default class Hunter extends BaseShip {
 					if (ship.gravityData) {
 						let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 						let targetVector = targetPos.clone().subtract(ourPos);
-						if (ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+						if (gravVector.magnitude() < (ship.gravityData.size*5) && ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
 							ship.aiPlan = HUNTER_PLAN_ORBIT;
 						}
 					}

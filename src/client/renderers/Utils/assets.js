@@ -92,18 +92,20 @@ module.exports = {
 			pluto: 0xdbcebb
 		},
 		Systems: {
-			2: 0xFF0000,
-			4: 0x3333FF,
-			8: 0x00FF00,
-			16: 0xCC3300,
-			32: 0x00CC33,
-			64: 0x6600FF,
-			128: 0xCCFF00,
-			256: 0xFF00CC,
-			512: 0x00CCFF,
-			1024: 0xFF9966,
+			0: 0x392d37, // reactor
+			2: 0xF8004B, // SYS__SENSORS
+			4: 0x2966C0, // SYS_ENGINE
+			8: 0x1DD634, // SYS_MANEUVER
+			16: 0x5944E0, // SYS_TORPS
+			32: 0x75EE10, // SYS_PDC
+			64: 0x1499C5, // SYS_LIFE
+			128: 0xFFAE22, // SYS_CONSOLES
+			256: 0x4B1E44, // SYS_NAV
+			512: 0xEF1053, // SYS_RELOAD
+			1024: 0xFF8300, // SYS_FUEL
 		}
 	},
+
 	Fonts: {
 		Mono: "\"Electrolize\",\"Lucida Console\",\"Lucida Sans Typewriter\",\"Bitstream Vera Sans Mono\",monospace",
 		Regular: "\"Oswald\",\"Lucida Console\",\"Lucida Sans Typewriter\",\"Bitstream Vera Sans Mono\",sans-serif"

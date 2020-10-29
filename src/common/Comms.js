@@ -50,22 +50,36 @@ export default class Comms {
 	// try and start or contiue a comms session
 	openComms(playerShip, selectedObj) {
 
-		// update ship with commsTargetId
-	if (selectedObj.playable != 1 && selectedObj.commsTargetId != playerShip.id) {
-			this.client.updateShipComms({
-				id: selectedObj.id,
-				target: playerShip.id
-			});
+		// check the selectedObj still exists in the game
+		let obj = this.game.world.objects[selectedObj.id];
+		if (obj) {
 
-			// also update playerShip
+			// update ship with commsTargetId
+			if (selectedObj.playable != 1 && selectedObj.commsTargetId != playerShip.id) {
+				this.client.updateShipComms({
+					id: selectedObj.id,
+					target: playerShip.id
+				});
+
+				// also update playerShip
+				this.client.updateShipComms({
+					id: playerShip.id,
+					target: selectedObj.id,
+					state: 1 // set player as "connected"
+				});
+			}
+
+			return this.getComms(playerShip, selectedObj);
+
+		} else {
+			// obj not found in game - reset
+			// update playerShip
 			this.client.updateShipComms({
 				id: playerShip.id,
-				target: selectedObj.id,
-				state: 1 // set player as "connected"
+				target: -1,
+				state: 0 
 			});
 		}
-
-		return this.getComms(playerShip, selectedObj);
 	}
 
 	// get current comm state

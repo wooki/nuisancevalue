@@ -117,7 +117,7 @@ export default class PowerGrid {
       let reactorHeight = this.gridTop - this.parameters.y;
 
       let reactorGraphics = new PIXI.Graphics();
-      reactorGraphics.beginFill(Assets.Colors.Red, 0.66);
+      reactorGraphics.beginFill(Assets.Colors.Systems[0], 0.66);
       reactorGraphics.drawRect(0, 0, this.parameters.width, reactorHeight);
 
       let reactorTexture = this.pixiApp.renderer.generateTexture(reactorGraphics);
@@ -279,7 +279,7 @@ export default class PowerGrid {
       sysSprite.zIndex = this.parameters.internalZIndex.system;
 
       let systemGraphics = new PIXI.Graphics();
-      systemGraphics.beginFill(Assets.Colors.Systems[currentSystem], 0.4);
+      systemGraphics.beginFill(Assets.Colors.Systems[currentSystem], 0.66);
       systemGraphics.drawRect(0, 0, this.gridSquareSize * systemSize, systemHeight);
 
       let systemTexture = this.pixiApp.renderer.generateTexture(systemGraphics);

@@ -170,7 +170,8 @@ export default class SolarSystem extends Mission {
           angle: (Math.random() * 2),
           faction: this.playerFaction,
           aiScript: 3, // Traveller
-          targetId: 1 + Math.round(Math.random() * 7)
+          // targetId: 1 + Math.round(Math.random() * 7)
+          targetId: 6
       });
 
       this.friendlyFreighters.push(freighter);

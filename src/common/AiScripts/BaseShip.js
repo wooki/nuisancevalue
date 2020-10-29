@@ -209,7 +209,7 @@ export default class BaseShip {
 				if (angleFromTarget < -Math.PI) angleFromTarget = angleFromTarget + (Math.PI*2)
 				if (angleFromTarget > Math.PI) angleFromTarget = angleFromTarget - (Math.PI*2)
 
-				if (Math.abs(angleFromTarget) < 0.2 && Math.abs(bearingChange) < 0.4) {
+				if (Math.abs(angleFromTarget) < 0.3 && Math.abs(bearingChange) < 0.6) {
 					ship.engine = 5;
 				} else {
 					ship.engine = 0;

@@ -63,12 +63,20 @@ export default class Traveller extends BaseShip {
 			// start to travel once 10k away from surface of gravity source
 			if (ship.targetId > -1) {
 
-				let ourPos = Victor.fromArray(ship.physicsObj.position);
-				if (ship.gravityData) {
-					let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
+				// check if we are actually already near our destination
+				if (ship.gravityData && ship.targetId == ship.gravityData.id) {
 
-					if (gravVector.magnitude() > (4000 + (ship.gravityData.size * 4))) {
-						ship.aiPlan = TRAVELLER_PLAN_TRAVEL; // travel to destination
+					ship.aiPlan = TRAVELLER_PLAN_ORBIT; // travel to destination
+					mission.event("AI.Traveller.Arrived", {ship: ship} );
+
+				} else {
+					let ourPos = Victor.fromArray(ship.physicsObj.position);
+					if (ship.gravityData) {
+						let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
+
+						if (gravVector.magnitude() > (4000 + (ship.gravityData.size * 4))) {
+							ship.aiPlan = TRAVELLER_PLAN_TRAVEL; // travel to destination
+						}
 					}
 				}
 			}
@@ -94,7 +102,7 @@ export default class Traveller extends BaseShip {
 						}
 						let gravVector = Victor.fromArray([ship.gravityData.direction.x, ship.gravityData.direction.y]);
 						let targetVector = targetPos.clone().subtract(ourPos);
-						if (ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
+						if (gravVector.magnitude() < (ship.gravityData.size*5) && ship.gravityData.id != target.id && Math.abs(gravVector.angleDeg() - targetVector.angleDeg()) < 30) {
 							ship.aiPlan = TRAVELLER_PLAN_ORBIT;
 						}
 					}
@@ -118,7 +126,8 @@ export default class Traveller extends BaseShip {
 
 						// upon arrival see what mission thinks we should do (if there is one)
 						if (mission && mission.event) {
-							mission.event("AI.Traveller.Arrived", {ship: ship} );
+
+						mission.event("AI.Traveller.Arrived", {ship: ship} );
 						}
 					}
 				}
