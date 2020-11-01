@@ -84,17 +84,6 @@ export default class NvGameEngine extends GameEngine {
       // console.timeEnd("step");
     // }
 
-    debugNaN(src) {
-
-      this.world.forEachObject((objId, obj) => {
-        if (obj) {
-          if (obj.physicsObj && isNaN(obj.physicsObj.position[0])) {
-            console.log(src+" NAN :"+" "+obj.physicsObj.position[0]+" "+obj.toString());
-          }
-        }
-      });
-    }
-
     // update world objects for engines/gravity etc
     preStep(params) {
 
@@ -102,8 +91,6 @@ export default class NvGameEngine extends GameEngine {
         let isReenact = params.isReenact;
         let dt = params.dt;
         // console.log(`step:${step} dt:${dt}`);
-
-        this.debugNaN("preStep 1");
 
         // every 60 steps (every second)
         if ((step % 60) == 0) {
@@ -367,8 +354,6 @@ export default class NvGameEngine extends GameEngine {
             } // not docked or destroyed
 
         });
-
-        // this.debugNaN("preStep 2");
     }
 
     registerClasses(serializer) {

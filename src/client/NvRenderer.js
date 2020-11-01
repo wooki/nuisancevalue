@@ -1,6 +1,7 @@
 import { Renderer } from 'lance-gg';
 import Ship from './../common/Ship';
 import LobbyRenderer from './renderers/Lobby';
+import PilotRenderer from './renderers/Pilot';
 import HelmRenderer from './renderers/Helm';
 import CaptainRenderer from './renderers/Captain';
 import EngineerRenderer from './renderers/Engineer';
@@ -43,7 +44,9 @@ export default class NvRenderer extends Renderer {
 
         // actually configure and set the renderer
         this.removeRenderer();
-        if (station == 'helm') {
+        if (station == 'pilot') {
+            renderer = new PilotRenderer(game, client);
+        } else if (station == 'helm') {
             renderer = new HelmRenderer(game, client);
         } else if (station == 'nav') {
             renderer = new NavRenderer(game, client);
@@ -67,15 +70,29 @@ export default class NvRenderer extends Renderer {
         let station = null;
         game.world.forEachObject((objId, obj) => {
             if (obj instanceof Ship) {
-                if (obj.helmPlayerId == game.playerId) {
+
+                // station for actual role depends on hull,
+                // e.g. a single seater hull just has helm and
+                // gives a special single-seater pilot ui
+                let hull = obj.getHullData();
+                let stations = ['helm', 'nav', 'signals', 'captain', 'engineer'];
+                if (hull.stations) {
+                  stations = hull.stations;
+                }
+
+                if (hull.includes('pilot') && obj.helmPlayerId == game.playerId) {
+                    station = 'pilot';
+                } else if (hull.includes('helm') && obj.helmPlayerId == game.playerId) {
                     station = 'helm';
-                } else if (obj.navPlayerId == game.playerId) {
+                } else if (hull.includes('pilot') && obj.helmPlayerId == game.playerId) {
+                    station = 'pilot';
+                } else if (hull.includes('nav') && obj.navPlayerId == game.playerId) {
                     station = 'nav';
-                } else if (obj.signalsPlayerId == game.playerId) {
+                } else if (hull.includes('signals') && obj.signalsPlayerId == game.playerId) {
                     station = 'signals';
-                } else if (obj.captainPlayerId == game.playerId) {
+                } else if (hull.includes('captain') && obj.captainPlayerId == game.playerId) {
                     station = 'captain';
-                } else if (obj.engineerPlayerId == game.playerId) {
+                } else if (hull.includes('engineer') && obj.engineerPlayerId == game.playerId) {
                     station = 'engineer';
                 }
             }

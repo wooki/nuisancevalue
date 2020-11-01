@@ -108,60 +108,88 @@ export default class LobbyRenderer {
         width: 'auto'
       }, []));
 
-      buttons.push(h('button.join', {
-        key: 'helm',
-        classes: {
-          disabled: (obj.helmPlayerId != 0)
-        },
-        onclick: (event) => {
-          if (obj.helmPlayerId != 0) return;
-          this.joinShip(obj.id, 'helm');
-        }
-      }, ["Helm"]));
+      let stations = ['helm', 'nav', 'signals', 'captain', 'engineer'];
+      if (hullData.stations) {
+        stations = hullData.stations;
+      }
 
-      buttons.push(h('button.join', {
-        key: 'signals',
-        classes: {
-          disabled: (obj.signalsPlayerId != 0)
-        },
-        onclick: (event) => {
-          if (obj.signalsPlayerId != 0) return;
-          this.joinShip(obj.id, 'signals');
-        }
-      }, ["Signals"]));
+      if (stations.includes('helm')) {
+        buttons.push(h('button.join', {
+          key: 'helm',
+          classes: {
+            disabled: (obj.helmPlayerId != 0)
+          },
+          onclick: (event) => {
+            if (obj.helmPlayerId != 0) return;
+            this.joinShip(obj.id, 'helm');
+          }
+        }, ["Helm"]));
+      }
 
-      buttons.push(h('button.join', {
-        key: 'nav',
-        classes: {
-          disabled: (obj.navPlayerId != 0)
-        },
-        onclick: (event) => {
-          if (obj.navPlayerId != 0) return;
-          this.joinShip(obj.id, 'nav');
-        }
-      }, ["Nav"]));
+      if (stations.includes('pilot')) {
+        buttons.push(h('button.join', {
+          key: 'pilot',
+          classes: {
+            disabled: (obj.helmPlayerId != 0)
+          },
+          onclick: (event) => {
+            if (obj.helmPlayerId != 0) return;
+            this.joinShip(obj.id, 'helm');
+          }
+        }, ["Pilot"]));
+      }
 
-      buttons.push(h('button.join', {
-        key: 'engineer',
-        classes: {
-          disabled: (obj.engineerPlayerId != 0)
-        },
-        onclick: (event) => {
-          if (obj.engineerPlayerId != 0) return;
-          this.joinShip(obj.id, 'engineer');
-        }
-      }, ["Engineer"]));
+      if (stations.includes('signals')) {
+        buttons.push(h('button.join', {
+          key: 'signals',
+          classes: {
+            disabled: (obj.signalsPlayerId != 0)
+          },
+          onclick: (event) => {
+            if (obj.signalsPlayerId != 0) return;
+            this.joinShip(obj.id, 'signals');
+          }
+        }, ["Signals"]));
+      }
 
-      buttons.push(h('button.join', {
-        key: 'captain',
-        classes: {
-          disabled: (obj.captainPlayerId != 0)
-        },
-        onclick: (event) => {
-          if (obj.captainPlayerId != 0) return;
-          this.joinShip(obj.id, 'captain');
-        }
-      }, ["Captain"]));
+      if (stations.includes('nav')) {
+        buttons.push(h('button.join', {
+          key: 'nav',
+          classes: {
+            disabled: (obj.navPlayerId != 0)
+          },
+          onclick: (event) => {
+            if (obj.navPlayerId != 0) return;
+            this.joinShip(obj.id, 'nav');
+          }
+        }, ["Nav"]));
+      }
+
+      if (stations.includes('engineer')) {
+        buttons.push(h('button.join', {
+          key: 'engineer',
+          classes: {
+            disabled: (obj.engineerPlayerId != 0)
+          },
+          onclick: (event) => {
+            if (obj.engineerPlayerId != 0) return;
+            this.joinShip(obj.id, 'engineer');
+          }
+        }, ["Engineer"]));
+      }
+
+      if (stations.includes('captain')) {
+        buttons.push(h('button.join', {
+          key: 'captain',
+          classes: {
+            disabled: (obj.captainPlayerId != 0)
+          },
+          onclick: (event) => {
+            if (obj.captainPlayerId != 0) return;
+            this.joinShip(obj.id, 'captain');
+          }
+        }, ["Captain"]));
+      }
 
 
       text.push(h('label', [obj.name + ", "+hullData.name+' Class']));
@@ -192,15 +220,23 @@ export default class LobbyRenderer {
           if (obj.playable === 1) {
             ships.push(obj);
 
-            if (obj.helmPlayerId == this.game.playerId) {
+            let hullData = obj.getHullData();
+            let availableStations = ['helm', 'nav', 'signals', 'captain', 'engineer'];
+            if (hullData.stations) {
+              availableStations = hullData.stations;
+            }
+
+            if (availableStations.includes('pilot') && obj.helmPlayerId == this.game.playerId) {
+                station = 'pilot';
+            } else if (availableStations.includes('helm') && obj.helmPlayerId == this.game.playerId) {
                 station = 'helm';
-            } else if (obj.navPlayerId == this.game.playerId) {
+            } else if (availableStations.includes('nav') && obj.navPlayerId == this.game.playerId) {
                 station = 'nav';
-            } else if (obj.signalsPlayerId == this.game.playerId) {
+            } else if (availableStations.includes('signals') && obj.signalsPlayerId == this.game.playerId) {
                 station = 'signals';
-            } else if (obj.engineerPlayerId == this.game.playerId) {
+            } else if (availableStations.includes('engineer') && obj.engineerPlayerId == this.game.playerId) {
                 station = 'engineer';
-            } else if (obj.captainPlayerId == this.game.playerId) {
+            } else if (availableStations.includes('captain') && obj.captainPlayerId == this.game.playerId) {
                 station = 'captain';
             }
           }
@@ -210,15 +246,23 @@ export default class LobbyRenderer {
               if (dockedObj instanceof Ship && dockedObj.playable === 1) {
                 ships.push(dockedObj);
 
-                if (dockedObj.helmPlayerId == this.game.playerId) {
+                let dockedHullData = obj.getHullData();
+                let dockedAvailableStations = ['helm', 'nav', 'signals', 'captain', 'engineer'];
+                if (dockedHullData.stations) {
+                  dockedAvailableStations = dockedHullData.stations;
+                }
+
+                if (dockedAvailableStations.includes('pilot') && dockedObj.helmPlayerId == this.game.playerId) {
+                    station = 'pilot';
+                } else if (dockedAvailableStations.includes('helm') && dockedObj.helmPlayerId == this.game.playerId) {
                     station = 'helm';
-                } else if (dockedObj.navPlayerId == this.game.playerId) {
+                } else if (dockedAvailableStations.includes('nav') && dockedObj.navPlayerId == this.game.playerId) {
                     station = 'nav';
-                } else if (dockedObj.signalsPlayerId == this.game.playerId) {
+                } else if (dockedAvailableStations.includes('signals') && dockedObj.signalsPlayerId == this.game.playerId) {
                     station = 'signals';
-                } else if (dockedObj.engineerPlayerId == this.game.playerId) {
+                } else if (dockedAvailableStations.includes('engineer') && dockedObj.engineerPlayerId == this.game.playerId) {
                     station = 'engineer';
-                } else if (dockedObj.captainPlayerId == this.game.playerId) {
+                } else if (dockedAvailableStations.includes('captain') && dockedObj.captainPlayerId == this.game.playerId) {
                     station = 'captain';
                 }
               }

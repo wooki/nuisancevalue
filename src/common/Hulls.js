@@ -124,7 +124,10 @@ export default {
 				reload: 36, // ms
 				volley: 1 // fire 2 of the 4 tubes, hence reload is half
 			}
-		}
+		},
+		stations: [
+			'pilot'
+		]
 	},
 
 	"bushido": {

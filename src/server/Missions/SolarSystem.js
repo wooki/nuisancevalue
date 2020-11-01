@@ -170,6 +170,7 @@ export default class SolarSystem extends Mission {
           angle: (Math.random() * 2),
           faction: this.playerFaction,
           aiScript: 3, // Traveller
+          playable: 1,
           targetId: 1 + Math.round(Math.random() * 7)
       });
 
