@@ -12,6 +12,11 @@ import ZoomControl from './SubRenderers/ZoomControl';
 import FuelGauge from './SubRenderers/FuelGauge';
 import GlobalSound from './SubRenderers/GlobalSound';
 import LocalSound from './SubRenderers/LocalSound';
+import NextTargetControl from './SubRenderers/NextTargetControl';
+import TargetSelection from './SubRenderers/TargetSelection';
+import OpenCommsControl from './SubRenderers/OpenCommsControl';
+import CommsControl from './SubRenderers/CommsControl';
+import TorpedoFireControl from './SubRenderers/TorpedoFireControl';
 
 // extend compsite with pre-set subrenderers
 export default class PilotRenderer extends CompositeRenderer {
@@ -91,6 +96,19 @@ export default class PilotRenderer extends CompositeRenderer {
             keyboardControls: true,
             onScreenControls: false
           }),
+          new NextTargetControl({
+            keyboardControls: true,
+            onScreenControls: false
+          }),
+          new TargetSelection({}), // watch for selection and set as target
+          new TorpedoFireControl({
+            x: margin,
+            y: (marginFull + 126),
+            width: Math.max(sideWidth, sideControlsMin),
+            zIndex: 30,
+            keyboardControls: false,
+            autoLoad: true
+          }),
           new DockingControl({
             x: margin,
             y: margin,
@@ -112,6 +130,20 @@ export default class PilotRenderer extends CompositeRenderer {
             width: Math.max(sideWidth, sideControlsMin),
             height: fullHeight - marginFull,
             zIndex: 30
+          }),
+          new OpenCommsControl({
+            x: margin,
+            y: margin,
+            width: Math.max(sideWidth, sideControlsMin),
+            zIndex: 40,
+            keyboardControls: true
+          }),
+          new CommsControl({
+            x: margin,
+            y: margin,
+            width: fullWidth - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 100
           }),
           new GlobalSound({
           }),

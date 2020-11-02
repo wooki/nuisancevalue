@@ -32,11 +32,11 @@ export default class EngineControl {
     // attach shortcut keys
     if (this.parameters.keyboardControls && renderer.keyboardControls) {
       renderer.keyboardControls.bindKey('Digit0', 'engine', { }, { level: 0 });
-      renderer.keyboardControls.bindKey('Digit01', 'engine', { }, { level: 1 });
-      renderer.keyboardControls.bindKey('Digit02', 'engine', { }, { level: 2 });
-      renderer.keyboardControls.bindKey('Digit03', 'engine', { }, { level: 3 });
-      renderer.keyboardControls.bindKey('Digit04', 'engine', { }, { level: 4 });
-      renderer.keyboardControls.bindKey('Digit05', 'engine', { }, { level: 5 });
+      renderer.keyboardControls.bindKey('Digit1', 'engine', { }, { level: 1 });
+      renderer.keyboardControls.bindKey('Digit2', 'engine', { }, { level: 2 });
+      renderer.keyboardControls.bindKey('Digit3', 'engine', { }, { level: 3 });
+      renderer.keyboardControls.bindKey('Digit4', 'engine', { }, { level: 4 });
+      renderer.keyboardControls.bindKey('Digit5', 'engine', { }, { level: 5 });
       renderer.keyboardControls.bindKey('ArrowUp', 'engine', { }, { level: '+' });
       renderer.keyboardControls.bindKey('ArrowDown', 'engine', { }, { level: '-' });
     }

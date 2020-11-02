@@ -15,7 +15,8 @@ export default class TorpedoFireControl {
       height: 372,
       zIndex: 1,
       baseUrl: '/',
-      keyboardControls: false
+      keyboardControls: false,
+      autoLoad: false // loads availible torps when not loaded
     }, params);
   }
 
@@ -45,6 +46,28 @@ export default class TorpedoFireControl {
     this.projector.append(this.el, this.render.bind(this));
   }
 
+  startLoading(tubeIndex) {
+
+    if (this.parameters.autoLoad) {
+
+      // load one of whatever we have
+      let torpTypeIndex = 0;
+      if (this.playerShip.weaponStock[1]) {
+        torpTypeIndex = 1;
+      } else if (this.playerShip.weaponStock[2]) {
+        torpTypeIndex = 2;
+      }
+
+      // start loading/unloading
+      if (!this.loadingState[tubeIndex]) {
+        this.loadingState[tubeIndex] = {
+          load: torpTypeIndex,
+          timeToLoad: 1000 * 15 // load takes 15 seconds (5s slower than enginner)
+        };
+      }
+    }
+  }
+
   // watch player ship
   updatePlayerShip(playerShip, isDocked, isDestroyed, renderer, dt) {
 
@@ -57,6 +80,36 @@ export default class TorpedoFireControl {
     this.targetId = this.playerShip.targetId;
 
     if (this.playerShip.tubes) {
+
+      if (this.parameters.autoLoad) {
+
+        for (let i = 0; i < this.playerShip.tubes.length; i++) {
+
+          // progress loading
+          let currentTorp = this.getTorpType(this.playerShip.tubes[i]);
+          if (currentTorp) {
+
+            // if we have a torp then make sure we don't load
+            this.loadingState[i] = false;
+
+          } else if (this.loadingState[i] && this.loadingState[i].timeToLoad > 0) {
+
+            this.loadingState[i].timeToLoad = this.loadingState[i].timeToLoad - dt;
+
+          } else if (this.loadingState[i]) {
+            // finished loading
+            if (this.renderer.client) {
+              this.renderer.client.loadTorp(i, this.loadingState[i].load);
+              this.loadingState[i] = false;
+            }
+          } else {
+            // isn't loading - if empty then start loading
+            this.startLoading(i);
+          }
+        }
+
+      }
+
       this.projector.scheduleRender();
     }
 
@@ -75,6 +128,13 @@ export default class TorpedoFireControl {
       }
 
       let haveTarget = (this.targetId >= 0);
+      let reloading = this.parameters.autoLoad && this.loadingState[tubeIndex];
+
+      if (reloading) {
+        isActive = false;
+        // ${Math.round(this.loadingState[tubeIndex].timeToLoad / 1000)}
+        currentState = h('div.current', {key: 'current'}, [`RELOADING`]);
+      }
 
       // add warning light if not enough power
       let led = null;
@@ -105,6 +165,11 @@ export default class TorpedoFireControl {
                   this.renderer.client.fireTorp(this.targetId , tubeIndex);
                 }
                 this.renderer.client.loadTorp(tubeIndex, 0);
+
+                // when button pressed always restart loading
+                if (this.parameters.autoLoad) {
+                  this.startLoading(tubeIndex);
+                }
 
                 // redraw to update button state
                 this.projector.scheduleRender();

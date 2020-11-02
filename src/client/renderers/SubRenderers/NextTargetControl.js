@@ -21,6 +21,8 @@ export default class ZoomControl {
       	'next': 'T-'
       }
     }, params);
+
+    this.parameters.viewDistance = (this.parameters.mapSize/2) / this.parameters.zoom;
   }
 
   // keep references and add to the html

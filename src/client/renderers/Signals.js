@@ -108,7 +108,7 @@ export default class SignalsRenderer extends CompositeRenderer {
           }),
           new NextTargetControl({
             keyboardControls: true,
-            onScreenControls: true,
+            onScreenControls: false,
             mapSize: 30000
           }),
           new SignalsData({
