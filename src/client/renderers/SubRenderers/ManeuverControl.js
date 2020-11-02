@@ -35,8 +35,8 @@ export default class ManeuverControl {
 
     // attach shortcut keys
     if (this.parameters.keyboardControls && renderer.keyboardControls) {
-      renderer.keyboardControls.bindKey('left', 'maneuver', { }, { direction: 'l' });
-      renderer.keyboardControls.bindKey('right', 'maneuver', { }, { direction: 'r' });
+      renderer.keyboardControls.bindKey('ArrowLeft', 'maneuver', { }, { direction: 'l' });
+      renderer.keyboardControls.bindKey('ArrowRight', 'maneuver', { }, { direction: 'r' });
     }
   }
 

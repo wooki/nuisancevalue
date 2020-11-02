@@ -29,7 +29,7 @@ export default class TorpedoFireControl {
 
     // attach shortcut keys
     // if (this.parameters.keyboardControls && renderer.keyboardControls) {
-    //   renderer.keyboardControls.bindKey('0', 'engine', { }, { level: 0 });
+    //   renderer.keyboardControls.bindKey('Digit0', 'engine', { }, { level: 0 });
     // }
 
     // get the torpedo types

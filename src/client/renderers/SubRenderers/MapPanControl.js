@@ -14,17 +14,17 @@ export default class MapPanControl {
   getKeys(direction) {
       let keys = [];
       if (direction == "N") {
-        if (this.parameters.wasd) keys.push('w');
-        if (this.parameters.arrows) keys.push('up');
+        if (this.parameters.wasd) keys.push('KeyW');
+        if (this.parameters.arrows) keys.push('ArrowUp');
       } else if (direction == "S") {
-        if (this.parameters.wasd) keys.push('s');
-        if (this.parameters.arrows) keys.push('down');
+        if (this.parameters.wasd) keys.push('KeyS');
+        if (this.parameters.arrows) keys.push('ArrowDown');
       } else if (direction == "E") {
-        if (this.parameters.wasd) keys.push('d');
-        if (this.parameters.arrows) keys.push('right');
+        if (this.parameters.wasd) keys.push('KeyD');
+        if (this.parameters.arrows) keys.push('ArrowRight');
       } else if (direction == "W") {
-        if (this.parameters.wasd) keys.push('a');
-        if (this.parameters.arrows) keys.push('left');
+        if (this.parameters.wasd) keys.push('KeyA');
+        if (this.parameters.arrows) keys.push('ArrowLeft');
       }
       return keys;
   }

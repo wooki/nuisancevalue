@@ -196,6 +196,7 @@ class KeyboardControls {
 
         this.gameEngine.on('client__preStep', () => {
             for (let keyName of Object.keys(this.boundKeys)) {
+
                 if (this.keyState[keyName] && this.keyState[keyName].isDown) {
 
                     // handle repeat press
@@ -267,7 +268,8 @@ class KeyboardControls {
     onKeyChange(e, isDown) {
         e = e || window.event;
 
-        let keyName = keyCodeTable[e.keyCode];
+        // let keyName = keyCodeTable[e.keyCode];
+        let keyName = e.code;
         if (keyName && this.boundKeys[keyName]) {
             if (this.keyState[keyName] == null) {
                 this.keyState[keyName] = {
@@ -280,7 +282,9 @@ class KeyboardControls {
             if (!isDown) this.keyState[keyName].count = 0;
 
             // keep reference to the last key pressed to avoid duplicates
-            this.lastKeyPressed = isDown ? e.keyCode : null;
+            // this.lastKeyPressed = isDown ? e.keyCode : null;
+            this.lastKeyPressed = isDown ? e.code : null;
+
             // this.renderer.onKeyChange({ keyName, isDown });
             e.preventDefault();
         }

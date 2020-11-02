@@ -33,10 +33,10 @@ export default class PdcFireControl {
 
     // attach shortcut keys
     if (this.parameters.keyboardControls && renderer.keyboardControls) {
-      renderer.keyboardControls.bindKey('up', 'pdcstate', { }, { direction: '+' });
-      renderer.keyboardControls.bindKey('down', 'pdcstate', { }, { direction: '-' });
-      renderer.keyboardControls.bindKey('left', 'pdcangle', { repeat: true }, { direction: '-' });
-      renderer.keyboardControls.bindKey('right', 'pdcangle', { repeat: true }, { direction: '+' });
+      renderer.keyboardControls.bindKey('ArrowUp', 'pdcstate', { }, { direction: '+' });
+      renderer.keyboardControls.bindKey('ArrowDown', 'pdcstate', { }, { direction: '-' });
+      renderer.keyboardControls.bindKey('ArrowLeft', 'pdcangle', { repeat: true }, { direction: '-' });
+      renderer.keyboardControls.bindKey('ArrowRight', 'pdcangle', { repeat: true }, { direction: '+' });
     }
   }
 

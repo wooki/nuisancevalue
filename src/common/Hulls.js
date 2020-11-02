@@ -19,6 +19,7 @@ export default {
 		damage: 2600,
 		enginePositions: [[0.15, 0.21, 1.4], [0.15, 0.79, 1.4]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
+		powerGrid: true, // used only when assigning damage - so only ships with engineer can have system damage
 		pdc: {
 			range: 6000,
 			size: 1400,
@@ -75,6 +76,7 @@ export default {
 		damage: 1600,
 		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
+		powerGrid: true, // used only when assigning damage - so only ships with engineer can have system damage
 		pdc: {
 			range: 4000,
 			size: 1000,
@@ -109,6 +111,7 @@ export default {
 		damage: 1300,
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
+		powerGrid: false, // used only when assigning damage - so only ships with engineer can have system damage
 		fuel: 10000,
 		tubes: 1,
 		systems: STANDARD_SYSTEMS,
@@ -141,6 +144,7 @@ export default {
 		damage: 1800,
 		enginePositions: [[0.3, 0.5, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
+		powerGrid: true, // used only when assigning damage - so only ships with engineer can have system damage
 		pdc: {
 			range: 4000,
 			size: 1000,
@@ -175,6 +179,7 @@ export default {
 		damage: 1600,
 		enginePositions: [[0.25, 0.1, 0.9], [0.25, 0.9, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
+		powerGrid: true, // used only when assigning damage - so only ships with engineer can have system damage
 		pdc: {
 			range: 5000,
 			size: 800,

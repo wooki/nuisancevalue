@@ -146,7 +146,7 @@ export default class NvServerEngine extends ServerEngine {
               A.damage = A.damage + payload;
 
               // playable ship also take damage to power grid
-              if (A instanceof PlayableShip) {
+              if (A instanceof PlayableShip && A.getHullData().powerGrid) {
                 A.grid = new Systems();
                 A.grid.unpack(A.power);
 

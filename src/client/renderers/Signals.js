@@ -6,6 +6,7 @@ import Map from './SubRenderers/Map';
 import MapHud from './SubRenderers/MapHud';
 import MapPaths from './SubRenderers/MapPaths';
 import ZoomControl from './SubRenderers/ZoomControl';
+import NextTargetControl from './SubRenderers/NextTargetControl';
 import TargetSelection from './SubRenderers/TargetSelection';
 import OpenCommsControl from './SubRenderers/OpenCommsControl';
 import CommsControl from './SubRenderers/CommsControl';
@@ -104,6 +105,11 @@ export default class SignalsRenderer extends CompositeRenderer {
           new ZoomControl({
             keyboardControls: true,
             onScreenControls: false
+          }),
+          new NextTargetControl({
+            keyboardControls: true,
+            onScreenControls: true,
+            mapSize: 30000
           }),
           new SignalsData({
             x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
