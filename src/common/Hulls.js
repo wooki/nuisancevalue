@@ -112,7 +112,8 @@ export default {
 		enginePositions: [[0.2, 0.35, 0.9], [0.2, 0.65, 0.9]],// [scale, %x, %y]
 		exhaustImage: 'exhaust', // or exhaustflame
 		powerGrid: false, // used only when assigning damage - so only ships with engineer can have system damage
-		fuel: 10000,
+		fuelProductionEfficiency: 0.1,
+		fuel: 5000,
 		tubes: 1,
 		systems: STANDARD_SYSTEMS,
 		systemLayout: STANDARD_SYSTEMS_LAYOUT,

@@ -133,7 +133,7 @@ export default class TorpedoFireControl {
       if (reloading) {
         isActive = false;
         // ${Math.round(this.loadingState[tubeIndex].timeToLoad / 1000)}
-        currentState = h('div.current', {key: 'current'}, [`RELOADING`]);
+        currentState = h('div.current', {key: 'current'}, ['RELOADING']);
       }
 
       // add warning light if not enough power

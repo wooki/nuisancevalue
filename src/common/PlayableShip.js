@@ -98,11 +98,19 @@ export default class PlayableShip extends Ship {
     }
 
     getFuelProductionEfficiency() {
-      if (!this.grid) this.unpackPowerGrid();
 
       let hullData = this.getHullData();
       let systems = hullData.systems;
-      return this.grid.getEfficiency(systems['SYS_FUEL']);
+
+      // some hulls don't have this at all
+      if (hullData.powerGrid) {
+        // otherwise depends on efficiency from engineering
+        if (!this.grid) this.unpackPowerGrid();
+        return this.grid.getEfficiency(systems['SYS_FUEL']);
+      } else {
+        return hullData.fuelProductionEfficiency || 0;
+      }
+
     }
 
     getPowerAdjustedHullData() {
