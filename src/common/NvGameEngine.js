@@ -602,7 +602,11 @@ export default class NvGameEngine extends GameEngine {
                 let ship = this.getPlayerShip(playerId);
                 let targetId = inputData.options.objId;
                 let tube = inputData.options.tube;
-                this.emit('firetorp', { ship: ship, targetId: targetId, tube: tube });
+                if (ship.dockedId !== null && ship.dockedId >= 0) {
+                  // can't do this while docked
+                } else {
+                  this.emit('firetorp', { ship: ship, targetId: targetId, tube: tube });
+                }
             }
 
 

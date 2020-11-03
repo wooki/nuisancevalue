@@ -103,17 +103,18 @@ export default class PilotRenderer extends CompositeRenderer {
           new TargetSelection({}), // watch for selection and set as target
           new TorpedoFireControl({
             x: margin,
-            y: (marginFull + 126),
+            y: (marginFull + 126 + margin + 195),
             width: Math.max(sideWidth, sideControlsMin),
+            height: 220,
             zIndex: 30,
             keyboardControls: false,
             autoLoad: true
           }),
           new DockingControl({
             x: margin,
-            y: margin,
+            y: (marginFull + 126),
             width: Math.max(sideWidth, sideControlsMin),
-            height: (halfHeight - (margin * 2)),
+            height: 195,
             zIndex: 30,
             keyboardControls: true
           }),
