@@ -11,7 +11,7 @@ export default class LobbyRenderer {
 
       this.root = document.getElementById('game');
 
-      this.missions = ['Solar System', 'Exploration', 'Target Test'];
+      this.missions = ['Solar System', 'Exploration', 'Pilot Training'];
       this.playableShips = [];
 
       this.projector = createProjector();

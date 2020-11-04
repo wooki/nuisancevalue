@@ -150,6 +150,7 @@ export default class ExplorationMission extends Mission {
         commsScript: 102
     });
   }
+
   // asteroids between mars and jupiter
   addAsteroids(asteroidCount, big) {
 

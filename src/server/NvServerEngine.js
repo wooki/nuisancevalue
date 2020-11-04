@@ -13,7 +13,7 @@ import CollisionUtils from '../common/CollisionUtils';
 
 import SolarSystem from './Missions/SolarSystem';
 import ExplorationMission from './Missions/ExplorationMission';
-import TargetTestMission from './Missions/TargetTestMission';
+import PilotTrainingMission from './Missions/PilotTrainingMission';
 
 export default class NvServerEngine extends ServerEngine {
 
@@ -23,7 +23,7 @@ export default class NvServerEngine extends ServerEngine {
         this.mission = null;
         this.lastMissionSeconds = 0;
         this.missionSecondsOffset = 0;
-        this.missions = [SolarSystem, ExplorationMission, TargetTestMission];
+        this.missions = [SolarSystem, ExplorationMission, PilotTrainingMission];
     }
 
     // remove everything from the game
@@ -322,6 +322,10 @@ export default class NvServerEngine extends ServerEngine {
               // check the ship has a torp loaded in the specified tube
               let torpType = ship.tubes[tube] -1;
 
+              if (ship.playable) {
+                ship.tubes[tube] = 0;
+              }
+
               // find direction to target
               let shipPos = Victor.fromArray(ship.physicsObj.position);
               let targetPos = Victor.fromArray(target.physicsObj.position);
@@ -345,6 +349,7 @@ export default class NvServerEngine extends ServerEngine {
                   engine: 1,
                   torpType: torpType
               });
+
             }
 
         });

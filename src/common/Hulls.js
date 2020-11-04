@@ -169,6 +169,40 @@ export default {
 		}
 	},
 
+	"fighter": {
+		name: 'Fighter',
+		image: 'assets/fighter.png',
+		size: 100, // used for height
+		width: 1.36, // ratio to height
+		mass: 0.003,
+		thrust: 0.03,
+		maneuver: 2.0,
+		damage: 750,
+		enginePositions: [[0.1, 0.25, 0.6], [0.1, 0.35, 0.6], [0.1, 0.65, 0.6], [0.1, 0.75, 0.6]],// [scale, %x, %y]
+		exhaustImage: 'exhaust',
+		powerGrid: false, // used only when assigning damage - so only ships with engineer can have system damage
+		fuelProductionEfficiency: 0.05,
+		fuel: 5000,
+		tubes: 4,
+		systems: STANDARD_SYSTEMS,
+		systemLayout: STANDARD_SYSTEMS_LAYOUT,
+		maxWeaponStock: [0, 8, 0],
+		defaultWeaponStock: [0, 0, 0],
+		scanRanges: [6000, 12000], // visual, sensor: visual=auto scan, sensor=can see bogey (scannable)
+		ai: { // variables for the AI to behave diferently by hull
+			refuel: 0.5,
+			scan: 0.16, // chance to scan a ship in range every plan (1/s)
+			torpedo: {
+				range: 30000, // range to fire at
+				reload: 60, // ms
+				volley: 4 // fire 2 of the 4 tubes, hence reload is half
+			}
+		},
+		stations: [
+			'pilot'
+		]
+	},
+
 	"blockade-runner": {
 		name: 'Blockade Runner',
 		image: 'assets/blockade-runner.png',

@@ -38,6 +38,7 @@ export default class TorpedoFireControl {
 
     // keep some local state indicating loading status
     this.loadingState = [];
+    this.emptyState = [];
     this.targetId = -1;
 
     // draw first with no tubes (depends on ship hull)
@@ -60,10 +61,19 @@ export default class TorpedoFireControl {
 
       // start loading/unloading
       if (!this.loadingState[tubeIndex]) {
-        this.loadingState[tubeIndex] = {
-          load: torpTypeIndex,
-          timeToLoad: 1000 * 15 // load takes 15 seconds (5s slower than enginner)
-        };
+
+        // only if we have stock
+        if (this.playerShip.weaponStock[torpTypeIndex] > 0) {
+
+          this.emptyState[tubeIndex] = false;
+
+          this.loadingState[tubeIndex] = {
+            load: torpTypeIndex,
+            timeToLoad: 1000 * 15 // load takes 15 seconds (5s slower than enginner)
+          };
+        } else {
+          this.emptyState[tubeIndex] = true;
+        }
       }
     }
   }
@@ -99,7 +109,13 @@ export default class TorpedoFireControl {
           } else if (this.loadingState[i]) {
             // finished loading
             if (this.renderer.client) {
-              this.renderer.client.loadTorp(i, this.loadingState[i].load);
+              // only if we have stock
+              if (this.playerShip.weaponStock[this.loadingState[i].load] > 0) {
+                this.playerShip.weaponStock[this.loadingState[i].load] = this.playerShip.weaponStock[this.loadingState[i].load] - 1;
+                this.renderer.client.loadTorp(i, this.loadingState[i].load);
+              } else {
+                this.emptyState[i] = true;
+              }
               this.loadingState[i] = false;
             }
           } else {
@@ -134,6 +150,9 @@ export default class TorpedoFireControl {
         isActive = false;
         // ${Math.round(this.loadingState[tubeIndex].timeToLoad / 1000)}
         currentState = h('div.current', {key: 'current'}, ['RELOADING']);
+      } else if (this.emptyState[tubeIndex]) {
+        isActive = false;
+        currentState = h('div.current', {key: 'current'}, ['STOCK EMPTY']);
       }
 
       // add warning light if not enough power
@@ -164,7 +183,6 @@ export default class TorpedoFireControl {
                 if (isActive && currentTorp) {
                   this.renderer.client.fireTorp(this.targetId , tubeIndex);
                 }
-                this.renderer.client.loadTorp(tubeIndex, 0);
 
                 // when button pressed always restart loading
                 if (this.parameters.autoLoad) {

@@ -158,9 +158,11 @@ export default class PlayableShip extends Ship {
         this.tubes[tube] = torpType;
 
       } else if (this.weaponStock[torpType] > 0) {
+
         // super(tube, torpType);
         this.tubes[tube] = torpType;
         this.weaponStock[torpType] = this.weaponStock[torpType] - 1;
+
       }
 
     }
