@@ -94,7 +94,9 @@ export default class PilotRenderer extends CompositeRenderer {
           }),
           new ZoomControl({
             keyboardControls: true,
-            onScreenControls: false
+            onScreenControls: false,
+            minZoom: 0.06,
+            maxZoom: 3,
           }),
           new NextTargetControl({
             keyboardControls: true,

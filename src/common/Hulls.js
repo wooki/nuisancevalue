@@ -175,8 +175,8 @@ export default {
 		size: 100, // used for height
 		width: 1.36, // ratio to height
 		mass: 0.003,
-		thrust: 0.03,
-		maneuver: 2.0,
+		thrust: 0.035,
+		maneuver: 1.6,
 		damage: 750,
 		enginePositions: [[0.1, 0.25, 0.6], [0.1, 0.35, 0.6], [0.1, 0.65, 0.6], [0.1, 0.75, 0.6]],// [scale, %x, %y]
 		exhaustImage: 'exhaust',
