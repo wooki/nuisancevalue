@@ -20,7 +20,7 @@ multiplayer bridge-sim game using lance.gg, p2 and pixi.js
 
 ### Engineering
 
-![Image of Engineering Screen](https://github.com/wooki/nuisancevalue/blob/master/docs/assets/engineering.png)
+![Image of Engineering Screen](https://github.com/wooki/nuisancevalue/blob/master/docs/assets/engineer.png)
 
 ### Captain
 
