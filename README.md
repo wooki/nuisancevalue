@@ -62,6 +62,18 @@ To run the server
 yarn run start
 ```
 
+The server listens on port 3000 by default and when a client connects there are several options that can be passed in the querystring.
+
+- admin=1 allows that client to select a mission
+- sound=local|global|on local sound effects are for the individual station the client is viewing, global sounds are for a main viewer. On allows for both.
+- debug=1 allows the client to see objects outside of scan range
+
+E.g.
+
+```
+http://localhost:3000?admin=1&sound=on
+```
+
 ## Contributing
 
 Discussion, ideas and even pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
