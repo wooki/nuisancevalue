@@ -2,7 +2,7 @@
   "name": "nuisancevalue",
   "version": "0.0.1",
   "engines": {
-    "node": "~12.18.0"
+    "node": "~12.22.0"
   },
   "description": "An HTML5 multiplayer bridge simulator game based on Lance, P2 and PIXI",
   "main": "main.js",
