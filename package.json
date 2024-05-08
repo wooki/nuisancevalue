@@ -9,6 +9,7 @@
   "dependencies": {
     "@babel/node": "^7.10.5",
     "babel-loader": "^8.0.5",
+    "browserlist": "^1.0.1",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^3.6.0",
     "elliptic": "^6.5.3",
@@ -43,6 +44,7 @@
     "webpack-cli": "^3.3.12"
   },
   "scripts": {
+    "browserslist": "browserslist --update-db",
     "start": "node dist-server/main.js",
     "start-debug": "node --inspect-brk dist-server/main.js",
     "start-dev": "nodemon dist-server/main.js",
