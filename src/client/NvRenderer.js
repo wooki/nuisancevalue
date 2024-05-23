@@ -123,7 +123,9 @@ export default class NvRenderer extends Renderer {
     // defer draw to specific renderer
     draw(t, dt) {
 
+        // console.time("draw");
         super.draw(t, dt);
+        // console.timeEnd("draw");
 
         if (renderer) {
             let backToLobby = renderer.draw(t, dt);
@@ -140,6 +142,8 @@ export default class NvRenderer extends Renderer {
 
 
     runClientStep(t) {
+        // console.time("runClientStep");
+
         let p = this.clientEngine.options.stepPeriod;
         let dt = 0;
 
@@ -179,6 +183,7 @@ export default class NvRenderer extends Renderer {
             if (dt < 0) dt = 0;
             this.clientEngine.correction = this.clientEngine.lastStepTime - t;
             this.clientEngine.step(t, dt, true);
+            // console.timeEnd("runClientStep");
             return;
         }
 
@@ -188,6 +193,7 @@ export default class NvRenderer extends Renderer {
         this.clientEngine.lastStepTime += p;
         this.clientEngine.correction = this.clientEngine.lastStepTime - t;
         this.clientEngine.step(t, dt);
+        // console.timeEnd("runClientStep");
     }
 
 
