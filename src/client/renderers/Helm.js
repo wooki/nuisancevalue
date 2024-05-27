@@ -39,84 +39,84 @@ export default class HelmRenderer extends CompositeRenderer {
         baseUrl: '/',
         // dashboardColor: 0x2c332c,
         subRenderers: [
-          // new MapBackground({
-          //   x: halfWidth - (halfHeight - margin),
-          //   y: margin,
-          //   width: fullHeight - marginFull,
-          //   height: fullHeight - marginFull,
-          //   zIndex: 5
-          // }),
-          // new MapGrid({
-          //   x: halfWidth - (halfHeight - margin),
-          //   y: margin,
-          //   width: fullHeight - marginFull,
-          //   height: fullHeight - marginFull,
-          //   zIndex: 8
-          // }),
-          // new MapPaths({
-          //   x: halfWidth - (halfHeight - margin),
-          //   y: margin,
-          //   width: fullHeight - marginFull,
-          //   height: fullHeight - marginFull,
-          //   zIndex: 12
-          // }),
-          // new Map({
-          //   x: halfWidth - (halfHeight - margin),
-          //   y: margin,
-          //   width: fullHeight - marginFull,
-          //   height: fullHeight - marginFull,
-          //   zIndex: 15
-          // }),
-          // new MapHud({
-          //   x: halfWidth - (halfHeight - margin),
-          //   y: margin,
-          //   width: fullHeight - marginFull,
-          //   height: fullHeight - marginFull,
-          //   zIndex: 20,
-          //   predictTime: 120 // to match waypoint predicition with nav
-          // }),
+          new MapBackground({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 5
+          }),
+          new MapGrid({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 8
+          }),
+          new MapPaths({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 12
+          }),
+          new Map({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 15
+          }),
+          new MapHud({
+            x: halfWidth - (halfHeight - margin),
+            y: margin,
+            width: fullHeight - marginFull,
+            height: fullHeight - marginFull,
+            zIndex: 20,
+            predictTime: 120 // to match waypoint predicition with nav
+          }),
           new EngineControl({
             x: margin,
             y: fullHeight - (margin + 372),
             zIndex: 30,
             keyboardControls: true
           }),
-          // new ManeuverControl({
-          //   x: margin + margin + 60, // engine control + 2 margins
-          //   y: fullHeight - (margin + 44),
-          //   zIndex: 30,
-          //   keyboardControls: true
-          // }),
-          // new ZoomControl({
-          //   keyboardControls: true,
-          //   onScreenControls: false
-          // }),
-          // new DockingControl({
-          //   x: margin,
-          //   y: margin,
-          //   width: Math.max(sideWidth, sideControlsMin),
-          //   height: (halfHeight - (margin * 2)),
-          //   zIndex: 30,
-          //   keyboardControls: true
-          // }),
-          // new FuelGauge({
-          //   x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
-          //   y: fullHeight - (margin + 44),
-          //   width: Math.max(sideWidth, sideControlsMin),
-          //   height: 44,
-          //   zIndex: 25
-          // }),
-          // new HudData({
-          //   x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
-          //   y: margin,
-          //   width: Math.max(sideWidth, sideControlsMin),
-          //   height: fullHeight - marginFull,
-          //   zIndex: 30
-          // }),
-          // new GlobalSound({
-          // }),
-          // new LocalSound({
-          // }),
+          new ManeuverControl({
+            x: margin + margin + 60, // engine control + 2 margins
+            y: fullHeight - (margin + 44),
+            zIndex: 30,
+            keyboardControls: true
+          }),
+          new ZoomControl({
+            keyboardControls: true,
+            onScreenControls: false
+          }),
+          new DockingControl({
+            x: margin,
+            y: margin,
+            width: Math.max(sideWidth, sideControlsMin),
+            height: (halfHeight - (margin * 2)),
+            zIndex: 30,
+            keyboardControls: true
+          }),
+          new FuelGauge({
+            x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
+            y: fullHeight - (margin + 44),
+            width: Math.max(sideWidth, sideControlsMin),
+            height: 44,
+            zIndex: 25
+          }),
+          new HudData({
+            x: fullWidth - (margin + Math.max(sideWidth, sideControlsMin)),
+            y: margin,
+            width: Math.max(sideWidth, sideControlsMin),
+            height: fullHeight - marginFull,
+            zIndex: 30
+          }),
+          new GlobalSound({
+          }),
+          new LocalSound({
+          }),
         ]
       };
 
