@@ -14,8 +14,8 @@ const defaults = {
     scheduler: 'render-schedule',
     syncOptions: {
       sync: qsOptions.sync || 'interpolate',
-      localObjBending: 0.6,
-      remoteObjBending: 0.6,
+      localObjBending: 0.5,
+      remoteObjBending: 0.5,
     },
     verbose: false
 };

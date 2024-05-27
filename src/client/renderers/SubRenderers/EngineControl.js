@@ -52,7 +52,7 @@ export default class EngineControl {
     }
 
     this.engine = this.playerShip.engine;
-    this.projector.scheduleRender();
+    // this.projector.scheduleRender();
   }
 
   setEngine(engineLevel) {

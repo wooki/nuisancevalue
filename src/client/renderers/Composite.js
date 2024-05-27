@@ -253,7 +253,7 @@ export default class CompositeRenderer {
     }
 
     draw(t, dt) {
-
+        
         if (this.loadedSprites) {
 
           // find the player ship first, so we can set objects positions relative to it

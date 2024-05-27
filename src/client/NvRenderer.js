@@ -124,8 +124,8 @@ export default class NvRenderer extends Renderer {
     draw(t, dt) {
 
         // console.time("draw");
-        super.draw(t, dt);
-        // console.timeEnd("draw");
+        let startTime = performance.now();
+        super.draw(t, dt);        
 
         if (renderer) {
             let backToLobby = renderer.draw(t, dt);
@@ -137,7 +137,12 @@ export default class NvRenderer extends Renderer {
             // constructor doesn't have the world and playerId initialised yet
             this.detectRenderer();
         }
-
+        // console.timeEnd("draw");
+        let endTime = performance.now();
+        let duration = endTime - startTime;
+        // if (duration >= 16) {
+            console.log(`duration: ${duration}`);
+        // }
     }
 
 

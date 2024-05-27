@@ -25,9 +25,9 @@ const io = socketIO(requestHandler);
 const gameEngine = new NvGameEngine({ traceLevel: Lib.Trace.TRACE_ERROR });
 const serverEngine = new NvServerEngine(io, gameEngine, {
 	stepRate: 60,
-	updateRate: 4, 
-	fullSyncRate: 30, 
-	timeoutInterval: 60,
+	updateRate: 6, 
+	fullSyncRate: 20, 
+	timeoutInterval: 2400,
 	countConnections: false,
 	updateOnObjectCreation: true
 });
