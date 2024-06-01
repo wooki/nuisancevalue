@@ -38,6 +38,23 @@ export default class ManeuverControl {
       renderer.keyboardControls.bindKey('ArrowLeft', 'maneuver', { }, { direction: 'l' });
       renderer.keyboardControls.bindKey('ArrowRight', 'maneuver', { }, { direction: 'r' });
     }
+
+    // rember dimesnions
+    let rect = this.el.getBoundingClientRect();
+    this.screenWidth = rect.width / 2;
+    this.screenHeight = rect.height / 2;
+      
+    // watch for click and compute angle
+    this.el.addEventListener('click', (event) => {
+      event.preventDefault();
+      let x = event.clientX - this.screenWidth;
+      let y = event.clientY - this.screenHeight;
+      let angle = Math.atan2(y, x) * 180 / Math.PI;
+      angle = angle - 90;
+      angle = angle < 0? angle + 360 : angle;      
+      this.renderer.playSound('click');
+      this.renderer.client.setManeuver(angle);
+    });
   }
 
   sendManeuver(direction) {
@@ -52,6 +69,7 @@ export default class ManeuverControl {
         key: 'btn'+direction,
         onclick: (event) => {
           event.preventDefault();
+          event.stopPropagation();
           this.sendManeuver(direction);
         }
         },

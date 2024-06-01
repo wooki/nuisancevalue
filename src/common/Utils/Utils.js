@@ -12,15 +12,14 @@ export default {
 		return `${prefix}/${name}${suffix}`.toUpperCase();
 	},
 
-	radiansToDegrees(radians) {
-      if (radians < 0) {
-        return this.radiansToDegrees((radians + (Math.PI*2)));
-      } else if (radians > (Math.PI*2)) {
-        return this.radiansToDegrees((radians - (Math.PI*2)));
-      } else {
-        return (radians % (2 * Math.PI)) * (180 / Math.PI);
-      }
+	radiansToDegrees(radians) {		
+		let degrees = radians * (180 / Math.PI);
+		return ((degrees % 360) + 360) % 360;
   },
+
+  	normalizeAngle(angle){
+		return ((angle % 360) + 360) % 360;
+	},	
 
 	checkLineIntersection(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
 	    // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point

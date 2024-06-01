@@ -129,8 +129,12 @@ export default class SolarSystem extends Mission {
             angle: Math.PI,
             playable: 1,
             faction: this.playerFaction,
-            fuel: 4000
+            fuel: 10000
         });
+        this.playerShip.loadTorp(0, 1);
+        this.playerShip.loadTorp(1, 1);
+        this.playerShip.loadTorp(2, 1);
+        this.playerShip.loadTorp(3, 1);
       }
     } // stationPlanets
 

@@ -70,6 +70,7 @@ export default class EngineControl {
         key: 'btn'+engineLevel,
         onclick: (event) => {
           event.preventDefault();
+          event.stopPropagation();
           this.setEngine(engineLevel);
         }
         },

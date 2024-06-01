@@ -16,6 +16,7 @@ import CollisionUtils from './CollisionUtils';
 import Ai from './Ai';
 import Systems from './Systems';
 import Waypoint from './Waypoint';
+import Utils from './Utils/Utils.js';
 
 let gravityObjects = {};
 
@@ -148,7 +149,7 @@ export default class NvGameEngine extends GameEngine {
               // torps with no fuel just explode
               this.removeObjectFromWorld(obj);
               this.emitonoff.emit('explosion', obj);  // object itself does this - but do here (in case we skip on client)
-
+              
             } else {
 
                 // for every hundred steps (offset by id so we only process 1 obj per step until > 100 objects)
@@ -194,6 +195,16 @@ export default class NvGameEngine extends GameEngine {
                   }
                 }
 
+                if (obj instanceof Torpedo && obj.aiAngle) {
+                  let angle = obj.aiAngle;
+                  let currentAngle = Utils.radiansToDegrees(obj.physicsObj.angle);
+                  let deltaAngle = currentAngle - angle;
+                  if (Math.abs(deltaAngle) < 1) {
+                    obj.aiAngle = null;
+                    obj.physicsObj.angularVelocity = 0;
+                  }
+                }              
+
                 // only certain types have engines
                 if (obj.applyEngine) {
                     obj.applyEngine();
@@ -207,6 +218,19 @@ export default class NvGameEngine extends GameEngine {
                 if (obj instanceof PDC) {
                   obj.processContact();
                 }
+
+                // check for ai rotation
+                if (obj instanceof Ship && obj.aiAngle) {
+                  let angle = obj.aiAngle;
+                  let currentAngle = Utils.radiansToDegrees(obj.physicsObj.angle);
+                  let deltaAngle = currentAngle - angle;
+                  // console.log("xxx", deltaAngle, currentAngle, angle);      
+                  if (Math.abs(deltaAngle) < 1) {
+                    obj.aiAngle = null;
+                    obj.physicsObj.angularVelocity = 0;
+                  }
+                }
+
 
                 // if this object has a PDC then update it
                 if (obj instanceof Ship && obj.pdc) {

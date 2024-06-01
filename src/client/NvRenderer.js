@@ -124,7 +124,7 @@ export default class NvRenderer extends Renderer {
     draw(t, dt) {
 
         // console.time("draw");
-        let startTime = performance.now();
+        // let startTime = performance.now();
         super.draw(t, dt);        
 
         if (renderer) {
@@ -138,10 +138,10 @@ export default class NvRenderer extends Renderer {
             this.detectRenderer();
         }
         // console.timeEnd("draw");
-        let endTime = performance.now();
-        let duration = endTime - startTime;
+        // let endTime = performance.now();
+        // let duration = endTime - startTime;
         // if (duration >= 16) {
-            console.log(`duration: ${duration}`);
+            // console.log(`duration: ${duration}`);
         // }
     }
 

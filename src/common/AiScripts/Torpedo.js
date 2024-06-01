@@ -1,5 +1,5 @@
 import Victor from 'victor';
-import Utils from '../Utils/Utils';
+import Utils from '../Utils/Utils.js';
 
 export default class TorpedoAi {
 
@@ -40,29 +40,20 @@ export default class TorpedoAi {
 
 			// calculate adjustment towards ideal
 			let correctionV = idealV.clone().subtract(ourVelocity);
-
+			
 			// if our bearing does not match then rotate
 			let correctionAngle = 0 - correctionV.verticalAngle() % (Math.PI*2);
 			let ourBearing = torpedo.physicsObj.angle % (Math.PI*2);
-			let bearingChange = correctionAngle - ourBearing;
+
+			let bearingChange = correctionAngle - ourBearing;			
+
 			if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
 			if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
 
-			if (bearingChange < 0.1) {
-					torpedo.engine = 0;
-					if (torpedo.physicsObj.angularVelocity >= -0.1) {
-						torpedo.applyManeuver('l');
-					}
-
-			} else if (bearingChange > -0.1) {
-					torpedo.engine = 0;
-					if (torpedo.physicsObj.angularVelocity <= 0.1) {
-						torpedo.applyManeuver('r');
-					}
-			}
-
+			torpedo.applyManeuver(Utils.radiansToDegrees(correctionAngle));
+			
 			// if our bearing is close to desired then fire engine
-			if (Math.abs(bearingChange) <= 0.1) {
+			if (Math.abs(bearingChange) <= 0.1) {			
 				torpedo.engine = 1;
 			} else {
 				torpedo.engine = 0;

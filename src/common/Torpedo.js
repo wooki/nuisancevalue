@@ -1,5 +1,6 @@
 import { PhysicalObject2D, BaseTypes } from 'lance-gg';
 import Hulls from './Hulls';
+import Utils from './Utils/Utils.js';
 
 let game = null;
 let p2 = null;
@@ -9,6 +10,7 @@ export default class Torpedo extends PhysicalObject2D {
   constructor(gameEngine, options, props) {
       super(gameEngine, options, props);
       this.texture = "Torpedo";
+      this.aiAngle = null;
   }
 
   static get netScheme() {
@@ -17,6 +19,7 @@ export default class Torpedo extends PhysicalObject2D {
         fuel: { type: BaseTypes.TYPES.INT16 },
         engine: { type: BaseTypes.TYPES.UINT8 },
         torpType: { type: BaseTypes.TYPES.UINT8 },
+        aiAngle: { type: BaseTypes.TYPES.UINT8 },
         sensed: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
         scanned: { type: BaseTypes.TYPES.INT16 }, // bit mask indicating state for each faction
       }, super.netScheme);
@@ -39,24 +42,24 @@ export default class Torpedo extends PhysicalObject2D {
       let width = hullData.size * hullData.width;
       let halfWidth = Math.floor(width * 0.5);
 
-      if (maneuver == 'l') {
+      if (!isNaN(maneuver)) {
 
-          if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.5) {
-              this.physicsObj.angularVelocity = 0;
+          // apply force towards angle
+          let angle = parseFloat(maneuver);
+          if (angle < 0) angle = 360 + angle;
+          this.aiAngle = angle;          
+          let currentAngle = Utils.radiansToDegrees(this.physicsObj.angle);          
+          let deltaAngle = currentAngle - angle;
+          
+          if (Math.abs(deltaAngle) > 0.1) {
+            if (deltaAngle > 0 && deltaAngle < 180) {
+              this.physicsObj.angularVelocity = -4;
+            } else {
+              this.physicsObj.angularVelocity = 4;
+            }
           } else {
-              this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [halfWidth, 0]);
-              this.physicsObj.applyForceLocal([hullData.maneuver, 0], [halfWidth, height]);
+            this.physicsObj.angularVelocity = 0;
           }
-
-      } else if (maneuver == 'r') {
-
-          if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.5) {
-              this.physicsObj.angularVelocity = 0;
-          } else {
-              this.physicsObj.applyForceLocal([hullData.maneuver, 0], [halfWidth, 0]);
-              this.physicsObj.applyForceLocal([0 - hullData.maneuver, 0], [halfWidth, height]);
-          }
-
       }
 
   }

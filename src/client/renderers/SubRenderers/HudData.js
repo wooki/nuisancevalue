@@ -1,6 +1,7 @@
 import Victor from 'victor';
 import Assets from '../Utils/assets.js';
 import UiUtils from '../Utils/UiUtils';
+import Utils from '../../../common/Utils/Utils.js';
 import {h, createProjector} from 'maquette';
 import SolarObjects from '../../../common/SolarObjects';
 import Factions from '../../../common/Factions';
@@ -303,11 +304,12 @@ export default class HudData {
   }
 
   radiansToDegrees(radians) {
-    let degrees = radians * (180/Math.PI);
-    if (degrees < 0) {
-      degrees = degrees + 360;
-    }
-    return degrees;
+    // let degrees = radians * (180/Math.PI);
+    // if (degrees < 0) {
+    //   degrees = degrees + 360;
+    // }
+    // return degrees;
+    return Utils.radiansToDegrees(radians);
   }
 
   getBearingData(playerShip) {

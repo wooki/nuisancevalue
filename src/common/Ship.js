@@ -1,6 +1,7 @@
 import { PhysicalObject2D, BaseTypes, TwoVector } from 'lance-gg';
 import Hulls from './Hulls';
 import Factions from './Factions';
+import Utils from './Utils/Utils.js';
 
 let game = null;
 let p2 = null;
@@ -11,6 +12,7 @@ export default class Ship extends PhysicalObject2D {
       super(gameEngine, options, props);
       this.playable = 0;
       this.fuel = 10000;
+      this.aiAngle = null;
       this.factions = new Factions();
     }
 
@@ -24,6 +26,7 @@ export default class Ship extends PhysicalObject2D {
             commsTargetId: { type: BaseTypes.TYPES.INT16 }, // currently talking to
             targetId: { type: BaseTypes.TYPES.INT32 },
             dockedId: { type: BaseTypes.TYPES.INT32 },
+            aiAngle: { type: BaseTypes.TYPES.UINT8 },
             aiScript: { type: BaseTypes.TYPES.UINT8 },
             aiPlan: { type: BaseTypes.TYPES.UINT8 },
             faction: { type: BaseTypes.TYPES.INT16 },
@@ -138,34 +141,46 @@ export default class Ship extends PhysicalObject2D {
             return; // can't do this while docked
         }
 
-        if (this.fuel <= 0) return;
-        this.fuel = this.fuel - 0.01;
+        // if (this.fuel <= 0) return;
+        // this.fuel = this.fuel - 0.01;
 
         if (maneuver == 'l') {
 
-            if (this.physicsObj.angularVelocity > 0 && this.physicsObj.angularVelocity < 0.5) {
-                this.physicsObj.angularVelocity = 0;
+          this.aiAngle = null;
+          if (this.physicsObj.angularVelocity > 0) {
+              this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([0 - maneuverForce, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([maneuverForce, 0], [Math.floor(this.size/2), this.size]);
+              this.physicsObj.angularVelocity = this.physicsObj.angularVelocity - 0.5;
             }
 
         } else if (maneuver == 'r') {
 
-            if (this.physicsObj.angularVelocity < 0 && this.physicsObj.angularVelocity > -0.5) {
-                this.physicsObj.angularVelocity = 0;
+            this.aiAngle = null;
+            if (this.physicsObj.angularVelocity < 0) {
+              this.physicsObj.angularVelocity = 0;
             } else {
-                this.physicsObj.applyForceLocal([maneuverForce, 0], [Math.floor(this.size/2), 0]);
-                this.physicsObj.applyForceLocal([0 - maneuverForce, 0], [Math.floor(this.size/2), this.size]);
+              this.physicsObj.angularVelocity = this.physicsObj.angularVelocity + 0.5;
             }
 
-        } else if (maneuver == 'f') {
 
-            this.physicsObj.applyForceLocal([0, hullData.maneuver / 2], [Math.floor(this.size/2), Math.floor(this.size/2)]);
+        } else if (!isNaN(maneuver)) {
 
-        } else if (maneuver == 'b') {
-
-            this.physicsObj.applyForceLocal([0, 0 - (0 - hullData.maneuver / 2)], [Math.floor(this.size/2), Math.floor(this.size/2)]);
+            // apply force towards angle
+            let angle = parseFloat(maneuver);
+            if (angle < 0) angle = 360 + angle;
+            this.aiAngle = angle;
+            let currentAngle = Utils.radiansToDegrees(this.physicsObj.angle);
+            let deltaAngle = currentAngle - angle;
+            
+            if (Math.abs(deltaAngle) > 1) {
+              if (deltaAngle > 0 && deltaAngle < 180) {
+                this.physicsObj.angularVelocity = -2;
+              } else {
+                this.physicsObj.angularVelocity = 2;
+              }
+            } else {
+              this.physicsObj.angularVelocity = 0;
+            }
         }
 
     }

@@ -194,15 +194,19 @@ export default class BaseShip {
 				if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
 
 				// turn to face path - prefer turning right, because of anticlockwise orbit
-				if (bearingChange > 0.1) {
-					if (ship.physicsObj.angularVelocity <= 0.1) {
-						ship.applyManeuver('r');
-					}
-				} else if (bearingChange < -0.1) {
-					if (ship.physicsObj.angularVelocity >= -0.1) {
-						ship.applyManeuver('l');
-					}
+				// if (bearingChange > 0.1) {
+				// 	if (ship.physicsObj.angularVelocity <= 0.1) {
+				// 		ship.applyManeuver('r');
+				// 	}
+				// } else if (bearingChange < -0.1) {
+				// 	if (ship.physicsObj.angularVelocity >= -0.1) {
+				// 		ship.applyManeuver('l');
+				// 	}
+				// }
+				if (Math.abs(bearingChange > 0.1)) {
+					ship.applyManeuver(Utils.radiansToDegrees(directionAngle));
 				}
+			
 
 				// if we're close to facing our destination then fire engine
 				let angleFromTarget = targetAngle - ourBearing;
@@ -287,15 +291,18 @@ export default class BaseShip {
 			} else {
 				ship.engine = 0;
 
-				if (bearingChange < 0) {
-						if (ship.physicsObj.angularVelocity >= -0.1) {
-							ship.applyManeuver('l');
-						}
+				// if (bearingChange < 0) {
+				// 		if (ship.physicsObj.angularVelocity >= -0.1) {
+				// 			ship.applyManeuver('l');
+				// 		}
 
-				} else if (bearingChange > 0) {
-						if (ship.physicsObj.angularVelocity <= 0.1) {
-							ship.applyManeuver('r');
-						}
+				// } else if (bearingChange > 0) {
+				// 		if (ship.physicsObj.angularVelocity <= 0.1) {
+				// 			ship.applyManeuver('r');
+				// 		}
+				// }
+				if (Math.abs(bearingChange > 0.1)) {
+					ship.applyManeuver(Utils.radiansToDegrees(correctionAngle));
 				}
 			}
 		}
@@ -346,20 +353,22 @@ export default class BaseShip {
 			let bearingChange = correctionAngle - ourBearing;
 			if (bearingChange < -Math.PI) bearingChange = bearingChange + (Math.PI*2)
 			if (bearingChange > Math.PI) bearingChange = bearingChange - (Math.PI*2)
+			
+			ship.applyManeuver(Utils.radiansToDegrees(correctionAngle));
+			
+			// if (bearingChange < 0.1) {
+			// 		ship.engine = 0;
+			// 		if (ship.physicsObj.angularVelocity >= -0.1) {
+			// 			ship.applyManeuver('l');
+			// 		}
 
-			if (bearingChange < 0.1) {
-					ship.engine = 0;
-					if (ship.physicsObj.angularVelocity >= -0.1) {
-						ship.applyManeuver('l');
-					}
+			// } else if (bearingChange > -0.1) {
+			// 		ship.engine = 0;
+			// 		if (ship.physicsObj.angularVelocity <= 0.1) {
+			// 			ship.applyManeuver('r');
+			// 		}
 
-			} else if (bearingChange > -0.1) {
-					ship.engine = 0;
-					if (ship.physicsObj.angularVelocity <= 0.1) {
-						ship.applyManeuver('r');
-					}
-
-			}
+			// }
 
 			// if our bearing is close to desired then fire engine
 			if (Math.abs(bearingChange) < 0.1 && correctionV.magnitude() > 20) { // only bother when drifting away from desired
